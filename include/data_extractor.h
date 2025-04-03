@@ -5,6 +5,8 @@
  * @author Your Name
  * @date YYYY-MM-DD
  */
+#ifndef DATA_EXTRACTOR_H
+#define DATA_EXTRACTOR_H
 #include <fstream>	// std::ifstream
 #include <string>	// std::string
 #include <algorithm>	// std::remove_if
@@ -102,3 +104,4 @@ public:
 	int* getBarcodes();
 	Landmark* getLandmarks();
 };
+#endif
