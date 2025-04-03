@@ -8,6 +8,7 @@
 
 #include "../include/data_extractor.h"
 #include <iostream>
+#include <string>
 
 /**
  * @brief Default constructor.
@@ -171,6 +172,46 @@ bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 		std::cout<< "[ERROR] Unable to open Groundtruth file:" << filename << std::endl;
 		return false;
 	}
+}
+
+bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
+	std::string filename = dataset + "Robot" + std::to_string(robot_id) +"_Odometry.dat";
+	std::fstream file(filename); 
+
+	std::string line;
+	if (file.is_open()) {
+		while (std::getline(file, line)) {
+			/* Ignore Comments */
+			if ('#' == line[0]) {
+				continue;
+			}
+			/* Remove Whitespace */
+			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+			int start_index = 0;
+			int end_index = line.find('\t', 0); 
+			double time = std::stod(line.substr(start_index, end_index));
+
+			start_index = end_index;
+			end_index = line.find('\t', ++end_index);
+			double forward_velocity;
+
+			start_index = end_index;
+			end_index = line.find('\t', ++end_index);
+			double angular_velocity;
+
+			robots[robot_id].raw.odometry.push_back(Odometry(time, forward_velocity, angular_velocity));
+		}
+
+		return true;
+	}
+	else {
+		std::cout<< "[ERROR] Unable to open Odometry file:" << filename << std::endl;
+		return false;
+	}
+}
+bool DataExtractor::readMeasurements(std::string, int) {
+	return false;
 }
 
 void DataExtractor::setDataSet(std::string dataset) {
