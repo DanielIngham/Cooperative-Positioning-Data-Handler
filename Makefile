@@ -10,7 +10,7 @@ CXX := g++
 CFLAGS := -I $(INCLUDE_DIR)
 
 # Files
-TARGET := $(BIN_DIR)/kalman_filter
+TARGET := $(BIN_DIR)/data_extractor
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
@@ -22,6 +22,7 @@ TEST_OBJECTS :=  $(patsubst $(TEST_DIR)/%.cpp, $(BUILD_DIR)/%.o,$(TEST))
 TEST_SOURCES := $(filter-out $(SRC_DIR)/main.cpp, $(SOURCES)) 
 TEST_SRC_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(TEST_SOURCES))
 
+.PHONEY: all run clean test
 
 # Linking
 $(TARGET): $(OBJECTS)
