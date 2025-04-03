@@ -305,9 +305,9 @@ void DataExtractor::setDataSet(std::string dataset) {
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
 		ground_truth_correct &= readGroundTruth(dataset, i);
 	}
-	bool succesful_extraction = barcodes_correct & landmarks_correct & ground_truth_correct;
+	bool successful_extraction = barcodes_correct & landmarks_correct & ground_truth_correct;
 
-	if (!succesful_extraction) {
+	if (!successful_extraction) {
 		throw std::runtime_error("Unable to extract data from dataset");
 	}
 }
