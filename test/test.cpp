@@ -20,8 +20,8 @@ void checkBarcodes(bool& barcodes_set) {
 
 		/* Unit Test 1: check if barcodes were set. */	
 		int* barcodes = data.getBarcodes();
-		for (int i = 0; i < TOTAL_BARCODES; i++) {
-			if (barcodes[i] == 0) {
+		for (int j = 0; j < TOTAL_BARCODES; j++) {
+			if (barcodes[j] == 0) {
 				barcodes_set = false; 
 			}
 		}
@@ -53,7 +53,7 @@ void checkLandmarkBarcodes(bool& correct_landmark_barcode) {
 void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int robot_id) {
 	DataExtractor data;
 
-	for (int i=1; i <= TOTAL_DATASETS; i++) {
+	for (int i = 1; i <= TOTAL_DATASETS; i++) {
 		std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
 		data.setDataSet(dataset);
 
@@ -63,7 +63,7 @@ void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int ro
 		std::ifstream file(groundtruth_file);
 		std::string line;
 
-		int counter = 0;
+		long unsigned int counter = 0;
 		if (file.is_open()) {
 			while(std::getline(file, line)) {
 				if ('#' == line[0]) {
@@ -86,7 +86,7 @@ void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int ro
 }
 
 
-int main(int argc, char** argv) {
+int main() {
 	auto start = std::chrono::high_resolution_clock::now();
 	std::cout<< "UNIT TESTING" <<std::endl;
 	std::cout<< "Number of treads supported: " << std::thread::hardware_concurrency() << std::endl;
