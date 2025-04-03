@@ -7,8 +7,6 @@
  */
 
 #include "../include/data_extractor.h"
-#include <iostream>
-#include <string>
 
 /**
  * @brief Default constructor.
@@ -175,6 +173,9 @@ bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 }
 
 bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
+	/* Clear Previous Data in vectors */
+
+
 	std::string filename = dataset + "Robot" + std::to_string(robot_id) +"_Odometry.dat";
 	std::fstream file(filename); 
 
@@ -210,11 +211,63 @@ bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
 		return false;
 	}
 }
-bool DataExtractor::readMeasurements(std::string, int) {
-	return false;
+
+bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
+	std::string filename = dataset + "/Robot" + std::to_string(robot_id) + "_Measurment.dat";
+	std::fstream file(filename);
+
+	std::string line;
+
+	if (file.is_open()) {
+		while (std::getline(file, line)) {
+			/* Ignore Comments */
+			if ('#' == line[0]) {
+				continue;
+			}
+			/* Remove Whitespaces */
+			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+			int start_index = 0;
+			int end_index = line.find('\t', 0);
+			double time = std::stod(line.substr(start_index, end_index));
+			
+			start_index = end_index;
+			end_index = line.find('\t', ++end_index);
+			int subject = std::stoi(line.substr(start_index, end_index));
+
+			start_index = end_index;
+			end_index = line.find('\t', ++end_index);
+			double range = std::stod(line.substr(start_index, end_index));
+
+			start_index = end_index;
+			end_index = line.find('\t', ++end_index);
+			double bearing = std::stod(line.substr(start_index, end_index));
+
+			/* Check if the current time index falls within 0.05 seconds of a previous time index. */
+			auto iterator = std::find_if(robots[robot_id].raw.measurements.begin(), robots[robot_id].raw.measurements.end(), [&](Measurement index) {
+				return index.time >= time - 0.05 && index.time <= time + 0.05;
+			});
+
+			/* If the timestamp already exists in the vector of measurements, append the current measurment to the timestamp.*/
+			if (iterator != robots[robot_id].raw.measurements.end()) {
+				iterator->subjects.push_back(subject);
+				iterator->ranges.push_back(range);
+				iterator->bearings.push_back(bearing);
+			}
+			else {
+				robots[robot_id].raw.measurements.push_back(Measurement(time, subject, range, bearing));
+			}
+		}
+		
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 void DataExtractor::setDataSet(std::string dataset) {
+	/* Check if the data set directory exists */
 	struct stat sb;
 	const char* directory = dataset.c_str();
 
@@ -224,7 +277,8 @@ void DataExtractor::setDataSet(std::string dataset) {
 	else {
 		throw std::runtime_error("Dataset file path does not exist"); 
 	}
-
+	
+	/* Perform data extraction in the directory */
 	bool barcodes_correct = readBarcodes(dataset);
 	bool landmarks_correct = readLandmarks(dataset);
 	bool ground_truth_correct = readGroundTruth(dataset, 1);

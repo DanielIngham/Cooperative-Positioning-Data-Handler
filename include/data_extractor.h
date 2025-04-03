@@ -9,7 +9,7 @@
 #define DATA_EXTRACTOR_H
 #include <fstream>	// std::ifstream
 #include <string>	// std::string
-#include <algorithm>	// std::remove_if
+#include <algorithm>	// std::remove_if and std::find
 #include <iostream>	// std::cout
 #include <stdexcept>	// throw std::runtime_error
 #include <sys/stat.h>	// std::stat
@@ -72,10 +72,15 @@ private:
 
 	struct Measurement {
 		double time;
-		double range;
-		double bearing;
+		std::vector<int> subjects;
+		std::vector<double> ranges;
+		std::vector<double> bearings;
 
-		Measurement(double time_, double range_, double bearing_): time(time_), range(range_), bearing(bearing_) {}
+		Measurement(double time_,  int subject_, double range_, double bearing_): time(time_){
+			subjects.push_back(subject_);
+			ranges.push_back(range_);
+			bearings.push_back(bearing_);
+		}
 	};
 
 	struct Robot {
