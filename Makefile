@@ -1,56 +1,55 @@
 # Directories
-BUILD_DIR := build
-BIN_DIR := $(BUILD_DIR)/bin
+BUILD_DIR := lib
 INCLUDE_DIR := include
 SRC_DIR := src
-TEST_DIR := test
 
 # Compiler
 CXX := g++
-CFLAGS := -I $(INCLUDE_DIR)
+
+# Flags
+WFLAGS := -Wall -Wextra -Werror -Wshadow
+CFLAGS := $(WFLAGS)
 
 # Files
-TARGET := $(BIN_DIR)/data_extractor
+LIBRARY := data_extractor
+TARGET := $(BUILD_DIR)/lib$(LIBRARY).a
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
 # Unit Test Files
-TEST_TARGET := $(BIN_DIR)/test
-TEST := $(wildcard $(TEST_DIR)/*.cpp)
-TEST_OBJECTS :=  $(patsubst $(TEST_DIR)/%.cpp, $(BUILD_DIR)/%.o,$(TEST)) 
-## Include all source files except main.cpp
-TEST_SOURCES := $(filter-out $(SRC_DIR)/main.cpp, $(SOURCES)) 
-TEST_SRC_OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(TEST_SOURCES))
+TEST_DIR := test
+TEST_BUILD := $(TEST_DIR)/build
 
-.PHONEY: all run clean test
+TEST_TARGET := $(TEST_BUILD)/test
+TEST_SOURCES := $(wildcard $(TEST_DIR)/*.cpp)
+TEST_OBJECTS :=  $(patsubst $(TEST_DIR)/%.cpp, $(TEST_BUILD)/%.o,$(TEST_SOURCES)) 
+
+.PHONEY: all clean test
 
 # Linking
 $(TARGET): $(OBJECTS)
 	@mkdir -p $(dir $@)
-	$(CXX) -o $@ $^
+	ar rcs $@ $^
 
 # Compiling 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CFLAGS) -c $^ -o $@ 
+	$(CXX) -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
 
 all: $(TARGET)
-
-run: $(TARGET)
-	$(TARGET)
 
 clean:
 	rm -rf $(BUILD_DIR)
 
 # Test Linking
-$(TEST_TARGET): $(TEST_OBJECTS) $(TEST_SRC_OBJECTS)
+$(TEST_TARGET): $(TARGET) $(TEST_OBJECTS) 
 	@mkdir -p $(dir $@)
-	$(CXX) -o $@ $^
+	$(CXX) $(TEST_OBJECTS) -L$(BUILD_DIR) -l$(LIBRARY) -o $@ 
 	
 # Test Compling
-$(BUILD_DIR)/%.o: $(TEST_DIR)/%.cpp 
+$(TEST_BUILD)/%.o: $(TEST_DIR)/%.cpp 
 	@mkdir -p $(dir $@)
-	$(CXX) $(CFLAGS) -c $^ -o $@ 
+	$(CXX) -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
 
 test: $(TEST_TARGET)
 	$(TEST_TARGET)
