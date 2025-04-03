@@ -24,13 +24,13 @@ private:
 	/**
 	 * @brief String of the folder location for the dataset.
 	 */
-	std::string dataset = "";
+	std::string dataset_ = "";
 
 	/**
 	 * @brief Array containing list of all barcodes corresponding to the robots and landmarks. The index of the element in the array corresponds to its id minus one.
 	 * @detail Initialise all barcodes to 0. Since none of the barcodes have a value of 0, this will be used as a check to see if all the barcodes were correctly set .
 	 */
-	int barcodes[TOTAL_BARCODES] = {0}; 
+	int barcodes_[TOTAL_BARCODES] = {0}; 
 	
 	/** 
 	 * @struct landmark
@@ -45,7 +45,7 @@ private:
 		double y_std_dev;	///< y-standard deviation [m]
 	};
 	
-	Landmark landmarks [TOTAL_LANDMARKS];
+	Landmark landmarks_[TOTAL_LANDMARKS];
 
 	struct Groundtruth {
 		double time;
@@ -93,7 +93,7 @@ private:
 		} raw, synced;
 	};
 	
-	Robot robots [TOTAL_ROBOTS];
+	Robot robots_[TOTAL_ROBOTS];
 
 	bool readBarcodes(std::string);
 	bool readLandmarks(std::string);

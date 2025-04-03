@@ -7,7 +7,6 @@
  */
 
 #include "../include/data_extractor.h"
-#include <iostream>
 
 /**
  * @brief Default constructor.
@@ -27,7 +26,7 @@ DataExtractor::DataExtractor(std::string dataset){
 
 bool DataExtractor::readBarcodes(std::string dataset) {
 	/* Check that the dataset was specified */
-	if ("" == this->dataset) {
+	if ("" == this->dataset_) {
 		std::cout<< "Please specify a dataset\n";
 		return false;
 	}
@@ -55,7 +54,7 @@ bool DataExtractor::readBarcodes(std::string dataset) {
 				return false;
 			}
 			else {
-				barcodes[i++] = std::stoi(line.substr(line.find('\t', 0))) ;
+				barcodes_[i++] = std::stoi(line.substr(line.find('\t', 0))) ;
 			}
 		}
 
@@ -96,31 +95,31 @@ bool DataExtractor::readLandmarks(std::string dataset) {
 			else {
 				std::size_t start_index = 0; 
 				std::size_t end_index = line.find('\t', 0);
-				landmarks[i].id = std::stoi(line.substr(start_index, end_index));
+				landmarks_[i].id = std::stoi(line.substr(start_index, end_index));
 
-				if (barcodes[landmarks[i].id - 1] == 0) { 
+				if (barcodes_[landmarks_[i].id - 1] == 0) { 
 					std::cout << "[ERROR] Barcodes not correctly set" << std::endl;
 					return false;
 				}
 
-				landmarks[i].barcode = barcodes[landmarks[i].id - 1] ;
+				landmarks_[i].barcode = barcodes_[landmarks_[i].id - 1] ;
 				
 
 				start_index = end_index; 
 				end_index = line.find('\t', end_index+1);
-				landmarks[i].x = std::stod(line.substr(start_index, end_index));
+				landmarks_[i].x = std::stod(line.substr(start_index, end_index));
 
 				start_index = end_index; 
 				end_index = line.find('\t', end_index+1);
-				landmarks[i].y = std::stod(line.substr(start_index, end_index));
+				landmarks_[i].y = std::stod(line.substr(start_index, end_index));
 
 				start_index = end_index; 
 				end_index = line.find('\t', end_index+1);
-				landmarks[i].x_std_dev = std::stod(line.substr(start_index, end_index));
+				landmarks_[i].x_std_dev = std::stod(line.substr(start_index, end_index));
 
 				start_index = end_index; 
 				end_index = line.find('\t', end_index+1);
-				landmarks[i++].y_std_dev = std::stod(line.substr(start_index, end_index));
+				landmarks_[i++].y_std_dev = std::stod(line.substr(start_index, end_index));
 			}
 		}
 
@@ -136,7 +135,7 @@ bool DataExtractor::readLandmarks(std::string dataset) {
 
 bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 	/* Clear all previous elements in the ground truth vector. */
-	robots[robot_id].raw.ground_truth.clear();
+	robots_[robot_id].raw.ground_truth.clear();
 
 	/* Setup file for data extraction */
 	std::string filename = dataset + "/Robot" + std::to_string(robot_id + 1) + "_Groundtruth.dat"; 
@@ -169,7 +168,7 @@ bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 			end_index = line.find('\t', ++end_index);
 			double orientation = std::stod(line.substr(start_index, end_index));
 
-			robots[robot_id].raw.ground_truth.push_back(Groundtruth(time, x_coordinate, y_coordinate, orientation));
+			robots_[robot_id].raw.ground_truth.push_back(Groundtruth(time, x_coordinate, y_coordinate, orientation));
 		}
 		return true;
 	}
@@ -182,7 +181,7 @@ bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 
 bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
 	/* Clear all previous elements in the odometry vector. */
-	robots[robot_id].raw.odometry.clear();
+	robots_[robot_id].raw.odometry.clear();
 
 	/* Setup file for data extraction */
 	std::string filename = dataset + "Robot" + std::to_string(robot_id + 1) +"_Odometry.dat";
@@ -206,13 +205,15 @@ bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
 
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
-			double forward_velocity;
+			double forward_velocity = std::stod(line.substr(start_index, end_index));
+;
 
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
-			double angular_velocity;
+			double angular_velocity = std::stod(line.substr(start_index, end_index));
+;
 
-			robots[robot_id].raw.odometry.push_back(Odometry(time, forward_velocity, angular_velocity));
+			robots_[robot_id].raw.odometry.push_back(Odometry(time, forward_velocity, angular_velocity));
 		}
 
 		return true;
@@ -226,7 +227,7 @@ bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
 
 bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
 	/* Clear all previous elements in the measurement vector. */
-	robots[robot_id].raw.odometry.clear();
+	robots_[robot_id].raw.odometry.clear();
 
 	/* Setup file for data extraction */
 	std::string filename = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurment.dat";
@@ -261,18 +262,18 @@ bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
 			double bearing = std::stod(line.substr(start_index, end_index));
 
 			/* Check if the current time index falls within 0.05 seconds of a previous time index. */
-			auto iterator = std::find_if(robots[robot_id].raw.measurements.begin(), robots[robot_id].raw.measurements.end(), [&](Measurement index) {
+			auto iterator = std::find_if(robots_[robot_id].raw.measurements.begin(), robots_[robot_id].raw.measurements.end(), [&](Measurement index) {
 				return index.time >= time - 0.05 && index.time <= time + 0.05;
 			});
 
 			/* If the timestamp already exists in the vector of measurements, append the current measurment to the timestamp.*/
-			if (iterator != robots[robot_id].raw.measurements.end()) {
+			if (iterator != robots_[robot_id].raw.measurements.end()) {
 				iterator->subjects.push_back(subject);
 				iterator->ranges.push_back(range);
 				iterator->bearings.push_back(bearing);
 			}
 			else {
-				robots[robot_id].raw.measurements.push_back(Measurement(time, subject, range, bearing));
+				robots_[robot_id].raw.measurements.push_back(Measurement(time, subject, range, bearing));
 			}
 		}
 		
@@ -291,7 +292,7 @@ void DataExtractor::setDataSet(std::string dataset) {
 	const char* directory = dataset.c_str();
 
 	if (stat(directory, &sb) == 0) {
-		this->dataset = dataset;
+		this->dataset_ = dataset;
 	}
 	else {
 		throw std::runtime_error("Dataset file path does not exist"); 
@@ -313,25 +314,25 @@ void DataExtractor::setDataSet(std::string dataset) {
 }
 
 int* DataExtractor::getBarcodes() {
-	if ("" ==  this->dataset) {
+	if ("" ==  this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data."); 
 		return nullptr;
 	}
-	return barcodes;
+	return barcodes_;
 }
 
 DataExtractor::Landmark* DataExtractor::getLandmarks() {
-	if ("" ==  this->dataset) {
+	if ("" ==  this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
 		return nullptr;
 	}
-	return landmarks;
+	return landmarks_;
 }
 
 DataExtractor::Robot* DataExtractor::getRobots() {
-	if ("" == this->dataset) {
+	if ("" == this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
 		return nullptr;
 	}
-	return robots;
+	return robots_;
 }
