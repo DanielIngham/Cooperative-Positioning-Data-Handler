@@ -64,11 +64,16 @@ private:
 		double time;
 		double forward_velocity;
 		double angular_velocity;
+
+		Odometry(double time_, double forward_velocity_, double angular_velocity_): time(time_), forward_velocity(forward_velocity_), angular_velocity(angular_velocity_) {} 
 	};
 
 	struct Measurement {
+		double time;
 		double range;
 		double bearing;
+
+		Measurement(double time_, double range_, double bearing_): time(time_), range(range_), bearing(bearing_) {}
 	};
 
 	struct Robot {
@@ -82,6 +87,7 @@ private:
 	};
 	
 	Robot robots [TOTAL_ROBOTS];
+
 	bool readBarcodes(std::string);
 	bool readLandmarks(std::string);
 	bool readGroundTruth(std::string, int);
