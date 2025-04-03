@@ -134,11 +134,17 @@ bool DataExtractor::readLandmarks(std::string dataset) {
 }
 
 bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
+	/* Clear all previous elements in the ground truth vector. */
+	robots[robot_id].raw.ground_truth.clear();
+
+	/* Setup file for data extraction */
 	std::string filename = dataset + "/Robot" + std::to_string(robot_id) + "_Groundtruth.dat"; 
-	
 	std::ifstream file(filename);
 	std::string line;
+
+	/* Check if the file could be opened */
 	if (file.is_open()) {
+		/* Loop through each line in the file. */
 		while (std::getline(file, line)) {
 			/* Ignore Comments */
 			if ('#' == line[0]) {
@@ -166,6 +172,7 @@ bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 		}
 		return true;
 	}
+	/* If the data file could not be opened, display error. */
 	else {
 		std::cout<< "[ERROR] Unable to open Groundtruth file:" << filename << std::endl;
 		return false;
@@ -173,14 +180,17 @@ bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 }
 
 bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
-	/* Clear Previous Data in vectors */
+	/* Clear all previous elements in the odometry vector. */
+	robots[robot_id].raw.odometry.clear();
 
-
+	/* Setup file for data extraction */
 	std::string filename = dataset + "Robot" + std::to_string(robot_id) +"_Odometry.dat";
 	std::fstream file(filename); 
-
 	std::string line;
+
+	/* Check if the file could be opened */
 	if (file.is_open()) {
+		/* Loop through each line in the file. */
 		while (std::getline(file, line)) {
 			/* Ignore Comments */
 			if ('#' == line[0]) {
@@ -206,6 +216,7 @@ bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
 
 		return true;
 	}
+	/* If the data file could not be opened, display error. */
 	else {
 		std::cout<< "[ERROR] Unable to open Odometry file:" << filename << std::endl;
 		return false;
@@ -213,12 +224,17 @@ bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
 }
 
 bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
+	/* Clear all previous elements in the measurement vector. */
+	robots[robot_id].raw.odometry.clear();
+
+	/* Setup file for data extraction */
 	std::string filename = dataset + "/Robot" + std::to_string(robot_id) + "_Measurment.dat";
 	std::fstream file(filename);
-
 	std::string line;
 
+	/* Check if the file could be opened */
 	if (file.is_open()) {
+		/* Loop through each line in the file. */
 		while (std::getline(file, line)) {
 			/* Ignore Comments */
 			if ('#' == line[0]) {
@@ -261,7 +277,9 @@ bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
 		
 		return true;
 	}
+	/* If the data file could not be opened, display error. */
 	else {
+		std::cout<< "[ERROR] Unable to open Measurement file:" << filename << std::endl;
 		return false;
 	}
 }
@@ -303,4 +321,12 @@ DataExtractor::Landmark* DataExtractor::getLandmarks() {
 		return nullptr;
 	}
 	return landmarks;
+}
+
+DataExtractor::Robot* DataExtractor::getRobots() {
+	if ("" == this->dataset) {
+		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
+		return nullptr;
+	}
+	return robots;
 }
