@@ -7,6 +7,7 @@
  */
 
 #include "../include/data_extractor.h"
+#include <iostream>
 
 /**
  * @brief Default constructor.
@@ -138,7 +139,7 @@ bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 	robots[robot_id].raw.ground_truth.clear();
 
 	/* Setup file for data extraction */
-	std::string filename = dataset + "/Robot" + std::to_string(robot_id) + "_Groundtruth.dat"; 
+	std::string filename = dataset + "/Robot" + std::to_string(robot_id + 1) + "_Groundtruth.dat"; 
 	std::ifstream file(filename);
 	std::string line;
 
@@ -184,7 +185,7 @@ bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
 	robots[robot_id].raw.odometry.clear();
 
 	/* Setup file for data extraction */
-	std::string filename = dataset + "Robot" + std::to_string(robot_id) +"_Odometry.dat";
+	std::string filename = dataset + "Robot" + std::to_string(robot_id + 1) +"_Odometry.dat";
 	std::fstream file(filename); 
 	std::string line;
 
@@ -228,7 +229,7 @@ bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
 	robots[robot_id].raw.odometry.clear();
 
 	/* Setup file for data extraction */
-	std::string filename = dataset + "/Robot" + std::to_string(robot_id) + "_Measurment.dat";
+	std::string filename = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurment.dat";
 	std::fstream file(filename);
 	std::string line;
 
@@ -299,7 +300,11 @@ void DataExtractor::setDataSet(std::string dataset) {
 	/* Perform data extraction in the directory */
 	bool barcodes_correct = readBarcodes(dataset);
 	bool landmarks_correct = readLandmarks(dataset);
-	bool ground_truth_correct = readGroundTruth(dataset, 1);
+	bool ground_truth_correct = true;
+
+	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		ground_truth_correct &= readGroundTruth(dataset, i);
+	}
 	bool succesful_extraction = barcodes_correct & landmarks_correct & ground_truth_correct;
 
 	if (!succesful_extraction) {
