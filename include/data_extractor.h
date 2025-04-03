@@ -108,5 +108,7 @@ public:
 
 	int* getBarcodes();
 	Landmark* getLandmarks();
+	Robot* getRobots();
+
 };
 #endif
