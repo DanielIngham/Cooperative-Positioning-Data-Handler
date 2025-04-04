@@ -1,0 +1,288 @@
+\doxysection{Data\+Extractor Class Reference}
+\hypertarget{classDataExtractor}{}\label{classDataExtractor}\index{DataExtractor@{DataExtractor}}
+
+
+Extracts the data from the UTIAS Multi-\/robot Dataset.  
+
+
+
+
+{\ttfamily \#include $<$data\+\_\+extractor.\+h$>$}
+
+
+
+Collaboration diagram for Data\+Extractor\+:
+% FIG 0
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Groundtruth}{Groundtruth}}
+\begin{DoxyCompactList}\small\item\em Data attributes for a single groundtruth reading extracted from Robotx\+\_\+\+Groundtruth.\+dat. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Landmark}{Landmark}}
+\begin{DoxyCompactList}\small\item\em Data attributes for a given landmark extracted from the dataset file. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Measurement}{Measurement}}
+\begin{DoxyCompactList}\small\item\em Data attributes of the relative distance measurement taken at a single timestep in Robotx\+\_\+\+Measurements. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Odometry}{Odometry}}
+\begin{DoxyCompactList}\small\item\em Data attributes of a single odometry reading extracted from Robotx\+\_\+\+Odometry.\+dat. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Robot}{Robot}}
+\begin{DoxyCompactList}\small\item\em All data related to a given robot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classDataExtractor_a6f87f9706fcd238f3d9b37818419299e}{Data\+Extractor}} ()
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classDataExtractor_a6cb74994c1a148510802eb6ed624e470}{Data\+Extractor}} (const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em Constructor that extracts and populates class attributes using the values from the dataset provided. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classDataExtractor_a1ef7f1e25f51c2ce18b434cbeae73cf7}{set\+Data\+Set}} (const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em Extracts data from the all files in the specified dataset folder. \end{DoxyCompactList}\item 
+int \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classDataExtractor_a12d77e71ac073ba6fdd74bbd7d4623f9}{get\+Barcodes}} ()
+\begin{DoxyCompactList}\small\item\em Getter for the array of Barcodes. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structDataExtractor_1_1Landmark}{Landmark}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classDataExtractor_a56661eac6102e583322a4acc9dd3b280}{get\+Landmarks}} ()
+\begin{DoxyCompactList}\small\item\em Getter for the array of Landmarks. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structDataExtractor_1_1Robot}{Robot}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classDataExtractor_ad4fa18cc6c45ba4a5b1fd67f2c9280bd}{get\+Robots}} ()
+\begin{DoxyCompactList}\small\item\em Getter for the array of robots. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classDataExtractor_af1a917b3145da4bad75fbf981a8231af}{read\+Barcodes}} (const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em Extracts data from the barcodes data file\+: Barcodes.\+dat. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classDataExtractor_a0ab43e97580ac6fc06e36bec8387394f}{read\+Landmarks}} (const std\+::string \&)
+\begin{DoxyCompactList}\small\item\em Extracts data from the landmarks data file\+: Landmark\+\_\+\+Groundtruth.\+dat. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classDataExtractor_a0516962713b6dd93a60b93656c074a92}{read\+Ground\+Truth}} (const std\+::string \&, int)
+\begin{DoxyCompactList}\small\item\em Extracts data from the groundtruth data file\+: Robotx\+\_\+\+Groundtruth.\+dat. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classDataExtractor_ad5f6823e6f8a890054a5d1d257a3f02d}{read\+Odometry}} (const std\+::string \&, int)
+\begin{DoxyCompactList}\small\item\em Extracts data from the groundtruth data file\+: Robotx\+\_\+\+Odometry.\+dat. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classDataExtractor_a85639ff251a6d04a5c6d5ec0cfd2972c}{read\+Measurements}} (const std\+::string \&, int)
+\begin{DoxyCompactList}\small\item\em Extracts data from the groundtruth data file\+: Robotx\+\_\+\+Measurement.\+dat. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{classDataExtractor_a5d3582e10607740a209cda35cf7b7da1}{dataset\+\_\+}} = "{}"{}
+\begin{DoxyCompactList}\small\item\em Folder location for the dataset. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classDataExtractor_a81d6f7805595910ec02275f968e0d6f9}{barcodes\+\_\+}} \mbox{[}\mbox{\hyperlink{data__extractor_8h_ab0060507120fd9fcee92c6c50f40f388}{TOTAL\+\_\+\+BARCODES}}\mbox{]} = \{0\}
+\begin{DoxyCompactList}\small\item\em List of all barcodes corresponding to the robots and landmarks. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structDataExtractor_1_1Landmark}{Landmark}} \mbox{\hyperlink{classDataExtractor_a20f5f839c10595a115a56cc2f0e91a1d}{landmarks\+\_\+}} \mbox{[}\mbox{\hyperlink{data__extractor_8h_ae64fbd84f3b95d0a1677950ba5535d2a}{TOTAL\+\_\+\+LANDMARKS}}\mbox{]}
+\begin{DoxyCompactList}\small\item\em All landmarks containing all the data extracted form Landmarks.\+dat. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structDataExtractor_1_1Robot}{Robot}} \mbox{\hyperlink{classDataExtractor_a5bc8313564f06dc055be313e96e5042a}{robots\+\_\+}} \mbox{[}\mbox{\hyperlink{data__extractor_8h_a4d7e3126c3d5577b42c708bde8b73ca5}{TOTAL\+\_\+\+ROBOTS}}\mbox{]}
+\begin{DoxyCompactList}\small\item\em All data for all robots. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Extracts the data from the UTIAS Multi-\/robot Dataset. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classDataExtractor_a6f87f9706fcd238f3d9b37818419299e}\label{classDataExtractor_a6f87f9706fcd238f3d9b37818419299e} 
+\index{DataExtractor@{DataExtractor}!DataExtractor@{DataExtractor}}
+\index{DataExtractor@{DataExtractor}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{DataExtractor()}{DataExtractor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Data\+Extractor\+::\+Data\+Extractor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Default constructor. 
+
+\Hypertarget{classDataExtractor_a6cb74994c1a148510802eb6ed624e470}\label{classDataExtractor_a6cb74994c1a148510802eb6ed624e470} 
+\index{DataExtractor@{DataExtractor}!DataExtractor@{DataExtractor}}
+\index{DataExtractor@{DataExtractor}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{DataExtractor()}{DataExtractor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Data\+Extractor\+::\+Data\+Extractor (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dataset }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Constructor that extracts and populates class attributes using the values from the dataset provided. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em path} & to the dataset folder. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+The dataset extractor constructor only takes one dataset at at time. 
+\end{DoxyNote}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classDataExtractor_a12d77e71ac073ba6fdd74bbd7d4623f9}\label{classDataExtractor_a12d77e71ac073ba6fdd74bbd7d4623f9} 
+\index{DataExtractor@{DataExtractor}!getBarcodes@{getBarcodes}}
+\index{getBarcodes@{getBarcodes}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{getBarcodes()}{getBarcodes()}}
+{\footnotesize\ttfamily int \texorpdfstring{$\ast$}{*} Data\+Extractor\+::get\+Barcodes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Getter for the array of Barcodes. 
+
+\begin{DoxyReturn}{Returns}
+Returns an integer pointer to the array of barcodes extracted from the barcodes data file\+: Barcodes.\+dat. 
+\end{DoxyReturn}
+\Hypertarget{classDataExtractor_a56661eac6102e583322a4acc9dd3b280}\label{classDataExtractor_a56661eac6102e583322a4acc9dd3b280} 
+\index{DataExtractor@{DataExtractor}!getLandmarks@{getLandmarks}}
+\index{getLandmarks@{getLandmarks}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{getLandmarks()}{getLandmarks()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structDataExtractor_1_1Landmark}{Data\+Extractor\+::\+Landmark}} \texorpdfstring{$\ast$}{*} Data\+Extractor\+::get\+Landmarks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Getter for the array of Landmarks. 
+
+\begin{DoxyReturn}{Returns}
+Returns a pointer to the Landmarks structure member, populated by extracting data form Landmarks.\+dat. 
+\end{DoxyReturn}
+\Hypertarget{classDataExtractor_ad4fa18cc6c45ba4a5b1fd67f2c9280bd}\label{classDataExtractor_ad4fa18cc6c45ba4a5b1fd67f2c9280bd} 
+\index{DataExtractor@{DataExtractor}!getRobots@{getRobots}}
+\index{getRobots@{getRobots}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{getRobots()}{getRobots()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structDataExtractor_1_1Robot}{Data\+Extractor\+::\+Robot}} \texorpdfstring{$\ast$}{*} Data\+Extractor\+::get\+Robots (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Getter for the array of robots. 
+
+\begin{DoxyReturn}{Returns}
+Returns a pointer to the \doxylink{structDataExtractor_1_1Robot}{Robot} structure member, populated by extracting datefrom Robotx\+\_\+\+Groundtruth.\+dat, Robotx\+\_\+\+Odometry.\+dat, and Robotx\+\_\+\+Measurement.\+dat. 
+\end{DoxyReturn}
+\Hypertarget{classDataExtractor_af1a917b3145da4bad75fbf981a8231af}\label{classDataExtractor_af1a917b3145da4bad75fbf981a8231af} 
+\index{DataExtractor@{DataExtractor}!readBarcodes@{readBarcodes}}
+\index{readBarcodes@{readBarcodes}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{readBarcodes()}{readBarcodes()}}
+{\footnotesize\ttfamily bool Data\+Extractor\+::read\+Barcodes (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dataset }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Extracts data from the barcodes data file\+: Barcodes.\+dat. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em path} & to the dataset folder. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classDataExtractor_a0516962713b6dd93a60b93656c074a92}\label{classDataExtractor_a0516962713b6dd93a60b93656c074a92} 
+\index{DataExtractor@{DataExtractor}!readGroundTruth@{readGroundTruth}}
+\index{readGroundTruth@{readGroundTruth}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{readGroundTruth()}{readGroundTruth()}}
+{\footnotesize\ttfamily bool Data\+Extractor\+::read\+Ground\+Truth (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dataset,  }\item[{int}]{robot\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Extracts data from the groundtruth data file\+: Robotx\+\_\+\+Groundtruth.\+dat. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em path} & to the dataset folder. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classDataExtractor_a0ab43e97580ac6fc06e36bec8387394f}\label{classDataExtractor_a0ab43e97580ac6fc06e36bec8387394f} 
+\index{DataExtractor@{DataExtractor}!readLandmarks@{readLandmarks}}
+\index{readLandmarks@{readLandmarks}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{readLandmarks()}{readLandmarks()}}
+{\footnotesize\ttfamily bool Data\+Extractor\+::read\+Landmarks (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dataset }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Extracts data from the landmarks data file\+: Landmark\+\_\+\+Groundtruth.\+dat. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em path} & to the dataset folder. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+\doxylink{classDataExtractor_af1a917b3145da4bad75fbf981a8231af}{Data\+Extractor\+::read\+Barcodes} needs to be called before this function since this function relies on the barcodes it extracted. 
+\end{DoxyNote}
+\Hypertarget{classDataExtractor_a85639ff251a6d04a5c6d5ec0cfd2972c}\label{classDataExtractor_a85639ff251a6d04a5c6d5ec0cfd2972c} 
+\index{DataExtractor@{DataExtractor}!readMeasurements@{readMeasurements}}
+\index{readMeasurements@{readMeasurements}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{readMeasurements()}{readMeasurements()}}
+{\footnotesize\ttfamily bool Data\+Extractor\+::read\+Measurements (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dataset,  }\item[{int}]{robot\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Extracts data from the groundtruth data file\+: Robotx\+\_\+\+Measurement.\+dat. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em path} & to the dataset folder. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classDataExtractor_ad5f6823e6f8a890054a5d1d257a3f02d}\label{classDataExtractor_ad5f6823e6f8a890054a5d1d257a3f02d} 
+\index{DataExtractor@{DataExtractor}!readOdometry@{readOdometry}}
+\index{readOdometry@{readOdometry}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{readOdometry()}{readOdometry()}}
+{\footnotesize\ttfamily bool Data\+Extractor\+::read\+Odometry (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dataset,  }\item[{int}]{robot\+\_\+id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Extracts data from the groundtruth data file\+: Robotx\+\_\+\+Odometry.\+dat. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em path} & to the dataset folder. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classDataExtractor_a1ef7f1e25f51c2ce18b434cbeae73cf7}\label{classDataExtractor_a1ef7f1e25f51c2ce18b434cbeae73cf7} 
+\index{DataExtractor@{DataExtractor}!setDataSet@{setDataSet}}
+\index{setDataSet@{setDataSet}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{setDataSet()}{setDataSet()}}
+{\footnotesize\ttfamily void Data\+Extractor\+::set\+Data\+Set (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dataset }\end{DoxyParamCaption})}
+
+
+
+Extracts data from the all files in the specified dataset folder. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em path} & to the dataset folder. @detail The function only checks the existence of the given datset folder and call the other "{}read"{} functions for the data extraction. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classDataExtractor_a81d6f7805595910ec02275f968e0d6f9}\label{classDataExtractor_a81d6f7805595910ec02275f968e0d6f9} 
+\index{DataExtractor@{DataExtractor}!barcodes\_@{barcodes\_}}
+\index{barcodes\_@{barcodes\_}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{barcodes\_}{barcodes\_}}
+{\footnotesize\ttfamily int Data\+Extractor\+::barcodes\+\_\+\mbox{[}\mbox{\hyperlink{data__extractor_8h_ab0060507120fd9fcee92c6c50f40f388}{TOTAL\+\_\+\+BARCODES}}\mbox{]} = \{0\}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+List of all barcodes corresponding to the robots and landmarks. 
+
+\begin{DoxyNote}{Note}
+The index of the element in the array corresponds to its id minus one.
+\end{DoxyNote}
+Initialise all barcodes to 0. Since none of the barcodes have a value of 0, this will be used as a check by \doxylink{classDataExtractor_a0ab43e97580ac6fc06e36bec8387394f}{Data\+Extractor\+::read\+Landmarks} to see if all the barcodes were correctly set. \Hypertarget{classDataExtractor_a5d3582e10607740a209cda35cf7b7da1}\label{classDataExtractor_a5d3582e10607740a209cda35cf7b7da1} 
+\index{DataExtractor@{DataExtractor}!dataset\_@{dataset\_}}
+\index{dataset\_@{dataset\_}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{dataset\_}{dataset\_}}
+{\footnotesize\ttfamily std\+::string Data\+Extractor\+::dataset\+\_\+ = "{}"{}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Folder location for the dataset. 
+
+\Hypertarget{classDataExtractor_a20f5f839c10595a115a56cc2f0e91a1d}\label{classDataExtractor_a20f5f839c10595a115a56cc2f0e91a1d} 
+\index{DataExtractor@{DataExtractor}!landmarks\_@{landmarks\_}}
+\index{landmarks\_@{landmarks\_}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{landmarks\_}{landmarks\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structDataExtractor_1_1Landmark}{Landmark}} Data\+Extractor\+::landmarks\+\_\+\mbox{[}\mbox{\hyperlink{data__extractor_8h_ae64fbd84f3b95d0a1677950ba5535d2a}{TOTAL\+\_\+\+LANDMARKS}}\mbox{]}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+All landmarks containing all the data extracted form Landmarks.\+dat. 
+
+\Hypertarget{classDataExtractor_a5bc8313564f06dc055be313e96e5042a}\label{classDataExtractor_a5bc8313564f06dc055be313e96e5042a} 
+\index{DataExtractor@{DataExtractor}!robots\_@{robots\_}}
+\index{robots\_@{robots\_}!DataExtractor@{DataExtractor}}
+\doxysubsubsection{\texorpdfstring{robots\_}{robots\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structDataExtractor_1_1Robot}{Robot}} Data\+Extractor\+::robots\+\_\+\mbox{[}\mbox{\hyperlink{data__extractor_8h_a4d7e3126c3d5577b42c708bde8b73ca5}{TOTAL\+\_\+\+ROBOTS}}\mbox{]}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+All data for all robots. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/dan/\+Code/\+UTIAS-\/\+Multi-\/\+Robot/\+Data-\/\+Extractor/include/\mbox{\hyperlink{data__extractor_8h}{data\+\_\+extractor.\+h}}\item 
+/home/dan/\+Code/\+UTIAS-\/\+Multi-\/\+Robot/\+Data-\/\+Extractor/src/\mbox{\hyperlink{data__extractor_8cpp}{data\+\_\+extractor.\+cpp}}\end{DoxyCompactItemize}

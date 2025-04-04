@@ -1,0 +1,115 @@
+\doxysection{Data\+Extractor\+::Robot Struct Reference}
+\hypertarget{structDataExtractor_1_1Robot}{}\label{structDataExtractor_1_1Robot}\index{DataExtractor::Robot@{DataExtractor::Robot}}
+
+
+All data related to a given robot.  
+
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{structDataExtractor_1_1Robot_a496bf6a80251be47d85a0aca6c67e28f}{id}}
+\begin{DoxyCompactList}\small\item\em Numerical identifier for the robot. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{structDataExtractor_1_1Robot_a79d61cdadd11825ba58b7cfc22f606d4}{barcode}}
+\begin{DoxyCompactList}\small\item\em Barcode associated with the robot. This is what the other robots will read during there operation to identify each other. \end{DoxyCompactList}\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+struct \{\\
+\>std::vector$<$ \mbox{\hyperlink{structDataExtractor_1_1Groundtruth}{Groundtruth}} $>$ \mbox{\hyperlink{structDataExtractor_1_1Robot_a81425f6747c62c5623a153e6283c458b}{ground\_truth}}\\
+\>\>{\em All groundtruth values extracted for the given robot. }\\
+\>std::vector$<$ \mbox{\hyperlink{structDataExtractor_1_1Odometry}{Odometry}} $>$ \mbox{\hyperlink{structDataExtractor_1_1Robot_a7cb246f68338a46cc2881114e4263baf}{odometry}}\\
+\>\>{\em All odometry inputs extracted for the given robot. }\\
+\>std::vector$<$ \mbox{\hyperlink{structDataExtractor_1_1Measurement}{Measurement}} $>$ \mbox{\hyperlink{structDataExtractor_1_1Robot_a5de0749e198a5150ef0e026e6293048f}{measurements}}\\
+\>\>{\em All measurements taken by the given robot. }\\
+\} \mbox{\hyperlink{structDataExtractor_1_1Robot_a5ca03554a0cc3877f8d16b8ad69ebee2}{raw}}\\
+
+\end{tabbing}\begin{DoxyCompactList}\small\item\em struct containing vectors related to the robot data files. \end{DoxyCompactList}\item 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+struct \{\\
+\>std::vector$<$ \mbox{\hyperlink{structDataExtractor_1_1Groundtruth}{Groundtruth}} $>$ \mbox{\hyperlink{structDataExtractor_1_1Robot_a81425f6747c62c5623a153e6283c458b}{ground\_truth}}\\
+\>\>{\em All groundtruth values extracted for the given robot. }\\
+\>std::vector$<$ \mbox{\hyperlink{structDataExtractor_1_1Odometry}{Odometry}} $>$ \mbox{\hyperlink{structDataExtractor_1_1Robot_a7cb246f68338a46cc2881114e4263baf}{odometry}}\\
+\>\>{\em All odometry inputs extracted for the given robot. }\\
+\>std::vector$<$ \mbox{\hyperlink{structDataExtractor_1_1Measurement}{Measurement}} $>$ \mbox{\hyperlink{structDataExtractor_1_1Robot_a5de0749e198a5150ef0e026e6293048f}{measurements}}\\
+\>\>{\em All measurements taken by the given robot. }\\
+\} \mbox{\hyperlink{structDataExtractor_1_1Robot_a2fa6c8fdf49d448362c8bbf4e3120dec}{synced}}\\
+
+\end{tabbing}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+All data related to a given robot. 
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structDataExtractor_1_1Robot_a79d61cdadd11825ba58b7cfc22f606d4}\label{structDataExtractor_1_1Robot_a79d61cdadd11825ba58b7cfc22f606d4} 
+\index{DataExtractor::Robot@{DataExtractor::Robot}!barcode@{barcode}}
+\index{barcode@{barcode}!DataExtractor::Robot@{DataExtractor::Robot}}
+\doxysubsubsection{\texorpdfstring{barcode}{barcode}}
+{\footnotesize\ttfamily int Data\+Extractor\+::\+Robot\+::barcode}
+
+
+
+Barcode associated with the robot. This is what the other robots will read during there operation to identify each other. 
+
+\Hypertarget{structDataExtractor_1_1Robot_a81425f6747c62c5623a153e6283c458b}\label{structDataExtractor_1_1Robot_a81425f6747c62c5623a153e6283c458b} 
+\index{DataExtractor::Robot@{DataExtractor::Robot}!ground\_truth@{ground\_truth}}
+\index{ground\_truth@{ground\_truth}!DataExtractor::Robot@{DataExtractor::Robot}}
+\doxysubsubsection{\texorpdfstring{ground\_truth}{ground\_truth}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{structDataExtractor_1_1Groundtruth}{Groundtruth}}$>$ Data\+Extractor\+::\+Robot\+::ground\+\_\+truth}
+
+
+
+All groundtruth values extracted for the given robot. 
+
+\Hypertarget{structDataExtractor_1_1Robot_a496bf6a80251be47d85a0aca6c67e28f}\label{structDataExtractor_1_1Robot_a496bf6a80251be47d85a0aca6c67e28f} 
+\index{DataExtractor::Robot@{DataExtractor::Robot}!id@{id}}
+\index{id@{id}!DataExtractor::Robot@{DataExtractor::Robot}}
+\doxysubsubsection{\texorpdfstring{id}{id}}
+{\footnotesize\ttfamily int Data\+Extractor\+::\+Robot\+::id}
+
+
+
+Numerical identifier for the robot. 
+
+\Hypertarget{structDataExtractor_1_1Robot_a5de0749e198a5150ef0e026e6293048f}\label{structDataExtractor_1_1Robot_a5de0749e198a5150ef0e026e6293048f} 
+\index{DataExtractor::Robot@{DataExtractor::Robot}!measurements@{measurements}}
+\index{measurements@{measurements}!DataExtractor::Robot@{DataExtractor::Robot}}
+\doxysubsubsection{\texorpdfstring{measurements}{measurements}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{structDataExtractor_1_1Measurement}{Measurement}}$>$ Data\+Extractor\+::\+Robot\+::measurements}
+
+
+
+All measurements taken by the given robot. 
+
+\Hypertarget{structDataExtractor_1_1Robot_a7cb246f68338a46cc2881114e4263baf}\label{structDataExtractor_1_1Robot_a7cb246f68338a46cc2881114e4263baf} 
+\index{DataExtractor::Robot@{DataExtractor::Robot}!odometry@{odometry}}
+\index{odometry@{odometry}!DataExtractor::Robot@{DataExtractor::Robot}}
+\doxysubsubsection{\texorpdfstring{odometry}{odometry}}
+{\footnotesize\ttfamily std\+::vector$<$\mbox{\hyperlink{structDataExtractor_1_1Odometry}{Odometry}}$>$ Data\+Extractor\+::\+Robot\+::odometry}
+
+
+
+All odometry inputs extracted for the given robot. 
+
+\Hypertarget{structDataExtractor_1_1Robot_a5ca03554a0cc3877f8d16b8ad69ebee2}\label{structDataExtractor_1_1Robot_a5ca03554a0cc3877f8d16b8ad69ebee2} 
+\index{DataExtractor::Robot@{DataExtractor::Robot}!raw@{raw}}
+\index{raw@{raw}!DataExtractor::Robot@{DataExtractor::Robot}}
+\doxysubsubsection{\texorpdfstring{[struct]}{[struct]}}
+{\footnotesize\ttfamily struct  \{ ... \}  Data\+Extractor\+::\+Robot\+::raw}
+
+
+
+struct containing vectors related to the robot data files. 
+
+The struct has two instances\+: raw and sync. The raw instance is the data from the dataset extracted as is. The synce sychronises the time steps of each robot. \Hypertarget{structDataExtractor_1_1Robot_a2fa6c8fdf49d448362c8bbf4e3120dec}\label{structDataExtractor_1_1Robot_a2fa6c8fdf49d448362c8bbf4e3120dec} 
+\index{DataExtractor::Robot@{DataExtractor::Robot}!synced@{synced}}
+\index{synced@{synced}!DataExtractor::Robot@{DataExtractor::Robot}}
+\doxysubsubsection{\texorpdfstring{[struct]}{[struct]}}
+{\footnotesize\ttfamily struct  \{ ... \}  Data\+Extractor\+::\+Robot\+::synced}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/dan/\+Code/\+UTIAS-\/\+Multi-\/\+Robot/\+Data-\/\+Extractor/include/\mbox{\hyperlink{data__extractor_8h}{data\+\_\+extractor.\+h}}\end{DoxyCompactItemize}

@@ -1,0 +1,124 @@
+\doxysection{Data\+Extractor\+::Groundtruth Struct Reference}
+\hypertarget{structDataExtractor_1_1Groundtruth}{}\label{structDataExtractor_1_1Groundtruth}\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+
+
+Data attributes for a single groundtruth reading extracted from Robotx\+\_\+\+Groundtruth.\+dat.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structDataExtractor_1_1Groundtruth_a1463f662940e839577f9ff1fe67af691}{Groundtruth}} (double time\+\_\+, double x\+\_\+, double y\+\_\+, double orientation\+\_\+)
+\begin{DoxyCompactList}\small\item\em Constructor for convenient population of Data\+Extractor\+::robots\+\_\+.\+raw.\+ground\+\_\+truth . \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Groundtruth_a4a895e821f8e1773cc4fd86303f2cdf8}{time}}
+\begin{DoxyCompactList}\small\item\em Time stamp of the ground truth reading \mbox{[}s\mbox{]}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Groundtruth_af38e56abe1e343141b4a8a0bd0ea35e6}{x}}
+\begin{DoxyCompactList}\small\item\em \doxylink{structDataExtractor_1_1Robot}{Robot} \doxylink{structDataExtractor_1_1Groundtruth}{Groundtruth} x-\/coordinate \mbox{[}m\mbox{]}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Groundtruth_ac0e832c4071adb6f6b8de8f970e8a683}{y}}
+\begin{DoxyCompactList}\small\item\em \doxylink{structDataExtractor_1_1Robot}{Robot} \doxylink{structDataExtractor_1_1Groundtruth}{Groundtruth} y-\/coordinate \mbox{[}m\mbox{]}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Groundtruth_aacc91c0eb42c294ed6a34c9a8345963a}{orientation}}
+\begin{DoxyCompactList}\small\item\em \doxylink{structDataExtractor_1_1Robot}{Robot} \doxylink{structDataExtractor_1_1Groundtruth}{Groundtruth} orientation \mbox{[}rad\mbox{]}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Groundtruth_ab7c8a9df7a17e4322fb616be1ae191a6}{forward\+\_\+velocity}}
+\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Groundtruth_aa4f0335d2beb438e0f3e385580ba4e2a}{angular\+\_\+velocity}}
+\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Groundtruth_a670169f8a23a508e2820a8cfd5c32403}{range}}
+\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Groundtruth_a15f1b5444d4d04175bd7e2cb433a8efa}{bearing}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Data attributes for a single groundtruth reading extracted from Robotx\+\_\+\+Groundtruth.\+dat. 
+
+\begin{DoxyNote}{Note}
+According the UTIAS website, the groundtruth readings are accurate to the order of 1mm (1E\texorpdfstring{$^\wedge$}{\string^}-\/3 m). Additionally, the NTP deamon used to synchronise the clocks between robots has an average timing error of 1ms (1E-\/3 s). 
+\end{DoxyNote}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structDataExtractor_1_1Groundtruth_a1463f662940e839577f9ff1fe67af691}\label{structDataExtractor_1_1Groundtruth_a1463f662940e839577f9ff1fe67af691} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!Groundtruth@{Groundtruth}}
+\index{Groundtruth@{Groundtruth}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{Groundtruth()}{Groundtruth()}}
+{\footnotesize\ttfamily Data\+Extractor\+::\+Groundtruth\+::\+Groundtruth (\begin{DoxyParamCaption}\item[{double}]{time\+\_\+,  }\item[{double}]{x\+\_\+,  }\item[{double}]{y\+\_\+,  }\item[{double}]{orientation\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for convenient population of Data\+Extractor\+::robots\+\_\+.\+raw.\+ground\+\_\+truth . 
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structDataExtractor_1_1Groundtruth_aa4f0335d2beb438e0f3e385580ba4e2a}\label{structDataExtractor_1_1Groundtruth_aa4f0335d2beb438e0f3e385580ba4e2a} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!angular\_velocity@{angular\_velocity}}
+\index{angular\_velocity@{angular\_velocity}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{angular\_velocity}{angular\_velocity}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Groundtruth\+::angular\+\_\+velocity}
+
+\Hypertarget{structDataExtractor_1_1Groundtruth_a15f1b5444d4d04175bd7e2cb433a8efa}\label{structDataExtractor_1_1Groundtruth_a15f1b5444d4d04175bd7e2cb433a8efa} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!bearing@{bearing}}
+\index{bearing@{bearing}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{bearing}{bearing}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Groundtruth\+::bearing}
+
+\Hypertarget{structDataExtractor_1_1Groundtruth_ab7c8a9df7a17e4322fb616be1ae191a6}\label{structDataExtractor_1_1Groundtruth_ab7c8a9df7a17e4322fb616be1ae191a6} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!forward\_velocity@{forward\_velocity}}
+\index{forward\_velocity@{forward\_velocity}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{forward\_velocity}{forward\_velocity}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Groundtruth\+::forward\+\_\+velocity}
+
+\Hypertarget{structDataExtractor_1_1Groundtruth_aacc91c0eb42c294ed6a34c9a8345963a}\label{structDataExtractor_1_1Groundtruth_aacc91c0eb42c294ed6a34c9a8345963a} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!orientation@{orientation}}
+\index{orientation@{orientation}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{orientation}{orientation}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Groundtruth\+::orientation}
+
+
+
+\doxylink{structDataExtractor_1_1Robot}{Robot} \doxylink{structDataExtractor_1_1Groundtruth}{Groundtruth} orientation \mbox{[}rad\mbox{]}. 
+
+\Hypertarget{structDataExtractor_1_1Groundtruth_a670169f8a23a508e2820a8cfd5c32403}\label{structDataExtractor_1_1Groundtruth_a670169f8a23a508e2820a8cfd5c32403} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!range@{range}}
+\index{range@{range}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{range}{range}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Groundtruth\+::range}
+
+\Hypertarget{structDataExtractor_1_1Groundtruth_a4a895e821f8e1773cc4fd86303f2cdf8}\label{structDataExtractor_1_1Groundtruth_a4a895e821f8e1773cc4fd86303f2cdf8} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!time@{time}}
+\index{time@{time}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{time}{time}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Groundtruth\+::time}
+
+
+
+Time stamp of the ground truth reading \mbox{[}s\mbox{]}. 
+
+\Hypertarget{structDataExtractor_1_1Groundtruth_af38e56abe1e343141b4a8a0bd0ea35e6}\label{structDataExtractor_1_1Groundtruth_af38e56abe1e343141b4a8a0bd0ea35e6} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!x@{x}}
+\index{x@{x}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Groundtruth\+::x}
+
+
+
+\doxylink{structDataExtractor_1_1Robot}{Robot} \doxylink{structDataExtractor_1_1Groundtruth}{Groundtruth} x-\/coordinate \mbox{[}m\mbox{]}. 
+
+\Hypertarget{structDataExtractor_1_1Groundtruth_ac0e832c4071adb6f6b8de8f970e8a683}\label{structDataExtractor_1_1Groundtruth_ac0e832c4071adb6f6b8de8f970e8a683} 
+\index{DataExtractor::Groundtruth@{DataExtractor::Groundtruth}!y@{y}}
+\index{y@{y}!DataExtractor::Groundtruth@{DataExtractor::Groundtruth}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Groundtruth\+::y}
+
+
+
+\doxylink{structDataExtractor_1_1Robot}{Robot} \doxylink{structDataExtractor_1_1Groundtruth}{Groundtruth} y-\/coordinate \mbox{[}m\mbox{]}. 
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/dan/\+Code/\+UTIAS-\/\+Multi-\/\+Robot/\+Data-\/\+Extractor/include/\mbox{\hyperlink{data__extractor_8h}{data\+\_\+extractor.\+h}}\end{DoxyCompactItemize}

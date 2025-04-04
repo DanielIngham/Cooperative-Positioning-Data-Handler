@@ -1,0 +1,92 @@
+\doxysection{Data\+Extractor\+::Measurement Struct Reference}
+\hypertarget{structDataExtractor_1_1Measurement}{}\label{structDataExtractor_1_1Measurement}\index{DataExtractor::Measurement@{DataExtractor::Measurement}}
+
+
+Data attributes of the relative distance measurement taken at a single timestep in Robotx\+\_\+\+Measurements.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structDataExtractor_1_1Measurement_ab5bbdcc3a0d7951866ba9b39b00f319c}{Measurement}} (double time\+\_\+, int subject\+\_\+, double range\+\_\+, double bearing\+\_\+)
+\begin{DoxyCompactList}\small\item\em Constructor for convenient population of Data\+Extractor\+::robots\+\_\+.\+raw.\+measurements . \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{structDataExtractor_1_1Measurement_ad8216dd6d6f9b5785d4b215e9683a1bd}{time}}
+\begin{DoxyCompactList}\small\item\em Time stamp of the measurement \mbox{[}s\mbox{]}. \end{DoxyCompactList}\item 
+std\+::vector$<$ int $>$ \mbox{\hyperlink{structDataExtractor_1_1Measurement_a33d0b4d25a7a67958f1e3ed95fccaa36}{subjects}}
+\begin{DoxyCompactList}\small\item\em The Barcode of the other robots being measured. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{structDataExtractor_1_1Measurement_af56a71ab05baae799ef4b9df992c5ccd}{ranges}}
+\begin{DoxyCompactList}\small\item\em The measured ranges to the subjects \mbox{[}m\mbox{]}. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{structDataExtractor_1_1Measurement_a30fb2b0c4edc907cdd712a0b187e19c6}{bearings}}
+\begin{DoxyCompactList}\small\item\em The bearings from the subjects \mbox{[}rad\mbox{]}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Data attributes of the relative distance measurement taken at a single timestep in Robotx\+\_\+\+Measurements. 
+
+\begin{DoxyNote}{Note}
+This structure combines multiple measurements with the same time stamp. There it is assumed that the vectors\+: subjects, ranges, and bearings are in the same order. 
+\end{DoxyNote}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structDataExtractor_1_1Measurement_ab5bbdcc3a0d7951866ba9b39b00f319c}\label{structDataExtractor_1_1Measurement_ab5bbdcc3a0d7951866ba9b39b00f319c} 
+\index{DataExtractor::Measurement@{DataExtractor::Measurement}!Measurement@{Measurement}}
+\index{Measurement@{Measurement}!DataExtractor::Measurement@{DataExtractor::Measurement}}
+\doxysubsubsection{\texorpdfstring{Measurement()}{Measurement()}}
+{\footnotesize\ttfamily Data\+Extractor\+::\+Measurement\+::\+Measurement (\begin{DoxyParamCaption}\item[{double}]{time\+\_\+,  }\item[{int}]{subject\+\_\+,  }\item[{double}]{range\+\_\+,  }\item[{double}]{bearing\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor for convenient population of Data\+Extractor\+::robots\+\_\+.\+raw.\+measurements . 
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structDataExtractor_1_1Measurement_a30fb2b0c4edc907cdd712a0b187e19c6}\label{structDataExtractor_1_1Measurement_a30fb2b0c4edc907cdd712a0b187e19c6} 
+\index{DataExtractor::Measurement@{DataExtractor::Measurement}!bearings@{bearings}}
+\index{bearings@{bearings}!DataExtractor::Measurement@{DataExtractor::Measurement}}
+\doxysubsubsection{\texorpdfstring{bearings}{bearings}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ Data\+Extractor\+::\+Measurement\+::bearings}
+
+
+
+The bearings from the subjects \mbox{[}rad\mbox{]}. 
+
+\Hypertarget{structDataExtractor_1_1Measurement_af56a71ab05baae799ef4b9df992c5ccd}\label{structDataExtractor_1_1Measurement_af56a71ab05baae799ef4b9df992c5ccd} 
+\index{DataExtractor::Measurement@{DataExtractor::Measurement}!ranges@{ranges}}
+\index{ranges@{ranges}!DataExtractor::Measurement@{DataExtractor::Measurement}}
+\doxysubsubsection{\texorpdfstring{ranges}{ranges}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ Data\+Extractor\+::\+Measurement\+::ranges}
+
+
+
+The measured ranges to the subjects \mbox{[}m\mbox{]}. 
+
+\Hypertarget{structDataExtractor_1_1Measurement_a33d0b4d25a7a67958f1e3ed95fccaa36}\label{structDataExtractor_1_1Measurement_a33d0b4d25a7a67958f1e3ed95fccaa36} 
+\index{DataExtractor::Measurement@{DataExtractor::Measurement}!subjects@{subjects}}
+\index{subjects@{subjects}!DataExtractor::Measurement@{DataExtractor::Measurement}}
+\doxysubsubsection{\texorpdfstring{subjects}{subjects}}
+{\footnotesize\ttfamily std\+::vector$<$int$>$ Data\+Extractor\+::\+Measurement\+::subjects}
+
+
+
+The Barcode of the other robots being measured. 
+
+\Hypertarget{structDataExtractor_1_1Measurement_ad8216dd6d6f9b5785d4b215e9683a1bd}\label{structDataExtractor_1_1Measurement_ad8216dd6d6f9b5785d4b215e9683a1bd} 
+\index{DataExtractor::Measurement@{DataExtractor::Measurement}!time@{time}}
+\index{time@{time}!DataExtractor::Measurement@{DataExtractor::Measurement}}
+\doxysubsubsection{\texorpdfstring{time}{time}}
+{\footnotesize\ttfamily double Data\+Extractor\+::\+Measurement\+::time}
+
+
+
+Time stamp of the measurement \mbox{[}s\mbox{]}. 
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/dan/\+Code/\+UTIAS-\/\+Multi-\/\+Robot/\+Data-\/\+Extractor/include/\mbox{\hyperlink{data__extractor_8h}{data\+\_\+extractor.\+h}}\end{DoxyCompactItemize}

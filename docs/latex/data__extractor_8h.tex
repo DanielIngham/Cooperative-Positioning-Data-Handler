@@ -1,0 +1,74 @@
+\doxysection{/home/dan/\+Code/\+UTIAS-\/\+Multi-\/\+Robot/\+Data-\/\+Extractor/include/data\+\_\+extractor.h File Reference}
+\hypertarget{data__extractor_8h}{}\label{data__extractor_8h}\index{/home/dan/Code/UTIAS-\/Multi-\/Robot/Data-\/Extractor/include/data\_extractor.h@{/home/dan/Code/UTIAS-\/Multi-\/Robot/Data-\/Extractor/include/data\_extractor.h}}
+
+
+Class responsible for extracting the data from the UTIAS multi-\/robot localisation dataset.  
+
+
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+{\ttfamily \#include $<$sys/stat.\+h$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+Include dependency graph for data\+\_\+extractor.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classDataExtractor}{Data\+Extractor}}
+\begin{DoxyCompactList}\small\item\em Extracts the data from the UTIAS Multi-\/robot Dataset. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Landmark}{Data\+Extractor\+::\+Landmark}}
+\begin{DoxyCompactList}\small\item\em Data attributes for a given landmark extracted from the dataset file. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Groundtruth}{Data\+Extractor\+::\+Groundtruth}}
+\begin{DoxyCompactList}\small\item\em Data attributes for a single groundtruth reading extracted from Robotx\+\_\+\+Groundtruth.\+dat. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Odometry}{Data\+Extractor\+::\+Odometry}}
+\begin{DoxyCompactList}\small\item\em Data attributes of a single odometry reading extracted from Robotx\+\_\+\+Odometry.\+dat. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Measurement}{Data\+Extractor\+::\+Measurement}}
+\begin{DoxyCompactList}\small\item\em Data attributes of the relative distance measurement taken at a single timestep in Robotx\+\_\+\+Measurements. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structDataExtractor_1_1Robot}{Data\+Extractor\+::\+Robot}}
+\begin{DoxyCompactList}\small\item\em All data related to a given robot. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{data__extractor_8h_ae64fbd84f3b95d0a1677950ba5535d2a}{TOTAL\+\_\+\+LANDMARKS}}~15
+\item 
+\#define \mbox{\hyperlink{data__extractor_8h_a4d7e3126c3d5577b42c708bde8b73ca5}{TOTAL\+\_\+\+ROBOTS}}~5
+\item 
+\#define \mbox{\hyperlink{data__extractor_8h_ab0060507120fd9fcee92c6c50f40f388}{TOTAL\+\_\+\+BARCODES}}~(\mbox{\hyperlink{data__extractor_8h_a4d7e3126c3d5577b42c708bde8b73ca5}{TOTAL\+\_\+\+ROBOTS}} + \mbox{\hyperlink{data__extractor_8h_ae64fbd84f3b95d0a1677950ba5535d2a}{TOTAL\+\_\+\+LANDMARKS}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class responsible for extracting the data from the UTIAS multi-\/robot localisation dataset. 
+
+The class extracts the textfile dataset into three members\+: barcodes, landmarks, and robots. \begin{DoxyAuthor}{Author}
+Daniel Ingham 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2025-\/04-\/04 
+\end{DoxyDate}
+
+
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{data__extractor_8h_ab0060507120fd9fcee92c6c50f40f388}\label{data__extractor_8h_ab0060507120fd9fcee92c6c50f40f388} 
+\index{data\_extractor.h@{data\_extractor.h}!TOTAL\_BARCODES@{TOTAL\_BARCODES}}
+\index{TOTAL\_BARCODES@{TOTAL\_BARCODES}!data\_extractor.h@{data\_extractor.h}}
+\doxysubsubsection{\texorpdfstring{TOTAL\_BARCODES}{TOTAL\_BARCODES}}
+{\footnotesize\ttfamily \#define TOTAL\+\_\+\+BARCODES~(\mbox{\hyperlink{data__extractor_8h_a4d7e3126c3d5577b42c708bde8b73ca5}{TOTAL\+\_\+\+ROBOTS}} + \mbox{\hyperlink{data__extractor_8h_ae64fbd84f3b95d0a1677950ba5535d2a}{TOTAL\+\_\+\+LANDMARKS}})}
+
+\Hypertarget{data__extractor_8h_ae64fbd84f3b95d0a1677950ba5535d2a}\label{data__extractor_8h_ae64fbd84f3b95d0a1677950ba5535d2a} 
+\index{data\_extractor.h@{data\_extractor.h}!TOTAL\_LANDMARKS@{TOTAL\_LANDMARKS}}
+\index{TOTAL\_LANDMARKS@{TOTAL\_LANDMARKS}!data\_extractor.h@{data\_extractor.h}}
+\doxysubsubsection{\texorpdfstring{TOTAL\_LANDMARKS}{TOTAL\_LANDMARKS}}
+{\footnotesize\ttfamily \#define TOTAL\+\_\+\+LANDMARKS~15}
+
+\Hypertarget{data__extractor_8h_a4d7e3126c3d5577b42c708bde8b73ca5}\label{data__extractor_8h_a4d7e3126c3d5577b42c708bde8b73ca5} 
+\index{data\_extractor.h@{data\_extractor.h}!TOTAL\_ROBOTS@{TOTAL\_ROBOTS}}
+\index{TOTAL\_ROBOTS@{TOTAL\_ROBOTS}!data\_extractor.h@{data\_extractor.h}}
+\doxysubsubsection{\texorpdfstring{TOTAL\_ROBOTS}{TOTAL\_ROBOTS}}
+{\footnotesize\ttfamily \#define TOTAL\+\_\+\+ROBOTS~5}
+
