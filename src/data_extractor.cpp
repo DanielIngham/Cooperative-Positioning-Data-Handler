@@ -1,6 +1,6 @@
 /**
  * @file data_extractor.cpp
- * @brief Class responsible for exracting the ground-truth, odometry and measurement data from the UTIAS multi-robot localisation dataset.
+ * @brief Class implementation file responsible for exracting the ground-truth, odometry and measurement data from the UTIAS multi-robot localisation dataset.
  * @details The class extracts the data from the groundtruth, measurement, and populates three main 
  * @author Daniel Ingham
  * @date 2025-03-28
@@ -16,13 +16,17 @@ DataExtractor::DataExtractor(){
 }
 /**
  * @brief Constructor that extracts and populates class attributes using the values from the dataset provided.
- * @param[in] dataset filepath to the dataset folder.
+ * @param[in] path to the dataset folder.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
 DataExtractor::DataExtractor(const std::string& dataset){
 	setDataSet(dataset);
 }
 
+/**
+ * @brief Extracts data from the barcodes data file: Barcodes.dat.
+ * @param[in] path to the dataset folder.
+ */
 bool DataExtractor::readBarcodes(const std::string& dataset) {
 	/* Check that the dataset was specified */
 	if ("" == this->dataset_) {
@@ -53,6 +57,7 @@ bool DataExtractor::readBarcodes(const std::string& dataset) {
 				return false;
 			}
 			else {
+				/* Extract barcodes into barcodes array */
 				barcodes_[i++] = std::stoi(line.substr(line.find('\t', 0))) ;
 			}
 		}
@@ -67,16 +72,20 @@ bool DataExtractor::readBarcodes(const std::string& dataset) {
 	}
 }
 
+/**
+ * @brief Extracts data from the landmarks data file: Landmark_Groundtruth.dat.
+ * @param[in] path to the dataset folder.
+ * @note DataExtractor::readBarcodes needs to be called before this function since this function relies on the barcodes it extracted.
+ */
 bool DataExtractor::readLandmarks(const std::string& dataset) {
 
 	std::string filename = dataset + "/Landmark_Groundtruth.dat";
 	std::ifstream file(filename);
 
-	std::string line;
-
 	if (file.is_open()) {
 		/* Iterate through file line by line.*/
 		int i = 0; 
+		std::string line;
 
 		while (std::getline(file, line)) {
 			/* Ignore file comments. */
@@ -92,18 +101,20 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 				return false;
 			}
 			else {
+				/* */
 				std::size_t start_index = 0; 
 				std::size_t end_index = line.find('\t', 0);
 				landmarks_[i].id = std::stoi(line.substr(start_index, end_index));
 
+				/* Ensure that the barcodes have been extracted and set */
 				if (barcodes_[landmarks_[i].id - 1] == 0) { 
 					std::cout << "[ERROR] Barcodes not correctly set" << std::endl;
 					return false;
 				}
 
+				/* Set landmarks barcode */
 				landmarks_[i].barcode = barcodes_[landmarks_[i].id - 1] ;
 				
-
 				start_index = end_index; 
 				end_index = line.find('\t', end_index+1);
 				landmarks_[i].x = std::stod(line.substr(start_index, end_index));
@@ -132,6 +143,10 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 	}
 }
 
+/**
+ * @brief Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.
+ * @param[in] path to the dataset folder.
+ */
 bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the ground truth vector. */
 	robots_[robot_id].raw.ground_truth.clear();
@@ -139,36 +154,45 @@ bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 	/* Setup file for data extraction */
 	std::string filename = dataset + "/Robot" + std::to_string(robot_id + 1) + "_Groundtruth.dat"; 
 	std::ifstream file(filename);
-	std::string line;
 
 	/* Check if the file could be opened */
 	if (file.is_open()) {
 		/* Loop through each line in the file. */
+		std::string line;
 		while (std::getline(file, line)) {
 			/* Ignore Comments */
 			if ('#' == line[0]) {
 				continue;
 			}
+
 			/* Remove whitespaces */
 			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-			int start_index = 0;
-			int end_index = line.find('\t', 0);
+
+			/* Extract Data into thier respective variables */
+			/* - Time */
+			std::size_t start_index = 0;
+			std::size_t end_index = line.find('\t', 0);
 			double time = std::stod(line.substr(start_index, end_index));
 
+			/* - x-coordinate [m] */
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
 			double x_coordinate = std::stod(line.substr(start_index, end_index));
 
+			/* - y-coordinate [m] */
 			start_index = end_index; 
 			end_index = line.find('\t', ++end_index);
 			double y_coordinate = std::stod(line.substr(start_index, end_index));
 
+			/* - Orientaiton [rad] */
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
 			double orientation = std::stod(line.substr(start_index, end_index));
 
+			/* Populate robot groundtruth with exracted values. */
 			robots_[robot_id].raw.ground_truth.push_back(Groundtruth(time, x_coordinate, y_coordinate, orientation));
 		}
+		file.close();
 		return true;
 	}
 	/* If the data file could not be opened, display error. */
@@ -178,6 +202,10 @@ bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 	}
 }
 
+/**
+ * @brief Extracts data from the groundtruth data file: Robotx_Odometry.dat.
+ * @param[in] path to the dataset folder.
+ */
 bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the odometry vector. */
 	robots_[robot_id].raw.odometry.clear();
@@ -185,11 +213,11 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 	/* Setup file for data extraction */
 	std::string filename = dataset + "Robot" + std::to_string(robot_id + 1) +"_Odometry.dat";
 	std::fstream file(filename); 
-	std::string line;
 
 	/* Check if the file could be opened */
 	if (file.is_open()) {
 		/* Loop through each line in the file. */
+		std::string line;
 		while (std::getline(file, line)) {
 			/* Ignore Comments */
 			if ('#' == line[0]) {
@@ -198,23 +226,27 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 			/* Remove Whitespace */
 			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
-			int start_index = 0;
-			int end_index = line.find('\t', 0); 
+			/* Extract Data into thier respective variables */
+			/* - Time */
+			std::size_t start_index = 0;
+			std::size_t end_index = line.find('\t', 0); 
 			double time = std::stod(line.substr(start_index, end_index));
 
+			/* - Forward Velocity [m/s] */
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
 			double forward_velocity = std::stod(line.substr(start_index, end_index));
 ;
-
+			/* - Angular Velocity [rad/s] */
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
 			double angular_velocity = std::stod(line.substr(start_index, end_index));
 ;
-
+			/* Populate the robot struct with the extracted values. */
 			robots_[robot_id].raw.odometry.push_back(Odometry(time, forward_velocity, angular_velocity));
 		}
 
+		file.close();
 		return true;
 	}
 	/* If the data file could not be opened, display error. */
@@ -224,6 +256,10 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 	}
 }
 
+/**
+ * @brief Extracts data from the groundtruth data file: Robotx_Measurement.dat.
+ * @param[in] path to the dataset folder.
+ */
 bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the measurement vector. */
 	robots_[robot_id].raw.odometry.clear();
@@ -231,11 +267,11 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 	/* Setup file for data extraction */
 	std::string filename = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurment.dat";
 	std::fstream file(filename);
-	std::string line;
 
 	/* Check if the file could be opened */
 	if (file.is_open()) {
 		/* Loop through each line in the file. */
+		std::string line;
 		while (std::getline(file, line)) {
 			/* Ignore Comments */
 			if ('#' == line[0]) {
@@ -244,18 +280,23 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 			/* Remove Whitespaces */
 			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
-			int start_index = 0;
-			int end_index = line.find('\t', 0);
+			/* Extract Data into thier respective variables */
+			/* - Time [s]*/
+			std::size_t start_index = 0;
+			std::size_t end_index = line.find('\t', 0);
 			double time = std::stod(line.substr(start_index, end_index));
 			
+			/* - Subject (ID) */
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
 			int subject = std::stoi(line.substr(start_index, end_index));
 
+			/* - Range [m] */
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
 			double range = std::stod(line.substr(start_index, end_index));
 
+			/* - Bearing [rad] */
 			start_index = end_index;
 			end_index = line.find('\t', ++end_index);
 			double bearing = std::stod(line.substr(start_index, end_index));
@@ -276,6 +317,7 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 			}
 		}
 		
+		file.close();
 		return true;
 	}
 	/* If the data file could not be opened, display error. */
@@ -285,6 +327,11 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 	}
 }
 
+/**
+ * @brief Extracts data from the all files in the specified dataset folder.
+ * @param[in] path to the dataset folder.
+ * @detail The function only checks the existence of the given datset folder and call the other "read" functions for the data extraction. 
+ */
 void DataExtractor::setDataSet(const std::string& dataset) {
 	/* Check if the data set directory exists */
 	struct stat sb;
@@ -312,6 +359,10 @@ void DataExtractor::setDataSet(const std::string& dataset) {
 	}
 }
 
+/**
+ * @brief Getter for the array of Barcodes.
+ * @return Returns an integer pointer to the array of barcodes extracted from the barcodes data file: Barcodes.dat.
+ */
 int* DataExtractor::getBarcodes() {
 	if ("" ==  this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data."); 
@@ -319,6 +370,10 @@ int* DataExtractor::getBarcodes() {
 	return barcodes_;
 }
 
+/**
+ * @brief Getter for the array of Landmarks.
+ * @return Returns a pointer to the Landmarks structure member, populated by extracting data form Landmarks.dat.
+ */
 DataExtractor::Landmark* DataExtractor::getLandmarks() {
 	if ("" ==  this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
@@ -326,6 +381,10 @@ DataExtractor::Landmark* DataExtractor::getLandmarks() {
 	return landmarks_;
 }
 
+/**
+ * @brief Getter for the array of robots.
+ * @return Returns a pointer to the Robot structure member, populated by extracting datefrom Robotx_Groundtruth.dat, Robotx_Odometry.dat, and Robotx_Measurement.dat.
+ */
 DataExtractor::Robot* DataExtractor::getRobots() {
 	if ("" == this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
