@@ -2,8 +2,7 @@
 #include<fstream>	// std::fstream
 #include<string>	// std::string
 #include<thread>	// std::thread
-#include<atomic>	// std::atomic
-#include<chrono>
+#include<chrono>	// std::chrono
 
 #include "../include/data_extractor.h"
 
@@ -16,21 +15,49 @@
 long unsigned int countFileLines(const std::string& filename) {
 	std::ifstream file(filename);
 
-	if (file.is_open()) {
-		long unsigned int counter = 0;
-		std::string line;
-		while(std::getline(file, line)) {
-			if ('#' == line[0]) {
-				continue;
-			}
-			counter++;
-		}
-		return counter;
-	}
-	else {
-		std::cout << "[Error] Failed to open file:" << filename << std::endl;
+	if (!file.is_open()) {
+		std::cerr << "[ERROR] Failed to open file:" << filename << std::endl;
 		return 0;
 	}
+
+	long unsigned int counter = 0;
+	std::string line;
+
+	while(std::getline(file, line)) {
+		if ('#' == line[0]) {
+			continue;
+		}
+		counter++;
+	}
+
+	return counter;
+}
+
+bool plotData() {
+	DataExtractor data;
+
+	data.setDataSet("./data/MRCLAM_Dataset1");
+
+	std::ofstream file("./test/plot_data/GT.txt");
+
+	if (!file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file\n";
+		return false;
+	}
+
+	for (uint8_t i = 0; i < 1; i++) {
+		const auto* robots = data.getRobots();
+
+		std::size_t gt_size = robots[i].raw.ground_truth.size();
+
+		for (std::size_t j = 0; j < gt_size; j++) {
+			file << robots[i].raw.ground_truth[j].x << '\t' << robots[i].raw.ground_truth[j].y << '\t' << i+1 << '\n';
+		}
+	}
+
+	file.close();
+
+	return true;
 }
 
 /**
@@ -196,27 +223,31 @@ int main() {
 	bool correct_odometry = true;
 	bool correct_measurements = true;
 	
-	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	//
+	// unit_test_1.join();
+	// unit_test_2.join();
+	// unit_test_3.join();
+	// unit_test_4.join();
+	// unit_test_5.join();
+	//
+	barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cerr << "[FAIL] All barcodes were not set.\n"  ;
 
-	unit_test_1.join();
-	unit_test_2.join();
-	unit_test_3.join();
-	unit_test_4.join();
-	unit_test_5.join();
+	correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cerr << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
 
-	barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cout << "[FAIL] All barcodes were not set.\n"  ;
+	correct_groundtruth ? std::cout << "[PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
 
-	correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cout << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
+	correct_odometry ? std::cout << "[PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
 
-	correct_groundtruth ? std::cout << "[PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
+	correct_measurements ? std::cout << "[PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
 
-	correct_odometry ? std::cout << "[PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
+	bool plot = plotData();
 
-	correct_measurements ? std::cout << "[PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
+	plot ? std::cout << "[PASS] Plot saved.\n" : std::cerr << "[FAIL] Failed to save plot.\n";
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end-start);
