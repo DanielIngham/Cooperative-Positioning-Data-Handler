@@ -30,7 +30,7 @@ DataExtractor::DataExtractor(const std::string& dataset){
 bool DataExtractor::readBarcodes(const std::string& dataset) {
 	/* Check that the dataset was specified */
 	if ("" == this->dataset_) {
-		std::cout<< "Please specify a dataset\n";
+		std::cerr << "Please specify a dataset\n";
 		return false;
 	}
 
@@ -39,7 +39,7 @@ bool DataExtractor::readBarcodes(const std::string& dataset) {
 
 
 	if (!file.is_open()) {
-		std::cout<< "[ERROR] Unable to open barcodes file:"<< filename << std::endl;
+		std::cerr << "[ERROR] Unable to open barcodes file:"<< filename << std::endl;
 		return false;
 	}
 
@@ -57,7 +57,7 @@ bool DataExtractor::readBarcodes(const std::string& dataset) {
 		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 		
 		if (i >= TOTAL_BARCODES) {
-			std::cout << "[ERROR] total read barcodes exceeds TOTAL_BARCODES\n";
+			std::cerr << "[ERROR] total read barcodes exceeds TOTAL_BARCODES\n";
 			return false;
 		}
 
@@ -81,7 +81,7 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 	std::ifstream file(filename);
 
 	if (!file.is_open()) {
-		std::cout<< "[ERROR] Unable to open Landmarks file:" << filename << std::endl;
+		std::cerr << "[ERROR] Unable to open Landmarks file:" << filename << std::endl;
 		return false;
 	}
 	/* Iterate through file line by line.*/
@@ -98,7 +98,7 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 		
 		if (i >= TOTAL_LANDMARKS) { 
-			std::cout << "[ERROR] total read landmarks exceeds TOTAL_LANDMARKS\n";
+			std::cerr << "[ERROR] total read landmarks exceeds TOTAL_LANDMARKS\n";
 			return false;
 		}
 
@@ -109,7 +109,7 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 
 		/* Ensure that the barcodes have been extracted and set */
 		if (barcodes_[landmarks_[i].id - 1] == 0) { 
-			std::cout << "[ERROR] Barcodes not correctly set" << std::endl;
+			std::cerr << "[ERROR] Barcodes not correctly set" << std::endl;
 			return false;
 		}
 
@@ -152,7 +152,7 @@ bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 
 	/* Check if the file could be opened */
 	if (!file.is_open()) {
-		std::cout<< "[ERROR] Unable to open Groundtruth file:" << filename << std::endl;
+		std::cerr << "[ERROR] Unable to open Groundtruth file:" << filename << std::endl;
 		return false;
 	}
 
@@ -210,7 +210,7 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 
 	/* Check if the file could be opened */
 	if (!file.is_open()) {
-		std::cout<< "[ERROR] Unable to open Odometry file:" << filename << std::endl;
+		std::cerr << "[ERROR] Unable to open Odometry file:" << filename << std::endl;
 		return false;
 	}
 
@@ -262,7 +262,7 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 
 	/* Check if the file could be opened */
 	if (!file.is_open()) {
-		std::cout<< "[ERROR] Unable to open Measurement file:" << filename << std::endl;
+		std::cerr << "[ERROR] Unable to open Measurement file:" << filename << std::endl;
 		return false;
 	}
 
