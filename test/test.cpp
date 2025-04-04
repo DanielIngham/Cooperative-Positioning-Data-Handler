@@ -79,7 +79,7 @@ void checkLandmarkBarcodes(bool& correct_landmark_barcode) {
 /** 
  * @brief Unit Test 3: check that all the ground truth values were extracted.
  */
-void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int robot_id) {
+void checkGroundtruthExtraction(bool& flag) {
 	DataExtractor data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
@@ -89,17 +89,19 @@ void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int ro
 
 		const auto* robots = data.getRobots();
 
-		std::string groundtruth_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Groundtruth.dat";
+		for (int robot_id = 0; robot_id < TOTAL_ROBOTS; robot_id++) {
+			std::string groundtruth_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Groundtruth.dat";
 
-		long unsigned int counter = countFileLines(groundtruth_file);
+			long unsigned int counter = countFileLines(groundtruth_file);
 
-		if (0 == counter) {
-			correct_ground_truth = false;
-		}
+			if (0 == counter) {
+				flag = false;
+			}
 
-		else if (robots[robot_id].raw.ground_truth.size() != counter) {
-			std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the groundtruth: " << robots[robot_id].raw.ground_truth.size() << " ≠ " << counter << std::endl;
-			correct_ground_truth = false;
+			else if (robots[robot_id].raw.ground_truth.size() != counter) {
+				std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the groundtruth: " << robots[robot_id].raw.ground_truth.size() << " ≠ " << counter << std::endl;
+				flag = false;
+			}
 		}
 	} 
 	return;
@@ -108,26 +110,32 @@ void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int ro
 /** 
  * @brief Unit Test 4: check that all the odometry values were extracted.
  */
-void checkOdometryExtraction( std::atomic<bool>& flag, int robot_id) {
+void checkOdometryExtraction(bool& flag) {
 	DataExtractor data;
 
+	/* Loop through every data */
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
+
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
 
 		data.setDataSet(dataset);
 
 		const auto* robots = data.getRobots();
 
-		std::string odometry_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Odometry.dat";
+		/* Loop through every robot */
+		for (int robot_id = 0; robot_id < TOTAL_ROBOTS; robot_id++) {
 
-		long unsigned int counter = countFileLines(odometry_file);
+			std::string odometry_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Odometry.dat";
 
-		if (counter == 0) {
-			flag = false;
-		}
-		else if (robots[robot_id].raw.odometry.size() != counter) {
-			std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the odometry file: " << robots[robot_id].raw.odometry.size() << " ≠ " << counter << std::endl;
-			flag = false;
+			long unsigned int counter = countFileLines(odometry_file);
+
+			if (counter == 0) {
+				flag = false;
+			}
+			else if (robots[robot_id].raw.odometry.size() != counter) {
+				std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the odometry file: " << robots[robot_id].raw.odometry.size() << " ≠ " << counter << std::endl;
+				flag = false;
+			}
 		}
 	} 
 	return;
@@ -136,39 +144,41 @@ void checkOdometryExtraction( std::atomic<bool>& flag, int robot_id) {
 /** 
  * @brief Unit Test 5: check that all the measurement values were extracted.
  */
-void checkMeasurementExtraction( std::atomic<bool>& flag, int robot_id) {
+void checkMeasurementExtraction(bool& flag) {
 	DataExtractor data;
 
+	/* Loop through every data */
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
 		data.setDataSet(dataset);
 
 		const auto* robots = data.getRobots();
 
-		std::string measurement_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurement.dat";
+		/* Loop through every robot */
+		for (int robot_id = 0; robot_id < TOTAL_ROBOTS; robot_id++) {
+			std::string measurement_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurement.dat";
 
-		long unsigned int counter = countFileLines(measurement_file);
+			long unsigned int counter = countFileLines(measurement_file);
 
-		if (0 == counter) {
-			flag = false;
-		}
-
-		/* Count the number of elements */ 
-		long unsigned int measurement_counter = 0;
-
-		for (std::size_t j = 0; j < robots[robot_id].raw.measurements.size(); j++) {
-			if ((robots[robot_id].raw.measurements[j].bearings.size() == robots[robot_id].raw.measurements[j].ranges.size()) && (robots[robot_id].raw.measurements[j].ranges.size() == robots[robot_id].raw.measurements[j].subjects.size())) {
-				measurement_counter += robots[robot_id].raw.measurements[j].subjects.size();
-			}
-			else {
+			if (0 == counter) {
 				flag = false;
 			}
 
-		}
+			/* Count the number of elements */ 
+			long unsigned int measurement_counter = 0;
 
-		if (measurement_counter != counter) {
-			std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the measurement file: " << robots[robot_id].raw.measurements.size() << " ≠ " << counter << std::endl;
-			flag = false;
+			for (std::size_t j = 0; j < robots[robot_id].raw.measurements.size(); j++) {
+				if ((robots[robot_id].raw.measurements[j].bearings.size() == robots[robot_id].raw.measurements[j].ranges.size()) && (robots[robot_id].raw.measurements[j].ranges.size() == robots[robot_id].raw.measurements[j].subjects.size())) {
+					measurement_counter += robots[robot_id].raw.measurements[j].subjects.size();
+				}
+				else {
+					flag = false;
+				}
+			}
+			if (measurement_counter != counter) {
+				std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the measurement file: " << robots[robot_id].raw.measurements.size() << " ≠ " << counter << std::endl;
+				flag = false;
+			}
 		}
 	} 
 	return;
@@ -180,53 +190,31 @@ int main() {
 	std::cout<< "Number of treads supported: " << std::thread::hardware_concurrency() << std::endl;
 
 	// /* Loop through every MRCLAM data set and check if the file extraction was successful. */
-	// bool barcodes_set = true;
-	// bool correct_landmark_barcode = true;
-	// std::atomic<bool> correct_groundtruth(true);
-	//
-	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	// std::thread unit_test_3[TOTAL_ROBOTS];
-	//
-	// for (int i = 0; i < TOTAL_ROBOTS; i++) {
-	// 	unit_test_3[i] = std::thread(checkGroundtruthExtraction, std::ref(correct_groundtruth), i);
-	// }
-	//
-	// unit_test_1.join();
-	// unit_test_2.join();
-	// for (int j = 0; j < TOTAL_ROBOTS; j++) {
-	// 	unit_test_3[j].join();
-	// }
-	//
-	// barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cout << "[FAIL] All barcodes were not set.\n"  ;
-	//
-	// correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cout << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
-	//
-	// correct_groundtruth ? std::cout << "[PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
+	bool barcodes_set = true;
+	bool correct_landmark_barcode = true;
+	bool correct_groundtruth = true;
+	bool correct_odometry = true;
+	bool correct_measurements = true;
+	
+	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
 
-	// std::atomic<bool> correct_odometry(true);
-	std::atomic<bool> correct_measurements(true);
+	unit_test_1.join();
+	unit_test_2.join();
+	unit_test_3.join();
+	unit_test_4.join();
+	unit_test_5.join();
 
-	// std::thread unit_test_4[TOTAL_ROBOTS];
-	// for (int i = 0; i < TOTAL_ROBOTS; i++) {
-	// 	unit_test_4[i] = std::thread(checkOdometryExtraction, std::ref(correct_odometry), i);
-	// }
+	barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cout << "[FAIL] All barcodes were not set.\n"  ;
 
-	std::thread unit_test_5[TOTAL_ROBOTS];
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		unit_test_5[i] = std::thread(checkMeasurementExtraction, std::ref(correct_measurements), i);
-	}
+	correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cout << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
 
+	correct_groundtruth ? std::cout << "[PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
 
-	// for (int j = 0; j < TOTAL_ROBOTS; j++) {
-	// 	unit_test_4[j].join();
-	// }
-
-	for (int j = 0; j < TOTAL_ROBOTS; j++) {
-		unit_test_5[j].join();
-	}
-
-	// correct_odometry ? std::cout << "[PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
+	correct_odometry ? std::cout << "[PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
 
 	correct_measurements ? std::cout << "[PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
 
