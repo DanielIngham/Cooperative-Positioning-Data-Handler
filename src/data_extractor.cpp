@@ -38,38 +38,36 @@ bool DataExtractor::readBarcodes(const std::string& dataset) {
 	std::ifstream file(filename);
 
 
-	if (file.is_open()) {
-		std::string line;
-		/* Iterate through file line by line.*/
-		int i = 0; 
-
-		while (std::getline(file, line)) {
-			/* Ignore file comments. */
-			if (line[0] == '#') {
-				continue;
-			}
-
-			/* Remove whitespaces */ 
-			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-			
-			if (i >= TOTAL_BARCODES) {
-				std::cout << "[ERROR] total read barcodes exceeds TOTAL_BARCODES\n";
-				return false;
-			}
-			else {
-				/* Extract barcodes into barcodes array */
-				barcodes_[i++] = std::stoi(line.substr(line.find('\t', 0))) ;
-			}
-		}
-
-		file.close();
-
-		return true;
-	}
-	else { 
+	if (!file.is_open()) {
 		std::cout<< "[ERROR] Unable to open barcodes file:"<< filename << std::endl;
 		return false;
 	}
+
+	/* Iterate through file line by line.*/
+	std::string line;
+	int i = 0; 
+
+	while (std::getline(file, line)) {
+		/* Ignore file comments. */
+		if (line[0] == '#') {
+			continue;
+		}
+
+		/* Remove whitespaces */ 
+		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+		
+		if (i >= TOTAL_BARCODES) {
+			std::cout << "[ERROR] total read barcodes exceeds TOTAL_BARCODES\n";
+			return false;
+		}
+
+		/* Extract barcodes into barcodes array */
+		barcodes_[i++] = std::stoi(line.substr(line.find('\t', 0))) ;
+	}
+
+	file.close();
+
+	return true;
 }
 
 /**
@@ -82,65 +80,62 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 	std::string filename = dataset + "/Landmark_Groundtruth.dat";
 	std::ifstream file(filename);
 
-	if (file.is_open()) {
-		/* Iterate through file line by line.*/
-		int i = 0; 
-		std::string line;
-
-		while (std::getline(file, line)) {
-			/* Ignore file comments. */
-			if ('#' == line[0]) {
-				continue;
-			}
-
-			/* Remove whitespaces */
-			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-			
-			if (i >= TOTAL_LANDMARKS) { 
-				std::cout << "[ERROR] total read landmarks exceeds TOTAL_LANDMARKS\n";
-				return false;
-			}
-			else {
-				/* */
-				std::size_t start_index = 0; 
-				std::size_t end_index = line.find('\t', 0);
-				landmarks_[i].id = std::stoi(line.substr(start_index, end_index));
-
-				/* Ensure that the barcodes have been extracted and set */
-				if (barcodes_[landmarks_[i].id - 1] == 0) { 
-					std::cout << "[ERROR] Barcodes not correctly set" << std::endl;
-					return false;
-				}
-
-				/* Set landmarks barcode */
-				landmarks_[i].barcode = barcodes_[landmarks_[i].id - 1] ;
-				
-				start_index = end_index; 
-				end_index = line.find('\t', end_index+1);
-				landmarks_[i].x = std::stod(line.substr(start_index, end_index));
-
-				start_index = end_index; 
-				end_index = line.find('\t', end_index+1);
-				landmarks_[i].y = std::stod(line.substr(start_index, end_index));
-
-				start_index = end_index; 
-				end_index = line.find('\t', end_index+1);
-				landmarks_[i].x_std_dev = std::stod(line.substr(start_index, end_index));
-
-				start_index = end_index; 
-				end_index = line.find('\t', end_index+1);
-				landmarks_[i++].y_std_dev = std::stod(line.substr(start_index, end_index));
-			}
-		}
-
-		file.close();
-
-		return true;
-	}
-	else { 
+	if (!file.is_open()) {
 		std::cout<< "[ERROR] Unable to open Landmarks file:" << filename << std::endl;
 		return false;
 	}
+	/* Iterate through file line by line.*/
+	int i = 0; 
+	std::string line;
+
+	while (std::getline(file, line)) {
+		/* Ignore file comments. */
+		if ('#' == line[0]) {
+			continue;
+		}
+
+		/* Remove whitespaces */
+		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+		
+		if (i >= TOTAL_LANDMARKS) { 
+			std::cout << "[ERROR] total read landmarks exceeds TOTAL_LANDMARKS\n";
+			return false;
+		}
+
+		/* Set the landmark's ID */
+		std::size_t start_index = 0; 
+		std::size_t end_index = line.find('\t', 0);
+		landmarks_[i].id = std::stoi(line.substr(start_index, end_index));
+
+		/* Ensure that the barcodes have been extracted and set */
+		if (barcodes_[landmarks_[i].id - 1] == 0) { 
+			std::cout << "[ERROR] Barcodes not correctly set" << std::endl;
+			return false;
+		}
+
+		/* Set landmark's barcode */
+		landmarks_[i].barcode = barcodes_[landmarks_[i].id - 1] ;
+		
+		start_index = end_index; 
+		end_index = line.find('\t', end_index+1);
+		landmarks_[i].x = std::stod(line.substr(start_index, end_index));
+
+		start_index = end_index; 
+		end_index = line.find('\t', end_index+1);
+		landmarks_[i].y = std::stod(line.substr(start_index, end_index));
+
+		start_index = end_index; 
+		end_index = line.find('\t', end_index+1);
+		landmarks_[i].x_std_dev = std::stod(line.substr(start_index, end_index));
+
+		start_index = end_index; 
+		end_index = line.find('\t', end_index+1);
+		landmarks_[i++].y_std_dev = std::stod(line.substr(start_index, end_index));
+	}
+
+	file.close();
+
+	return true;
 }
 
 /**
@@ -156,50 +151,49 @@ bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 	std::ifstream file(filename);
 
 	/* Check if the file could be opened */
-	if (file.is_open()) {
-		/* Loop through each line in the file. */
-		std::string line;
-		while (std::getline(file, line)) {
-			/* Ignore Comments */
-			if ('#' == line[0]) {
-				continue;
-			}
-
-			/* Remove whitespaces */
-			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-
-			/* Extract Data into thier respective variables */
-			/* - Time */
-			std::size_t start_index = 0;
-			std::size_t end_index = line.find('\t', 0);
-			double time = std::stod(line.substr(start_index, end_index));
-
-			/* - x-coordinate [m] */
-			start_index = end_index;
-			end_index = line.find('\t', ++end_index);
-			double x_coordinate = std::stod(line.substr(start_index, end_index));
-
-			/* - y-coordinate [m] */
-			start_index = end_index; 
-			end_index = line.find('\t', ++end_index);
-			double y_coordinate = std::stod(line.substr(start_index, end_index));
-
-			/* - Orientaiton [rad] */
-			start_index = end_index;
-			end_index = line.find('\t', ++end_index);
-			double orientation = std::stod(line.substr(start_index, end_index));
-
-			/* Populate robot groundtruth with exracted values. */
-			robots_[robot_id].raw.ground_truth.push_back(Groundtruth(time, x_coordinate, y_coordinate, orientation));
-		}
-		file.close();
-		return true;
-	}
-	/* If the data file could not be opened, display error. */
-	else {
+	if (!file.is_open()) {
 		std::cout<< "[ERROR] Unable to open Groundtruth file:" << filename << std::endl;
 		return false;
 	}
+
+	/* Loop through each line in the file. */
+	std::string line;
+	while (std::getline(file, line)) {
+		/* Ignore Comments */
+		if ('#' == line[0]) {
+			continue;
+		}
+
+		/* Remove whitespaces */
+		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+		/* Extract Data into thier respective variables */
+		/* - Time */
+		std::size_t start_index = 0;
+		std::size_t end_index = line.find('\t', 0);
+		double time = std::stod(line.substr(start_index, end_index));
+
+		/* - x-coordinate [m] */
+		start_index = end_index;
+		end_index = line.find('\t', ++end_index);
+		double x_coordinate = std::stod(line.substr(start_index, end_index));
+
+		/* - y-coordinate [m] */
+		start_index = end_index; 
+		end_index = line.find('\t', ++end_index);
+		double y_coordinate = std::stod(line.substr(start_index, end_index));
+
+		/* - Orientaiton [rad] */
+		start_index = end_index;
+		end_index = line.find('\t', ++end_index);
+		double orientation = std::stod(line.substr(start_index, end_index));
+
+		/* Populate robot groundtruth with exracted values. */
+		robots_[robot_id].raw.ground_truth.push_back(Groundtruth(time, x_coordinate, y_coordinate, orientation));
+	}
+
+	file.close();
+	return true;
 }
 
 /**
@@ -215,45 +209,43 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 	std::fstream file(filename); 
 
 	/* Check if the file could be opened */
-	if (file.is_open()) {
-		/* Loop through each line in the file. */
-		std::string line;
-		while (std::getline(file, line)) {
-			/* Ignore Comments */
-			if ('#' == line[0]) {
-				continue;
-			}
-			/* Remove Whitespace */
-			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-
-			/* Extract Data into thier respective variables */
-			/* - Time */
-			std::size_t start_index = 0;
-			std::size_t end_index = line.find('\t', 0); 
-			double time = std::stod(line.substr(start_index, end_index));
-
-			/* - Forward Velocity [m/s] */
-			start_index = end_index;
-			end_index = line.find('\t', ++end_index);
-			double forward_velocity = std::stod(line.substr(start_index, end_index));
-;
-			/* - Angular Velocity [rad/s] */
-			start_index = end_index;
-			end_index = line.find('\t', ++end_index);
-			double angular_velocity = std::stod(line.substr(start_index, end_index));
-;
-			/* Populate the robot struct with the extracted values. */
-			robots_[robot_id].raw.odometry.push_back(Odometry(time, forward_velocity, angular_velocity));
-		}
-
-		file.close();
-		return true;
-	}
-	/* If the data file could not be opened, display error. */
-	else {
+	if (!file.is_open()) {
 		std::cout<< "[ERROR] Unable to open Odometry file:" << filename << std::endl;
 		return false;
 	}
+
+	/* Loop through each line in the file. */
+	std::string line;
+	while (std::getline(file, line)) {
+		/* Ignore Comments */
+		if ('#' == line[0]) {
+			continue;
+		}
+		/* Remove Whitespace */
+		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+		/* Extract Data into thier respective variables */
+		/* - Time */
+		std::size_t start_index = 0;
+		std::size_t end_index = line.find('\t', 0); 
+		double time = std::stod(line.substr(start_index, end_index));
+
+		/* - Forward Velocity [m/s] */
+		start_index = end_index;
+		end_index = line.find('\t', ++end_index);
+		double forward_velocity = std::stod(line.substr(start_index, end_index));
+;
+		/* - Angular Velocity [rad/s] */
+		start_index = end_index;
+		end_index = line.find('\t', ++end_index);
+		double angular_velocity = std::stod(line.substr(start_index, end_index));
+;
+		/* Populate the robot struct with the extracted values. */
+		robots_[robot_id].raw.odometry.push_back(Odometry(time, forward_velocity, angular_velocity));
+	}
+
+	file.close();
+	return true;
 }
 
 /**
@@ -269,62 +261,60 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 	std::fstream file(filename);
 
 	/* Check if the file could be opened */
-	if (file.is_open()) {
-		/* Loop through each line in the file. */
-		std::string line;
-		while (std::getline(file, line)) {
-			/* Ignore Comments */
-			if ('#' == line[0]) {
-				continue;
-			}
-			/* Remove Whitespaces */
-			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-
-			/* Extract Data into thier respective variables */
-			/* - Time [s]*/
-			std::size_t start_index = 0;
-			std::size_t end_index = line.find('\t', 0);
-			double time = std::stod(line.substr(start_index, end_index));
-			
-			/* - Subject (ID) */
-			start_index = end_index;
-			end_index = line.find('\t', ++end_index);
-			int subject = std::stoi(line.substr(start_index, end_index));
-
-			/* - Range [m] */
-			start_index = end_index;
-			end_index = line.find('\t', ++end_index);
-			double range = std::stod(line.substr(start_index, end_index));
-
-			/* - Bearing [rad] */
-			start_index = end_index;
-			end_index = line.find('\t', ++end_index);
-			double bearing = std::stod(line.substr(start_index, end_index));
-
-			/* Check if the current time index falls within 0.05 seconds of a previous time index. */
-			auto iterator = std::find_if(robots_[robot_id].raw.measurements.begin(), robots_[robot_id].raw.measurements.end(), [&](const Measurement& index) {
-				return index.time >= time - 0.05 && index.time <= time + 0.05;
-			});
-
-			/* If the timestamp already exists in the vector of measurements, append the current measurment to the timestamp.*/
-			if (iterator != robots_[robot_id].raw.measurements.end()) {
-				iterator->subjects.push_back(subject);
-				iterator->ranges.push_back(range);
-				iterator->bearings.push_back(bearing);
-			}
-			else {
-				robots_[robot_id].raw.measurements.push_back(Measurement(time, subject, range, bearing));
-			}
-		}
-		
-		file.close();
-		return true;
-	}
-	/* If the data file could not be opened, display error. */
-	else {
+	if (!file.is_open()) {
 		std::cout<< "[ERROR] Unable to open Measurement file:" << filename << std::endl;
 		return false;
 	}
+
+	/* Loop through each line in the file. */
+	std::string line;
+	while (std::getline(file, line)) {
+		/* Ignore Comments */
+		if ('#' == line[0]) {
+			continue;
+		}
+		/* Remove Whitespaces */
+		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+		/* Extract Data into thier respective variables */
+		/* - Time [s]*/
+		std::size_t start_index = 0;
+		std::size_t end_index = line.find('\t', 0);
+		double time = std::stod(line.substr(start_index, end_index));
+		
+		/* - Subject (ID) */
+		start_index = end_index;
+		end_index = line.find('\t', ++end_index);
+		int subject = std::stoi(line.substr(start_index, end_index));
+
+		/* - Range [m] */
+		start_index = end_index;
+		end_index = line.find('\t', ++end_index);
+		double range = std::stod(line.substr(start_index, end_index));
+
+		/* - Bearing [rad] */
+		start_index = end_index;
+		end_index = line.find('\t', ++end_index);
+		double bearing = std::stod(line.substr(start_index, end_index));
+
+		/* Check if the current time index falls within 0.05 seconds of a previous time index. */
+		auto iterator = std::find_if(robots_[robot_id].raw.measurements.begin(), robots_[robot_id].raw.measurements.end(), [&](const Measurement& index) {
+			return index.time >= time - 0.05 && index.time <= time + 0.05;
+		});
+
+		/* If the timestamp already exists in the vector of measurements, append the current measurment to the timestamp.*/
+		if (iterator != robots_[robot_id].raw.measurements.end()) {
+			iterator->subjects.push_back(subject);
+			iterator->ranges.push_back(range);
+			iterator->bearings.push_back(bearing);
+		}
+		else {
+			robots_[robot_id].raw.measurements.push_back(Measurement(time, subject, range, bearing));
+		}
+	}
+	
+	file.close();
+	return true;
 }
 
 /**
