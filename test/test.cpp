@@ -9,8 +9,33 @@
 
 #define TOTAL_DATASETS 9
 
+/**
+ * @brief Loops through the entire dataset file and counts the number of lines that are not commented.
+ * @return the number of lines counted.
+ */
+long unsigned int countFileLines(const std::string& filename) {
+	std::ifstream file(filename);
 
-/* Unit Test 1: check if barcodes were set. */	
+	if (file.is_open()) {
+		long unsigned int counter = 0;
+		std::string line;
+		while(std::getline(file, line)) {
+			if ('#' == line[0]) {
+				continue;
+			}
+			counter++;
+		}
+		return counter;
+	}
+	else {
+		std::cout << "[Error] Failed to open file:" << filename << std::endl;
+		return 0;
+	}
+}
+
+/**
+ * @brief Unit Test 1: check if barcodes were set.
+ */
 void checkBarcodes(bool& barcodes_set) {
 	DataExtractor data;
 
@@ -29,7 +54,9 @@ void checkBarcodes(bool& barcodes_set) {
 	return;
 }
 
-/* Unit Test 2: compare landmark barcodes to barcodes. */
+/** 
+ * @brief Unit Test 2: compare landmark barcodes to barcodes. 
+ */
 void checkLandmarkBarcodes(bool& correct_landmark_barcode) {
 	DataExtractor data;
 
@@ -49,8 +76,67 @@ void checkLandmarkBarcodes(bool& correct_landmark_barcode) {
 	return;
 }
 
-/* Unit Test 3: check that all the ground truth values were extracted.*/
+/** 
+ * @brief Unit Test 3: check that all the ground truth values were extracted.
+ */
 void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int robot_id) {
+	DataExtractor data;
+
+	for (int i = 1; i <= TOTAL_DATASETS; i++) {
+		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
+
+		data.setDataSet(dataset);
+
+		const auto* robots = data.getRobots();
+
+		std::string groundtruth_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Groundtruth.dat";
+
+		long unsigned int counter = countFileLines(groundtruth_file);
+
+		if (0 == counter) {
+			correct_ground_truth = false;
+		}
+
+		else if (robots[robot_id].raw.ground_truth.size() != counter) {
+			std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the groundtruth: " << robots[robot_id].raw.ground_truth.size() << " ≠ " << counter << std::endl;
+			correct_ground_truth = false;
+		}
+	} 
+	return;
+}
+
+/** 
+ * @brief Unit Test 4: check that all the odometry values were extracted.
+ */
+void checkOdometryExtraction( std::atomic<bool>& flag, int robot_id) {
+	DataExtractor data;
+
+	for (int i = 1; i <= TOTAL_DATASETS; i++) {
+		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
+
+		data.setDataSet(dataset);
+
+		const auto* robots = data.getRobots();
+
+		std::string odometry_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Odometry.dat";
+
+		long unsigned int counter = countFileLines(odometry_file);
+
+		if (counter == 0) {
+			flag = false;
+		}
+		else if (robots[robot_id].raw.odometry.size() != counter) {
+			std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the odometry file: " << robots[robot_id].raw.odometry.size() << " ≠ " << counter << std::endl;
+			flag = false;
+		}
+	} 
+	return;
+}
+
+/** 
+ * @brief Unit Test 5: check that all the measurement values were extracted.
+ */
+void checkMeasurementExtraction( std::atomic<bool>& flag, int robot_id) {
 	DataExtractor data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
@@ -59,67 +145,93 @@ void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int ro
 
 		const auto* robots = data.getRobots();
 
-		std::string groundtruth_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Groundtruth.dat";
-		std::ifstream file(groundtruth_file);
+		std::string measurement_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurement.dat";
 
-		long unsigned int counter = 0;
-		if (file.is_open()) {
-			std::string line;
-			while(std::getline(file, line)) {
-				if ('#' == line[0]) {
-					continue;
-				}
-				counter++;
+		long unsigned int counter = countFileLines(measurement_file);
+
+		if (0 == counter) {
+			flag = false;
+		}
+
+		/* Count the number of elements */ 
+		long unsigned int measurement_counter = 0;
+
+		for (std::size_t j = 0; j < robots[robot_id].raw.measurements.size(); j++) {
+			if ((robots[robot_id].raw.measurements[j].bearings.size() == robots[robot_id].raw.measurements[j].ranges.size()) && (robots[robot_id].raw.measurements[j].ranges.size() == robots[robot_id].raw.measurements[j].subjects.size())) {
+				measurement_counter += robots[robot_id].raw.measurements[j].subjects.size();
 			}
+			else {
+				flag = false;
+			}
+
 		}
-		else {
-			std::cout << "[Error] Failed to open groundtruth file:" << groundtruth_file << std::endl;
-			correct_ground_truth = false;
-		}
-		if (robots[robot_id].raw.ground_truth.size() != counter) {
-			std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the groundtruth: " << robots[robot_id].raw.ground_truth.size() << " ≠ " << counter << std::endl;
-			correct_ground_truth = false;
+
+		if (measurement_counter != counter) {
+			std::cout<< "Robot " << robot_id + 1 << " does not have a size equal to the number of entries in the measurement file: " << robots[robot_id].raw.measurements.size() << " ≠ " << counter << std::endl;
+			flag = false;
 		}
 	} 
-
 	return;
 }
-
 
 int main() {
 	auto start = std::chrono::high_resolution_clock::now();
 	std::cout<< "UNIT TESTING" <<std::endl;
 	std::cout<< "Number of treads supported: " << std::thread::hardware_concurrency() << std::endl;
 
-	/* Loop through every MRCLAM data set and check if the file extraction was successful. */
-	bool barcodes_set = true;
-	bool correct_landmark_barcode = true;
-	std::atomic<bool> correct_ground_truth(true);
-	
-	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	std::thread unit_test_3[TOTAL_ROBOTS];
+	// /* Loop through every MRCLAM data set and check if the file extraction was successful. */
+	// bool barcodes_set = true;
+	// bool correct_landmark_barcode = true;
+	// std::atomic<bool> correct_groundtruth(true);
+	//
+	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	// std::thread unit_test_3[TOTAL_ROBOTS];
+	//
+	// for (int i = 0; i < TOTAL_ROBOTS; i++) {
+	// 	unit_test_3[i] = std::thread(checkGroundtruthExtraction, std::ref(correct_groundtruth), i);
+	// }
+	//
+	// unit_test_1.join();
+	// unit_test_2.join();
+	// for (int j = 0; j < TOTAL_ROBOTS; j++) {
+	// 	unit_test_3[j].join();
+	// }
+	//
+	// barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cout << "[FAIL] All barcodes were not set.\n"  ;
+	//
+	// correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cout << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
+	//
+	// correct_groundtruth ? std::cout << "[PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
 
+	// std::atomic<bool> correct_odometry(true);
+	std::atomic<bool> correct_measurements(true);
+
+	// std::thread unit_test_4[TOTAL_ROBOTS];
+	// for (int i = 0; i < TOTAL_ROBOTS; i++) {
+	// 	unit_test_4[i] = std::thread(checkOdometryExtraction, std::ref(correct_odometry), i);
+	// }
+
+	std::thread unit_test_5[TOTAL_ROBOTS];
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		unit_test_3[i] = std::thread(checkGroundtruthExtraction, std::ref(correct_ground_truth), i);
+		unit_test_5[i] = std::thread(checkMeasurementExtraction, std::ref(correct_measurements), i);
 	}
 
-	unit_test_1.join();
-	unit_test_2.join();
+
+	// for (int j = 0; j < TOTAL_ROBOTS; j++) {
+	// 	unit_test_4[j].join();
+	// }
+
 	for (int j = 0; j < TOTAL_ROBOTS; j++) {
-		unit_test_3[j].join();
+		unit_test_5[j].join();
 	}
-	
-	barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cout << "[FAIL] All barcodes were not set.\n"  ;
-	
-	correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cout << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
 
-	correct_ground_truth ? std::cout << "[PASS] All Robots have extracted all groundtruth values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct number of groundtruth values from the dataset.\n";
+	// correct_odometry ? std::cout << "[PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
+
+	correct_measurements ? std::cout << "[PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cout << "[FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
 
 	auto end = std::chrono::high_resolution_clock::now();
-
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end-start);
-
 	std::cout << "\n Test ran for: " << duration.count() << " seconds\n";
 	return 0;
 }
