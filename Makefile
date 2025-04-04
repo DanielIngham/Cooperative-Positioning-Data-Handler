@@ -24,7 +24,11 @@ TEST_TARGET := $(TEST_BUILD)/test
 TEST_SOURCES := $(wildcard $(TEST_DIR)/*.cpp)
 TEST_OBJECTS :=  $(patsubst $(TEST_DIR)/%.cpp, $(TEST_BUILD)/%.o,$(TEST_SOURCES)) 
 
-.PHONEY: all clean test
+# Static C++ Code Analyser
+CPPCHECK := cppcheck
+
+
+.PHONEY: all clean test cppcheck
 
 # Linking
 $(TARGET): $(OBJECTS)
@@ -53,3 +57,7 @@ $(TEST_BUILD)/%.o: $(TEST_DIR)/%.cpp
 
 test: $(TEST_TARGET)
 	$(TEST_TARGET)
+
+# Static C++ Code Analyser
+cppcheck: 
+	$(CPPCHECK) --quiet --enable=all --suppress=missingIncludeSystem --error-exitcode=1 -I $(INCLUDE_DIR) $(SRC_DIR) $(TEST_DIR)
