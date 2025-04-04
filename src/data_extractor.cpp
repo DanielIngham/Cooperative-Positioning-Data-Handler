@@ -211,7 +211,7 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 	robots_[robot_id].raw.odometry.clear();
 
 	/* Setup file for data extraction */
-	std::string filename = dataset + "Robot" + std::to_string(robot_id + 1) +"_Odometry.dat";
+	std::string filename = dataset + "/Robot" + std::to_string(robot_id + 1) +"_Odometry.dat";
 	std::fstream file(filename); 
 
 	/* Check if the file could be opened */
@@ -262,10 +262,10 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
  */
 bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the measurement vector. */
-	robots_[robot_id].raw.odometry.clear();
+	robots_[robot_id].raw.measurements.clear();
 
 	/* Setup file for data extraction */
-	std::string filename = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurment.dat";
+	std::string filename = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurement.dat";
 	std::fstream file(filename);
 
 	/* Check if the file could be opened */
@@ -347,12 +347,16 @@ void DataExtractor::setDataSet(const std::string& dataset) {
 	/* Perform data extraction in the directory */
 	bool barcodes_correct = readBarcodes(dataset);
 	bool landmarks_correct = readLandmarks(dataset);
-	bool ground_truth_correct = true;
+	bool groundtruth_correct = true;
+	bool odometry_correct = true;
+	bool measurement_correct = true;
 
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		ground_truth_correct &= readGroundTruth(dataset, i);
+		groundtruth_correct &= readGroundTruth(dataset, i);
+		odometry_correct &= readOdometry(dataset, i);
+		measurement_correct &= readMeasurements(dataset, i);
 	}
-	bool successful_extraction = barcodes_correct & landmarks_correct & ground_truth_correct;
+	bool successful_extraction = barcodes_correct & landmarks_correct & groundtruth_correct & odometry_correct & measurement_correct;
 
 	if (!successful_extraction) {
 		throw std::runtime_error("Unable to extract data from dataset");
@@ -389,5 +393,6 @@ DataExtractor::Robot* DataExtractor::getRobots() {
 	if ("" == this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
 	}
+
 	return robots_;
 }
