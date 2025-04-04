@@ -19,12 +19,11 @@ DataExtractor::DataExtractor(){
  * @param[in] dataset filepath to the dataset folder.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
-DataExtractor::DataExtractor(std::string dataset){
+DataExtractor::DataExtractor(const std::string& dataset){
 	setDataSet(dataset);
-
 }
 
-bool DataExtractor::readBarcodes(std::string dataset) {
+bool DataExtractor::readBarcodes(const std::string& dataset) {
 	/* Check that the dataset was specified */
 	if ("" == this->dataset_) {
 		std::cout<< "Please specify a dataset\n";
@@ -34,9 +33,9 @@ bool DataExtractor::readBarcodes(std::string dataset) {
 	std::string filename = dataset + "/Barcodes.dat";
 	std::ifstream file(filename);
 
-	std::string line;
 
 	if (file.is_open()) {
+		std::string line;
 		/* Iterate through file line by line.*/
 		int i = 0; 
 
@@ -68,7 +67,7 @@ bool DataExtractor::readBarcodes(std::string dataset) {
 	}
 }
 
-bool DataExtractor::readLandmarks(std::string dataset) {
+bool DataExtractor::readLandmarks(const std::string& dataset) {
 
 	std::string filename = dataset + "/Landmark_Groundtruth.dat";
 	std::ifstream file(filename);
@@ -133,7 +132,7 @@ bool DataExtractor::readLandmarks(std::string dataset) {
 	}
 }
 
-bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
+bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the ground truth vector. */
 	robots_[robot_id].raw.ground_truth.clear();
 
@@ -179,7 +178,7 @@ bool DataExtractor::readGroundTruth(std::string dataset, int robot_id) {
 	}
 }
 
-bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
+bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the odometry vector. */
 	robots_[robot_id].raw.odometry.clear();
 
@@ -225,7 +224,7 @@ bool DataExtractor::readOdometry(std::string dataset, int robot_id) {
 	}
 }
 
-bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
+bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the measurement vector. */
 	robots_[robot_id].raw.odometry.clear();
 
@@ -262,7 +261,7 @@ bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
 			double bearing = std::stod(line.substr(start_index, end_index));
 
 			/* Check if the current time index falls within 0.05 seconds of a previous time index. */
-			auto iterator = std::find_if(robots_[robot_id].raw.measurements.begin(), robots_[robot_id].raw.measurements.end(), [&](Measurement index) {
+			auto iterator = std::find_if(robots_[robot_id].raw.measurements.begin(), robots_[robot_id].raw.measurements.end(), [&](const Measurement& index) {
 				return index.time >= time - 0.05 && index.time <= time + 0.05;
 			});
 
@@ -286,7 +285,7 @@ bool DataExtractor::readMeasurements(std::string dataset, int robot_id) {
 	}
 }
 
-void DataExtractor::setDataSet(std::string dataset) {
+void DataExtractor::setDataSet(const std::string& dataset) {
 	/* Check if the data set directory exists */
 	struct stat sb;
 	const char* directory = dataset.c_str();
@@ -316,7 +315,6 @@ void DataExtractor::setDataSet(std::string dataset) {
 int* DataExtractor::getBarcodes() {
 	if ("" ==  this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data."); 
-		return nullptr;
 	}
 	return barcodes_;
 }
@@ -324,7 +322,6 @@ int* DataExtractor::getBarcodes() {
 DataExtractor::Landmark* DataExtractor::getLandmarks() {
 	if ("" ==  this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
-		return nullptr;
 	}
 	return landmarks_;
 }
@@ -332,7 +329,6 @@ DataExtractor::Landmark* DataExtractor::getLandmarks() {
 DataExtractor::Robot* DataExtractor::getRobots() {
 	if ("" == this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
-		return nullptr;
 	}
 	return robots_;
 }

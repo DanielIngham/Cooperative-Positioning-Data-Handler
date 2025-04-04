@@ -95,16 +95,16 @@ private:
 	
 	Robot robots_[TOTAL_ROBOTS];
 
-	bool readBarcodes(std::string);
-	bool readLandmarks(std::string);
-	bool readGroundTruth(std::string, int);
-	bool readOdometry(std::string, int);
-	bool readMeasurements(std::string, int);
+	bool readBarcodes(const std::string&);
+	bool readLandmarks(const std::string&);
+	bool readGroundTruth(const std::string&, int);
+	bool readOdometry(const std::string&, int);
+	bool readMeasurements(const std::string&, int);
 public:
 	DataExtractor(); 
-	DataExtractor(std::string);
+	explicit DataExtractor(const std::string&);
 
-	void setDataSet(std::string);
+	void setDataSet(const std::string&);
 
 	int* getBarcodes();
 	Landmark* getLandmarks();

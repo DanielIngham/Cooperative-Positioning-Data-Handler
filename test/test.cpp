@@ -15,11 +15,11 @@ void checkBarcodes(bool& barcodes_set) {
 	DataExtractor data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
-		std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
+		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
 		data.setDataSet(dataset);
 
 		/* Unit Test 1: check if barcodes were set. */	
-		int* barcodes = data.getBarcodes();
+		const int* barcodes = data.getBarcodes();
 		for (int j = 0; j < TOTAL_BARCODES; j++) {
 			if (barcodes[j] == 0) {
 				barcodes_set = false; 
@@ -34,11 +34,11 @@ void checkLandmarkBarcodes(bool& correct_landmark_barcode) {
 	DataExtractor data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
-		std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
+		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
 		data.setDataSet(dataset);
 
-		int* barcodes = data.getBarcodes();
-		auto landmarks = data.getLandmarks();
+		const int* barcodes = data.getBarcodes();
+		const auto* landmarks = data.getLandmarks();
 
 		for (int j = 0; j < TOTAL_LANDMARKS; j++) {
 			if (landmarks[j].barcode != barcodes[landmarks[j].id - 1]) {
@@ -54,17 +54,17 @@ void checkGroundtruthExtraction( std::atomic<bool>& correct_ground_truth, int ro
 	DataExtractor data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
-		std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
+		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
 		data.setDataSet(dataset);
 
-		auto robots = data.getRobots();
+		const auto* robots = data.getRobots();
 
 		std::string groundtruth_file = dataset + "/Robot" + std::to_string(robot_id+1) + "_Groundtruth.dat";
 		std::ifstream file(groundtruth_file);
-		std::string line;
 
 		long unsigned int counter = 0;
 		if (file.is_open()) {
+			std::string line;
 			while(std::getline(file, line)) {
 				if ('#' == line[0]) {
 					continue;
