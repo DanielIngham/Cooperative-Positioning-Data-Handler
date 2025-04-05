@@ -7,6 +7,8 @@
  */
 
 #include "../include/data_extractor.h"
+#include <algorithm>
+#include <cmath>
 
 /**
  * @brief Default constructor.
@@ -19,9 +21,8 @@ DataExtractor::DataExtractor(){
  * @param[in] path to the dataset folder.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
-DataExtractor::DataExtractor(const std::string& dataset, double sample_period = 0.02){
-	setDataSet(dataset);
-	syncData(sample_period);
+DataExtractor::DataExtractor(const std::string& dataset,const double& sample_period = 0.02){
+	setDataSet(dataset, sample_period);
 }
 
 /**
@@ -323,7 +324,7 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
  * @param[in] path to the dataset folder.
  * @detail The function only checks the existence of the given datset folder and call the other "read" functions for the data extraction. 
  */
-void DataExtractor::setDataSet(const std::string& dataset) {
+void DataExtractor::setDataSet(const std::string& dataset, const double& sample_period=0.02) {
 	/* Check if the data set directory exists */
 	struct stat sb;
 	const char* directory = dataset.c_str();
@@ -352,6 +353,9 @@ void DataExtractor::setDataSet(const std::string& dataset) {
 	if (!successful_extraction) {
 		throw std::runtime_error("Unable to extract data from dataset");
 	}
+
+	/* Perform Time Stamp Synchronisation */
+	syncData(sample_period);
 }
 
 /**
@@ -388,11 +392,103 @@ DataExtractor::Robot* DataExtractor::getRobots() {
 	return robots_;
 }
 
-bool DataExtractor::setSamplePeriod(double sample_period){
-	return false;
-}
+/**
+ * @brief Syncs the time steps for the extracted data according to the specified sampling period.
+ */
+void DataExtractor::syncData(const double& sample_period) {
+	/* Find the minimum and maximimum times in the datasets */
+	double minimum_time = robots_[0].raw.ground_truth.front().time;
+	double maximum_time = robots_[0].raw.ground_truth.back().time;
 
-bool DataExtractor::syncData(double sample_period) {
-	setSamplePeriod(sample_period);
-	return false;
+	for (int i = 1; i < TOTAL_ROBOTS; i++) {
+		double robot_minimum_time = std::min({robots_[i].raw.ground_truth.front().time, robots_[i].raw.odometry.front().time, robots_[i].raw.measurements.front().time}); 
+		double robot_maximum_time = std::min({robots_[i].raw.ground_truth.back().time, robots_[i].raw.odometry.back().time, robots_[i].raw.measurements.back().time}); 
+
+		if (robot_minimum_time < minimum_time) {
+			minimum_time = robot_minimum_time;
+		}
+		if (robot_maximum_time > maximum_time) {
+			maximum_time = robot_maximum_time; 
+		}
+	}
+
+	/* Subtract the minimum time from all timesteps to make t=0 the intial time of the system. */
+	for  (int i = 0; i < TOTAL_ROBOTS; i++) {
+		/* Set the loop length to the size of the largest vector */
+		std::size_t dataset_size = std::max({robots_[i].raw.ground_truth.size(), robots_[i].raw.odometry.size(), robots_[i].raw.measurements.size()});
+
+		for (std::size_t j = 0; j < dataset_size; j++) {
+			if (j < robots_[i].raw.ground_truth.size()) {
+				robots_[i].raw.ground_truth[j].time -= minimum_time; 
+			}
+			if (j < robots_[i].raw.odometry.size()) {
+				robots_[i].raw.odometry[j].time -= minimum_time; 
+			}
+			if (j < robots_[i].raw.measurements.size()) {
+				robots_[i].raw.measurements[j].time -= minimum_time; 
+			}
+		}
+	}
+	
+	maximum_time -= minimum_time;
+	double timesteps = std::floor(maximum_time/sample_period) + 1;
+
+	std::cout << "The first timestep is at " << minimum_time << std::endl;
+	std::cout << "The sampling time is " << sample_period << std::endl;
+	std::cout << "Number of resulting timesteps " << timesteps << std::endl;
+
+	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+
+		for (double t = .0; t <= maximum_time; t+=sample_period) {
+
+			/* Find the first element that is larger than the current time step */
+			auto groundtruth_iterator = std::find_if(robots_[i].raw.ground_truth.begin(), robots_[i].raw.ground_truth.end(), [t](const Groundtruth& element) {
+			    return element.time > t;
+			});
+			/* If the element is the first item in the raw values, copy the raw values (no interpolation). This is assuming that the robot was stationary before its ground truth was recorded. */
+			if (groundtruth_iterator == robots_[i].raw.ground_truth.begin()) {
+				robots_[i].synced.ground_truth.push_back(Groundtruth(t, robots_[i].raw.ground_truth.front().x, robots_[i].raw.ground_truth.front().y, robots_[i].raw.ground_truth.front().orientation)); 
+				continue;
+			}
+			/* If the element is the larst item in the raw values, copy the raw values (no interpolation). This is assuming that the robot remains stationary after the ground truth recording ended. */
+			else if (groundtruth_iterator == robots_[i].raw.ground_truth.end()) {
+				robots_[i].synced.ground_truth.push_back(Groundtruth(t, robots_[i].raw.ground_truth.back().x, robots_[i].raw.ground_truth.back().y, robots_[i].raw.ground_truth.back().orientation));
+				continue;
+			}
+
+			/* Interpolate the Groundtruth values */
+			double interpolation_factor = (t -  (groundtruth_iterator-1)->time) / (groundtruth_iterator->time - (groundtruth_iterator -1)->time);
+
+			robots_[i].synced.ground_truth.push_back( Groundtruth(
+				t,
+				interpolation_factor * (groundtruth_iterator->x - (groundtruth_iterator - 1)->x) + (groundtruth_iterator - 1)->x,
+				interpolation_factor * (groundtruth_iterator->y - (groundtruth_iterator - 1)->y) + (groundtruth_iterator - 1)->y,
+				interpolation_factor * (groundtruth_iterator->orientation - (groundtruth_iterator - 1)->orientation) + (groundtruth_iterator - 1)->orientation
+			));
+
+			/* The same process as above is repeated for the odometry */
+			auto odometry_iterator = std::find_if(robots_[i].raw.odometry.begin(), robots_[i].raw.odometry.end(), [t](const Odometry& element) {
+			    return element.time > t;
+			});
+
+			if (odometry_iterator == robots_[i].raw.odometry.begin()) {
+				robots_[i].synced.odometry.push_back(Odometry(t, robots_[i].raw.odometry.front().forward_velocity, robots_[i].raw.odometry.front().angular_velocity));
+				continue;
+			}
+			else if (odometry_iterator == robots_[i].raw.odometry.end()) {
+				robots_[i].synced.odometry.push_back(Odometry(t, robots_[i].raw.odometry.back().forward_velocity, robots_[i].raw.odometry.back().angular_velocity));
+				continue;
+			}
+
+			/* Calculating Odometry Interpolation */
+			interpolation_factor = (t -  (odometry_iterator-1)->time) / (odometry_iterator->time - (odometry_iterator -1)->time); 
+
+			robots_[i].synced.odometry.push_back( Odometry(
+				t,
+				interpolation_factor * (odometry_iterator->forward_velocity - (odometry_iterator - 1)->forward_velocity) + (odometry_iterator - 1)->forward_velocity,
+				interpolation_factor * (odometry_iterator->angular_velocity - (odometry_iterator - 1)->angular_velocity) + (odometry_iterator - 1)->angular_velocity
+			));
+
+		}
+	}
 }

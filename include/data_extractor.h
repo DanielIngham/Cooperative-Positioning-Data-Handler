@@ -73,6 +73,7 @@ private:
 		double range;
 		double bearing;
 
+		Groundtruth();
 		/** 
 		 * @brief Constructor for convenient population of DataExtractor::robots_.raw.ground_truth .
 		 */
@@ -87,6 +88,7 @@ private:
 		double forward_velocity;	///< The robots forward velocity [m/s].
 		double angular_velocity;	///< The robots angular velocity [rad/s].
 
+		Odometry();
 		/** 
 		 * @brief Constructor for convenient population of DataExtractor::robots_.raw.odometry .
 		 */
@@ -142,13 +144,12 @@ private:
 	bool readOdometry(const std::string&, int);
 	bool readMeasurements(const std::string&, int);
 
-	bool syncData(double);
+	void syncData(const double&);
 public:
 	DataExtractor(); 
-	explicit DataExtractor(const std::string&, double);
+	explicit DataExtractor(const std::string&, const double& sampling_period);
 
-	void setDataSet(const std::string&);
-	bool setSamplePeriod(double);
+	void setDataSet(const std::string&, const double& sampling_period);
 
 	int* getBarcodes();
 	Landmark* getLandmarks();
