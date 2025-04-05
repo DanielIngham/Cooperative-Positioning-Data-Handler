@@ -7,8 +7,6 @@
  */
 
 #include "../include/data_extractor.h"
-#include <algorithm>
-#include <cmath>
 
 /**
  * @brief Default constructor.
@@ -21,7 +19,7 @@ DataExtractor::DataExtractor(){
  * @param[in] path to the dataset folder.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
-DataExtractor::DataExtractor(const std::string& dataset,const double& sample_period = 0.02){
+DataExtractor::DataExtractor(const std::string& dataset,const double& sample_period){
 	setDataSet(dataset, sample_period);
 }
 
@@ -38,7 +36,6 @@ bool DataExtractor::readBarcodes(const std::string& dataset) {
 
 	std::string filename = dataset + "/Barcodes.dat";
 	std::ifstream file(filename);
-
 
 	if (!file.is_open()) {
 		std::cerr << "[ERROR] Unable to open barcodes file:"<< filename << std::endl;
@@ -118,21 +115,21 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 		/* Set landmark's barcode */
 		landmarks_[i].barcode = barcodes_[landmarks_[i].id - 1] ;
 		
-		start_index = end_index; 
-		end_index = line.find('\t', end_index+1);
-		landmarks_[i].x = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1; 
+		end_index = line.find('\t', start_index);
+		landmarks_[i].x = std::stod(line.substr(start_index, end_index - start_index));
 
-		start_index = end_index; 
-		end_index = line.find('\t', end_index+1);
-		landmarks_[i].y = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1; 
+		end_index = line.find('\t', start_index);
+		landmarks_[i].y = std::stod(line.substr(start_index, end_index - start_index));
 
-		start_index = end_index; 
-		end_index = line.find('\t', end_index+1);
-		landmarks_[i].x_std_dev = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1; 
+		end_index = line.find('\t', start_index);
+		landmarks_[i].x_std_dev = std::stod(line.substr(start_index, end_index - start_index));
 
-		start_index = end_index; 
-		end_index = line.find('\t', end_index+1);
-		landmarks_[i++].y_std_dev = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1; 
+		end_index = line.find('\t', start_index);
+		landmarks_[i++].y_std_dev = std::stod(line.substr(start_index, end_index - start_index));
 	}
 
 	file.close();
@@ -176,19 +173,19 @@ bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 		double time = std::stod(line.substr(start_index, end_index));
 
 		/* - x-coordinate [m] */
-		start_index = end_index;
-		end_index = line.find('\t', ++end_index);
-		double x_coordinate = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1;
+		end_index = line.find('\t', start_index);
+		double x_coordinate = std::stod(line.substr(start_index, end_index - start_index));
 
 		/* - y-coordinate [m] */
-		start_index = end_index; 
-		end_index = line.find('\t', ++end_index);
-		double y_coordinate = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1; 
+		end_index = line.find('\t', start_index);
+		double y_coordinate = std::stod(line.substr(start_index, end_index - start_index));
 
 		/* - Orientaiton [rad] */
-		start_index = end_index;
-		end_index = line.find('\t', ++end_index);
-		double orientation = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1;
+		end_index = line.find('\t', start_index);
+		double orientation = std::stod(line.substr(start_index, end_index - start_index));
 
 		/* Populate robot groundtruth with exracted values. */
 		robots_[robot_id].raw.ground_truth.push_back(Groundtruth(time, x_coordinate, y_coordinate, orientation));
@@ -233,14 +230,14 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 		double time = std::stod(line.substr(start_index, end_index));
 
 		/* - Forward Velocity [m/s] */
-		start_index = end_index;
-		end_index = line.find('\t', ++end_index);
-		double forward_velocity = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1;
+		end_index = line.find('\t', start_index);
+		double forward_velocity = std::stod(line.substr(start_index, end_index - start_index));
 ;
 		/* - Angular Velocity [rad/s] */
-		start_index = end_index;
-		end_index = line.find('\t', ++end_index);
-		double angular_velocity = std::stod(line.substr(start_index, end_index));
+		start_index = end_index + 1;
+		end_index = line.find('\t', start_index);
+		double angular_velocity = std::stod(line.substr(start_index, end_index - start_index));
 ;
 		/* Populate the robot struct with the extracted values. */
 		robots_[robot_id].raw.odometry.push_back(Odometry(time, forward_velocity, angular_velocity));
@@ -324,7 +321,7 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
  * @param[in] path to the dataset folder.
  * @detail The function only checks the existence of the given datset folder and call the other "read" functions for the data extraction. 
  */
-void DataExtractor::setDataSet(const std::string& dataset, const double& sample_period=0.02) {
+void DataExtractor::setDataSet(const std::string& dataset, const double& sample_period) {
 	/* Check if the data set directory exists */
 	struct stat sb;
 	const char* directory = dataset.c_str();
@@ -431,18 +428,16 @@ void DataExtractor::syncData(const double& sample_period) {
 	}
 	
 	maximum_time -= minimum_time;
-	double timesteps = std::floor(maximum_time/sample_period) + 1;
-
-	std::cout << "The first timestep is at " << minimum_time << std::endl;
-	std::cout << "The sampling time is " << sample_period << std::endl;
-	std::cout << "Number of resulting timesteps " << timesteps << std::endl;
+	// double timesteps = std::floor(maximum_time/sample_period) + 1;
 
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		auto groundtruth_iterator = robots_[i].raw.ground_truth.begin();
+		auto odometry_iterator = robots_[i].raw.odometry.begin();
 
 		for (double t = .0; t <= maximum_time; t+=sample_period) {
 
 			/* Find the first element that is larger than the current time step */
-			auto groundtruth_iterator = std::find_if(robots_[i].raw.ground_truth.begin(), robots_[i].raw.ground_truth.end(), [t](const Groundtruth& element) {
+			groundtruth_iterator = std::find_if(groundtruth_iterator, robots_[i].raw.ground_truth.end(), [t](const Groundtruth& element) {
 			    return element.time > t;
 			});
 			/* If the element is the first item in the raw values, copy the raw values (no interpolation). This is assuming that the robot was stationary before its ground truth was recorded. */
@@ -467,7 +462,7 @@ void DataExtractor::syncData(const double& sample_period) {
 			));
 
 			/* The same process as above is repeated for the odometry */
-			auto odometry_iterator = std::find_if(robots_[i].raw.odometry.begin(), robots_[i].raw.odometry.end(), [t](const Odometry& element) {
+			odometry_iterator = std::find_if(odometry_iterator, robots_[i].raw.odometry.end(), [t](const Odometry& element) {
 			    return element.time > t;
 			});
 
