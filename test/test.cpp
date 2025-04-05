@@ -38,24 +38,43 @@ bool plotData() {
 
 	data.setDataSet("./data/MRCLAM_Dataset1");
 
-	std::ofstream file("./test/plot_data/GT.txt");
+	std::ofstream robot_file[TOTAL_ROBOTS];
 
-	if (!file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file\n";
-		return false;
-	}
-
-	for (uint8_t i = 0; i < 1; i++) {
-		const auto* robots = data.getRobots();
-
-		std::size_t gt_size = robots[i].raw.ground_truth.size();
-
-		for (std::size_t j = 0; j < gt_size; j++) {
-			file << robots[i].raw.ground_truth[j].x << '\t' << robots[i].raw.ground_truth[j].y << '\t' << i+1 << '\n';
+	for (uint8_t i = 0; i < TOTAL_ROBOTS; i++ ) {
+		const std::string filename = "./test/data/robot" + std::to_string(i) + ".dat";
+		robot_file[i].open(filename);
+		if (!robot_file[i].is_open()) {
+			std::cerr << "[ERROR]: Could not create file\n";
+			return false;
 		}
 	}
 
-	file.close();
+	const auto* robots = data.getRobots();
+	
+	/* Find the largest dataset to be the limitor in the file writing. */
+	std::size_t largest_dataset = 0;
+	for (uint8_t k = 0; k < TOTAL_ROBOTS; k++) {
+		std::size_t robot_dataset_size = robots[k].raw.ground_truth.size();
+
+		if (robot_dataset_size > largest_dataset) {
+			 largest_dataset = robot_dataset_size;
+		}
+	}
+
+	for (std::size_t j = 0; j < largest_dataset; j++) {
+		for (uint8_t i = 0; i < TOTAL_ROBOTS; i++) { 
+			if (j < robots[i].raw.ground_truth.size()) { 
+			      robot_file[i] << robots[i].raw.ground_truth[j].x << '\t' << robots[i].raw.ground_truth[j].y << '\t' << i+1 << '\n' ; 
+			} 
+			else {
+			      robot_file[i] << robots[i].raw.ground_truth.back().x << '\t' << robots[i].raw.ground_truth.back().y << '\t' << i+1 << '\n' ; 
+			}
+		}
+	}
+
+	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		robot_file[i].close();
+	}
 
 	return true;
 }
