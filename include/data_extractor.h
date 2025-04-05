@@ -14,6 +14,7 @@
 #include <stdexcept>	// throw std::runtime_error
 #include <sys/stat.h>	// std::stat
 #include <vector>	// std::vector
+#include <cmath>
 
 #define TOTAL_LANDMARKS 15
 #define TOTAL_ROBOTS 5
@@ -147,9 +148,9 @@ private:
 	void syncData(const double&);
 public:
 	DataExtractor(); 
-	explicit DataExtractor(const std::string&, const double& sampling_period);
+	explicit DataExtractor(const std::string&, const double& sampling_period = 0.02);
 
-	void setDataSet(const std::string&, const double& sampling_period);
+	void setDataSet(const std::string&, const double& sampling_period = 0.02);
 
 	int* getBarcodes();
 	Landmark* getLandmarks();
