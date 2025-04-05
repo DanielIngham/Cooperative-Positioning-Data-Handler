@@ -30,7 +30,7 @@ private:
 	 * @brief Folder location for the dataset.
 	 */
 	std::string dataset_ = "";
-
+	
 	/**
 	 * @brief  List of all barcodes corresponding to the robots and landmarks. 
 	 * @note The index of the element in the array corresponds to its id minus one.
@@ -141,11 +141,14 @@ private:
 	bool readGroundTruth(const std::string&, int);
 	bool readOdometry(const std::string&, int);
 	bool readMeasurements(const std::string&, int);
+
+	bool syncData(double);
 public:
 	DataExtractor(); 
-	explicit DataExtractor(const std::string&);
+	explicit DataExtractor(const std::string&, double);
 
 	void setDataSet(const std::string&);
+	bool setSamplePeriod(double);
 
 	int* getBarcodes();
 	Landmark* getLandmarks();

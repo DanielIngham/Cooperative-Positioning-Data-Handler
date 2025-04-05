@@ -19,8 +19,9 @@ DataExtractor::DataExtractor(){
  * @param[in] path to the dataset folder.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
-DataExtractor::DataExtractor(const std::string& dataset){
+DataExtractor::DataExtractor(const std::string& dataset, double sample_period = 0.02){
 	setDataSet(dataset);
+	syncData(sample_period);
 }
 
 /**
@@ -385,4 +386,13 @@ DataExtractor::Robot* DataExtractor::getRobots() {
 	}
 
 	return robots_;
+}
+
+bool DataExtractor::setSamplePeriod(double sample_period){
+	return false;
+}
+
+bool DataExtractor::syncData(double sample_period) {
+	setSamplePeriod(sample_period);
+	return false;
 }
