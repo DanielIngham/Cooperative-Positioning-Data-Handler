@@ -7,6 +7,7 @@
  */
 
 #include "../include/data_extractor.h"
+#include <iterator>
 
 /**
  * @brief Default constructor.
@@ -254,6 +255,7 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the measurement vector. */
 	robots_[robot_id].raw.measurements.clear();
+	robots_[robot_id].synced.measurements.clear();
 
 	/* Setup file for data extraction */
 	std::string filename = dataset + "/Robot" + std::to_string(robot_id+1) + "_Measurement.dat";
@@ -296,20 +298,7 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 		end_index = line.find('\t', ++end_index);
 		double bearing = std::stod(line.substr(start_index, end_index));
 
-		/* Check if the current time index falls within 0.05 seconds of a previous time index. */
-		auto iterator = std::find_if(robots_[robot_id].raw.measurements.begin(), robots_[robot_id].raw.measurements.end(), [&](const Measurement& index) {
-			return index.time >= time - 0.05 && index.time <= time + 0.05;
-		});
-
-		/* If the timestamp already exists in the vector of measurements, append the current measurment to the timestamp.*/
-		if (iterator != robots_[robot_id].raw.measurements.end()) {
-			iterator->subjects.push_back(subject);
-			iterator->ranges.push_back(range);
-			iterator->bearings.push_back(bearing);
-		}
-		else {
-			robots_[robot_id].raw.measurements.push_back(Measurement(time, subject, range, bearing));
-		}
+		robots_[robot_id].raw.measurements.push_back(Measurement(time, subject, range, bearing));
 	}
 	
 	file.close();
@@ -485,14 +474,33 @@ void DataExtractor::syncData(const double& sample_period) {
 			));
 		}
 
-		for (std::size_t j = 0; j < robots_[i].raw.measurements.size(); j++) {
-			robots_[i].synced.measurements.push_back( Measurement(
-				std::floor(robots_[i].raw.measurements.size() / sample_period + 0.5) * sample_period,
-				robots_[i].raw.measurements[j].subjects,
-				robots_[i].raw.measurements[j].ranges,
-				robots_[i].raw.measurements[j].bearings
-			));
-		}
+		/* Update the timestamps of the the measurments */
+		robots_[i].synced.measurements.push_back( Measurement(
+			std::floor(robots_[i].raw.measurements[0].time / sample_period + 0.5) * sample_period,
+			robots_[i].raw.measurements[0].subjects,
+			robots_[i].raw.measurements[0].ranges,
+			robots_[i].raw.measurements[0].bearings
+		));
 
+		std::vector<Measurement>::iterator iterator = robots_[i].synced.measurements.end() - 1;
+		// std::size_t counter = 0;
+
+		for (std::size_t j = 1; j < robots_[i].raw.measurements.size(); j++) {
+			double synced_time = std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5) * sample_period;
+			if (synced_time == iterator->time) {
+				iterator->subjects.push_back(robots_[i].raw.measurements[j].subjects[0]);
+				iterator->ranges.push_back(robots_[i].raw.measurements[j].ranges[0]);
+				iterator->bearings.push_back(robots_[i].raw.measurements[j].bearings[0]);
+			}
+			else {
+				robots_[i].synced.measurements.push_back( Measurement(
+					std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5) * sample_period,
+					robots_[i].raw.measurements[j].subjects,
+					robots_[i].raw.measurements[j].ranges,
+					robots_[i].raw.measurements[j].bearings
+				));
+				iterator = robots_[i].synced.measurements.end() - 1;
+			}
+		}
 	}
 }
