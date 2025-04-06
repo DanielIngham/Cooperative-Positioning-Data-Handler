@@ -461,13 +461,13 @@ void DataExtractor::syncData(const double& sample_period) {
 				interpolation_factor * (groundtruth_iterator->orientation - (groundtruth_iterator - 1)->orientation) + (groundtruth_iterator - 1)->orientation
 			));
 
-			/* The same process as above is repeated for the odometry */
+			/* The same process as above is repeated for the odometry, except assume the robot is stationary prior to ground truth readings */
 			odometry_iterator = std::find_if(odometry_iterator, robots_[i].raw.odometry.end(), [t](const Odometry& element) {
 			    return element.time > t;
 			});
 
 			if (odometry_iterator == robots_[i].raw.odometry.begin()) {
-				robots_[i].synced.odometry.push_back(Odometry(t, robots_[i].raw.odometry.front().forward_velocity, robots_[i].raw.odometry.front().angular_velocity));
+				robots_[i].synced.odometry.push_back(Odometry(t, 0, 0));
 				continue;
 			}
 			else if (odometry_iterator == robots_[i].raw.odometry.end()) {
@@ -483,7 +483,16 @@ void DataExtractor::syncData(const double& sample_period) {
 				interpolation_factor * (odometry_iterator->forward_velocity - (odometry_iterator - 1)->forward_velocity) + (odometry_iterator - 1)->forward_velocity,
 				interpolation_factor * (odometry_iterator->angular_velocity - (odometry_iterator - 1)->angular_velocity) + (odometry_iterator - 1)->angular_velocity
 			));
-
 		}
+
+		for (std::size_t j = 0; j < robots_[i].raw.measurements.size(); j++) {
+			robots_[i].synced.measurements.push_back( Measurement(
+				std::floor(robots_[i].raw.measurements.size() / sample_period + 0.5) * sample_period,
+				robots_[i].raw.measurements[j].subjects,
+				robots_[i].raw.measurements[j].ranges,
+				robots_[i].raw.measurements[j].bearings
+			));
+		}
+
 	}
 }
