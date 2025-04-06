@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <cstdint>
 #include<iostream>	// std::cout
 #include<fstream>	// std::fstream
 #include <iterator>
@@ -319,6 +320,7 @@ void testInterpolation(bool& flag) {
 		flag = false;
 		return;
 	}
+
 	for (std::size_t i = 0; i < robots[0].synced.odometry.size(); i++) {
 		std::string line;
 		std::getline(file, line); 
@@ -367,6 +369,146 @@ void testInterpolation(bool& flag) {
 		flag = false;
 		return;
 	}
+	/* Check that the number of lines in the file match the number of items in the extracted values. */
+	total_lines = countFileLines("./test/Matlab_output/Robot1_Measurement.csv");
+	if (0 == total_lines) {
+		flag = false;
+		return;
+	}
+
+	std::size_t total_measurements = 0;
+	/* Count the then number of elements in the measurment matrix */ 
+	for (std::size_t i; i < robots[0].synced.measurements.size(); i++) {
+		/* Check all the measurement vectors are the same length */ 
+		if ((robots[0].synced.measurements[i].subjects.size() != robots[0].synced.measurements[i].ranges.size()) || (robots[0].synced.measurements[i].ranges.size() != robots[0].synced.measurements[i].bearings.size())) {
+			std::cerr << "Measurement size mismatch: subjects, ranges, and bearings do not have the same size: " << robots[0].synced.measurements[i].subjects.size() << " : " << robots[0].synced.measurements[i].ranges.size() << " : " << robots[0].synced.measurements[i].bearings.size() << "\n"; 
+			flag = false; 
+			return; 
+		} 
+		total_measurements += robots[0].synced.measurements[i].subjects.size();
+	}
+
+	if (total_lines != total_measurements) {
+		std::cerr << "Total number of interpolated Measurment values does not match Matlab output " << robots[0].synced.measurements.size() << " ≠ " << total_lines << std::endl;
+		flag = false;
+		return;
+	}
+
+	std::string line;
+	std::size_t counter = 0;
+	double current_time = -1.0f;
+
+	std::vector<int> subjects;
+	std::vector<double> ranges;
+	std::vector<double> bearings;
+
+	while (std::getline(file, line)) {
+		
+		/* Ignore Comments */
+		if ('#' == line[0]) {
+			continue;
+		}
+
+		/* Remove whitespaces */
+		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+		
+		std::size_t start_index = 0; 
+		std::size_t end_index = line.find(',', 0);
+		double time = std::stod(line.substr(start_index, end_index));
+		/* Initialise current_time on first iteration. */
+		if (current_time == -1.0f) {
+			current_time = time;
+		}
+		else if (time > current_time) {
+			/* Perform checking on previously populated list */
+			if (std::round((robots[0].synced.measurements[counter].time - current_time ) * 100.0f)/ 100.0f  !=  0 ) {
+				std::cerr << "Interpolation Time Index Error [Line " << counter << "] ./test/Matlab_output/Robot1_Measurement.csv: " << robots[0].synced.measurements[counter].time << " ≠ " << time << std::endl;
+				flag = false;
+				return;
+			}
+
+			if (robots[0].synced.measurements[counter].subjects != subjects) {
+				std::cerr << "List of subjects does not match\n"; 
+				std::cerr << current_time << std::endl;
+				std::cerr << robots[0].synced.measurements[counter].subjects.size() << " : " << subjects.size() << std::endl;
+				for (std::uint8_t i = 0; i < robots[0].synced.measurements[counter].subjects.size(); i++) {
+					std::cout << robots[0].synced.measurements[counter].subjects[i] << '\t';
+				}
+				std::cout << '\n';
+
+				for (std::uint8_t i = 0; i < subjects.size(); i++) {
+					std::cout << subjects[i] << '\t';
+				}
+				std::cout << "\n\n";
+
+				flag = false;
+				return;
+			}
+
+			if (robots[0].synced.measurements[counter].ranges != ranges) {
+				std::cerr << "List of ranges does not match\n"; 
+				flag = false;
+				return;
+			}
+
+			if (robots[0].synced.measurements[counter].ranges != ranges) {
+				std::cerr << "List of bearings does not match\n"; 
+				flag = false;
+				return;
+			}
+
+			/* Clear vectors */
+			subjects.clear();
+			ranges.clear();
+			bearings.clear();
+
+			/* Update the current timestep */
+			current_time = time;
+			counter++;
+		}
+
+		start_index = end_index + 1;
+		end_index = line.find(',', start_index);
+		subjects.push_back(std::stod(line.substr(start_index, end_index - start_index)));
+
+		start_index = end_index + 1;
+		end_index = line.find(',', start_index);
+		ranges.push_back(std::stod(line.substr(start_index, end_index - start_index)));
+
+		start_index = end_index + 1;
+		end_index = line.find(',', start_index);
+		bearings.push_back(std::stod(line.substr(start_index, end_index - start_index)));
+	}
+
+}
+
+void writeMeasurements() {
+	DataExtractor data;
+
+	data.setDataSet("./data/MRCLAM_Dataset1");
+
+	std::ofstream robot_file;
+
+	const std::string filename = "./test/data/measurement_robot" + std::to_string(1) + ".dat";
+	robot_file.open(filename);
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file\n";
+		return;
+	}
+
+	const auto* robots = data.getRobots();
+	
+	for (std::size_t j = 0; j < robots[0].raw.measurements.size(); j++) {
+		robot_file << robots[0].raw.measurements[j].time << '\t'; 
+		for (std::size_t i = 0; i < robots[0].raw.measurements[j].subjects.size(); i++) { 
+		      robot_file << robots[0].raw.measurements[j].subjects[i] << '\t'; 
+		}
+		robot_file << '\n';
+	}
+
+	robot_file.close();
+
+	return;
 }
 
 int main() {
@@ -375,42 +517,43 @@ int main() {
 	std::cout<< "Number of treads supported: " << std::thread::hardware_concurrency() << std::endl;
 
 	/* Loop through every MRCLAM data set and check if the file extraction was successful. */
-	// bool barcodes_set = true;
-	// bool correct_landmark_barcode = true;
-	// bool correct_groundtruth = true;
-	// bool correct_odometry = true;
-	// bool correct_measurements = true;
-	//
-	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
-	//
-	// unit_test_1.join();
-	// unit_test_2.join();
-	// unit_test_3.join();
-	// unit_test_4.join();
-	// unit_test_5.join();
-	//
-	// barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cerr << "[FAIL] All barcodes were not set.\n"  ;
-	//
-	// correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cerr << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
-	//
-	// correct_groundtruth ? std::cout << "[PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
-	//
-	// correct_odometry ? std::cout << "[PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
-	//
-	// correct_measurements ? std::cout << "[PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
-	//
-	// bool plot = false;
-	// plotData();
-
+	bool barcodes_set = true;
+	bool correct_landmark_barcode = true;
+	bool correct_groundtruth = true;
+	bool correct_odometry = true;
+	bool correct_measurements = true;
 	bool correct_interpolation = true;
+
+	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
 	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
+
+	unit_test_1.join();
+	unit_test_2.join();
+	unit_test_3.join();
+	unit_test_4.join();
+	unit_test_5.join();
 	unit_test_6.join();
 
-	correct_interpolation ? std::cout << "[PASS] All raw extracted values were correctly interpolated\n" : std::cerr << "[FAIL] Raw extraced values were not correctly interpolated\n";
+	barcodes_set ? std::cout << "[U1 PASS] All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
+
+	correct_landmark_barcode ? std::cout << "[U2 PASS] All landmarks have the correct barcodes.\n" : std::cerr << "[U2 FAIL] Landmarks do not have the correct barcodes.\n"  ;
+
+	correct_groundtruth ? std::cout << "[U3 PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cerr << "[U3 FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
+
+	correct_odometry ? std::cout << "[U4 PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cerr << "[U3 FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
+
+	correct_measurements ? std::cout << "[U5 PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cerr << "[U5 FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
+
+	// bool plot = false;
+	// plotData();
+	// writeMeasurements();
+
+
+	correct_interpolation ? std::cout << "[U6 PASS] All raw extracted values were correctly interpolated\n" : std::cerr << "[U6 FAIL] Raw extraced values were not correctly interpolated\n";
 
 	// plot ? std::cout << "[PASS] Plot saved.\n" : std::cerr << "[FAIL] Failed to save plot.\n";
 
