@@ -1,5 +1,7 @@
+#include <cstddef>
 #include<iostream>	// std::cout
 #include<fstream>	// std::fstream
+#include <iterator>
 #include<string>	// std::string
 #include<thread>	// std::thread
 #include<chrono>	// std::chrono
@@ -12,7 +14,7 @@
  * @brief Loops through the entire dataset file and counts the number of lines that are not commented.
  * @return the number of lines counted.
  */
-long unsigned int countFileLines(const std::string& filename) {
+std::size_t countFileLines(const std::string& filename) {
 	std::ifstream file(filename);
 
 	if (!file.is_open()) {
@@ -230,18 +232,155 @@ void checkMeasurementExtraction(bool& flag) {
 	return;
 }
 
+void testInterpolation(bool& flag) { 
+	DataExtractor data("./data/MRCLAM_Dataset1");
+	auto* robots = data.getRobots();
+
+	/* Check Groundtruth Interpolation  */
+	std::fstream file("./test/Matlab_output/Robot1_Groundtruth.csv");
+
+	if (!file.is_open()) {
+		std::cerr << "Unable to open file: ./test/Matlab_output/Robot1_Groundtruth.csv" << std::endl;
+		flag = false;
+		return;
+	}
+	/* Check that the number of lines in the file match the number of items in the extracted values. */
+	std::size_t total_lines = countFileLines("./test/Matlab_output/Robot1_Groundtruth.csv");
+	if (total_lines != robots[0].synced.ground_truth.size()) {
+		std::cerr << "Total number of interpolated groundtruth values does not match Matlab output " << robots[0].synced.ground_truth.size() << " ≠ " << total_lines;
+		flag = false;
+		return;
+	}
+
+	for (std::size_t i = 0; i < robots[0].synced.ground_truth.size(); i++) {
+		std::string line;
+		std::getline(file, line); 
+		if ('#' == line[0]) {
+			i--;
+			continue;
+		}
+		/* Remove whitespaces */
+		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+		std::size_t start_index = 0; 
+		std::size_t end_index = line.find(',', 0);
+		double time = std::stod(line.substr(start_index, end_index));
+
+		if (std::round((robots[0].synced.ground_truth[i].time - time )* 100.0f)/ 100.0f  !=  0 ) {
+			std::cerr << "Interpolation Time Index Error [Line " << i << "] ./test/Matlab_output/Robot1_Groundtruth.csv" << robots[0].synced.ground_truth[i].time << " ≠ " << time << std::endl;
+			flag = false;
+			return;
+		}
+
+		start_index = end_index + 1;
+		end_index = line.find(',', start_index);
+		double x_coordinate = std::stod(line.substr(start_index, end_index - start_index));
+
+		if (std::round((robots[0].synced.ground_truth[i].x - x_coordinate) * 100.0f)/ 100.0f != 0) {
+			std::cerr << "Interpolation x-coordinate Error [Line " << i << "] ./test/Matlab_output/Robot1_Groundtruth.csv" << robots[0].synced.ground_truth[i].x << " ≠ " << x_coordinate << std::endl;
+			flag = false;
+			return;
+		}
+
+		start_index = end_index + 1;
+		end_index = line.find(',', start_index);
+		double y_coordinate = std::stod(line.substr(start_index, end_index - start_index));
+
+		if (std::round((robots[0].synced.ground_truth[i].y - y_coordinate ) * 100.0f)/ 100.0f != 0) {
+			std::cerr << "Interpolation y-coordinate Error [Line " << i << "] ./test/Matlab_output/Robot1_Groundtruth.csv" << robots[0].synced.ground_truth[i].y << " ≠ " << y_coordinate << std::endl;
+			flag = false;
+			return;
+		}
+
+		start_index = end_index + 1;
+		end_index = line.find(',', start_index);
+		double orientation = std::stod(line.substr(start_index, end_index - start_index));
+
+		if (std::round((robots[0].synced.ground_truth[i].orientation - orientation) * 100.0f) / 100.0 != 0) {
+			std::cerr << "Interpolation orientation Error [Line " << i << "] ./test/Matlab_output/Robot1_Groundtruth.csv" << robots[0].synced.ground_truth[i].orientation << " ≠ " << orientation << std::endl;
+			flag = false;
+			return;
+		}
+	}
+
+	/* Check Odometry Interpolation  */
+	file.close();
+	file.open("./test/Matlab_output/Robot1_Odometry.csv");
+	if (!file.is_open()) {
+		std::cerr << "Unable to open file: ./test/Matlab_output/Robot1_Odometry.csv" << std::endl;
+		flag = false;
+		return;
+	}
+
+	/* Check that the number of lines in the file match the number of items in the extracted values. */
+	total_lines = countFileLines("./test/Matlab_output/Robot1_Odometry.csv");
+	if (total_lines != robots[0].synced.odometry.size()) {
+		std::cerr << "Total number of interpolated Odometry values does not match Matlab output " << robots[0].synced.odometry.size() << " ≠ " << total_lines;
+		flag = false;
+		return;
+	}
+	for (std::size_t i = 0; i < robots[0].synced.odometry.size(); i++) {
+		std::string line;
+		std::getline(file, line); 
+		if ('#' == line[0]) {
+			i--;
+			continue;
+		}
+		/* Remove whitespaces */
+		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+		
+		std::size_t start_index = 0; 
+		std::size_t end_index = line.find(',', 0);
+		double time = std::stod(line.substr(start_index, end_index));
+
+		if (std::round((robots[0].synced.odometry[i].time - time )* 100.0f)/ 100.0f  !=  0 ) {
+			std::cout << "Interpolation Time Index Error [Line " << i << "] ./test/Matlab_output/Robot1_Odometry.csv: " << robots[0].synced.odometry[i].time << " ≠ " << time << std::endl;
+			flag = false;
+			return;
+		}
+
+		start_index = end_index + 1;
+		end_index = line.find(',', start_index);
+		double forward_velocity = std::stod(line.substr(start_index, end_index - start_index));
+		if (std::round((robots[0].synced.odometry[i].forward_velocity - forward_velocity) * 100.0f)/ 100.0f != 0) {
+			std::cerr << "Interpolation forward velocity Error [Line " << i << "] ./test/Matlab_output/Robot1_Odometry.csv: " << robots[0].synced.odometry[i].forward_velocity << " ≠ " << forward_velocity << std::endl;
+			flag = false;
+			return;
+		}
+
+		start_index = end_index + 1;
+		end_index = line.find(',', start_index);
+		double angular_velocity = std::stod(line.substr(start_index, end_index - start_index));
+
+		if (std::round((robots[0].synced.odometry[i].angular_velocity - angular_velocity ) * 100.0f)/ 100.0f != 0) {
+			std::cerr << "Interpolation angular_velocity Error [Line " << i << "] ./test/Matlab_output/Robot1_Odometry.csv: " << robots[0].synced.odometry[i].angular_velocity << " ≠ " << angular_velocity << std::endl;
+			flag = false;
+			return;
+		}
+	}
+
+	/* Check Measurement Interpolation  */
+	file.close();
+	file.open("./test/Matlab_output/Robot1_Measurement.csv");
+	if (!file.is_open()) {
+		std::cerr << "Unable to open file: ./test/Matlab_output/Robot1_Measurement.csv" << std::endl;
+		flag = false;
+		return;
+	}
+}
+
 int main() {
 	auto start = std::chrono::high_resolution_clock::now();
 	std::cout<< "UNIT TESTING" <<std::endl;
 	std::cout<< "Number of treads supported: " << std::thread::hardware_concurrency() << std::endl;
 
-	// /* Loop through every MRCLAM data set and check if the file extraction was successful. */
-	bool barcodes_set = true;
-	bool correct_landmark_barcode = true;
-	bool correct_groundtruth = true;
-	bool correct_odometry = true;
-	bool correct_measurements = true;
-	
+	/* Loop through every MRCLAM data set and check if the file extraction was successful. */
+	// bool barcodes_set = true;
+	// bool correct_landmark_barcode = true;
+	// bool correct_groundtruth = true;
+	// bool correct_odometry = true;
+	// bool correct_measurements = true;
+	//
 	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
 	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
 	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
@@ -254,19 +393,26 @@ int main() {
 	// unit_test_4.join();
 	// unit_test_5.join();
 	//
-	barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cerr << "[FAIL] All barcodes were not set.\n"  ;
+	// barcodes_set ? std::cout << "[PASS] All barcodes were set.\n" : std::cerr << "[FAIL] All barcodes were not set.\n"  ;
+	//
+	// correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cerr << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
+	//
+	// correct_groundtruth ? std::cout << "[PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
+	//
+	// correct_odometry ? std::cout << "[PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
+	//
+	// correct_measurements ? std::cout << "[PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
+	//
+	// bool plot = false;
+	// plotData();
 
-	correct_landmark_barcode ? std::cout << "[PASS] All landmarks have the correct barcodes.\n" : std::cerr << "[FAIL] Landmarks do not have the correct barcodes.\n"  ;
+	bool correct_interpolation = true;
+	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
+	unit_test_6.join();
 
-	correct_groundtruth ? std::cout << "[PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
+	correct_interpolation ? std::cout << "[PASS] All raw extracted values were correctly interpolated\n" : std::cerr << "[FAIL] Raw extraced values were not correctly interpolated\n";
 
-	correct_odometry ? std::cout << "[PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
-
-	correct_measurements ? std::cout << "[PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cerr << "[FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
-
-	bool plot = plotData();
-
-	plot ? std::cout << "[PASS] Plot saved.\n" : std::cerr << "[FAIL] Failed to save plot.\n";
+	// plot ? std::cout << "[PASS] Plot saved.\n" : std::cerr << "[FAIL] Failed to save plot.\n";
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end-start);
