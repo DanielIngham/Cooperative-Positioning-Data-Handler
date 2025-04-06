@@ -14,7 +14,7 @@
 #include <stdexcept>	// throw std::runtime_error
 #include <sys/stat.h>	// std::stat
 #include <vector>	// std::vector
-#include <cmath>
+#include <cmath>	// std::floor
 
 #define TOTAL_LANDMARKS 15
 #define TOTAL_ROBOTS 5
@@ -93,7 +93,7 @@ private:
 		/** 
 		 * @brief Constructor for convenient population of DataExtractor::robots_.raw.odometry .
 		 */
-		Odometry(double time_, double forward_velocity_, double angular_velocity_): time(time_), forward_velocity(forward_velocity_), angular_velocity(angular_velocity_) {} 
+		Odometry(double time_, double forward_velocity_, double angular_velocity_): time(time_), forward_velocity(forward_velocity_), angular_velocity(angular_velocity_) {} ;
 	};
 
 	/**
@@ -106,6 +106,7 @@ private:
 		std::vector<double> ranges;	///< The measured ranges to the subjects [m]
 		std::vector<double> bearings;	///< The bearings from the subjects [rad]
 
+		Measurement(double time_,  std::vector<int> subjects_, std::vector<double> ranges_, std::vector<double> bearings_): time(time_), subjects(subjects_), ranges(ranges_), bearings(bearings_) {};
 		/** 
 		 * @brief Constructor for convenient population of DataExtractor::robots_.raw.measurements .
 		 */
@@ -113,7 +114,7 @@ private:
 			subjects.push_back(subject_);
 			ranges.push_back(range_);
 			bearings.push_back(bearing_);
-		}
+		};
 	};
 
 	/**
