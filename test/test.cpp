@@ -477,7 +477,7 @@ void testInterpolation(bool& flag) {
 					return;
 				}
 
-				if (robots[k].synced.measurements[counter].ranges != ranges) {
+				if (robots[k].synced.measurements[counter].bearings != bearings) {
 					std::cerr << "List of bearings does not match\n"; 
 					flag = false;
 					return;
@@ -522,19 +522,19 @@ int main() {
 	bool correct_measurements = true;
 	bool correct_interpolation = true;
 
-	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
-	// std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
-	//
-	// unit_test_1.join();
-	// unit_test_2.join();
-	// unit_test_3.join();
-	// unit_test_4.join();
-	// unit_test_5.join();
-	// unit_test_6.join();
+	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
+
+	unit_test_1.join();
+	unit_test_2.join();
+	unit_test_3.join();
+	unit_test_4.join();
+	unit_test_5.join();
+	unit_test_6.join();
 
 	barcodes_set ? std::cout << "[U1 PASS] All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
 
@@ -553,10 +553,6 @@ int main() {
 
 	// plot ? std::cout << "[PASS] Plot saved.\n" : std::cerr << "[FAIL] Failed to save plot.\n";
 	
-	DataExtractor data("./data/MRCLAM_Dataset1");
-	auto robots = data.getRobots();
-	std::cout << robots[0].raw.ground_truth.size() << std::endl;
-	std::cout << robots[0].synced.ground_truth.size() << std::endl;
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end-start);
