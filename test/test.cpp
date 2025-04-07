@@ -233,253 +233,263 @@ void checkMeasurementExtraction(bool& flag) {
 	return;
 }
 
+/**
+ * Unit Test 6: Test Intepolation values against the ones extracted from the matlab script.
+ */
 void testInterpolation(bool& flag) { 
 	DataExtractor data("./data/MRCLAM_Dataset1");
 	auto* robots = data.getRobots();
 
-	/* Check Groundtruth Interpolation  */
-	std::fstream file("./test/Matlab_output/Robot1_Groundtruth.csv");
+	for (std::uint8_t k = 0; k < TOTAL_ROBOTS; k++) {
 
-	if (!file.is_open()) {
-		std::cerr << "Unable to open file: ./test/Matlab_output/Robot1_Groundtruth.csv" << std::endl;
-		flag = false;
-		return;
-	}
-	/* Check that the number of lines in the file match the number of items in the extracted values. */
-	std::size_t total_lines = countFileLines("./test/Matlab_output/Robot1_Groundtruth.csv");
-	if (total_lines != robots[0].synced.ground_truth.size()) {
-		std::cerr << "Total number of interpolated groundtruth values does not match Matlab output " << robots[0].synced.ground_truth.size() << " ≠ " << total_lines;
-		flag = false;
-		return;
-	}
+		/* Check Groundtruth Interpolation  */
+		std::string filename = "./test/Matlab_output/Robot" + std::to_string(k+ 1) + "_Groundtruth.csv";
+		std::fstream file(filename);
 
-	for (std::size_t i = 0; i < robots[0].synced.ground_truth.size(); i++) {
+		if (!file.is_open()) {
+			std::cerr << "Unable to open file: " << filename << std::endl;
+			flag = false;
+			return;
+		}
+
+		/* Check that the number of lines in the file match the number of items in the extracted values. */
+		std::size_t total_lines = countFileLines(filename);
+		if (total_lines != robots[k].synced.ground_truth.size()) {
+			std::cerr << "Total number of interpolated groundtruth values does not match Matlab output " << robots[k].synced.ground_truth.size() << " ≠ " << total_lines <<". File: " << filename << std::endl;
+			flag = false;
+			return;
+		}
+
+		for (std::size_t i = 0; i < robots[k].synced.ground_truth.size(); i++) {
+			std::string line;
+			std::getline(file, line); 
+			if ('#' == line[0]) {
+				i--;
+				continue;
+			}
+			/* Remove whitespaces */
+			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+			std::size_t start_index = 0; 
+			std::size_t end_index = line.find(',', 0);
+			double time = std::stod(line.substr(start_index, end_index));
+
+			if (std::round((robots[k].synced.ground_truth[i].time - time )* 100.0f)/ 100.0f  !=  0 ) {
+				std::cerr << "Interpolation Time Index Error [Line " << i << "] " << filename << ": " << robots[k].synced.ground_truth[i].time << " ≠ " << time << std::endl;
+				flag = false;
+				return;
+			}
+
+			start_index = end_index + 1;
+			end_index = line.find(',', start_index);
+			double x_coordinate = std::stod(line.substr(start_index, end_index - start_index));
+
+			if (std::round((robots[k].synced.ground_truth[i].x - x_coordinate) * 100.0f)/ 100.0f != 0) {
+				std::cerr << "Interpolation x-coordinate Error [Line " << i << "] " << filename << ": " << robots[k].synced.ground_truth[i].x << " ≠ " << x_coordinate << std::endl;
+				flag = false;
+				return;
+			}
+
+			start_index = end_index + 1;
+			end_index = line.find(',', start_index);
+			double y_coordinate = std::stod(line.substr(start_index, end_index - start_index));
+
+			if (std::round((robots[k].synced.ground_truth[i].y - y_coordinate ) * 100.0f)/ 100.0f != 0) {
+				std::cerr << "Interpolation y-coordinate Error [Line " << i << "] " << filename << ": "<< robots[k].synced.ground_truth[i].y << " ≠ " << y_coordinate << std::endl;
+				flag = false;
+				return;
+			}
+
+			start_index = end_index + 1;
+			end_index = line.find(',', start_index);
+			double orientation = std::stod(line.substr(start_index, end_index - start_index));
+
+			if (std::round((robots[k].synced.ground_truth[i].orientation - orientation) * 100.0f) / 100.0 != 0) {
+				std::cerr << "Interpolation orientation Error [Line " << i << "] " << filename << ":" << robots[k].synced.ground_truth[i].orientation << " ≠ " << orientation << std::endl;
+				flag = false;
+				return;
+			}
+		}
+
+		/* Check Odometry Interpolation */
+		file.close();
+		filename = "./test/Matlab_output/Robot" + std::to_string(k + 1) + "_Odometry.csv";
+		file.open(filename);
+		if (!file.is_open()) {
+			std::cerr << "Unable to open file: " << filename << std::endl;
+			flag = false;
+			return;
+		}
+
+		/* Check that the number of lines in the file match the number of items in the extracted values. */
+		total_lines = countFileLines(filename);
+		if (total_lines != robots[k].synced.odometry.size()) {
+			std::cerr << "Total number of interpolated Odometry values does not match Matlab output " << robots[k].synced.odometry.size() << " ≠ " << total_lines << " . File: " << filename;
+			flag = false;
+			return;
+		}
+
+		for (std::size_t i = 0; i < robots[k].synced.odometry.size(); i++) {
+			std::string line;
+			std::getline(file, line); 
+			if ('#' == line[0]) {
+				i--;
+				continue;
+			}
+			/* Remove whitespaces */
+			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+			
+			std::size_t start_index = 0; 
+			std::size_t end_index = line.find(',', 0);
+			double time = std::stod(line.substr(start_index, end_index));
+
+			if (std::round((robots[k].synced.odometry[i].time - time )* 100.0f)/ 100.0f  !=  0 ) {
+				std::cout << "Interpolation Time Index Error [Line " << i << "] " << filename << ": " << robots[k].synced.odometry[i].time << " ≠ " << time << std::endl;
+				flag = false;
+				return;
+			}
+
+			start_index = end_index + 1;
+			end_index = line.find(',', start_index);
+			double forward_velocity = std::stod(line.substr(start_index, end_index - start_index));
+			if (std::round((robots[k].synced.odometry[i].forward_velocity - forward_velocity) * 100.0f)/ 100.0f != 0) {
+				std::cerr << "Interpolation forward velocity Error [Line " << i << "] " << filename << ": " << robots[k].synced.odometry[i].forward_velocity << " ≠ " << forward_velocity << std::endl;
+				flag = false;
+				return;
+			}
+
+			start_index = end_index + 1;
+			end_index = line.find(',', start_index);
+			double angular_velocity = std::stod(line.substr(start_index, end_index - start_index));
+
+			if (std::round((robots[k].synced.odometry[i].angular_velocity - angular_velocity ) * 100.0f)/ 100.0f != 0) {
+				std::cerr << "Interpolation angular velocity Error [Line " << i << "] " << filename << ": " << robots[k].synced.odometry[i].angular_velocity << " ≠ " << angular_velocity << std::endl;
+				flag = false;
+				return;
+			}
+		}
+
+		/* Check Measurement Interpolation  */
+		file.close();
+		filename = "./test/Matlab_output/Robot" + std::to_string(k + 1) + "_Measurement.csv";
+		file.open(filename);
+		if (!file.is_open()) {
+			std::cerr << "Unable to open file: " << filename << std::endl;
+			flag = false;
+			return;
+		}
+		/* Check that the number of lines in the file match the number of items in the extracted values. */
+		total_lines = countFileLines(filename);
+		if (0 == total_lines) {
+			flag = false;
+			return;
+		}
+
+		std::size_t total_measurements = 0;
+		/* Count the then number of elements in the measurment matrix */ 
+		for (std::size_t i = 0; i < robots[k].synced.measurements.size(); i++) {
+			/* Check all the measurement vectors are the same length */ 
+			if ((robots[k].synced.measurements[i].subjects.size() != robots[k].synced.measurements[i].ranges.size()) || (robots[k].synced.measurements[i].ranges.size() != robots[k].synced.measurements[i].bearings.size())) {
+				std::cerr << "Measurement size mismatch: subjects, ranges, and bearings do not have the same size: " << robots[k].synced.measurements[i].subjects.size() << " : " << robots[k].synced.measurements[i].ranges.size() << " : " << robots[k].synced.measurements[i].bearings.size() << "\n"; 
+				flag = false; 
+				return; 
+			} 
+
+			total_measurements += robots[k].synced.measurements[i].subjects.size();
+		}
+
+		if (total_lines != total_measurements) {
+			std::cerr << "Total number of interpolated Measurment values does not match Matlab output " << total_measurements << " ≠ " << total_lines << filename <<  std::endl;
+			flag = false;
+			return;
+		}
+
 		std::string line;
-		std::getline(file, line); 
-		if ('#' == line[0]) {
-			i--;
-			continue;
-		}
-		/* Remove whitespaces */
-		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+		std::size_t counter = 0;
+		double current_time = -1.0f;
 
-		std::size_t start_index = 0; 
-		std::size_t end_index = line.find(',', 0);
-		double time = std::stod(line.substr(start_index, end_index));
+		std::vector<int> subjects;
+		std::vector<double> ranges;
+		std::vector<double> bearings;
 
-		if (std::round((robots[0].synced.ground_truth[i].time - time )* 100.0f)/ 100.0f  !=  0 ) {
-			std::cerr << "Interpolation Time Index Error [Line " << i << "] ./test/Matlab_output/Robot1_Groundtruth.csv" << robots[0].synced.ground_truth[i].time << " ≠ " << time << std::endl;
-			flag = false;
-			return;
-		}
-
-		start_index = end_index + 1;
-		end_index = line.find(',', start_index);
-		double x_coordinate = std::stod(line.substr(start_index, end_index - start_index));
-
-		if (std::round((robots[0].synced.ground_truth[i].x - x_coordinate) * 100.0f)/ 100.0f != 0) {
-			std::cerr << "Interpolation x-coordinate Error [Line " << i << "] ./test/Matlab_output/Robot1_Groundtruth.csv" << robots[0].synced.ground_truth[i].x << " ≠ " << x_coordinate << std::endl;
-			flag = false;
-			return;
-		}
-
-		start_index = end_index + 1;
-		end_index = line.find(',', start_index);
-		double y_coordinate = std::stod(line.substr(start_index, end_index - start_index));
-
-		if (std::round((robots[0].synced.ground_truth[i].y - y_coordinate ) * 100.0f)/ 100.0f != 0) {
-			std::cerr << "Interpolation y-coordinate Error [Line " << i << "] ./test/Matlab_output/Robot1_Groundtruth.csv" << robots[0].synced.ground_truth[i].y << " ≠ " << y_coordinate << std::endl;
-			flag = false;
-			return;
-		}
-
-		start_index = end_index + 1;
-		end_index = line.find(',', start_index);
-		double orientation = std::stod(line.substr(start_index, end_index - start_index));
-
-		if (std::round((robots[0].synced.ground_truth[i].orientation - orientation) * 100.0f) / 100.0 != 0) {
-			std::cerr << "Interpolation orientation Error [Line " << i << "] ./test/Matlab_output/Robot1_Groundtruth.csv" << robots[0].synced.ground_truth[i].orientation << " ≠ " << orientation << std::endl;
-			flag = false;
-			return;
-		}
-	}
-
-	/* Check Odometry Interpolation  */
-	file.close();
-	file.open("./test/Matlab_output/Robot1_Odometry.csv");
-	if (!file.is_open()) {
-		std::cerr << "Unable to open file: ./test/Matlab_output/Robot1_Odometry.csv" << std::endl;
-		flag = false;
-		return;
-	}
-
-	/* Check that the number of lines in the file match the number of items in the extracted values. */
-	total_lines = countFileLines("./test/Matlab_output/Robot1_Odometry.csv");
-	if (total_lines != robots[0].synced.odometry.size()) {
-		std::cerr << "Total number of interpolated Odometry values does not match Matlab output " << robots[0].synced.odometry.size() << " ≠ " << total_lines;
-		flag = false;
-		return;
-	}
-
-	for (std::size_t i = 0; i < robots[0].synced.odometry.size(); i++) {
-		std::string line;
-		std::getline(file, line); 
-		if ('#' == line[0]) {
-			i--;
-			continue;
-		}
-		/* Remove whitespaces */
-		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-		
-		std::size_t start_index = 0; 
-		std::size_t end_index = line.find(',', 0);
-		double time = std::stod(line.substr(start_index, end_index));
-
-		if (std::round((robots[0].synced.odometry[i].time - time )* 100.0f)/ 100.0f  !=  0 ) {
-			std::cout << "Interpolation Time Index Error [Line " << i << "] ./test/Matlab_output/Robot1_Odometry.csv: " << robots[0].synced.odometry[i].time << " ≠ " << time << std::endl;
-			flag = false;
-			return;
-		}
-
-		start_index = end_index + 1;
-		end_index = line.find(',', start_index);
-		double forward_velocity = std::stod(line.substr(start_index, end_index - start_index));
-		if (std::round((robots[0].synced.odometry[i].forward_velocity - forward_velocity) * 100.0f)/ 100.0f != 0) {
-			std::cerr << "Interpolation forward velocity Error [Line " << i << "] ./test/Matlab_output/Robot1_Odometry.csv: " << robots[0].synced.odometry[i].forward_velocity << " ≠ " << forward_velocity << std::endl;
-			flag = false;
-			return;
-		}
-
-		start_index = end_index + 1;
-		end_index = line.find(',', start_index);
-		double angular_velocity = std::stod(line.substr(start_index, end_index - start_index));
-
-		if (std::round((robots[0].synced.odometry[i].angular_velocity - angular_velocity ) * 100.0f)/ 100.0f != 0) {
-			std::cerr << "Interpolation angular_velocity Error [Line " << i << "] ./test/Matlab_output/Robot1_Odometry.csv: " << robots[0].synced.odometry[i].angular_velocity << " ≠ " << angular_velocity << std::endl;
-			flag = false;
-			return;
-		}
-	}
-
-	/* Check Measurement Interpolation  */
-	file.close();
-	file.open("./test/Matlab_output/Robot1_Measurement.csv");
-	if (!file.is_open()) {
-		std::cerr << "Unable to open file: ./test/Matlab_output/Robot1_Measurement.csv" << std::endl;
-		flag = false;
-		return;
-	}
-	/* Check that the number of lines in the file match the number of items in the extracted values. */
-	total_lines = countFileLines("./test/Matlab_output/Robot1_Measurement.csv");
-	if (0 == total_lines) {
-		flag = false;
-		return;
-	}
-
-	std::size_t total_measurements = 0;
-	/* Count the then number of elements in the measurment matrix */ 
-	for (std::size_t i; i < robots[0].synced.measurements.size(); i++) {
-		/* Check all the measurement vectors are the same length */ 
-		if ((robots[0].synced.measurements[i].subjects.size() != robots[0].synced.measurements[i].ranges.size()) || (robots[0].synced.measurements[i].ranges.size() != robots[0].synced.measurements[i].bearings.size())) {
-			std::cerr << "Measurement size mismatch: subjects, ranges, and bearings do not have the same size: " << robots[0].synced.measurements[i].subjects.size() << " : " << robots[0].synced.measurements[i].ranges.size() << " : " << robots[0].synced.measurements[i].bearings.size() << "\n"; 
-			flag = false; 
-			return; 
-		} 
-		total_measurements += robots[0].synced.measurements[i].subjects.size();
-	}
-
-	if (total_lines != total_measurements) {
-		std::cerr << "Total number of interpolated Measurment values does not match Matlab output " << robots[0].synced.measurements.size() << " ≠ " << total_lines << std::endl;
-		flag = false;
-		return;
-	}
-
-	std::string line;
-	std::size_t counter = 0;
-	double current_time = -1.0f;
-
-	std::vector<int> subjects;
-	std::vector<double> ranges;
-	std::vector<double> bearings;
-
-	while (std::getline(file, line)) {
-		
-		/* Ignore Comments */
-		if ('#' == line[0]) {
-			continue;
-		}
-
-		/* Remove whitespaces */
-		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-		
-		std::size_t start_index = 0; 
-		std::size_t end_index = line.find(',', 0);
-		double time = std::stod(line.substr(start_index, end_index));
-		/* Initialise current_time on first iteration. */
-		if (current_time == -1.0f) {
-			current_time = time;
-		}
-		else if (time > current_time) {
-			/* Perform checking on previously populated list */
-			if (std::round((robots[0].synced.measurements[counter].time - current_time ) * 100.0f)/ 100.0f  !=  0 ) {
-				std::cerr << "Interpolation Time Index Error [Line " << counter << "] ./test/Matlab_output/Robot1_Measurement.csv: " << robots[0].synced.measurements[counter].time << " ≠ " << time << std::endl;
-				flag = false;
-				return;
+		while (std::getline(file, line)) {
+			
+			/* Ignore Comments */
+			if ('#' == line[0]) {
+				continue;
 			}
 
-			if (robots[0].synced.measurements[counter].subjects != subjects) {
-				std::cerr << "List of subjects does not match\n"; 
-				std::cerr << current_time << std::endl;
-				std::cerr << robots[0].synced.measurements[counter].subjects.size() << " : " << subjects.size() << std::endl;
-				for (std::uint8_t i = 0; i < robots[0].synced.measurements[counter].subjects.size(); i++) {
-					std::cout << robots[0].synced.measurements[counter].subjects[i] << '\t';
+			/* Remove whitespaces */
+			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+			
+			std::size_t start_index = 0; 
+			std::size_t end_index = line.find(',', 0);
+			double time = std::stod(line.substr(start_index, end_index));
+			/* Initialise current_time on first iteration. */
+			if (current_time == -1.0f) {
+				current_time = time;
+			}
+			else if (time > current_time) {
+				/* Perform checking on previously populated list */
+				if (std::round((robots[k].synced.measurements[counter].time - current_time ) * 100.0f)/ 100.0f  !=  0 ) {
+					std::cerr << "Interpolation Time Index Error [Line " << counter << "] ./test/Matlab_output/Robot1_Measurement.csv: " << robots[k].synced.measurements[counter].time << " ≠ " << time << std::endl;
+					flag = false;
+					return;
 				}
-				std::cout << '\n';
 
-				for (std::uint8_t i = 0; i < subjects.size(); i++) {
-					std::cout << subjects[i] << '\t';
+				if (robots[k].synced.measurements[counter].subjects != subjects) {
+					std::cerr << "List of subjects does not match\n"; 
+					std::cerr << current_time << std::endl;
+					std::cerr << robots[k].synced.measurements[counter].subjects.size() << " : " << subjects.size() << std::endl;
+					for (std::uint8_t i = 0; i < robots[k].synced.measurements[counter].subjects.size(); i++) {
+						std::cout << robots[k].synced.measurements[counter].subjects[i] << '\t';
+					}
+					std::cout << '\n';
+
+					for (std::uint8_t i = 0; i < subjects.size(); i++) {
+						std::cout << subjects[i] << '\t';
+					}
+					std::cout << "\n\n";
+
+					flag = false;
+					return;
 				}
-				std::cout << "\n\n";
 
-				flag = false;
-				return;
+				if (robots[k].synced.measurements[counter].ranges != ranges) {
+					std::cerr << "List of ranges does not match\n"; 
+					flag = false;
+					return;
+				}
+
+				if (robots[k].synced.measurements[counter].ranges != ranges) {
+					std::cerr << "List of bearings does not match\n"; 
+					flag = false;
+					return;
+				}
+
+				/* Clear vectors */
+				subjects.clear();
+				ranges.clear();
+				bearings.clear();
+
+				/* Update the current timestep */
+				current_time = time;
+				counter++;
 			}
 
-			if (robots[0].synced.measurements[counter].ranges != ranges) {
-				std::cerr << "List of ranges does not match\n"; 
-				flag = false;
-				return;
-			}
+			start_index = end_index + 1;
+			end_index = line.find(',', start_index);
+			subjects.push_back(std::stod(line.substr(start_index, end_index - start_index)));
 
-			if (robots[0].synced.measurements[counter].ranges != ranges) {
-				std::cerr << "List of bearings does not match\n"; 
-				flag = false;
-				return;
-			}
+			start_index = end_index + 1;
+			end_index = line.find(',', start_index);
+			ranges.push_back(std::stod(line.substr(start_index, end_index - start_index)));
 
-			/* Clear vectors */
-			subjects.clear();
-			ranges.clear();
-			bearings.clear();
-
-			/* Update the current timestep */
-			current_time = time;
-			counter++;
+			start_index = end_index + 1;
+			end_index = line.find(',', start_index);
+			bearings.push_back(std::stod(line.substr(start_index, end_index - start_index)));
 		}
-
-		start_index = end_index + 1;
-		end_index = line.find(',', start_index);
-		subjects.push_back(std::stod(line.substr(start_index, end_index - start_index)));
-
-		start_index = end_index + 1;
-		end_index = line.find(',', start_index);
-		ranges.push_back(std::stod(line.substr(start_index, end_index - start_index)));
-
-		start_index = end_index + 1;
-		end_index = line.find(',', start_index);
-		bearings.push_back(std::stod(line.substr(start_index, end_index - start_index)));
 	}
-
 }
 
 void writeMeasurements() {
@@ -548,12 +558,13 @@ int main() {
 
 	correct_measurements ? std::cout << "[U5 PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cerr << "[U5 FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
 
+	correct_interpolation ? std::cout << "[U6 PASS] All raw extracted values were correctly interpolated\n" : std::cerr << "[U6 FAIL] Raw extraced values were not correctly interpolated\n";
+	
 	// bool plot = false;
 	// plotData();
 	// writeMeasurements();
 
 
-	correct_interpolation ? std::cout << "[U6 PASS] All raw extracted values were correctly interpolated\n" : std::cerr << "[U6 FAIL] Raw extraced values were not correctly interpolated\n";
 
 	// plot ? std::cout << "[PASS] Plot saved.\n" : std::cerr << "[FAIL] Failed to save plot.\n";
 
