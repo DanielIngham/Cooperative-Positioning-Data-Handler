@@ -23,4 +23,7 @@ digraph "/home/dan/Code/UTIAS-Multi-Robot/Data-Extractor/src/data_extractor.cpp"
   Node9 [id="Node000009",label="vector",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node2 -> Node10 [id="edge9_Node000002_Node000010",color="steelblue1",style="solid",tooltip=" "];
   Node10 [id="Node000010",label="cmath",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node1 -> Node10 [id="edge10_Node000001_Node000010",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node11 [id="edge11_Node000001_Node000011",color="steelblue1",style="solid",tooltip=" "];
+  Node11 [id="Node000011",label="cstddef",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
 }
