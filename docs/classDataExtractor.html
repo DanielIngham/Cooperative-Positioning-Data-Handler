@@ -112,12 +112,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6f87f9706fcd238f3d9b37818419299e" id="r_a6f87f9706fcd238f3d9b37818419299e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataExtractor.html#a6f87f9706fcd238f3d9b37818419299e">DataExtractor</a> ()</td></tr>
 <tr class="memdesc:a6f87f9706fcd238f3d9b37818419299e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
 <tr class="separator:a6f87f9706fcd238f3d9b37818419299e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cb74994c1a148510802eb6ed624e470" id="r_a6cb74994c1a148510802eb6ed624e470"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataExtractor.html#a6cb74994c1a148510802eb6ed624e470">DataExtractor</a> (const std::string &amp;)</td></tr>
-<tr class="memdesc:a6cb74994c1a148510802eb6ed624e470"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that extracts and populates class attributes using the values from the dataset provided.  <br /></td></tr>
-<tr class="separator:a6cb74994c1a148510802eb6ed624e470"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ef7f1e25f51c2ce18b434cbeae73cf7" id="r_a1ef7f1e25f51c2ce18b434cbeae73cf7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataExtractor.html#a1ef7f1e25f51c2ce18b434cbeae73cf7">setDataSet</a> (const std::string &amp;)</td></tr>
-<tr class="memdesc:a1ef7f1e25f51c2ce18b434cbeae73cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the all files in the specified dataset folder.  <br /></td></tr>
-<tr class="separator:a1ef7f1e25f51c2ce18b434cbeae73cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb829477bfff2c7958a5e612486f2339" id="r_adb829477bfff2c7958a5e612486f2339"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataExtractor.html#adb829477bfff2c7958a5e612486f2339">DataExtractor</a> (const std::string &amp;, const double &amp;sampling_period=0.02)</td></tr>
+<tr class="memdesc:adb829477bfff2c7958a5e612486f2339"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor that extracts and populates class attributes using the values from the dataset provided.  <br /></td></tr>
+<tr class="separator:adb829477bfff2c7958a5e612486f2339"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3979f3658efa5f74790e9aafc5be40fe" id="r_a3979f3658efa5f74790e9aafc5be40fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataExtractor.html#a3979f3658efa5f74790e9aafc5be40fe">setDataSet</a> (const std::string &amp;, const double &amp;sampling_period=0.02)</td></tr>
+<tr class="memdesc:a3979f3658efa5f74790e9aafc5be40fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the all files in the specified dataset folder.  <br /></td></tr>
+<tr class="separator:a3979f3658efa5f74790e9aafc5be40fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12d77e71ac073ba6fdd74bbd7d4623f9" id="r_a12d77e71ac073ba6fdd74bbd7d4623f9"><td class="memItemLeft" align="right" valign="top">int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataExtractor.html#a12d77e71ac073ba6fdd74bbd7d4623f9">getBarcodes</a> ()</td></tr>
 <tr class="memdesc:a12d77e71ac073ba6fdd74bbd7d4623f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the array of Barcodes.  <br /></td></tr>
 <tr class="separator:a12d77e71ac073ba6fdd74bbd7d4623f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,6 +145,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a85639ff251a6d04a5c6d5ec0cfd2972c" id="r_a85639ff251a6d04a5c6d5ec0cfd2972c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataExtractor.html#a85639ff251a6d04a5c6d5ec0cfd2972c">readMeasurements</a> (const std::string &amp;, int)</td></tr>
 <tr class="memdesc:a85639ff251a6d04a5c6d5ec0cfd2972c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the groundtruth data file: Robotx_Measurement.dat.  <br /></td></tr>
 <tr class="separator:a85639ff251a6d04a5c6d5ec0cfd2972c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68a86647e411d881a3d0ca7b928b6e70" id="r_a68a86647e411d881a3d0ca7b928b6e70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataExtractor.html#a68a86647e411d881a3d0ca7b928b6e70">syncData</a> (const double &amp;)</td></tr>
+<tr class="memdesc:a68a86647e411d881a3d0ca7b928b6e70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Syncs the time steps for the extracted data according to the specified sampling period.  <br /></td></tr>
+<tr class="separator:a68a86647e411d881a3d0ca7b928b6e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -183,8 +186,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a6cb74994c1a148510802eb6ed624e470" name="a6cb74994c1a148510802eb6ed624e470"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6cb74994c1a148510802eb6ed624e470">&#9670;&#160;</a></span>DataExtractor() <span class="overload">[2/2]</span></h2>
+<a id="adb829477bfff2c7958a5e612486f2339" name="adb829477bfff2c7958a5e612486f2339"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb829477bfff2c7958a5e612486f2339">&#9670;&#160;</a></span>DataExtractor() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -196,8 +199,18 @@ Private Attributes</h2></td></tr>
           <td class="memname">DataExtractor::DataExtractor </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>dataset</em></td><td>)</td>
+          <td class="paramname"><em>dataset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>sample_period</em> = <code>0.02</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -429,10 +442,12 @@ Private Attributes</h2></td></tr>
 <p>Extracts data from the groundtruth data file: Robotx_Measurement.dat. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot whose measurements these values belong to. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the <a class="el" href="classDataExtractor.html#a68a86647e411d881a3d0ca7b928b6e70" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataExtractor::syncData</a> function. </dd></dl>
 
 </div>
 </div>
@@ -480,8 +495,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1ef7f1e25f51c2ce18b434cbeae73cf7" name="a1ef7f1e25f51c2ce18b434cbeae73cf7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ef7f1e25f51c2ce18b434cbeae73cf7">&#9670;&#160;</a></span>setDataSet()</h2>
+<a id="a3979f3658efa5f74790e9aafc5be40fe" name="a3979f3658efa5f74790e9aafc5be40fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3979f3658efa5f74790e9aafc5be40fe">&#9670;&#160;</a></span>setDataSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -490,8 +505,18 @@ Private Attributes</h2></td></tr>
           <td class="memname">void DataExtractor::setDataSet </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>dataset</em></td><td>)</td>
+          <td class="paramname"><em>dataset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>sample_period</em> = <code>0.02</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -499,7 +524,42 @@ Private Attributes</h2></td></tr>
 <p>Extracts data from the all files in the specified dataset folder. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>to the dataset folder. @detail The function only checks the existence of the given datset folder and call the other "read" functions for the data extraction. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>dataset path to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td>the sample period at which the linear intepolation should be performed. @detail The function only checks the existence of the given datset folder and call the other "read" functions for the data extraction. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a68a86647e411d881a3d0ca7b928b6e70" name="a68a86647e411d881a3d0ca7b928b6e70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68a86647e411d881a3d0ca7b928b6e70">&#9670;&#160;</a></span>syncData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataExtractor::syncData </td>
+          <td>(</td>
+          <td class="paramtype">const double &amp;&#160;</td>
+          <td class="paramname"><em>sample_period</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Syncs the time steps for the extracted data according to the specified sampling period. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td></td></tr>
   </table>
   </dd>
 </dl>

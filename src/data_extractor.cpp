@@ -16,7 +16,8 @@ DataExtractor::DataExtractor(){
 }
 /**
  * @brief Constructor that extracts and populates class attributes using the values from the dataset provided.
- * @param[in] path to the dataset folder.
+ * @param[in] dataset directory path to the dataset folder.
+ * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
 DataExtractor::DataExtractor(const std::string& dataset,const double& sample_period){
@@ -25,7 +26,7 @@ DataExtractor::DataExtractor(const std::string& dataset,const double& sample_per
 
 /**
  * @brief Extracts data from the barcodes data file: Barcodes.dat.
- * @param[in] path to the dataset folder.
+ * @param[in] dataset path to the dataset folder.
  */
 bool DataExtractor::readBarcodes(const std::string& dataset) {
 	/* Check that the dataset was specified */
@@ -71,7 +72,7 @@ bool DataExtractor::readBarcodes(const std::string& dataset) {
 
 /**
  * @brief Extracts data from the landmarks data file: Landmark_Groundtruth.dat.
- * @param[in] path to the dataset folder.
+ * @param[in] dataset path to the dataset folder.
  * @note DataExtractor::readBarcodes needs to be called before this function since this function relies on the barcodes it extracted.
  */
 bool DataExtractor::readLandmarks(const std::string& dataset) {
@@ -115,18 +116,22 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 		/* Set landmark's barcode */
 		landmarks_[i].barcode = barcodes_[landmarks_[i].id - 1] ;
 		
+		/* Landmark x-coordinate [m] */
 		start_index = end_index + 1; 
 		end_index = line.find('\t', start_index);
 		landmarks_[i].x = std::stod(line.substr(start_index, end_index - start_index));
 
+		/* Landmark y-coordinate [m] */
 		start_index = end_index + 1; 
 		end_index = line.find('\t', start_index);
 		landmarks_[i].y = std::stod(line.substr(start_index, end_index - start_index));
 
+		/* Landmark x standard deviation [m] */
 		start_index = end_index + 1; 
 		end_index = line.find('\t', start_index);
 		landmarks_[i].x_std_dev = std::stod(line.substr(start_index, end_index - start_index));
 
+		/* Landmark y standard deviation [m] */
 		start_index = end_index + 1; 
 		end_index = line.find('\t', start_index);
 		landmarks_[i++].y_std_dev = std::stod(line.substr(start_index, end_index - start_index));
@@ -139,7 +144,8 @@ bool DataExtractor::readLandmarks(const std::string& dataset) {
 
 /**
  * @brief Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.
- * @param[in] path to the dataset folder.
+ * @param[in] dataset path to the dataset folder.
+ * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
  */
 bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the ground truth vector. */
@@ -197,7 +203,8 @@ bool DataExtractor::readGroundTruth(const std::string& dataset, int robot_id) {
 
 /**
  * @brief Extracts data from the groundtruth data file: Robotx_Odometry.dat.
- * @param[in] path to the dataset folder.
+ * @param[in] dataset path to the dataset folder.
+ * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
  */
 bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the odometry vector. */
@@ -249,7 +256,9 @@ bool DataExtractor::readOdometry(const std::string& dataset, int robot_id) {
 
 /**
  * @brief Extracts data from the groundtruth data file: Robotx_Measurement.dat.
- * @param[in] path to the dataset folder.
+ * @param[in] dataset path to the dataset folder.
+ * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
+ * @note Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the DataExtractor::syncData function.
  */
 bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the measurement vector. */
@@ -306,8 +315,9 @@ bool DataExtractor::readMeasurements(const std::string& dataset, int robot_id) {
 
 /**
  * @brief Extracts data from the all files in the specified dataset folder.
- * @param[in] path to the dataset folder.
- * @detail The function only checks the existence of the given datset folder and call the other "read" functions for the data extraction. 
+ * @param[in] dataset dataset path to the dataset folder.
+ * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
+ * @note The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: DataExtractor::readBarcodes, DataExtractor::readLandmarks, DataExtractor::readGroundTruth, DataExtractor::readOdometry, and DataExtractor::readMeasurements. Additionally, the DataExtractor::syncData function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps.
  */
 void DataExtractor::setDataSet(const std::string& dataset, const double& sample_period) {
 	/* Check if the data set directory exists */
@@ -328,18 +338,21 @@ void DataExtractor::setDataSet(const std::string& dataset, const double& sample_
 	bool odometry_correct = true;
 	bool measurement_correct = true;
 
+	/* Populate the values for each robot from the dataset */
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
 		groundtruth_correct &= readGroundTruth(dataset, i);
 		odometry_correct &= readOdometry(dataset, i);
 		measurement_correct &= readMeasurements(dataset, i);
 	}
+
+	/* Checks that the setting of all data attributes have been succesful */
 	bool successful_extraction = barcodes_correct & landmarks_correct & groundtruth_correct & odometry_correct & measurement_correct;
 
 	if (!successful_extraction) {
 		throw std::runtime_error("Unable to extract data from dataset");
 	}
 
-	/* Perform Time Stamp Synchronisation */
+	/* Perform Time Stamp Synchronisation. This performs the linear intepolations of the values — ensuring all values have the same time steps  */
 	syncData(sample_period);
 }
 
@@ -379,6 +392,7 @@ DataExtractor::Robot* DataExtractor::getRobots() {
 
 /**
  * @brief Syncs the time steps for the extracted data according to the specified sampling period.
+ * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
  */
 void DataExtractor::syncData(const double& sample_period) {
 	/* Find the minimum and maximimum times in the datasets */
@@ -416,8 +430,8 @@ void DataExtractor::syncData(const double& sample_period) {
 	}
 	
 	maximum_time -= minimum_time;
-	// double timesteps = std::floor(maximum_time/sample_period) + 1;
 
+	/* Linear Interpolation. This section performs linear intepolation on the ground truth and odometry values to ensure that all robots have syncronised time steps. */
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
 		auto groundtruth_iterator = robots_[i].raw.ground_truth.begin();
 		auto odometry_iterator = robots_[i].raw.odometry.begin();
@@ -469,7 +483,7 @@ void DataExtractor::syncData(const double& sample_period) {
 			));
 		}
 
-		/* Update the timestamps of the the measurements */
+		/* The orginal UTIAS data extractor did NOT perform any linear interpolation on the meaurement values. The only action that was performed on the measurements was time stamp realignment according to the new timestamps. */
 		robots_[i].synced.measurements.push_back( Measurement(
 			std::floor(robots_[i].raw.measurements[0].time / sample_period + 0.5) * sample_period,
 			robots_[i].raw.measurements[0].subjects,
@@ -479,6 +493,7 @@ void DataExtractor::syncData(const double& sample_period) {
 
 		std::vector<Measurement>::iterator iterator = robots_[i].synced.measurements.end() - 1;
 
+		/* Time stamp grouping: measurements with the same timestamps are grouped together to improve accessability. */
 		for (std::size_t j = 1; j < robots_[i].raw.measurements.size(); j++) {
 			double synced_time = std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5) * sample_period;
 			if (synced_time == iterator->time) {
