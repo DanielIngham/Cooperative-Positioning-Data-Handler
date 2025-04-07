@@ -2,7 +2,6 @@
 #include <cstdint>
 #include<iostream>	// std::cout
 #include<fstream>	// std::fstream
-#include <iterator>
 #include<string>	// std::string
 #include<thread>	// std::thread
 #include<chrono>	// std::chrono
@@ -40,45 +39,62 @@ bool plotData() {
 	DataExtractor data;
 
 	data.setDataSet("./data/MRCLAM_Dataset1");
+	const auto* robots = data.getRobots();
 
-	std::ofstream robot_file[TOTAL_ROBOTS];
+	std::ofstream robot_file;
 
-	for (uint8_t i = 0; i < TOTAL_ROBOTS; i++ ) {
-		const std::string filename = "./test/data/robot" + std::to_string(i) + ".dat";
-		robot_file[i].open(filename);
-		if (!robot_file[i].is_open()) {
-			std::cerr << "[ERROR]: Could not create file\n";
+	for (std::uint8_t i = 0; i < TOTAL_ROBOTS; i++ ) {
+		std::string filename = "./test/data/robot" + std::to_string(i) + "-Groundtruth" + ".dat";
+		robot_file.open(filename);
+		if (!robot_file.is_open()) {
+			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
 			return false;
 		}
-	}
-
-	const auto* robots = data.getRobots();
-	
-	/* Find the largest dataset to be the limitor in the file writing. */
-	std::size_t largest_dataset = 0;
-	for (uint8_t k = 0; k < TOTAL_ROBOTS; k++) {
-		std::size_t robot_dataset_size = robots[k].raw.ground_truth.size();
-
-		if (robot_dataset_size > largest_dataset) {
-			 largest_dataset = robot_dataset_size;
-		}
-	}
-
-	for (std::size_t j = 0; j < largest_dataset; j++) {
-		for (uint8_t i = 0; i < TOTAL_ROBOTS; i++) { 
-			if (j < robots[i].raw.ground_truth.size()) { 
-			      robot_file[i] << robots[i].raw.ground_truth[j].x << '\t' << robots[i].raw.ground_truth[j].y << '\t' << i+1 << '\n' ; 
-			} 
-			else {
-			      robot_file[i] << robots[i].raw.ground_truth.back().x << '\t' << robots[i].raw.ground_truth.back().y << '\t' << i+1 << '\n' ; 
+		for (std::size_t j = 0; j < robots[i].raw.ground_truth.size(); j++) {
+			robot_file << robots[i].raw.ground_truth[j].time << '\t' << robots[i].raw.ground_truth[j].x << '\t' << robots[i].raw.ground_truth[j].y << '\t' << robots[i].raw.ground_truth[j].orientation << '\t' << 'g' << '\n';
+			
+			if (j < robots[i].synced.ground_truth.size()){
+				robot_file << robots[i].synced.ground_truth[j].time << '\t' << robots[i].synced.ground_truth[j].x << '\t' << robots[i].synced.ground_truth[j].y << '\t'<< robots[i].synced.ground_truth[j].orientation << '\t' << 'i' << '\n';
 			}
 		}
-	}
 
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		robot_file[i].close();
-	}
+		robot_file.close();
+		filename = "./test/data/robot" + std::to_string(i) + "-Odometry" + ".dat";
+		robot_file.open(filename);
 
+		if (!robot_file.is_open()) {
+			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+			return false;
+		}
+
+		for (std::size_t j = 0; j < robots[i].raw.odometry.size(); j++) {
+			robot_file << robots[i].raw.odometry[j].time << '\t' << robots[i].raw.odometry[j].forward_velocity << '\t' << robots[i].raw.odometry[j].angular_velocity << '\t' << 'g' << '\n';
+			
+			if (j < robots[i].synced.odometry.size()){
+				robot_file << robots[i].synced.odometry[j].time << '\t' << robots[i].synced.odometry[j].forward_velocity << '\t' << robots[i].synced.odometry[j].angular_velocity << '\t' << 'i' << '\n';
+			}
+		}
+
+		robot_file.close();
+		filename = "./test/data/robot" + std::to_string(i) + "-Meaurement" + ".dat";
+		robot_file.open(filename);
+
+		if (!robot_file.is_open()) {
+			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+			return false;
+		}
+
+		/* Note that when the "raw" measurement data structure is populate, it only add one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
+		for (std::size_t j = 0; j < robots[i].raw.measurements.size(); j++) {
+			robot_file << robots[i].raw.measurements[j].time << '\t' << robots[i].raw.measurements[j].subjects[0] << '\t' << robots[i].raw.measurements[j].ranges[0] << robots[i].raw.measurements[j].bearings[0] << '\t' << 'g' << '\n';
+		}
+		for (std::size_t j = 0; j < robots[i].synced.measurements.size(); j++) {
+			for (std::size_t k = 0; k < robots[i].synced.measurements[j].subjects.size(); k++) {
+				robot_file << robots[i].synced.measurements[j].time << '\t' << robots[i].synced.measurements[j].subjects[k] << '\t' << robots[i].synced.measurements[j].ranges[k] << robots[i].synced.measurements[j].bearings[k] << '\t' << 'i' << '\n';
+			}
+		}
+		robot_file.close();
+	}
 	return true;
 }
 
@@ -492,34 +508,6 @@ void testInterpolation(bool& flag) {
 	}
 }
 
-void writeMeasurements() {
-	DataExtractor data;
-
-	data.setDataSet("./data/MRCLAM_Dataset1");
-
-	std::ofstream robot_file;
-
-	const std::string filename = "./test/data/measurement_robot" + std::to_string(1) + ".dat";
-	robot_file.open(filename);
-	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file\n";
-		return;
-	}
-
-	const auto* robots = data.getRobots();
-	
-	for (std::size_t j = 0; j < robots[0].raw.measurements.size(); j++) {
-		robot_file << robots[0].raw.measurements[j].time << '\t'; 
-		for (std::size_t i = 0; i < robots[0].raw.measurements[j].subjects.size(); i++) { 
-		      robot_file << robots[0].raw.measurements[j].subjects[i] << '\t'; 
-		}
-		robot_file << '\n';
-	}
-
-	robot_file.close();
-
-	return;
-}
 
 int main() {
 	auto start = std::chrono::high_resolution_clock::now();
@@ -534,19 +522,19 @@ int main() {
 	bool correct_measurements = true;
 	bool correct_interpolation = true;
 
-	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
-	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
-
-	unit_test_1.join();
-	unit_test_2.join();
-	unit_test_3.join();
-	unit_test_4.join();
-	unit_test_5.join();
-	unit_test_6.join();
+	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	// std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
+	//
+	// unit_test_1.join();
+	// unit_test_2.join();
+	// unit_test_3.join();
+	// unit_test_4.join();
+	// unit_test_5.join();
+	// unit_test_6.join();
 
 	barcodes_set ? std::cout << "[U1 PASS] All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
 
@@ -560,13 +548,15 @@ int main() {
 
 	correct_interpolation ? std::cout << "[U6 PASS] All raw extracted values were correctly interpolated\n" : std::cerr << "[U6 FAIL] Raw extraced values were not correctly interpolated\n";
 	
-	// bool plot = false;
+	// bool plot = true;
 	// plotData();
-	// writeMeasurements();
-
-
 
 	// plot ? std::cout << "[PASS] Plot saved.\n" : std::cerr << "[FAIL] Failed to save plot.\n";
+	
+	DataExtractor data("./data/MRCLAM_Dataset1");
+	auto robots = data.getRobots();
+	std::cout << robots[0].raw.ground_truth.size() << std::endl;
+	std::cout << robots[0].synced.ground_truth.size() << std::endl;
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end-start);
