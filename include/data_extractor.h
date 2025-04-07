@@ -147,6 +147,8 @@ private:
 	bool readMeasurements(const std::string&, int);
 
 	void syncData(const double&);
+
+	void calculateGroundtruthOdometry();
 public:
 	DataExtractor(); 
 	explicit DataExtractor(const std::string&, const double& sampling_period = 0.02);

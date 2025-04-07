@@ -7,6 +7,8 @@
  */
 
 #include "../include/data_extractor.h"
+#include <cmath>
+#include <cstddef>
 
 /**
  * @brief Default constructor.
@@ -436,7 +438,7 @@ void DataExtractor::syncData(const double& sample_period) {
 		auto groundtruth_iterator = robots_[i].raw.ground_truth.begin();
 		auto odometry_iterator = robots_[i].raw.odometry.begin();
 
-		for (double t = .0; t <= maximum_time; t+=sample_period) {
+		for (double t = 0.0f; t <= maximum_time; t+=sample_period) {
 
 			/* Find the first element that is larger than the current time step */
 			groundtruth_iterator = std::find_if(groundtruth_iterator, robots_[i].raw.ground_truth.end(), [t](const Groundtruth& element) {
@@ -485,7 +487,7 @@ void DataExtractor::syncData(const double& sample_period) {
 
 		/* The orginal UTIAS data extractor did NOT perform any linear interpolation on the meaurement values. The only action that was performed on the measurements was time stamp realignment according to the new timestamps. */
 		robots_[i].synced.measurements.push_back( Measurement(
-			std::floor(robots_[i].raw.measurements[0].time / sample_period + 0.5) * sample_period,
+			std::floor(robots_[i].raw.measurements[0].time / sample_period + 0.5f) * sample_period,
 			robots_[i].raw.measurements[0].subjects,
 			robots_[i].raw.measurements[0].ranges,
 			robots_[i].raw.measurements[0].bearings
@@ -495,7 +497,7 @@ void DataExtractor::syncData(const double& sample_period) {
 
 		/* Time stamp grouping: measurements with the same timestamps are grouped together to improve accessability. */
 		for (std::size_t j = 1; j < robots_[i].raw.measurements.size(); j++) {
-			double synced_time = std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5) * sample_period;
+			double synced_time = std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5f) * sample_period;
 			if (synced_time == iterator->time) {
 				iterator->subjects.push_back(robots_[i].raw.measurements[j].subjects[0]);
 				iterator->ranges.push_back(robots_[i].raw.measurements[j].ranges[0]);
@@ -503,13 +505,37 @@ void DataExtractor::syncData(const double& sample_period) {
 			}
 			else {
 				robots_[i].synced.measurements.push_back( Measurement(
-					std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5) * sample_period,
+					std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5f) * sample_period,
 					robots_[i].raw.measurements[j].subjects,
 					robots_[i].raw.measurements[j].ranges,
 					robots_[i].raw.measurements[j].bearings
 				));
 				iterator = robots_[i].synced.measurements.end() - 1;
 			}
+		}
+	}
+}
+
+/**
+ * @brief Utilises the extracted robots groundtruth position and heading values to calculate their associated groundtruth odometry values. 
+ * @details The following expression is utilsed to calculate the odomotery values
+ * $$\begin{bmatrix} \omega_k & v_k \end{bmatrix}^\top = \begin{bmatrix} (\theta_{k+1} - \theta_{k}) / \Delta t & (y_{k+1} - y_k)/(\Delta t \; \sin (\theta_k))\end{bmatrix}^\top, $$ 
+ * where \f$k\f$ denotes the current time step; \f$\theta\f$ denotes the robot's orientation; \f$ y\f$ denotes the robot's y-coordinate; \f$\Delta t\f$ is the user defined sample period; \f$\omega\f$ and \f$v\f$ denotes the angular velocity and forward velocity of the robot respectively.
+ */
+void DataExtractor::calculateGroundtruthOdometry() {
+	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		for (std::size_t k = 0; k < robots_[i].synced.ground_truth.size()-1; k++) {
+			/* Calculate the time difference betweens samples. Will be equal to the user defined sample rate. */
+			double delta_t = robots_[i].synced.ground_truth[k+1].time - robots_[i].synced.ground_truth[k].time;
+
+			/* Calculate the angular velocity that occured between orientation measurements */
+			robots_[i].synced.ground_truth[k].angular_velocity = (robots_[i].synced.ground_truth[k+1].orientation - robots_[i].synced.ground_truth[k].orientation) / delta_t;
+			/* Normalise the angular velocity between PI and -PI (180 and -180 degrees respectively) */
+			while (robots_[i].synced.ground_truth[k].angular_velocity >= M_PI) robots_[i].synced.ground_truth[k].angular_velocity -= 2.0f * M_PI;
+			while (robots_[i].synced.ground_truth[k].angular_velocity < -M_PI) robots_[i].synced.ground_truth[k].angular_velocity += 2.0f * M_PI;
+
+			/* Calculate the forward velocity (velocity vector magnitude) */
+			robots_[i].synced.ground_truth[k].forward_velocity = (robots_[i].synced.ground_truth[k+1].x - robots_[i].synced.ground_truth[k].x) / (delta_t * std::sin(robots_[i].synced.ground_truth[k].orientation));
 		}
 	}
 }
