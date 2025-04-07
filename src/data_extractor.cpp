@@ -7,7 +7,6 @@
  */
 
 #include "../include/data_extractor.h"
-#include <iterator>
 
 /**
  * @brief Default constructor.
@@ -455,12 +454,8 @@ void DataExtractor::syncData(const double& sample_period) {
 			    return element.time > t;
 			});
 
-			if (odometry_iterator == robots_[i].raw.odometry.begin()) {
+			if (odometry_iterator == robots_[i].raw.odometry.begin() || odometry_iterator == robots_[i].raw.odometry.end()-1) {
 				robots_[i].synced.odometry.push_back(Odometry(t, 0, 0));
-				continue;
-			}
-			else if (odometry_iterator == robots_[i].raw.odometry.end()) {
-				robots_[i].synced.odometry.push_back(Odometry(t, robots_[i].raw.odometry.back().forward_velocity, robots_[i].raw.odometry.back().angular_velocity));
 				continue;
 			}
 
@@ -474,7 +469,7 @@ void DataExtractor::syncData(const double& sample_period) {
 			));
 		}
 
-		/* Update the timestamps of the the measurments */
+		/* Update the timestamps of the the measurements */
 		robots_[i].synced.measurements.push_back( Measurement(
 			std::floor(robots_[i].raw.measurements[0].time / sample_period + 0.5) * sample_period,
 			robots_[i].raw.measurements[0].subjects,
@@ -483,7 +478,6 @@ void DataExtractor::syncData(const double& sample_period) {
 		));
 
 		std::vector<Measurement>::iterator iterator = robots_[i].synced.measurements.end() - 1;
-		// std::size_t counter = 0;
 
 		for (std::size_t j = 1; j < robots_[i].raw.measurements.size(); j++) {
 			double synced_time = std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5) * sample_period;
