@@ -223,7 +223,8 @@ Private Attributes</h2></td></tr>
 <p>Constructor that extracts and populates class attributes using the values from the dataset provided. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>directory path to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td>the desired sample period for resampling the data to sync the timesteps between the vehicles. </td></tr>
   </table>
   </dd>
 </dl>
@@ -319,7 +320,7 @@ Private Attributes</h2></td></tr>
 <p>Extracts data from the barcodes data file: Barcodes.dat. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
   </table>
   </dd>
 </dl>
@@ -363,7 +364,8 @@ Private Attributes</h2></td></tr>
 <p>Extracts data from the groundtruth data file: Robotx_Groundtruth.dat. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot for which the extracted measurement will be assigned to. </td></tr>
   </table>
   </dd>
 </dl>
@@ -397,7 +399,7 @@ Private Attributes</h2></td></tr>
 <p>Extracts data from the landmarks data file: Landmark_Groundtruth.dat. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
   </table>
   </dd>
 </dl>
@@ -443,7 +445,7 @@ Private Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot whose measurements these values belong to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot for which the extracted measurement will be assigned to. </td></tr>
   </table>
   </dd>
 </dl>
@@ -488,7 +490,8 @@ Private Attributes</h2></td></tr>
 <p>Extracts data from the groundtruth data file: Robotx_Odometry.dat. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">path</td><td>to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot for which the extracted measurement will be assigned to. </td></tr>
   </table>
   </dd>
 </dl>
@@ -525,10 +528,11 @@ Private Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>dataset path to the dataset folder. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td>the sample period at which the linear intepolation should be performed. @detail The function only checks the existence of the given datset folder and call the other "read" functions for the data extraction. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td>the desired sample period for resampling the data to sync the timesteps between the vehicles. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: <a class="el" href="classDataExtractor.html#af1a917b3145da4bad75fbf981a8231af" title="Extracts data from the barcodes data file: Barcodes.dat.">DataExtractor::readBarcodes</a>, <a class="el" href="classDataExtractor.html#a0ab43e97580ac6fc06e36bec8387394f" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataExtractor::readLandmarks</a>, <a class="el" href="classDataExtractor.html#a0516962713b6dd93a60b93656c074a92" title="Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.">DataExtractor::readGroundTruth</a>, <a class="el" href="classDataExtractor.html#ad5f6823e6f8a890054a5d1d257a3f02d" title="Extracts data from the groundtruth data file: Robotx_Odometry.dat.">DataExtractor::readOdometry</a>, and <a class="el" href="classDataExtractor.html#a85639ff251a6d04a5c6d5ec0cfd2972c" title="Extracts data from the groundtruth data file: Robotx_Measurement.dat.">DataExtractor::readMeasurements</a>. Additionally, the <a class="el" href="classDataExtractor.html#a68a86647e411d881a3d0ca7b928b6e70" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataExtractor::syncData</a> function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps. </dd></dl>
 
 </div>
 </div>
@@ -559,7 +563,7 @@ Private Attributes</h2></td></tr>
 <p>Syncs the time steps for the extracted data according to the specified sampling period. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td>the desired sample period for resampling the data to sync the timesteps between the vehicles. </td></tr>
   </table>
   </dd>
 </dl>
