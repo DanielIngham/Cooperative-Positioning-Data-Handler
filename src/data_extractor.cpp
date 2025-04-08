@@ -354,7 +354,7 @@ void DataExtractor::setDataSet(const std::string& dataset, const double& sample_
 		throw std::runtime_error("Unable to extract data from dataset");
 	}
 
-	/* Perform Time Stamp Synchronisation. This performs the linear intepolations of the values — ensuring all values have the same time steps  */
+	/* Perform Time Stamp Synchronisation. This performs the linear interpolations of the values — ensuring all values have the same time steps  */
 	syncData(sample_period);
 }
 
@@ -433,7 +433,7 @@ void DataExtractor::syncData(const double& sample_period) {
 	
 	maximum_time -= minimum_time;
 
-	/* Linear Interpolation. This section performs linear intepolation on the ground truth and odometry values to ensure that all robots have syncronised time steps. */
+	/* Linear Interpolation. This section performs linear interpolation on the ground truth and odometry values to ensure that all robots have syncronised time steps. */
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
 		auto groundtruth_iterator = robots_[i].raw.ground_truth.begin();
 		auto odometry_iterator = robots_[i].raw.odometry.begin();
