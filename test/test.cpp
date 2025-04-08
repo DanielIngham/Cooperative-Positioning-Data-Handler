@@ -11,8 +11,10 @@
 #define TOTAL_DATASETS 9
 
 /**
- * @brief Loops through the entire dataset file and counts the number of lines that are not commented.
+ * @brief Loops through the entire dataset file and counts the number of lines that are not commented using '#'.
+ * @param [in] filename the name of the input file.
  * @return the number of lines counted.
+ * @note this function also counts empty lines. The only line ignored are the ones where the character '#' is present as the first character in the line.
  */
 std::size_t countFileLines(const std::string& filename) {
 	std::ifstream file(filename);
@@ -34,7 +36,9 @@ std::size_t countFileLines(const std::string& filename) {
 
 	return counter;
 }
-
+/**
+ * @brief Saves the data from the DataExtractor class into .dat files to be plotted by gnuplot.
+ */
 bool plotData() {
 	DataExtractor data;
 
@@ -43,21 +47,25 @@ bool plotData() {
 
 	std::ofstream robot_file;
 
+	/* Loop through the data structures for each robot */
 	for (std::uint8_t i = 0; i < TOTAL_ROBOTS; i++ ) {
+		/* Save the values of the raw and synced groundtruth values of a given robot into the same file with the last row indicating 'r' for raw and 's' for synced.*/
 		std::string filename = "./test/data/robot" + std::to_string(i) + "-Groundtruth" + ".dat";
 		robot_file.open(filename);
 		if (!robot_file.is_open()) {
 			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
 			return false;
 		}
+
 		for (std::size_t j = 0; j < robots[i].raw.ground_truth.size(); j++) {
-			robot_file << robots[i].raw.ground_truth[j].time << '\t' << robots[i].raw.ground_truth[j].x << '\t' << robots[i].raw.ground_truth[j].y << '\t' << robots[i].raw.ground_truth[j].orientation << '\t' << 'g' << '\n';
+			robot_file << robots[i].raw.ground_truth[j].time << '\t' << robots[i].raw.ground_truth[j].x << '\t' << robots[i].raw.ground_truth[j].y << '\t' << robots[i].raw.ground_truth[j].orientation << '\t' << 'r' << '\n';
 			
 			if (j < robots[i].synced.ground_truth.size()){
-				robot_file << robots[i].synced.ground_truth[j].time << '\t' << robots[i].synced.ground_truth[j].x << '\t' << robots[i].synced.ground_truth[j].y << '\t'<< robots[i].synced.ground_truth[j].orientation << '\t' << 'i' << '\n';
+				robot_file << robots[i].synced.ground_truth[j].time << '\t' << robots[i].synced.ground_truth[j].x << '\t' << robots[i].synced.ground_truth[j].y << '\t'<< robots[i].synced.ground_truth[j].orientation << '\t' << 's' << '\n';
 			}
 		}
 
+		/* Save the values of the raw and synced odometry values of a given robot into the same file with the last row indicating 'r' for raw  and 's' for synced.*/
 		robot_file.close();
 		filename = "./test/data/robot" + std::to_string(i) + "-Odometry" + ".dat";
 		robot_file.open(filename);
@@ -68,13 +76,14 @@ bool plotData() {
 		}
 
 		for (std::size_t j = 0; j < robots[i].raw.odometry.size(); j++) {
-			robot_file << robots[i].raw.odometry[j].time << '\t' << robots[i].raw.odometry[j].forward_velocity << '\t' << robots[i].raw.odometry[j].angular_velocity << '\t' << 'g' << '\n';
+			robot_file << robots[i].raw.odometry[j].time << '\t' << robots[i].raw.odometry[j].forward_velocity << '\t' << robots[i].raw.odometry[j].angular_velocity << '\t' << 'r' << '\n';
 			
 			if (j < robots[i].synced.odometry.size()){
-				robot_file << robots[i].synced.odometry[j].time << '\t' << robots[i].synced.odometry[j].forward_velocity << '\t' << robots[i].synced.odometry[j].angular_velocity << '\t' << 'i' << '\n';
+				robot_file << robots[i].synced.odometry[j].time << '\t' << robots[i].synced.odometry[j].forward_velocity << '\t' << robots[i].synced.odometry[j].angular_velocity << '\t' << 's' << '\n';
 			}
 		}
 
+		/* Save the values of the raw and synced measurment values of a given robot into the same file with the last row indicating 'g' for raw  and 'i' for synced.*/
 		robot_file.close();
 		filename = "./test/data/robot" + std::to_string(i) + "-Meaurement" + ".dat";
 		robot_file.open(filename);
@@ -84,13 +93,13 @@ bool plotData() {
 			return false;
 		}
 
-		/* Note that when the "raw" measurement data structure is populate, it only add one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
+		/* Note that when the "raw" measurement data structure is populated, it only adds one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
 		for (std::size_t j = 0; j < robots[i].raw.measurements.size(); j++) {
-			robot_file << robots[i].raw.measurements[j].time << '\t' << robots[i].raw.measurements[j].subjects[0] << '\t' << robots[i].raw.measurements[j].ranges[0] << robots[i].raw.measurements[j].bearings[0] << '\t' << 'g' << '\n';
+			robot_file << robots[i].raw.measurements[j].time << '\t' << robots[i].raw.measurements[j].subjects[0] << '\t' << robots[i].raw.measurements[j].ranges[0] << '\t' <<  robots[i].raw.measurements[j].bearings[0] << '\t' << 'r' << '\n';
 		}
 		for (std::size_t j = 0; j < robots[i].synced.measurements.size(); j++) {
 			for (std::size_t k = 0; k < robots[i].synced.measurements[j].subjects.size(); k++) {
-				robot_file << robots[i].synced.measurements[j].time << '\t' << robots[i].synced.measurements[j].subjects[k] << '\t' << robots[i].synced.measurements[j].ranges[k] << robots[i].synced.measurements[j].bearings[k] << '\t' << 'i' << '\n';
+				robot_file << robots[i].synced.measurements[j].time << '\t' << robots[i].synced.measurements[j].subjects[k] << '\t' << robots[i].synced.measurements[j].ranges[k] << '\t' << robots[i].synced.measurements[j].bearings[k] << '\t' << 's' << '\n';
 			}
 		}
 		robot_file.close();
@@ -100,8 +109,9 @@ bool plotData() {
 
 /**
  * @brief Unit Test 1: check if barcodes were set.
+ * @param [in,out] flag confirms that the test was passed or failed.
  */
-void checkBarcodes(bool& barcodes_set) {
+void checkBarcodes(bool& flag) {
 	DataExtractor data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
@@ -112,7 +122,7 @@ void checkBarcodes(bool& barcodes_set) {
 		const int* barcodes = data.getBarcodes();
 		for (int j = 0; j < TOTAL_BARCODES; j++) {
 			if (barcodes[j] == 0) {
-				barcodes_set = false; 
+				flag = false; 
 			}
 		}
 	}
@@ -121,8 +131,9 @@ void checkBarcodes(bool& barcodes_set) {
 
 /** 
  * @brief Unit Test 2: compare landmark barcodes to barcodes. 
+ * @param [in,out] flag confirms that the test was passed or failed.
  */
-void checkLandmarkBarcodes(bool& correct_landmark_barcode) {
+void checkLandmarkBarcodes(bool& flag) {
 	DataExtractor data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
@@ -134,7 +145,7 @@ void checkLandmarkBarcodes(bool& correct_landmark_barcode) {
 
 		for (int j = 0; j < TOTAL_LANDMARKS; j++) {
 			if (landmarks[j].barcode != barcodes[landmarks[j].id - 1]) {
-				correct_landmark_barcode = false;
+				flag = false;
 			}
 		}
 	}
@@ -143,6 +154,7 @@ void checkLandmarkBarcodes(bool& correct_landmark_barcode) {
 
 /** 
  * @brief Unit Test 3: check that all the ground truth values were extracted.
+ * @param [in,out] flag confirms that the test was passed or failed.
  */
 void checkGroundtruthExtraction(bool& flag) {
 	DataExtractor data;
@@ -174,6 +186,7 @@ void checkGroundtruthExtraction(bool& flag) {
 
 /** 
  * @brief Unit Test 4: check that all the odometry values were extracted.
+ * @param [in,out] flag confirms that the test was passed or failed.
  */
 void checkOdometryExtraction(bool& flag) {
 	DataExtractor data;
@@ -208,6 +221,7 @@ void checkOdometryExtraction(bool& flag) {
 
 /** 
  * @brief Unit Test 5: check that all the measurement values were extracted.
+ * @param [in,out] flag confirms that the test was passed or failed.
  */
 void checkMeasurementExtraction(bool& flag) {
 	DataExtractor data;
@@ -250,7 +264,8 @@ void checkMeasurementExtraction(bool& flag) {
 }
 
 /**
- * Unit Test 6: Test Intepolation values against the ones extracted from the matlab script.
+ * @brief Unit Test 6: Test Interpolation values against the ones extracted from the matlab script.
+ * @param [in,out] flag confirms that the test was passed or failed.
  */
 void testInterpolation(bool& flag) { 
 	DataExtractor data("./data/MRCLAM_Dataset1");
@@ -507,12 +522,18 @@ void testInterpolation(bool& flag) {
 		}
 	}
 }
-
+/**
+ * @brief Checks that the when the caluclated odometry values are used for dead-reckoning that the outputs matches the ground truth values.
+ * @param [in,out] flag confirms that the test was passed or failed.
+ */
+void testGroundtruthOdometry(bool& flag) {
+	flag = false;
+}
 
 int main() {
 	auto start = std::chrono::high_resolution_clock::now();
-	std::cout<< "UNIT TESTING" <<std::endl;
-	std::cout<< "Number of treads supported: " << std::thread::hardware_concurrency() << std::endl;
+	std::cout<< "\033[1;36mUNIT TESTING\033[0m" <<std::endl;
+	std::cout<< "\033[3mNumber of treads supported:\033[0m " << std::thread::hardware_concurrency() << std::endl;
 
 	/* Loop through every MRCLAM data set and check if the file extraction was successful. */
 	bool barcodes_set = true;
@@ -536,22 +557,22 @@ int main() {
 	unit_test_5.join();
 	unit_test_6.join();
 
-	barcodes_set ? std::cout << "[U1 PASS] All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
+	barcodes_set ? std::cout << "\033[1;32m[U1 PASS]\033[0m All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
 
-	correct_landmark_barcode ? std::cout << "[U2 PASS] All landmarks have the correct barcodes.\n" : std::cerr << "[U2 FAIL] Landmarks do not have the correct barcodes.\n"  ;
+	correct_landmark_barcode ? std::cout << "\033[1;32m[U2 PASS]\033[0m All landmarks have the correct barcodes.\n" : std::cerr << "\033[1;31m[U2 FAIL]\033[0m Landmarks do not have the correct barcodes.\n"  ;
 
-	correct_groundtruth ? std::cout << "[U3 PASS] All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cerr << "[U3 FAIL] Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
+	correct_groundtruth ? std::cout << "\033[1;32m[U3 PASS]\033[0m All Robots have extracted the correct amount groundtruth values from the dataset\n" : std::cerr << "\033[1;31m[U3 FAIL]\033[0m Not all robots extracted the correct amount of groundtruth values from the dataset.\n";
 
-	correct_odometry ? std::cout << "[U4 PASS] All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cerr << "[U3 FAIL] Not all robots extracted the correct amount of odometery values from the dataset.\n";
+	correct_odometry ? std::cout << "\033[1;32m[U4 PASS]\033[0m All Robots have extracted the correct amount of odometry values from the dataset\n" : std::cerr << "\033[1;31m[U3 FAIL]\033[0m Not all robots extracted the correct amount of odometery values from the dataset.\n";
 
-	correct_measurements ? std::cout << "[U5 PASS] All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cerr << "[U5 FAIL] Not all robots extracted the correct amount of measurement values from the dataset.\n";
+	correct_measurements ? std::cout << "\033[1;32m[U5 PASS]\033[0m All Robots have extracted the correct amount of measurement values from the dataset\n" : std::cerr << "\033[1;31m[U5 FAIL]\033[0m Not all robots extracted the correct amount of measurement values from the dataset.\n";
 
-	correct_interpolation ? std::cout << "[U6 PASS] All raw extracted values were correctly interpolated\n" : std::cerr << "[U6 FAIL] Raw extraced values were not correctly interpolated\n";
+	correct_interpolation ? std::cout << "\033[1;32m[U6 PASS]\033[0m All raw extracted values were correctly interpolated\n" : std::cerr << "\033[1;31m[U6 FAIL]\033[0m Raw extraced values were not correctly interpolated\n";
 	
-	// bool plot = true;
-	// plotData();
+	bool plot = true;
+	plotData();
 
-	// plot ? std::cout << "[PASS] Plot saved.\n" : std::cerr << "[FAIL] Failed to save plot.\n";
+	plot ? std::cout << "\033[1;32m[PASS]\033[0m Plot saved.\n" : std::cerr << "\033[1;32m[FAIL]\033[0m Failed to save plot.\n";
 	
 
 	auto end = std::chrono::high_resolution_clock::now();
