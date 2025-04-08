@@ -33,6 +33,11 @@ private:
 	std::string dataset_ = "";
 	
 	/**
+	 * @brief the desired sample period for resampling the data to sync the timesteps between the vehicles.
+	 */
+	double sampling_period_ = 0.2;
+
+	/**
 	 * @brief  List of all barcodes corresponding to the robots and landmarks. 
 	 * @note The index of the element in the array corresponds to its id minus one.
 	 * @details Initialise all barcodes to 0. Since none of the barcodes have a value of 0, this will be used as a check by DataExtractor::readLandmarks to see if all the barcodes were correctly set.
@@ -158,6 +163,7 @@ public:
 	int* getBarcodes();
 	Landmark* getLandmarks();
 	Robot* getRobots();
+	double getSamplePeriod();
 
 };
 #endif

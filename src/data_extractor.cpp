@@ -7,8 +7,6 @@
  */
 
 #include "../include/data_extractor.h"
-#include <cmath>
-#include <cstddef>
 
 /**
  * @brief Default constructor.
@@ -332,6 +330,9 @@ void DataExtractor::setDataSet(const std::string& dataset, const double& sample_
 	else {
 		throw std::runtime_error("Dataset file path does not exist"); 
 	}
+
+	/* Set the sample period for this dataset. */
+	this->sampling_period_ = sample_period;
 	
 	/* Perform data extraction in the directory */
 	bool barcodes_correct = readBarcodes(dataset);
@@ -356,6 +357,9 @@ void DataExtractor::setDataSet(const std::string& dataset, const double& sample_
 
 	/* Perform Time Stamp Synchronisation. This performs the linear interpolations of the values — ensuring all values have the same time steps  */
 	syncData(sample_period);
+
+	/* Calculate the odometry values that would correspond to the ground truth position and heading values after synchronsation. */
+	calculateGroundtruthOdometry();
 }
 
 /**
@@ -391,7 +395,9 @@ DataExtractor::Robot* DataExtractor::getRobots() {
 
 	return robots_;
 }
-
+double DataExtractor::getSamplePeriod() {
+	return sampling_period_;
+}
 /**
  * @brief Syncs the time steps for the extracted data according to the specified sampling period.
  * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
@@ -524,7 +530,8 @@ void DataExtractor::syncData(const double& sample_period) {
  */
 void DataExtractor::calculateGroundtruthOdometry() {
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		for (std::size_t k = 0; k < robots_[i].synced.ground_truth.size()-1; k++) {
+		std::size_t k = 0;
+		for (; k < robots_[i].synced.ground_truth.size() - 1; k++) {
 			/* Calculate the time difference betweens samples. Will be equal to the user defined sample rate. */
 			double delta_t = robots_[i].synced.ground_truth[k+1].time - robots_[i].synced.ground_truth[k].time;
 
@@ -537,5 +544,9 @@ void DataExtractor::calculateGroundtruthOdometry() {
 			/* Calculate the forward velocity (velocity vector magnitude) */
 			robots_[i].synced.ground_truth[k].forward_velocity = (robots_[i].synced.ground_truth[k+1].x - robots_[i].synced.ground_truth[k].x) / (delta_t * std::sin(robots_[i].synced.ground_truth[k].orientation));
 		}
-	}
+
+		/* NOTE: Since the last groundtruth value can not be calculated, it is set equal to the measured value */
+		robots_[i].synced.ground_truth[k].forward_velocity = robots_[i].synced.odometry.back().forward_velocity;
+		robots_[i].synced.ground_truth[k].angular_velocity = robots_[i].synced.odometry.back().angular_velocity;
+      }
 }
