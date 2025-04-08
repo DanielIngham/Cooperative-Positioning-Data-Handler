@@ -1,10 +1,11 @@
 #include <cstddef>
 #include <cstdint>
-#include<iostream>	// std::cout
-#include<fstream>	// std::fstream
-#include<string>	// std::string
-#include<thread>	// std::thread
-#include<chrono>	// std::chrono
+#include <iostream>	// std::cout
+#include <fstream>	// std::fstream
+#include <string>	// std::string
+#include <thread>	// std::thread
+#include <chrono>	// std::chrono
+#include <algorithm>	// std::find
 
 #include "../include/data_extractor.h"
 
@@ -39,7 +40,7 @@ std::size_t countFileLines(const std::string& filename) {
 /**
  * @brief Saves the data from the DataExtractor class into .dat files to be plotted by gnuplot.
  */
-bool plotData() {
+void savePlotData(bool& flag) {
 	DataExtractor data;
 
 	data.setDataSet("./data/MRCLAM_Dataset1");
@@ -54,7 +55,8 @@ bool plotData() {
 		robot_file.open(filename);
 		if (!robot_file.is_open()) {
 			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-			return false;
+			flag = false;
+			return;
 		}
 
 		for (std::size_t j = 0; j < robots[i].raw.ground_truth.size(); j++) {
@@ -72,7 +74,8 @@ bool plotData() {
 
 		if (!robot_file.is_open()) {
 			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-			return false;
+			flag = false;
+			return;
 		}
 
 		for (std::size_t j = 0; j < robots[i].raw.odometry.size(); j++) {
@@ -90,7 +93,8 @@ bool plotData() {
 
 		if (!robot_file.is_open()) {
 			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-			return false;
+			flag = false;
+			return;
 		}
 
 		/* Note that when the "raw" measurement data structure is populated, it only adds one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
@@ -104,12 +108,11 @@ bool plotData() {
 		}
 		robot_file.close();
 	}
-	return true;
 }
 
 /**
  * @brief Unit Test 1: check if barcodes were set.
- * @param [in,out] flag confirms that the test was passed or failed.
+ * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkBarcodes(bool& flag) {
 	DataExtractor data;
@@ -131,7 +134,7 @@ void checkBarcodes(bool& flag) {
 
 /** 
  * @brief Unit Test 2: compare landmark barcodes to barcodes. 
- * @param [in,out] flag confirms that the test was passed or failed.
+ * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkLandmarkBarcodes(bool& flag) {
 	DataExtractor data;
@@ -154,7 +157,7 @@ void checkLandmarkBarcodes(bool& flag) {
 
 /** 
  * @brief Unit Test 3: check that all the ground truth values were extracted.
- * @param [in,out] flag confirms that the test was passed or failed.
+ * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkGroundtruthExtraction(bool& flag) {
 	DataExtractor data;
@@ -186,7 +189,7 @@ void checkGroundtruthExtraction(bool& flag) {
 
 /** 
  * @brief Unit Test 4: check that all the odometry values were extracted.
- * @param [in,out] flag confirms that the test was passed or failed.
+ * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkOdometryExtraction(bool& flag) {
 	DataExtractor data;
@@ -221,7 +224,7 @@ void checkOdometryExtraction(bool& flag) {
 
 /** 
  * @brief Unit Test 5: check that all the measurement values were extracted.
- * @param [in,out] flag confirms that the test was passed or failed.
+ * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkMeasurementExtraction(bool& flag) {
 	DataExtractor data;
@@ -265,7 +268,7 @@ void checkMeasurementExtraction(bool& flag) {
 
 /**
  * @brief Unit Test 6: Test Interpolation values against the ones extracted from the matlab script.
- * @param [in,out] flag confirms that the test was passed or failed.
+ * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void testInterpolation(bool& flag) { 
 	DataExtractor data("./data/MRCLAM_Dataset1");
@@ -523,12 +526,86 @@ void testInterpolation(bool& flag) {
 	}
 }
 /**
+ * @brief Checks that the time stamps produced by the resampling process are shared across the ground truth, odometry and measurements, as well as equal to the defined sampling period. 
+ * @param [in,out] flag indicates whether the test was passed or failed.
+ */
+void checkSamplingRate(bool& flag) {
+	DataExtractor data("./data/MRCLAM_Dataset1");
+
+	auto* robots = data.getRobots();
+	double sample_period = data.getSamplePeriod();
+
+	for (int k = 0; k < TOTAL_ROBOTS; k++) {
+		/* Check if the synced groundtruth and odometry are the same length */
+		if (robots[k].synced.ground_truth.size() != robots[k].synced.odometry.size()) {
+			std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " groundtruth and odometry vectors are not the same length\n";
+			flag = false;
+			return;
+		}
+
+		/* Check if all the sample periods are equal to the dataExtractor::sample_period_ */
+		for (std::size_t i = 1; i < robots[k].synced.ground_truth.size(); i++) {
+			double extracted_sample_period = (robots[k].synced.ground_truth[i].time - robots[k].synced.ground_truth[i-1].time);
+
+			if (std::round((extracted_sample_period - sample_period)*1000.0f) / 1000.f != 0) {
+				std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " synced groundtruth time stamps do not matching sampling period:" << extracted_sample_period << " ≠ " << sample_period << std::endl;
+				flag = false;
+				return;
+			}
+		}
+
+		for (std::size_t i = 1; i < robots[k].synced.odometry.size(); i++) {
+			double extracted_sample_period = (robots[k].synced.odometry[i].time - robots[k].synced.odometry[i-1].time);
+
+			if (std::round((extracted_sample_period - sample_period)*1000.0f) / 1000.f != 0) {
+				std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " synced odometry time stamps do not matching sampling period:" << extracted_sample_period << " ≠ " << sample_period << std::endl;
+				flag = false;
+				return;
+			}
+		}
+
+		/* Check if all the sample time stamps are the same between Groundtruth and odometry.
+		 * NOTE: The sizes of the measurements and groundtruth vectors are checked above, so they are assumed to be equal here. 
+		 */ 
+		for (std::size_t i = 0; i < robots[k].synced.measurements.size(); i++) {
+			if (robots[k].synced.odometry[i].time != robots[k].synced.ground_truth[i].time) {
+			std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " Time stamp mismatch between odometry and groundtruth: " << robots[k].synced.odometry[i].time << " ≠ " << robots[k].synced.ground_truth[i].time << std::endl;
+			}
+		}
+		/* Check if all the measurements have the time stamps as Groundruth. */
+		auto iterator = robots[k].synced.ground_truth.begin();
+		for (std::size_t i = 0; i < robots[k].synced.measurements.size(); i++) {
+			/* Attempt to find the timestep in the ground truth time steps. 
+			 * NOTE: since the groundtruth and odometry has already been checked to be the same, it is assumed that if the time stamp is in the groundtruth, it is also in odometry. */
+			iterator = std::find_if(iterator, robots[k].synced.ground_truth.end(), [&](const auto& element) {
+				return (std::round((element.time - robots[k].synced.measurements[i].time) * 1000.0f) / 1000.0f == 0.0f);
+			});
+			/* If the measurement time stamp is not in the ground, an error has occured. */
+			if (iterator == robots[k].synced.ground_truth.end()) {
+				std::cerr << "\033[1;31m[ERROR]\033[1m Robot " << k << " measurment timestamp not present in groundtruth: "  << robots[k].synced.measurements[k].time << std::endl;
+				flag = false;
+				return;
+			}
+		}
+	}
+}
+
+/**
  * @brief Checks that the when the caluclated odometry values are used for dead-reckoning that the outputs matches the ground truth values.
  * @param [in,out] flag confirms that the test was passed or failed.
  */
-void testGroundtruthOdometry(bool& flag) {
-	flag = false;
-}
+// void testGroundtruthOdometry(bool& flag) {
+// 	DataExtractor data("./data/MRCLAM_Dataset1");
+//
+// 	auto* robots = data.getRobots();
+//
+// 	for (std::size_t i = 0; i < robots->synced.ground_truth.size(); i++) {
+// 		double delta_t = 0;
+// 		double x = robots->synced.ground_truth[i].x + robots->synced.ground_truth[i].forward_velocity ;
+// 		flag = false;
+// 	}
+//
+// }
 
 int main() {
 	auto start = std::chrono::high_resolution_clock::now();
@@ -542,6 +619,8 @@ int main() {
 	bool correct_odometry = true;
 	bool correct_measurements = true;
 	bool correct_interpolation = true;
+	bool correct_sampling_rate= true;
+	bool plot_data_saved = true;
 
 	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
 	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
@@ -549,6 +628,8 @@ int main() {
 	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
 	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
 	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
+	std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
+	std::thread unit_test_8(savePlotData, std::ref(plot_data_saved));
 
 	unit_test_1.join();
 	unit_test_2.join();
@@ -556,6 +637,8 @@ int main() {
 	unit_test_4.join();
 	unit_test_5.join();
 	unit_test_6.join();
+	unit_test_7.join();
+	unit_test_8.join();
 
 	barcodes_set ? std::cout << "\033[1;32m[U1 PASS]\033[0m All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
 
@@ -569,11 +652,12 @@ int main() {
 
 	correct_interpolation ? std::cout << "\033[1;32m[U6 PASS]\033[0m All raw extracted values were correctly interpolated\n" : std::cerr << "\033[1;31m[U6 FAIL]\033[0m Raw extraced values were not correctly interpolated\n";
 	
-	bool plot = true;
-	plotData();
+	correct_sampling_rate ? std:: cout << "\033[1;32m[U7 PASS]\033[0m All resampled data have the same time stamps \n" : std::cerr << "\033[1;31m[U7 FAIL] The timesteps in the synced datasets did not match.\n";
 
-	plot ? std::cout << "\033[1;32m[PASS]\033[0m Plot saved.\n" : std::cerr << "\033[1;32m[FAIL]\033[0m Failed to save plot.\n";
+	plot_data_saved ? std::cout << "\033[1;32m[U8 PASS]\033[0m Plot saved.\n" : std::cerr << "\033[1;32m[U8 FAIL]\033[0m Failed to save plot.\n";
 	
+	// bool correctGroundruthOdometry = true;
+	// testGroundtruthOdometry(correctGroundruthOdometry);
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end-start);
