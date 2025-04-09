@@ -308,7 +308,7 @@ void testInterpolation(bool& flag) {
 			std::size_t end_index = line.find(',', 0);
 			double time = std::stod(line.substr(start_index, end_index));
 
-			if (std::round((robots[k].synced.ground_truth[i].time - time )* 100.0f)/ 100.0f  !=  0 ) {
+			if (std::round((robots[k].synced.ground_truth[i].time - time )* 1000.0f)/ 1000.0f  !=  0 ) {
 				std::cerr << "Interpolation Time Index Error [Line " << i << "] " << filename << ": " << robots[k].synced.ground_truth[i].time << " ≠ " << time << std::endl;
 				flag = false;
 				return;
@@ -318,7 +318,7 @@ void testInterpolation(bool& flag) {
 			end_index = line.find(',', start_index);
 			double x_coordinate = std::stod(line.substr(start_index, end_index - start_index));
 
-			if (std::round((robots[k].synced.ground_truth[i].x - x_coordinate) * 100.0f)/ 100.0f != 0) {
+			if (std::round((robots[k].synced.ground_truth[i].x - x_coordinate) * 10000.0f)/ 10000.0f != 0) {
 				std::cerr << "Interpolation x-coordinate Error [Line " << i << "] " << filename << ": " << robots[k].synced.ground_truth[i].x << " ≠ " << x_coordinate << std::endl;
 				flag = false;
 				return;
@@ -338,7 +338,7 @@ void testInterpolation(bool& flag) {
 			end_index = line.find(',', start_index);
 			double orientation = std::stod(line.substr(start_index, end_index - start_index));
 
-			if (std::round((robots[k].synced.ground_truth[i].orientation - orientation) * 100.0f) / 100.0 != 0) {
+			if (std::round((robots[k].synced.ground_truth[i].orientation - orientation) * 1000.0f) / 1000.0 != 0) {
 				std::cerr << "Interpolation orientation Error [Line " << i << "] " << filename << ":" << robots[k].synced.ground_truth[i].orientation << " ≠ " << orientation << std::endl;
 				flag = false;
 				return;
@@ -594,18 +594,47 @@ void checkSamplingRate(bool& flag) {
  * @brief Checks that the when the caluclated odometry values are used for dead-reckoning that the outputs matches the ground truth values.
  * @param [in,out] flag confirms that the test was passed or failed.
  */
-// void testGroundtruthOdometry(bool& flag) {
-// 	DataExtractor data("./data/MRCLAM_Dataset1");
-//
-// 	auto* robots = data.getRobots();
-//
-// 	for (std::size_t i = 0; i < robots->synced.ground_truth.size(); i++) {
-// 		double delta_t = 0;
-// 		double x = robots->synced.ground_truth[i].x + robots->synced.ground_truth[i].forward_velocity ;
-// 		flag = false;
-// 	}
-//
-// }
+void testGroundtruthOdometry(bool& flag) {
+	DataExtractor data("./data/MRCLAM_Dataset1");
+
+	std::cout << "UNIT TEST 9" << std::endl;
+	auto* robots = data.getRobots();
+
+	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		for (std::size_t k = 0; k < robots[i].synced.ground_truth.size() - 1; k++) {
+
+			/* NOTE: Unit Test 8 checks that the sampling time equals the set sample period. Therefore, it is assumed that the same period is equal to the value set.  */
+			double sampling_period = data.getSamplePeriod();
+
+			/* Calculate the robot's x-position and compare it to the groundtruth value */
+			double x = robots[i].synced.ground_truth[k].x + robots[i].synced.ground_truth[k].forward_velocity * sampling_period * std::cos(robots[i].synced.ground_truth[k].orientation);
+
+			if (std::round((x - robots[i].synced.ground_truth[k + 1].x) * 100.0f) / 100.0f != 0.0f) {
+				std::cerr << "\033[1;31m[ERROR]\033[0m " << k << "Robot " << i << " ground truth odometry x-coordinate does not result in the ground truth values measured: " << robots[i].synced.ground_truth[k+1].x << " ≠ " << x << " = " << robots[i].synced.ground_truth[k].x << " + \033[1;31m" << robots[i].synced.ground_truth[k].forward_velocity << "\033[0m " << sampling_period << " cos(" << robots[i].synced.ground_truth[k].orientation << ")"<< std::endl;
+				flag = false;
+				return;
+			}
+
+			/* Calculate the robot's y-position and compare it to the groundtruth value */
+			double y = robots[i].synced.ground_truth[k].y + robots[i].synced.ground_truth[k].forward_velocity * sampling_period * std::sin(robots[i].synced.ground_truth[k].orientation);
+
+			if (std::round((y - robots[i].synced.ground_truth[k + 1].y) * 100.0f) / 100.0f != 0.0f) {
+				std::cerr << "\033[1;31m[ERROR]\033[0m " << k << " Robot " << i << " ground truth odometry y-coordinate does not result in the ground truth values measured: "  << robots[i].synced.ground_truth[k+1].y << " ≠ " << y << " = " << robots[i].synced.ground_truth[k].y << "+ \033[1;31m" << robots[i].synced.ground_truth[k].forward_velocity << "\033[0m " << sampling_period << " sin(" << robots[i].synced.ground_truth[k].orientation << ")" << std::endl;
+				flag = false;
+				return;
+			}
+
+			/* Calculate the robot's orientation and compare it to the groundtruth value */
+			double orientation = robots[i].synced.ground_truth[k].orientation + sampling_period * robots[i].synced.ground_truth[k].angular_velocity;
+
+			if (std::round((orientation - robots[i].synced.ground_truth[k + 1].orientation) * 1000.0f) / 1000.0f != 0.0f) {
+				std::cerr << "\033[1;31m[ERROR]\033[0m " << k << " Robot " << i << " ground truth odometry does not result in the ground truth values measured: "  << robots[i].synced.ground_truth[k+1].orientation << " ≠ " << orientation << " = " << robots[i].synced.ground_truth[k].orientation << robots[i].synced.ground_truth[k].orientation << "+ \033[1;31m" << robots[i].synced.ground_truth[k].angular_velocity << "\033[0m " << sampling_period << std::endl;
+				flag = false;
+				return;
+			}
+		}
+	}
+}
 
 int main() {
 	auto start = std::chrono::high_resolution_clock::now();
@@ -621,6 +650,7 @@ int main() {
 	bool correct_interpolation = true;
 	bool correct_sampling_rate= true;
 	bool plot_data_saved = true;
+	bool correct_groundtruth_odometry = true;
 
 	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
 	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
@@ -630,6 +660,7 @@ int main() {
 	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
 	std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
 	std::thread unit_test_8(savePlotData, std::ref(plot_data_saved));
+	std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
 
 	unit_test_1.join();
 	unit_test_2.join();
@@ -639,6 +670,7 @@ int main() {
 	unit_test_6.join();
 	unit_test_7.join();
 	unit_test_8.join();
+	unit_test_9.join();
 
 	barcodes_set ? std::cout << "\033[1;32m[U1 PASS]\033[0m All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
 
@@ -655,10 +687,9 @@ int main() {
 	correct_sampling_rate ? std:: cout << "\033[1;32m[U7 PASS]\033[0m All resampled data have the same time stamps \n" : std::cerr << "\033[1;31m[U7 FAIL] The timesteps in the synced datasets did not match.\n";
 
 	plot_data_saved ? std::cout << "\033[1;32m[U8 PASS]\033[0m Plot saved.\n" : std::cerr << "\033[1;32m[U8 FAIL]\033[0m Failed to save plot.\n";
-	
-	// bool correctGroundruthOdometry = true;
-	// testGroundtruthOdometry(correctGroundruthOdometry);
 
+	correct_groundtruth_odometry ? std::cout << "\033[1;32m[U9 PASS]\033[0m All Robots have the correct groundtruth odometry values\n" : std::cerr << "\033[1;31m[U9 FAIL]\033[0m Not all robots have the correctly calculated groundtruth odometry values.\n";
+	
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end-start);
 	std::cout << "\n Test ran for: " << duration.count() << " seconds\n";
