@@ -7,7 +7,7 @@ SRC_DIR := src
 CXX := g++
 
 # Flags
-WFLAGS := -Wall -Wextra -Werror -Wshadow
+WFLAGS := -Wall -Wextra -Werror -Wshadow -ffloat-store -fno-fast-math
 CFLAGS := $(WFLAGS)
 
 # Files
