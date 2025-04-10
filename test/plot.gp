@@ -13,7 +13,8 @@ set multiplot layout 3,1 title "Ground truth"
 set datafile sep ",	"
 
 # Set the x range. This was choosen specifically to showcase some interpolation issues.
-set xrange[1271.5:1272.5]
+# set xrange[1271.5:1272.5]
+set xrange[145.42:145.62]
 
 # Ground truth plot
 set title "Robot x Groundtruth Trajectory"
@@ -47,7 +48,8 @@ plot "./data/robot0-Odometry.dat" using (stringcolumn(4) eq "r" ? $1 : 1/0):(str
 	"./Matlab_output/Robot1_Odometry.csv" using 1:2 with points pointsize 0.4 title "Matlab Interpolated", \
 	"./data/robot0-Odometry.dat" using (stringcolumn(4) eq "s" ? $1 : 1/0):(stringcolumn(4) eq "s" ? $2 : 1/0) with points pointsize 0.4 title "Interpolated"
 
-set ylabel "Angular velocity [m/s]"
+set title "Robot Angular Velocity"
+set ylabel "Angular velocity [rad/s]"
 plot "./data/robot0-Odometry.dat" using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $3 : 1/0) with points pointsize 0.8 linecolor rgb "red" pointtype 7 title "Raw",\
 	"./Matlab_output/Robot1_Odometry.csv" using 1:3 with points pointsize 0.4 title "Matlab Interpolated", \
 	"./data/robot0-Odometry.dat" using (stringcolumn(4) eq "s" ? $1 : 1/0):(stringcolumn(4) eq "s" ? $3 : 1/0) with points pointsize 0.4 title "Interpolated"
@@ -55,20 +57,23 @@ pause -1
 
 # Robot Measurement plot
 set multiplot layout 3,1 title "Robot 1 Measurement"
+
+set title "Other Robots Barcodes"
 set ylabel "Subjects"
 plot "./data/robot0-Meaurement.dat" using (stringcolumn(5) eq 'r' ? $1: 1/0):(stringcolumn(5) eq 'r' ? $2 : 1/0) with points pointsize 0.8 linecolor rgb "red" pointtype 7 title "Raw",\
 	"./Matlab_output/Robot1_Measurement.csv" using 1:2 with points pointsize 0.4 linecolor rgb "red" pointtype 7 title "Matlab Interpolated", \
 	"./data/robot0-Meaurement.dat" using (stringcolumn(5) eq 's' ? $1: 1/0):(stringcolumn(5) eq 's' ? $2 : 1/0) with points pointsize 0.4 title "Interpolated" 
 
+set title "Other Robots Ranges"
 set ylabel "Ranges"
 plot "./data/robot0-Meaurement.dat" using (stringcolumn(5) eq 'r' ? $1: 1/0):(stringcolumn(5) eq 'r' ? $3 : 1/0) with points pointsize 0.8 linecolor rgb "red" pointtype 7 title "Raw",\
 	"./Matlab_output/Robot1_Measurement.csv" using 1:3 with points pointsize 0.4 linecolor rgb "red" pointtype 7 title "Matlab Interpolated", \
 	"./data/robot0-Meaurement.dat" using (stringcolumn(5) eq 's' ? $1: 1/0):(stringcolumn(5) eq 's' ? $3 : 1/0) with points pointsize 0.4 title "Interpolated" 
 
-set ylabel "Ranges"
+set title "Other Robots Bearings"
+set ylabel "Bearings"
 plot "./data/robot0-Meaurement.dat" using (stringcolumn(5) eq 'r' ? $1: 1/0):(stringcolumn(5) eq 'r' ? $4 : 1/0) with points pointsize 0.8 linecolor rgb "red" pointtype 7 title "Raw",\
 	"./Matlab_output/Robot1_Measurement.csv" using 1:4 with points pointsize 0.4 linecolor rgb "red" pointtype 7 title "Matlab Interpolated", \
 	"./data/robot0-Meaurement.dat" using (stringcolumn(5) eq 's' ? $1: 1/0):(stringcolumn(5) eq 's' ? $4 : 1/0) with points pointsize 0.4 title "Interpolated" 
 
-set ylabel "Bearings"
 pause -1
