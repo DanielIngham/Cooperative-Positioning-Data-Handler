@@ -73,13 +73,6 @@ private:
 		double y;			///< Robot Groundtruth y-coordinate [m].
 		double orientation;		///< Robot Groundtruth orientation [rad].
 		 
-		/* The following attributes are calculated from the extracted attributes above. */
-		double forward_velocity;
-		double angular_velocity;
-
-		double range;
-		double bearing;
-
 		State();
 		/** 
 		 * @brief Constructor for convenient population of DataExtractor::robots_.raw.ground_truth .

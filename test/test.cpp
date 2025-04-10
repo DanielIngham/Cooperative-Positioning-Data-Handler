@@ -600,36 +600,35 @@ void testGroundtruthOdometry(bool& flag) {
 	std::cout << "UNIT TEST 9" << std::endl;
 	auto* robots = data.getRobots();
 
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		double average_x_difference = 0;
 		double average_y_difference = 0;
 		double average_orientation_difference = 0;
 
-		for (std::size_t k = 0; k < robots[i].groundtruth.states.size() - 1; k++) {
+		for (std::size_t k = 0; k < robots[id].groundtruth.states.size() - 1; k++) {
 
 			/* NOTE: Unit Test 8 checks that the sampling time equals the set sample period. Therefore, it is assumed that the same period is equal to the value set.  */
 			double sampling_period = data.getSamplePeriod();
 
 			/* Calculate the robot's x-position and compare it to the groundtruth value */
-			double x = robots[i].groundtruth.states[k].x + robots[i].groundtruth.states[k].forward_velocity * sampling_period * std::cos(robots[i].groundtruth.states[k].orientation);
-
+			double x = robots[id].groundtruth.states[k].x + robots[id].groundtruth.odometry[k].forward_velocity * sampling_period * std::cos(robots[id].groundtruth.states[k].orientation);
 			
-			average_x_difference += std::abs(x - robots[i].groundtruth.states[k + 1].x); 
+			average_x_difference += std::abs(x - robots[id].groundtruth.states[k + 1].x); 
 
 			/* Calculate the robot's y-position and compare it to the groundtruth value */
-			double y = robots[i].groundtruth.states[k].y + robots[i].groundtruth.states[k].forward_velocity * sampling_period * std::sin(robots[i].groundtruth.states[k].orientation);
+			double y = robots[id].groundtruth.states[k].y + robots[id].groundtruth.odometry[k].forward_velocity * sampling_period * std::sin(robots[id].groundtruth.states[k].orientation);
 
-			average_y_difference += std::abs(y - robots[i].groundtruth.states[k+1].y);
+			average_y_difference += std::abs(y - robots[id].groundtruth.states[k+1].y);
 			/* Calculate the robot's orientation and compare it to the groundtruth value */
-			double orientation = robots[i].groundtruth.states[k].orientation + sampling_period * robots[i].groundtruth.states[k].angular_velocity;
+			double orientation = robots[id].groundtruth.states[k].orientation + sampling_period * robots[id].groundtruth.odometry[k].angular_velocity;
 
 			/* Normalise the angular velocity between PI and -PI (180 and -180 degrees respectively) */
 			while (orientation >= M_PI) orientation -= 2.0 * M_PI;
 			while (orientation < -M_PI) orientation += 2.0 * M_PI;
 
-			average_orientation_difference += std::abs(orientation - robots[i].groundtruth.states[k+1].orientation);
+			average_orientation_difference += std::abs(orientation - robots[id].groundtruth.states[k+1].orientation);
 		}
-		std::cout << average_x_difference / (robots[i].groundtruth.states.size() - 1) << ", " << average_y_difference / (robots[i].groundtruth.states.size() - 1) << ", " <<  average_orientation_difference / (robots[i].groundtruth.states.size() - 1) << std::endl;
+		std::cout << average_x_difference / (robots[id].groundtruth.states.size() - 1) << ", " << average_y_difference / (robots[id].groundtruth.states.size() - 1) << ", " <<  average_orientation_difference / (robots[id].groundtruth.states.size() - 1) << std::endl;
 	}
 }
 

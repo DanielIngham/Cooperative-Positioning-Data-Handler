@@ -401,6 +401,7 @@ double DataExtractor::getSamplePeriod() {
 /**
  * @brief Syncs the time steps for the extracted data according to the specified sampling period.
  * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
+ * @note Synced values for the ground truth are saved in the DataExtractor::robots_->groundtruth struct vector whereas synced odometry are saved in the DataExtractor::robots_->synced struct
  */
 void DataExtractor::syncData(const double& sample_period) {
 	/* Find the minimum and maximimum times in the datasets */
@@ -525,26 +526,28 @@ void DataExtractor::syncData(const double& sample_period) {
 /**
  * @brief Utilises the extracted robots groundtruth position and heading values to calculate their associated groundtruth odometry values. 
  * @details The following expression is utilsed to calculate the odomotery values
- * $$\begin{bmatrix} \omega_k & v_k \end{bmatrix}^\top = \begin{bmatrix} (\theta_{k+1} - \theta_{k}) / \Delta t & (y_{k+1} - y_k)/(\Delta t \; \sin (\theta_k))\end{bmatrix}^\top, $$ 
+ * $$\begin{bmatrix} \omega_k & v_k \end{bmatrix}^\top = \begin{bmatrix} \atan(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} - \theta_{k})) / \Delta t & sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2} \end{bmatrix}^\top, $$ 
  * where \f$k\f$ denotes the current time step; \f$\theta\f$ denotes the robot's orientation; \f$ y\f$ denotes the robot's y-coordinate; \f$\Delta t\f$ is the user defined sample period; \f$\omega\f$ and \f$v\f$ denotes the angular velocity and forward velocity of the robot respectively.
  */
 void DataExtractor::calculateGroundtruthOdometry() {
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		std::size_t k = 0;
-		for (; k < robots_[i].groundtruth.states.size() - 1; k++) {
+		for (; k < robots_[id].groundtruth.states.size() - 1; k++) {
 
-			/* Calculate the angular velocity that occured between orientation measurements */
-			robots_[i].groundtruth.states[k].angular_velocity = std::atan2(std::sin(robots_[i].groundtruth.states[k+1].orientation - robots_[i].groundtruth.states[k].orientation), std::cos(robots_[i].groundtruth.states[k+1].orientation - robots_[i].groundtruth.states[k].orientation)) / this->sampling_period_;
-
-			/* Calculate the forward velocity (velocity vector magnitude) */
-			double x_difference = (robots_[i].groundtruth.states[k+1].x - robots_[i].groundtruth.states[k].x);
-			double y_difference = (robots_[i].groundtruth.states[k+1].y - robots_[i].groundtruth.states[k].y);
-			robots_[i].groundtruth.states[k].forward_velocity = std::sqrt(x_difference*x_difference + y_difference*y_difference) / this->sampling_period_ ;
+			double x_difference = (robots_[id].groundtruth.states[k+1].x - robots_[id].groundtruth.states[k].x);
+			double y_difference = (robots_[id].groundtruth.states[k+1].y - robots_[id].groundtruth.states[k].y);
+			robots_[id].groundtruth.odometry.push_back( Odometry(
+				robots_[id].groundtruth.states[k].time, 
+				std::sqrt(x_difference*x_difference + y_difference*y_difference) / this->sampling_period_ ,
+				std::atan2(std::sin(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation), std::cos(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation)) / this->sampling_period_
+			));
 		}
-
-		/* NOTE: Since the last groundtruth value can not be calculated, it is set equal to the measured value */
-		robots_[i].groundtruth.states[k].forward_velocity = robots_[i].synced.odometry.back().forward_velocity;
-		robots_[i].groundtruth.states[k].angular_velocity = robots_[i].synced.odometry.back().angular_velocity;
-      }
+		/* NOTE: Since the last groundtruth value can not be calculated, it is set equal to the synced measured value */
+		robots_[id].groundtruth.odometry.push_back( Odometry(
+			robots_[id].synced.odometry.back().time,
+			robots_[id].synced.odometry.back().forward_velocity,
+			robots_[id].synced.odometry.back().angular_velocity
+		));
+	}
 }
 
