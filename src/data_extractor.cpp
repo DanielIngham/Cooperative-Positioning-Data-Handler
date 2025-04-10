@@ -534,20 +534,12 @@ void DataExtractor::calculateGroundtruthOdometry() {
 		for (; k < robots_[i].synced.ground_truth.size() - 1; k++) {
 
 			/* Calculate the angular velocity that occured between orientation measurements */
-			robots_[i].synced.ground_truth[k].angular_velocity = (robots_[i].synced.ground_truth[k+1].orientation - robots_[i].synced.ground_truth[k].orientation) / this->sampling_period_;
-			/* Normalise the angular velocity between PI and -PI (180 and -180 degrees respectively) */
-			while (robots_[i].synced.ground_truth[k].angular_velocity >= M_PI) robots_[i].synced.ground_truth[k].angular_velocity -= 2.0 * M_PI;
-			while (robots_[i].synced.ground_truth[k].angular_velocity < -M_PI) robots_[i].synced.ground_truth[k].angular_velocity += 2.0 * M_PI;
+			robots_[i].synced.ground_truth[k].angular_velocity = std::atan2(std::sin(robots_[i].synced.ground_truth[k+1].orientation - robots_[i].synced.ground_truth[k].orientation), std::cos(robots_[i].synced.ground_truth[k+1].orientation - robots_[i].synced.ground_truth[k].orientation)) / this->sampling_period_;
 
 			/* Calculate the forward velocity (velocity vector magnitude) */
-			// robots_[i].synced.ground_truth[k].forward_velocity = (robots_[i].synced.ground_truth[k+1].x - robots_[i].synced.ground_truth[k].x) / (this->sampling_period_ * std::cos(robots_[i].synced.ground_truth[k].orientation));
-			// double y_velocity = (robots_[i].synced.ground_truth[k+1].y - robots_[i].synced.ground_truth[k].y) / (delta_t * std::sin(robots_[i].synced.ground_truth[k].orientation));
-			//
-			// robots_[i].synced.ground_truth[k].forward_velocity 
-			double x_velocity = (robots_[i].synced.ground_truth[k+1].x - robots_[i].synced.ground_truth[k].x) / this->sampling_period_;
-			double y_velocity = (robots_[i].synced.ground_truth[k+1].y - robots_[i].synced.ground_truth[k].y) / this->sampling_period_;
-			robots_[i].synced.ground_truth[k].forward_velocity  = std::sqrt(x_velocity*x_velocity + y_velocity*y_velocity);
-			
+			double x_difference = (robots_[i].synced.ground_truth[k+1].x - robots_[i].synced.ground_truth[k].x);
+			double y_difference = (robots_[i].synced.ground_truth[k+1].y - robots_[i].synced.ground_truth[k].y);
+			robots_[i].synced.ground_truth[k].forward_velocity = std::sqrt(x_difference*x_difference + y_difference*y_difference) / this->sampling_period_ ;
 		}
 
 		/* NOTE: Since the last groundtruth value can not be calculated, it is set equal to the measured value */
@@ -555,3 +547,4 @@ void DataExtractor::calculateGroundtruthOdometry() {
 		robots_[i].synced.ground_truth[k].angular_velocity = robots_[i].synced.odometry.back().angular_velocity;
       }
 }
+
