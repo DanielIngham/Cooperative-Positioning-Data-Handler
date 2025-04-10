@@ -62,8 +62,8 @@ void savePlotData(bool& flag) {
 		for (std::size_t j = 0; j < robots[i].raw.states.size(); j++) {
 			robot_file << robots[i].raw.states[j].time << '\t' << robots[i].raw.states[j].x << '\t' << robots[i].raw.states[j].y << '\t' << robots[i].raw.states[j].orientation << '\t' << 'r' << '\n';
 			
-			if (j < robots[i].synced.states.size()){
-				robot_file << robots[i].synced.states[j].time << '\t' << robots[i].synced.states[j].x << '\t' << robots[i].synced.states[j].y << '\t'<< robots[i].synced.states[j].orientation << '\t' << 's' << '\n';
+			if (j < robots[i].groundtruth.states.size()){
+				robot_file << robots[i].groundtruth.states[j].time << '\t' << robots[i].groundtruth.states[j].x << '\t' << robots[i].groundtruth.states[j].y << '\t'<< robots[i].groundtruth.states[j].orientation << '\t' << 's' << '\n';
 			}
 		}
 
@@ -288,13 +288,13 @@ void testInterpolation(bool& flag) {
 
 		/* Check that the number of lines in the file match the number of items in the extracted values. */
 		std::size_t total_lines = countFileLines(filename);
-		if (total_lines != robots[id].synced.states.size()) {
-			std::cerr << "Total number of interpolated groundtruth values does not match Matlab output " << robots[id].synced.states.size() << " ≠ " << total_lines <<". File: " << filename << std::endl;
+		if (total_lines != robots[id].groundtruth.states.size()) {
+			std::cerr << "Total number of interpolated groundtruth values does not match Matlab output " << robots[id].groundtruth.states.size() << " ≠ " << total_lines <<". File: " << filename << std::endl;
 			flag = false;
 			return;
 		}
 
-		for (std::size_t k = 0; k < robots[id].synced.states.size(); k++) {
+		for (std::size_t k = 0; k < robots[id].groundtruth.states.size(); k++) {
 			std::string line;
 			std::getline(file, line); 
 			if ('#' == line[0]) {
@@ -308,8 +308,8 @@ void testInterpolation(bool& flag) {
 			std::size_t end_index = line.find(',', 0);
 			double time = std::stod(line.substr(start_index, end_index));
 
-			if (std::round((robots[id].synced.states[k].time - time )* 100.0)/ 100.0  !=  0 ) {
-				std::cerr << "Interpolation Time Index Error [Line " << k << "] " << filename << ": " << robots[id].synced.states[k].time << " ≠ " << time << std::endl;
+			if (std::round((robots[id].groundtruth.states[k].time - time )* 100.0)/ 100.0  !=  0 ) {
+				std::cerr << "Interpolation Time Index Error [Line " << k << "] " << filename << ": " << robots[id].groundtruth.states[k].time << " ≠ " << time << std::endl;
 				flag = false;
 				return;
 			}
@@ -318,8 +318,8 @@ void testInterpolation(bool& flag) {
 			end_index = line.find(',', start_index);
 			double x_coordinate = std::stod(line.substr(start_index, end_index - start_index));
 
-			if (std::round((robots[id].synced.states[k].x - x_coordinate) * 100.0)/ 100.0 != 0) {
-				std::cerr << "Interpolation x-coordinate Error [Line " << k << "] " << filename << ": " << robots[id].synced.states[k].x << " ≠ " << x_coordinate << std::endl;
+			if (std::round((robots[id].groundtruth.states[k].x - x_coordinate) * 100.0)/ 100.0 != 0) {
+				std::cerr << "Interpolation x-coordinate Error [Line " << k << "] " << filename << ": " << robots[id].groundtruth.states[k].x << " ≠ " << x_coordinate << std::endl;
 				flag = false;
 				return;
 			}
@@ -328,8 +328,8 @@ void testInterpolation(bool& flag) {
 			end_index = line.find(',', start_index);
 			double y_coordinate = std::stod(line.substr(start_index, end_index - start_index));
 
-			if (std::round((robots[id].synced.states[k].y - y_coordinate ) * 100.0)/ 100.0 != 0) {
-				std::cerr << "Interpolation y-coordinate Error [Line " << k << "] " << filename << ": "<< robots[id].synced.states[k].y << " ≠ " << y_coordinate << std::endl;
+			if (std::round((robots[id].groundtruth.states[k].y - y_coordinate ) * 100.0)/ 100.0 != 0) {
+				std::cerr << "Interpolation y-coordinate Error [Line " << k << "] " << filename << ": "<< robots[id].groundtruth.states[k].y << " ≠ " << y_coordinate << std::endl;
 				flag = false;
 				return;
 			}
@@ -338,8 +338,8 @@ void testInterpolation(bool& flag) {
 			end_index = line.find(',', start_index);
 			double orientation = std::stod(line.substr(start_index, end_index - start_index));
 
-			if (std::round((robots[id].synced.states[k].orientation - orientation) * 100.0) / 100.0 != 0) {
-				std::cerr << "Interpolation orientation Error [Line " << k << "] " << filename << ":" << robots[id].synced.states[k].orientation << " ≠ " << orientation << std::endl;
+			if (std::round((robots[id].groundtruth.states[k].orientation - orientation) * 100.0) / 100.0 != 0) {
+				std::cerr << "Interpolation orientation Error [Line " << k << "] " << filename << ":" << robots[id].groundtruth.states[k].orientation << " ≠ " << orientation << std::endl;
 				flag = false;
 				return;
 			}
@@ -536,15 +536,15 @@ void checkSamplingRate(bool& flag) {
 
 	for (int k = 0; k < TOTAL_ROBOTS; k++) {
 		/* Check if the synced groundtruth and odometry are the same length */
-		if (robots[k].synced.states.size() != robots[k].synced.odometry.size()) {
+		if (robots[k].groundtruth.states.size() != robots[k].synced.odometry.size()) {
 			std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " groundtruth and odometry vectors are not the same length\n";
 			flag = false;
 			return;
 		}
 
 		/* Check if all the sample periods are equal to the dataExtractor::sample_period_ */
-		for (std::size_t i = 1; i < robots[k].synced.states.size(); i++) {
-			double extracted_sample_period = (robots[k].synced.states[i].time - robots[k].synced.states[i-1].time);
+		for (std::size_t i = 1; i < robots[k].groundtruth.states.size(); i++) {
+			double extracted_sample_period = (robots[k].groundtruth.states[i].time - robots[k].groundtruth.states[i-1].time);
 
 			if (std::round((extracted_sample_period - sample_period)*1000.0) / 1000. != 0) {
 				std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " synced groundtruth time stamps do not matching sampling period:" << extracted_sample_period << " ≠ " << sample_period << std::endl;
@@ -567,20 +567,20 @@ void checkSamplingRate(bool& flag) {
 		 * NOTE: The sizes of the measurements and groundtruth vectors are checked above, so they are assumed to be equal here. 
 		 */ 
 		for (std::size_t i = 0; i < robots[k].synced.measurements.size(); i++) {
-			if (robots[k].synced.odometry[i].time != robots[k].synced.states[i].time) {
-			std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " Time stamp mismatch between odometry and groundtruth: " << robots[k].synced.odometry[i].time << " ≠ " << robots[k].synced.states[i].time << std::endl;
+			if (robots[k].synced.odometry[i].time != robots[k].groundtruth.states[i].time) {
+			std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " Time stamp mismatch between odometry and groundtruth: " << robots[k].synced.odometry[i].time << " ≠ " << robots[k].groundtruth.states[i].time << std::endl;
 			}
 		}
 		/* Check if all the measurements have the time stamps as Groundruth. */
-		auto iterator = robots[k].synced.states.begin();
+		auto iterator = robots[k].groundtruth.states.begin();
 		for (std::size_t i = 0; i < robots[k].synced.measurements.size(); i++) {
 			/* Attempt to find the timestep in the ground truth time steps. 
 			 * NOTE: since the groundtruth and odometry has already been checked to be the same, it is assumed that if the time stamp is in the groundtruth, it is also in odometry. */
-			iterator = std::find_if(iterator, robots[k].synced.states.end(), [&](const auto& element) {
+			iterator = std::find_if(iterator, robots[k].groundtruth.states.end(), [&](const auto& element) {
 				return (std::round((element.time - robots[k].synced.measurements[i].time) * 1000.0) / 1000.0 == 0.0);
 			});
 			/* If the measurement time stamp is not in the ground, an error has occured. */
-			if (iterator == robots[k].synced.states.end()) {
+			if (iterator == robots[k].groundtruth.states.end()) {
 				std::cerr << "\033[1;31m[ERROR]\033[1m Robot " << k << " measurment timestamp not present in groundtruth: "  << robots[k].synced.measurements[k].time << std::endl;
 				flag = false;
 				return;
@@ -605,31 +605,31 @@ void testGroundtruthOdometry(bool& flag) {
 		double average_y_difference = 0;
 		double average_orientation_difference = 0;
 
-		for (std::size_t k = 0; k < robots[i].synced.states.size() - 1; k++) {
+		for (std::size_t k = 0; k < robots[i].groundtruth.states.size() - 1; k++) {
 
 			/* NOTE: Unit Test 8 checks that the sampling time equals the set sample period. Therefore, it is assumed that the same period is equal to the value set.  */
 			double sampling_period = data.getSamplePeriod();
 
 			/* Calculate the robot's x-position and compare it to the groundtruth value */
-			double x = robots[i].synced.states[k].x + robots[i].synced.states[k].forward_velocity * sampling_period * std::cos(robots[i].synced.states[k].orientation);
+			double x = robots[i].groundtruth.states[k].x + robots[i].groundtruth.states[k].forward_velocity * sampling_period * std::cos(robots[i].groundtruth.states[k].orientation);
 
 			
-			average_x_difference += std::abs(x - robots[i].synced.states[k + 1].x); 
+			average_x_difference += std::abs(x - robots[i].groundtruth.states[k + 1].x); 
 
 			/* Calculate the robot's y-position and compare it to the groundtruth value */
-			double y = robots[i].synced.states[k].y + robots[i].synced.states[k].forward_velocity * sampling_period * std::sin(robots[i].synced.states[k].orientation);
+			double y = robots[i].groundtruth.states[k].y + robots[i].groundtruth.states[k].forward_velocity * sampling_period * std::sin(robots[i].groundtruth.states[k].orientation);
 
-			average_y_difference += std::abs(y - robots[i].synced.states[k+1].y);
+			average_y_difference += std::abs(y - robots[i].groundtruth.states[k+1].y);
 			/* Calculate the robot's orientation and compare it to the groundtruth value */
-			double orientation = robots[i].synced.states[k].orientation + sampling_period * robots[i].synced.states[k].angular_velocity;
+			double orientation = robots[i].groundtruth.states[k].orientation + sampling_period * robots[i].groundtruth.states[k].angular_velocity;
 
 			/* Normalise the angular velocity between PI and -PI (180 and -180 degrees respectively) */
 			while (orientation >= M_PI) orientation -= 2.0 * M_PI;
 			while (orientation < -M_PI) orientation += 2.0 * M_PI;
 
-			average_orientation_difference += std::abs(orientation - robots[i].synced.states[k+1].orientation);
+			average_orientation_difference += std::abs(orientation - robots[i].groundtruth.states[k+1].orientation);
 		}
-		std::cout << average_x_difference / (robots[i].synced.states.size() - 1) << ", " << average_y_difference / (robots[i].synced.states.size() - 1) << ", " <<  average_orientation_difference / (robots[i].synced.states.size() - 1) << std::endl;
+		std::cout << average_x_difference / (robots[i].groundtruth.states.size() - 1) << ", " << average_y_difference / (robots[i].groundtruth.states.size() - 1) << ", " <<  average_orientation_difference / (robots[i].groundtruth.states.size() - 1) << std::endl;
 	}
 }
 

@@ -452,19 +452,19 @@ void DataExtractor::syncData(const double& sample_period) {
 			});
 			/* If the element is the first item in the raw values, copy the raw values (no interpolation). This is assuming that the robot was stationary before its ground truth was recorded. */
 			if (groundtruth_iterator == robots_[i].raw.states.begin()) {
-				robots_[i].synced.states.push_back(State(t, robots_[i].raw.states.front().x, robots_[i].raw.states.front().y, robots_[i].raw.states.front().orientation)); 
+				robots_[i].groundtruth.states.push_back(State(t, robots_[i].raw.states.front().x, robots_[i].raw.states.front().y, robots_[i].raw.states.front().orientation)); 
 				continue;
 			}
 			/* If the element is the larst item in the raw values, copy the raw values (no interpolation). This is assuming that the robot remains stationary after the ground truth recording ended. */
 			else if (groundtruth_iterator == robots_[i].raw.states.end()) {
-				robots_[i].synced.states.push_back(State(t, robots_[i].raw.states.back().x, robots_[i].raw.states.back().y, robots_[i].raw.states.back().orientation));
+				robots_[i].groundtruth.states.push_back(State(t, robots_[i].raw.states.back().x, robots_[i].raw.states.back().y, robots_[i].raw.states.back().orientation));
 				continue;
 			}
 
 			/* Interpolate the Groundtruth values */
 			double interpolation_factor = (t -  (groundtruth_iterator-1)->time) / (groundtruth_iterator->time - (groundtruth_iterator -1)->time);
 
-			robots_[i].synced.states.push_back( State(
+			robots_[i].groundtruth.states.push_back( State(
 				t,
 				interpolation_factor * (groundtruth_iterator->x - (groundtruth_iterator - 1)->x) + (groundtruth_iterator - 1)->x,
 				interpolation_factor * (groundtruth_iterator->y - (groundtruth_iterator - 1)->y) + (groundtruth_iterator - 1)->y,
@@ -531,20 +531,20 @@ void DataExtractor::syncData(const double& sample_period) {
 void DataExtractor::calculateGroundtruthOdometry() {
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
 		std::size_t k = 0;
-		for (; k < robots_[i].synced.states.size() - 1; k++) {
+		for (; k < robots_[i].groundtruth.states.size() - 1; k++) {
 
 			/* Calculate the angular velocity that occured between orientation measurements */
-			robots_[i].synced.states[k].angular_velocity = std::atan2(std::sin(robots_[i].synced.states[k+1].orientation - robots_[i].synced.states[k].orientation), std::cos(robots_[i].synced.states[k+1].orientation - robots_[i].synced.states[k].orientation)) / this->sampling_period_;
+			robots_[i].groundtruth.states[k].angular_velocity = std::atan2(std::sin(robots_[i].groundtruth.states[k+1].orientation - robots_[i].groundtruth.states[k].orientation), std::cos(robots_[i].groundtruth.states[k+1].orientation - robots_[i].groundtruth.states[k].orientation)) / this->sampling_period_;
 
 			/* Calculate the forward velocity (velocity vector magnitude) */
-			double x_difference = (robots_[i].synced.states[k+1].x - robots_[i].synced.states[k].x);
-			double y_difference = (robots_[i].synced.states[k+1].y - robots_[i].synced.states[k].y);
-			robots_[i].synced.states[k].forward_velocity = std::sqrt(x_difference*x_difference + y_difference*y_difference) / this->sampling_period_ ;
+			double x_difference = (robots_[i].groundtruth.states[k+1].x - robots_[i].groundtruth.states[k].x);
+			double y_difference = (robots_[i].groundtruth.states[k+1].y - robots_[i].groundtruth.states[k].y);
+			robots_[i].groundtruth.states[k].forward_velocity = std::sqrt(x_difference*x_difference + y_difference*y_difference) / this->sampling_period_ ;
 		}
 
 		/* NOTE: Since the last groundtruth value can not be calculated, it is set equal to the measured value */
-		robots_[i].synced.states[k].forward_velocity = robots_[i].synced.odometry.back().forward_velocity;
-		robots_[i].synced.states[k].angular_velocity = robots_[i].synced.odometry.back().angular_velocity;
+		robots_[i].groundtruth.states[k].forward_velocity = robots_[i].synced.odometry.back().forward_velocity;
+		robots_[i].groundtruth.states[k].angular_velocity = robots_[i].synced.odometry.back().angular_velocity;
       }
 }
 
