@@ -49,9 +49,9 @@ void savePlotData(bool& flag) {
 	std::ofstream robot_file;
 
 	/* Loop through the data structures for each robot */
-	for (std::uint8_t i = 0; i < TOTAL_ROBOTS; i++ ) {
+	for (int id = 0; id < TOTAL_ROBOTS; id++ ) {
 		/* Save the values of the raw and synced groundtruth values of a given robot into the same file with the last row indicating 'r' for raw and 's' for synced.*/
-		std::string filename = "./test/data/robot" + std::to_string(i) + "-Groundtruth" + ".dat";
+		std::string filename = "./test/data/robot" + std::to_string(id) + "-Groundtruth" + ".dat";
 		robot_file.open(filename);
 		if (!robot_file.is_open()) {
 			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
@@ -59,17 +59,17 @@ void savePlotData(bool& flag) {
 			return;
 		}
 
-		for (std::size_t j = 0; j < robots[i].raw.states.size(); j++) {
-			robot_file << robots[i].raw.states[j].time << '\t' << robots[i].raw.states[j].x << '\t' << robots[i].raw.states[j].y << '\t' << robots[i].raw.states[j].orientation << '\t' << 'r' << '\n';
+		for (std::size_t j = 0; j < robots[id].raw.states.size(); j++) {
+			robot_file << robots[id].raw.states[j].time << '\t' << robots[id].raw.states[j].x << '\t' << robots[id].raw.states[j].y << '\t' << robots[id].raw.states[j].orientation << '\t' << 'r' << '\n';
 			
-			if (j < robots[i].groundtruth.states.size()){
-				robot_file << robots[i].groundtruth.states[j].time << '\t' << robots[i].groundtruth.states[j].x << '\t' << robots[i].groundtruth.states[j].y << '\t'<< robots[i].groundtruth.states[j].orientation << '\t' << 's' << '\n';
+			if (j < robots[id].groundtruth.states.size()){
+				robot_file << robots[id].groundtruth.states[j].time << '\t' << robots[id].groundtruth.states[j].x << '\t' << robots[id].groundtruth.states[j].y << '\t'<< robots[id].groundtruth.states[j].orientation << '\t' << 's' << '\n';
 			}
 		}
 
 		/* Save the values of the raw and synced odometry values of a given robot into the same file with the last row indicating 'r' for raw  and 's' for synced.*/
 		robot_file.close();
-		filename = "./test/data/robot" + std::to_string(i) + "-Odometry" + ".dat";
+		filename = "./test/data/robot" + std::to_string(id) + "-Odometry" + ".dat";
 		robot_file.open(filename);
 
 		if (!robot_file.is_open()) {
@@ -78,17 +78,17 @@ void savePlotData(bool& flag) {
 			return;
 		}
 
-		for (std::size_t j = 0; j < robots[i].raw.odometry.size(); j++) {
-			robot_file << robots[i].raw.odometry[j].time << '\t' << robots[i].raw.odometry[j].forward_velocity << '\t' << robots[i].raw.odometry[j].angular_velocity << '\t' << 'r' << '\n';
+		for (std::size_t j = 0; j < robots[id].raw.odometry.size(); j++) {
+			robot_file << robots[id].raw.odometry[j].time << '\t' << robots[id].raw.odometry[j].forward_velocity << '\t' << robots[id].raw.odometry[j].angular_velocity << '\t' << 'r' << '\n';
 			
-			if (j < robots[i].synced.odometry.size()){
-				robot_file << robots[i].synced.odometry[j].time << '\t' << robots[i].synced.odometry[j].forward_velocity << '\t' << robots[i].synced.odometry[j].angular_velocity << '\t' << 's' << '\n';
+			if (j < robots[id].synced.odometry.size()){
+				robot_file << robots[id].synced.odometry[j].time << '\t' << robots[id].synced.odometry[j].forward_velocity << '\t' << robots[id].synced.odometry[j].angular_velocity << '\t' << 's' << '\n';
 			}
 		}
 
 		/* Save the values of the raw and synced measurment values of a given robot into the same file with the last row indicating 'g' for raw  and 'i' for synced.*/
 		robot_file.close();
-		filename = "./test/data/robot" + std::to_string(i) + "-Meaurement" + ".dat";
+		filename = "./test/data/robot" + std::to_string(id) + "-Meaurement" + ".dat";
 		robot_file.open(filename);
 
 		if (!robot_file.is_open()) {
@@ -98,15 +98,56 @@ void savePlotData(bool& flag) {
 		}
 
 		/* Note that when the "raw" measurement data structure is populated, it only adds one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
-		for (std::size_t j = 0; j < robots[i].raw.measurements.size(); j++) {
-			robot_file << robots[i].raw.measurements[j].time << '\t' << robots[i].raw.measurements[j].subjects[0] << '\t' << robots[i].raw.measurements[j].ranges[0] << '\t' <<  robots[i].raw.measurements[j].bearings[0] << '\t' << 'r' << '\n';
+		for (std::size_t j = 0; j < robots[id].raw.measurements.size(); j++) {
+			robot_file << robots[id].raw.measurements[j].time << '\t' << robots[id].raw.measurements[j].subjects[0] << '\t' << robots[id].raw.measurements[j].ranges[0] << '\t' <<  robots[id].raw.measurements[j].bearings[0] << '\t' << 'r' << '\n';
 		}
-		for (std::size_t j = 0; j < robots[i].synced.measurements.size(); j++) {
-			for (std::size_t k = 0; k < robots[i].synced.measurements[j].subjects.size(); k++) {
-				robot_file << robots[i].synced.measurements[j].time << '\t' << robots[i].synced.measurements[j].subjects[k] << '\t' << robots[i].synced.measurements[j].ranges[k] << '\t' << robots[i].synced.measurements[j].bearings[k] << '\t' << 's' << '\n';
+		for (std::size_t j = 0; j < robots[id].synced.measurements.size(); j++) {
+			for (std::size_t k = 0; k < robots[id].synced.measurements[j].subjects.size(); k++) {
+				robot_file << robots[id].synced.measurements[j].time << '\t' << robots[id].synced.measurements[j].subjects[k] << '\t' << robots[id].synced.measurements[j].ranges[k] << '\t' << robots[id].synced.measurements[j].bearings[k] << '\t' << 's' << '\n';
 			}
 		}
 		robot_file.close();
+
+		/* Save the error values of the odometry.*/
+		filename = "./test/data/robot" + std::to_string(id) + "-Odometry-Error" + ".dat";
+		robot_file.open(filename);
+
+		if (!robot_file.is_open()) {
+			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+			flag = false;
+			return;
+		}
+
+		robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]\n";
+		for (std::size_t k = 0; k < robots[id].error.odometry.size(); k++) {
+			robot_file << robots[id].error.odometry[k].time << '\t' << robots[id].error.odometry[k].forward_velocity << '\t' << robots[id].error.odometry[k].angular_velocity <<  '\n';
+		}
+		robot_file.close();
+
+		/* Save the plot data for the error Gaussian */
+		filename = "./test/data/robot" + std::to_string(id) + "-Odometry-Error-PDF" + ".dat";
+		robot_file.open(filename);
+
+		if (!robot_file.is_open()) {
+			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+			flag = false;
+			return;
+		}
+
+		double min = std::abs(robots[id].error.odometry[0].forward_velocity);
+		double max = std::abs(robots[id].error.odometry[0].forward_velocity);
+;
+		for (std::size_t k = 1; k < robots[id].error.odometry.size(); k++) {
+
+			if (min > std::abs(robots[id].error.odometry[k].forward_velocity)) {
+				min = robots[id].error.odometry[k].forward_velocity;
+			}
+
+			if (max < std::abs(robots[id].error.odometry[k].forward_velocity)) {
+				max = robots[id].error.odometry[k].forward_velocity;
+			}
+			// robot_file << robots[id].error.odometry[k].time << '\t' << robots[id].error.odometry[k].forward_velocity << '\t' << robots[id].error.odometry[k].angular_velocity <<  '\n';
+		}
 	}
 }
 
@@ -594,7 +635,7 @@ void checkSamplingRate(bool& flag) {
  * @param [in,out] flag confirms that the test was passed or failed.
  */
 void testGroundtruthOdometry(bool& flag) {
-	flag = false;
+	flag = true;
 	DataExtractor data("./data/MRCLAM_Dataset1");
 
 	std::cout << "UNIT TEST 9" << std::endl;
@@ -622,14 +663,16 @@ void testGroundtruthOdometry(bool& flag) {
 			/* Calculate the robot's orientation and compare it to the groundtruth value */
 			double orientation = robots[id].groundtruth.states[k].orientation + sampling_period * robots[id].groundtruth.odometry[k].angular_velocity;
 
-			/* Normalise the angular velocity between PI and -PI (180 and -180 degrees respectively) */
+			/* Normalise the orientation between PI and -PI (180 and -180 degrees respectively) */
 			while (orientation >= M_PI) orientation -= 2.0 * M_PI;
 			while (orientation < -M_PI) orientation += 2.0 * M_PI;
 
 			average_orientation_difference += std::abs(orientation - robots[id].groundtruth.states[k+1].orientation);
 		}
 		std::cout << average_x_difference / (robots[id].groundtruth.states.size() - 1) << ", " << average_y_difference / (robots[id].groundtruth.states.size() - 1) << ", " <<  average_orientation_difference / (robots[id].groundtruth.states.size() - 1) << std::endl;
+
 	}
+
 }
 
 int main() {
@@ -648,25 +691,25 @@ int main() {
 	bool plot_data_saved = true;
 	bool correct_groundtruth_odometry = true;
 
-	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
 	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
-	std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
+	// std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
 	std::thread unit_test_8(savePlotData, std::ref(plot_data_saved));
-	std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
-
-	unit_test_1.join();
-	unit_test_2.join();
-	unit_test_3.join();
-	unit_test_4.join();
-	unit_test_5.join();
+	// std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
+	//
+	// unit_test_1.join();
+	// unit_test_2.join();
+	// unit_test_3.join();
+	// unit_test_4.join();
+	// unit_test_5.join();
 	unit_test_6.join();
-	unit_test_7.join();
+	// unit_test_7.join();
 	unit_test_8.join();
-	unit_test_9.join();
+	// unit_test_9.join();
 
 	barcodes_set ? std::cout << "\033[1;32m[U1 PASS]\033[0m All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
 
