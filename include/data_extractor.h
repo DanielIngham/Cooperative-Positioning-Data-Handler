@@ -125,13 +125,15 @@ private:
 
 		/**
 		 * @brief struct containing vectors related to the robot data files.
-		 * @details The struct has two instances: raw and sync. The raw instance is the data from the dataset extracted as is. The synce sychronises the time steps of each robot. 
 		 */
 		struct {
 			std::vector<State> states;		///< All groundtruth values extracted for the given robot.
 			std::vector<Odometry> odometry;		///< All odometry inputs extracted for the given robot.
 			std::vector<Measurement> measurements;	///< All measurements taken by the given robot.
-		} raw, synced, groundtruth;
+		} raw,		///< The raw data extracted from the dataset's .dat files. 
+		synced,		///< The odometry and measurement values with synced timesteps.
+		groundtruth,	///< The groundtruth
+		error;		///< The difference between the ground truth and the synced data
 	};
 	
 	/**
@@ -148,6 +150,7 @@ private:
 	void syncData(const double&);
 
 	void calculateGroundtruthOdometry();
+	void calculateOdometryError();
 public:
 	DataExtractor(); 
 	explicit DataExtractor(const std::string&, const double& sampling_period = 0.02);
