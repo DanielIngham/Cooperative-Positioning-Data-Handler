@@ -65,7 +65,7 @@ private:
 	 * @brief Data attributes for a single groundtruth reading extracted from Robotx_Groundtruth.dat.
 	 * @note According the UTIAS website, the groundtruth readings are accurate to the order of 1mm (1E^-3 m). Additionally, the NTP deamon used to synchronise the clocks between robots has an average timing error of 1ms (1E-3 s).
 	 */
-	struct Groundtruth {
+	struct State {
 		/* The following attributes are extracted directly from the robots groundtruth datafile. */
 		double time;			///< Time stamp of the ground truth reading [s].
 		double x;			///< Robot Groundtruth x-coordinate [m].
@@ -79,11 +79,11 @@ private:
 		double range;
 		double bearing;
 
-		Groundtruth();
+		State();
 		/** 
 		 * @brief Constructor for convenient population of DataExtractor::robots_.raw.ground_truth .
 		 */
-		Groundtruth(double time_, double x_, double y_, double orientation_): time(time_), x(x_), y(y_), orientation(orientation_) {}
+		State(double time_, double x_, double y_, double orientation_): time(time_), x(x_), y(y_), orientation(orientation_) {}
 	};
 
 	/**
@@ -134,7 +134,7 @@ private:
 		 * @details The struct has two instances: raw and sync. The raw instance is the data from the dataset extracted as is. The synce sychronises the time steps of each robot. 
 		 */
 		struct {
-			std::vector<Groundtruth> ground_truth;	///< All groundtruth values extracted for the given robot.
+			std::vector<State> states;	///< All groundtruth values extracted for the given robot.
 			std::vector<Odometry> odometry;		///< All odometry inputs extracted for the given robot.
 			std::vector<Measurement> measurements;	///< All measurements taken by the given robot.
 		} raw, synced;
