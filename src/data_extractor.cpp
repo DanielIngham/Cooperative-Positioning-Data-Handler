@@ -360,6 +360,7 @@ void DataExtractor::setDataSet(const std::string& dataset, const double& sample_
 
 	/* Calculate the odometry values that would correspond to the ground truth position and heading values after synchronsation. */
 	calculateGroundtruthOdometry();
+	calculateOdometryError();
 }
 
 /**
@@ -465,11 +466,25 @@ void DataExtractor::syncData(const double& sample_period) {
 			/* Interpolate the Groundtruth values */
 			double interpolation_factor = (t -  (groundtruth_iterator-1)->time) / (groundtruth_iterator->time - (groundtruth_iterator -1)->time);
 
+			double next_orientation = groundtruth_iterator->orientation;
+			if (next_orientation - (groundtruth_iterator - 1)->orientation > 5) {
+				next_orientation -= 2.0 * M_PI;
+			}
+			else if (next_orientation - (groundtruth_iterator - 1)->orientation < -5) {
+				next_orientation += 2.0 * M_PI;
+			}
+
+			next_orientation = interpolation_factor * (next_orientation - (groundtruth_iterator - 1)->orientation) + (groundtruth_iterator - 1)->orientation;
+			
+			/* Normalise the orientation between PI and -PI (180 and -180 degrees respectively) */
+			while (next_orientation >= M_PI) next_orientation -= 2.0 * M_PI;
+			while (next_orientation < -M_PI) next_orientation += 2.0 * M_PI;
+
 			robots_[i].groundtruth.states.push_back( State(
 				t,
 				interpolation_factor * (groundtruth_iterator->x - (groundtruth_iterator - 1)->x) + (groundtruth_iterator - 1)->x,
 				interpolation_factor * (groundtruth_iterator->y - (groundtruth_iterator - 1)->y) + (groundtruth_iterator - 1)->y,
-				interpolation_factor * (groundtruth_iterator->orientation - (groundtruth_iterator - 1)->orientation) + (groundtruth_iterator - 1)->orientation
+				next_orientation
 			));
 
 			/* The same process as above is repeated for the odometry, except assume the robot is stationary prior to ground truth readings */
@@ -531,15 +546,19 @@ void DataExtractor::syncData(const double& sample_period) {
  */
 void DataExtractor::calculateGroundtruthOdometry() {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
-		std::size_t k = 0;
-		for (; k < robots_[id].groundtruth.states.size() - 1; k++) {
+		for (std::size_t k = 0; k < robots_[id].groundtruth.states.size() - 1; k++) {
 
 			double x_difference = (robots_[id].groundtruth.states[k+1].x - robots_[id].groundtruth.states[k].x);
 			double y_difference = (robots_[id].groundtruth.states[k+1].y - robots_[id].groundtruth.states[k].y);
+			double value = std::atan2(std::sin(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation), std::cos(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation)) / this->sampling_period_ ;
+			// value = (robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation) / this->sampling_period_ ;
+			// if (value > 40 && 1 == id ) {
+			// 	std::cout << robots_[id].groundtruth.states[k].time << " Robot " << id << ": " << value << " = atan2(" << std::sin(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation) << " , " << std::cos(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation) << ") / " << this->sampling_period_ << std::endl;
+			// } 
 			robots_[id].groundtruth.odometry.push_back( Odometry(
 				robots_[id].groundtruth.states[k].time, 
 				std::sqrt(x_difference*x_difference + y_difference*y_difference) / this->sampling_period_ ,
-				std::atan2(std::sin(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation), std::cos(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation)) / this->sampling_period_
+				value
 			));
 		}
 		/* NOTE: Since the last groundtruth value can not be calculated, it is set equal to the synced measured value */
@@ -551,3 +570,21 @@ void DataExtractor::calculateGroundtruthOdometry() {
 	}
 }
 
+/**
+ * @brief Calculates the absolute error between the groundtruth odometry values and the values measured.
+ */
+void DataExtractor::calculateOdometryError() {
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		for (std::size_t k = 0; k < robots_[id].groundtruth.states.size() - 1; k++) {
+
+			if (id == 0 && (robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity) > 40 ) {
+				std::cout << (robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity) << " = " << robots_[id].groundtruth.odometry[k].angular_velocity<< " - " << robots_[id].synced.odometry[k].angular_velocity << std::endl;
+			}
+			robots_[id].error.odometry.push_back( Odometry(
+				robots_[id].groundtruth.odometry[k].time,
+				robots_[id].groundtruth.odometry[k].forward_velocity - robots_[id].synced.odometry[k].forward_velocity,
+				robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity
+			));
+		}
+	}
+}
