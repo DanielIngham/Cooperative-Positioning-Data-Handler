@@ -68,10 +68,11 @@ private:
 	struct State {
 		/* The following attributes are extracted directly from the robots groundtruth datafile. */
 		double time;			///< Time stamp of the ground truth reading [s].
+
 		double x;			///< Robot Groundtruth x-coordinate [m].
 		double y;			///< Robot Groundtruth y-coordinate [m].
 		double orientation;		///< Robot Groundtruth orientation [rad].
-
+		 
 		/* The following attributes are calculated from the extracted attributes above. */
 		double forward_velocity;
 		double angular_velocity;
@@ -134,10 +135,10 @@ private:
 		 * @details The struct has two instances: raw and sync. The raw instance is the data from the dataset extracted as is. The synce sychronises the time steps of each robot. 
 		 */
 		struct {
-			std::vector<State> states;	///< All groundtruth values extracted for the given robot.
+			std::vector<State> states;		///< All groundtruth values extracted for the given robot.
 			std::vector<Odometry> odometry;		///< All odometry inputs extracted for the given robot.
 			std::vector<Measurement> measurements;	///< All measurements taken by the given robot.
-		} raw, synced;
+		} raw, synced, groundtruth;
 	};
 	
 	/**
