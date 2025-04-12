@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['getbarcodes_0',['getBarcodes',['../classDataExtractor.html#a12d77e71ac073ba6fdd74bbd7d4623f9',1,'DataExtractor']]],
-  ['getlandmarks_1',['getLandmarks',['../classDataExtractor.html#a56661eac6102e583322a4acc9dd3b280',1,'DataExtractor']]],
-  ['getrobots_2',['getRobots',['../classDataExtractor.html#ad4fa18cc6c45ba4a5b1fd67f2c9280bd',1,'DataExtractor']]],
-  ['groundtruth_3',['groundtruth',['../structDataExtractor_1_1Groundtruth.html#abf15e3ba8e16d743f4882fda21b97778',1,'DataExtractor::Groundtruth::Groundtruth()'],['../structDataExtractor_1_1Groundtruth.html#a1463f662940e839577f9ff1fe67af691',1,'DataExtractor::Groundtruth::Groundtruth(double time_, double x_, double y_, double orientation_)']]]
+  ['getbarcodes_0',['getBarcodes',['../classDataHandler.html#a1c52c4a6d2c80544455fa93772726b66',1,'DataHandler']]],
+  ['getid_1',['getID',['../classDataHandler.html#ae37e377187143c400c6fe3bf82aa81fa',1,'DataHandler']]],
+  ['getlandmarks_2',['getLandmarks',['../classDataHandler.html#ae4c02bc4bf75d73fcd79e0f1443ba06e',1,'DataHandler']]],
+  ['getrobots_3',['getRobots',['../classDataHandler.html#a4adda21f9f6d8c7585c06197f5e391d2',1,'DataHandler']]],
+  ['getsampleperiod_4',['getSamplePeriod',['../classDataHandler.html#afb04d371c2be3284199e81d4188700d0',1,'DataHandler']]]
 ];

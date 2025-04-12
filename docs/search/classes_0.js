@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dataextractor_0',['DataExtractor',['../classDataExtractor.html',1,'']]]
+  ['datahandler_0',['DataHandler',['../classDataHandler.html',1,'']]]
 ];

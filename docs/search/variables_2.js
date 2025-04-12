@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dataset_5f_0',['dataset_',['../classDataExtractor.html#a5d3582e10607740a209cda35cf7b7da1',1,'DataExtractor']]]
+  ['dataset_5f_0',['dataset_',['../classDataHandler.html#aed9b3567fa755a3111aeaecf841aa924',1,'DataHandler']]]
 ];

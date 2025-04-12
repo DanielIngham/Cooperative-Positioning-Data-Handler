@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['forward_5fvelocity_0',['forward_velocity',['../structDataExtractor_1_1Groundtruth.html#ab7c8a9df7a17e4322fb616be1ae191a6',1,'DataExtractor::Groundtruth::forward_velocity'],['../structDataExtractor_1_1Odometry.html#af0aeabc609c68642e20ccc7c81dabae6',1,'DataExtractor::Odometry::forward_velocity']]]
+  ['forward_5fvelocity_0',['forward_velocity',['../structRobot_1_1Odometry.html#a6503fb69d41faba25ee12d89380656e5',1,'Robot::Odometry']]]
 ];

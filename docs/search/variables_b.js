@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['time_0',['time',['../structDataExtractor_1_1Groundtruth.html#a4a895e821f8e1773cc4fd86303f2cdf8',1,'DataExtractor::Groundtruth::time'],['../structDataExtractor_1_1Odometry.html#ad8ae9215363e2f64151ce0547c28f4a8',1,'DataExtractor::Odometry::time'],['../structDataExtractor_1_1Measurement.html#ad8216dd6d6f9b5785d4b215e9683a1bd',1,'DataExtractor::Measurement::time']]]
+  ['sampling_5fperiod_5f_0',['sampling_period_',['../classDataHandler.html#ab78d2ee79468cdc819f039cc850ce0d5',1,'DataHandler']]],
+  ['states_1',['states',['../classRobot.html#a6e25d758800a1d48d078e507419981ef',1,'Robot']]],
+  ['subjects_2',['subjects',['../structRobot_1_1Measurement.html#a512a0bbe41945c48e3fc8d1f68c4ee3a',1,'Robot::Measurement']]],
+  ['synced_3',['synced',['../classRobot.html#ae996702533d5252f0b84fad1739e42e9',1,'Robot']]]
 ];

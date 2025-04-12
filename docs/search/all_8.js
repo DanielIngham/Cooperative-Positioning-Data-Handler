@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['landmark_0',['Landmark',['../structDataExtractor_1_1Landmark.html',1,'DataExtractor']]],
-  ['landmarks_5f_1',['landmarks_',['../classDataExtractor.html#a20f5f839c10595a115a56cc2f0e91a1d',1,'DataExtractor']]]
+  ['landmark_0',['Landmark',['../structDataHandler_1_1Landmark.html',1,'DataHandler']]],
+  ['landmarks_5f_1',['landmarks_',['../classDataHandler.html#ae27cb9f8af33052f9c22ca9830186a2c',1,'DataHandler']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['robot_0',['Robot',['../structDataExtractor_1_1Robot.html',1,'DataExtractor']]]
+  ['state_0',['State',['../structRobot_1_1State.html',1,'Robot']]]
 ];

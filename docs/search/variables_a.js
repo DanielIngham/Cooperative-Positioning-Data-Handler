@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['subjects_0',['subjects',['../structDataExtractor_1_1Measurement.html#a33d0b4d25a7a67958f1e3ed95fccaa36',1,'DataExtractor::Measurement']]],
-  ['synced_1',['synced',['../structDataExtractor_1_1Robot.html#a2fa6c8fdf49d448362c8bbf4e3120dec',1,'DataExtractor::Robot']]]
+  ['ranges_0',['ranges',['../structRobot_1_1Measurement.html#aa071e829eca62fa89473fcc66a532101',1,'Robot::Measurement']]],
+  ['raw_1',['raw',['../classRobot.html#ae4e6f60558900a0655078461b3cb0588',1,'Robot']]],
+  ['robots_5f_2',['robots_',['../classDataHandler.html#a83cbe58eb101b8599bffef33bbfc9070',1,'DataHandler']]]
 ];
