@@ -17,7 +17,8 @@
 #include <vector>	// std::vector
 #include <cmath>	// std::floor
 
-#include <../include/robot.h>
+#include "../include/robot.h"
+#include "../include/landmark.h"
 
 #define TOTAL_LANDMARKS 15
 #define TOTAL_ROBOTS 5
@@ -46,18 +47,6 @@ private:
 	 */
 	int barcodes_[TOTAL_BARCODES] = {0}; 
 	
-	/** 
-	 * @brief Data attributes for a given landmark extracted from the dataset file.
-	 */
-	struct Landmark { 
-		int id;			///< Numerical identifier for the landmark. 
-		int barcode;		///< Barcode associated with the landmark. This is what the robots will read during there operation to identify the landmarks.
-		double x;		///< The landmark's golbal x-coordinate [m]
-		double y;		///< The landmark's golbal y-coordinate [m]
-		double x_std_dev;	///< The x-standard deviation of the positioning error [m]
-		double y_std_dev;	///< The y-standard deviation of the positioning error [m]
-	};
-	
 	/**
 	 * @brief All landmarks containing all the data extracted form Landmarks.dat. 
 	 */
@@ -78,7 +67,6 @@ private:
 
 	void calculateGroundtruthOdometry();
 	void calculateGroundtruthMeasurement();
-
 
 	int getID(int);
 public:

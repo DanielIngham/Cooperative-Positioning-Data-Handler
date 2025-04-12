@@ -389,7 +389,7 @@ int DataHandler::getID(int barcode) {
  * @brief Getter for the array of Landmarks.
  * @return Returns a pointer to the Landmarks structure member, populated by extracting data form Landmarks.dat.
  */
-DataHandler::Landmark* DataHandler::getLandmarks() {
+Landmark* DataHandler::getLandmarks() {
 	if ("" ==  this->dataset_) {
 		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
 	}
@@ -407,6 +407,7 @@ Robot* DataHandler::getRobots() {
 
 	return robots_;
 }
+
 double DataHandler::getSamplePeriod() {
 	return sampling_period_;
 }
