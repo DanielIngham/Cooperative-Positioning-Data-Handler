@@ -293,7 +293,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utilises the extracted robots groundtruth position and heading values to calculate their associated groundtruth odometry values. </p>
-<p>The following expression is utilsed to calculate the odomotery values $$\begin{bmatrix} \omega_k &amp; v_k \end{bmatrix}^\top = \begin{bmatrix} \atan(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} - \theta_{k})) / \Delta t &amp; sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2} \end{bmatrix}^\top, $$ where \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; \( y\) denotes the robot's y-coordinate; \(\Delta t\) is the user defined sample period; \(\omega\) and \(v\) denotes the angular velocity and forward velocity of the robot respectively. </p>
+<p>The following expression is utilsed to calculate the odomotery values $$\begin{bmatrix} \omega_k &amp; v_k \end{bmatrix}^\top = \begin{bmatrix} \text{arctan}(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} - \theta_{k})) / \Delta t &amp; sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2} \end{bmatrix}^\top, $$ where \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; \( y\) denotes the robot's y-coordinate; \(\Delta t\) is the user defined sample period; \(\omega\) and \(v\) denotes the angular velocity and forward velocity of the robot respectively. </p>
 
 </div>
 </div>
