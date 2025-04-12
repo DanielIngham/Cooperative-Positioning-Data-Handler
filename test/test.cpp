@@ -6,6 +6,7 @@
 #include <thread>	// std::thread
 #include <chrono>	// std::chrono
 #include <algorithm>	// std::find
+#include <unordered_map>
 
 #include "../include/data_extractor.h"
 
@@ -124,8 +125,8 @@ void savePlotData(bool& flag) {
 		}
 		robot_file.close();
 
-		/* Save the plot data for the error Gaussian */
-		filename = "./test/data/robot" + std::to_string(id) + "-Odometry-Error-PDF" + ".dat";
+		/* Save the plot data for the Forward Velocity Error  */
+		filename = "./test/data/robot" + std::to_string(id) + "-Forward-Error-PDF" + ".dat";
 		robot_file.open(filename);
 
 		if (!robot_file.is_open()) {
@@ -134,20 +135,53 @@ void savePlotData(bool& flag) {
 			return;
 		}
 
-		double min = std::abs(robots[id].error.odometry[0].forward_velocity);
-		double max = std::abs(robots[id].error.odometry[0].forward_velocity);
-;
-		for (std::size_t k = 1; k < robots[id].error.odometry.size(); k++) {
+		double bin_size = 0.0010;
 
-			if (min > std::abs(robots[id].error.odometry[k].forward_velocity)) {
-				min = robots[id].error.odometry[k].forward_velocity;
-			}
+		std::unordered_map<int, double> forward_velocity_bin_counts;
 
-			if (max < std::abs(robots[id].error.odometry[k].forward_velocity)) {
-				max = robots[id].error.odometry[k].forward_velocity;
-			}
-			// robot_file << robots[id].error.odometry[k].time << '\t' << robots[id].error.odometry[k].forward_velocity << '\t' << robots[id].error.odometry[k].angular_velocity <<  '\n';
+		for (auto odometry: robots[id].error.odometry) {
+			int bin_index = static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
+			forward_velocity_bin_counts[bin_index] += 1.0/robots[id].error.odometry.size();
 		}
+
+		robot_file << "# Bin Centre	Bin Width	Count"<< '\n';
+		for (const auto& [bin_index, count] : forward_velocity_bin_counts) {
+			double bin_start = bin_index * bin_size;
+			double bin_end = bin_start + bin_size;
+			// std::cout << "[" << bin_start << ", " << bin_end << "): " << count << "\n";
+
+			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\n';
+		}
+
+		robot_file.close();
+
+		/* Save the plot data for the Angular Velocity Error  */
+		filename = "./test/data/robot" + std::to_string(id) + "-Angular-Error-PDF" + ".dat";
+		robot_file.open(filename);
+
+		if (!robot_file.is_open()) {
+			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+			flag = false;
+			return;
+		}
+
+		std::unordered_map<int, double> angular_velocity_bin_counts;
+
+		for (auto odometry: robots[id].error.odometry) {
+			int bin_index = static_cast<int>(std::floor(odometry.angular_velocity / bin_size));
+			forward_velocity_bin_counts[bin_index] += 1.0/robots[id].error.odometry.size();
+		}
+
+		robot_file << "# Bin Centre	Bin Width	Count"<< '\n';
+		for (const auto& [bin_index, count] : forward_velocity_bin_counts) {
+			double bin_start = bin_index * bin_size;
+			double bin_end = bin_start + bin_size;
+			// std::cout << "[" << bin_start << ", " << bin_end << "): " << count << "\n";
+
+			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\n';
+		}
+
+		robot_file.close();
 	}
 }
 
