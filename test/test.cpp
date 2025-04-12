@@ -8,7 +8,7 @@
 #include <algorithm>	// std::find
 #include <unordered_map>// std::unordered_map
 
-#include "../include/data_extractor.h" // DataExtractor
+#include "../include/data_handler.h" // DataHandler
 
 #define TOTAL_DATASETS 9
 
@@ -39,10 +39,10 @@ std::size_t countFileLines(const std::string& filename) {
 	return counter;
 }
 /**
- * @brief Saves the data from the DataExtractor class into .dat files to be plotted by gnuplot.
+ * @brief Saves the data from the DataHandler class into .dat files to be plotted by gnuplot.
  */
 void saveMeasurementData(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 	data.setDataSet("./data/MRCLAM_Dataset1");
 	const auto* robots = data.getRobots();
 
@@ -73,7 +73,7 @@ void saveMeasurementData(bool& flag) {
 }
 
 void saveOdometryData(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 
 	for (int dataset = 1; dataset <= TOTAL_DATASETS; dataset++) {
 		data.setDataSet("./data/MRCLAM_Dataset" + std::to_string(dataset));
@@ -104,7 +104,7 @@ void saveOdometryData(bool& flag) {
 	}
 }
 void saveErrorPDF(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 	data.setDataSet("./data/MRCLAM_Dataset" + std::to_string(1));
 	const auto* robots = data.getRobots();
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
@@ -169,7 +169,7 @@ void saveErrorPDF(bool& flag) {
 }
 
 void saveErrorData(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 
 	data.setDataSet("./data/MRCLAM_Dataset1");
 	const auto* robots = data.getRobots();
@@ -196,7 +196,7 @@ void saveErrorData(bool& flag) {
 }
 
 void saveStateData(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 
 	data.setDataSet("./data/MRCLAM_Dataset1");
 	const auto* robots = data.getRobots();
@@ -240,7 +240,7 @@ void saveData(bool& flag) {
  * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkBarcodes(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
@@ -262,7 +262,7 @@ void checkBarcodes(bool& flag) {
  * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkLandmarkBarcodes(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
@@ -285,7 +285,7 @@ void checkLandmarkBarcodes(bool& flag) {
  * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkGroundtruthExtraction(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 
 	for (int d = 1; d <= TOTAL_DATASETS; d++) {
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(d);
@@ -317,7 +317,7 @@ void checkGroundtruthExtraction(bool& flag) {
  * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkOdometryExtraction(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 
 	/* Loop through every data */
 	for (int d = 1; d <= TOTAL_DATASETS; d++) {
@@ -352,7 +352,7 @@ void checkOdometryExtraction(bool& flag) {
  * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkMeasurementExtraction(bool& flag) {
-	DataExtractor data;
+	DataHandler data;
 
 	/* Loop through every data */
 	for (int i = 1; i <= TOTAL_DATASETS; i++) {
@@ -396,7 +396,7 @@ void checkMeasurementExtraction(bool& flag) {
  * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void testInterpolation(bool& flag) { 
-	DataExtractor data("./data/MRCLAM_Dataset1");
+	DataHandler data("./data/MRCLAM_Dataset1");
 	auto* robots = data.getRobots();
 
 	for (std::uint8_t id = 0; id < TOTAL_ROBOTS; id++) {
@@ -655,7 +655,7 @@ void testInterpolation(bool& flag) {
  * @param [in,out] flag indicates whether the test was passed or failed.
  */
 void checkSamplingRate(bool& flag) {
-	DataExtractor data("./data/MRCLAM_Dataset1");
+	DataHandler data("./data/MRCLAM_Dataset1");
 
 	auto* robots = data.getRobots();
 	double sample_period = data.getSamplePeriod();
@@ -668,7 +668,7 @@ void checkSamplingRate(bool& flag) {
 			return;
 		}
 
-		/* Check if all the sample periods are equal to the dataExtractor::sample_period_ */
+		/* Check if all the sample periods are equal to the dataHandler::sample_period_ */
 		for (std::size_t i = 1; i < robots[k].groundtruth.states.size(); i++) {
 			double extracted_sample_period = (robots[k].groundtruth.states[i].time - robots[k].groundtruth.states[i-1].time);
 
@@ -722,7 +722,7 @@ void checkSamplingRate(bool& flag) {
 void testGroundtruthOdometry(bool& flag) {
 	for (int dataset = 0; dataset < TOTAL_DATASETS; dataset++) {
 		std::cout << "./data/MRCLAM_Dataset" + std::to_string(dataset+1) << std::endl;
-		DataExtractor data("./data/MRCLAM_Dataset" + std::to_string(dataset+1));
+		DataHandler data("./data/MRCLAM_Dataset" + std::to_string(dataset+1));
 
 		auto* robots = data.getRobots();
 
@@ -762,7 +762,7 @@ void testGroundtruthOdometry(bool& flag) {
 }
 
 // void checkGroundtruthMeasurements(bool& flag) {
-// 	DataExtractor data()
+// 	DataHandler data()
 // 	for (int dataset = 0; dataset < TOTAL_DATASETS; dataset++) {
 // 		for (int id = 0; id < TOTAL_ROBOTS; id++) {
 // 			for ()
@@ -786,23 +786,23 @@ int main() {
 	bool plot_data_saved = true;
 	bool correct_groundtruth_odometry = true;
 
-	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
 	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
-	// std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
+	std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
 	std::thread unit_test_8(saveData, std::ref(plot_data_saved));
 	std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
 	//
-	// unit_test_1.join();
-	// unit_test_2.join();
-	// unit_test_3.join();
-	// unit_test_4.join();
-	// unit_test_5.join();
+	unit_test_1.join();
+	unit_test_2.join();
+	unit_test_3.join();
+	unit_test_4.join();
+	unit_test_5.join();
 	unit_test_6.join();
-	// unit_test_7.join();
+	unit_test_7.join();
 	unit_test_8.join();
 	unit_test_9.join();
 
