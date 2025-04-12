@@ -94,8 +94,4 @@ plot "./data/robot0-Odometry-Error.dat" using 1:3 with linespoints pointsize 0.2
 unset multiplot
 pause -1
 
-set title "Forward Velocity Error"
-set ylabel "Error [m/s]"
-plot "./data/robot0-Odometry-Error-PDF-sort.dat" using 1:3 with points pointsize 1.4 title "Count"
-pause -1
 
