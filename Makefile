@@ -11,7 +11,7 @@ WFLAGS := -Wall -Wextra -Werror -Wshadow -ffloat-store -fno-fast-math
 CFLAGS := $(WFLAGS)
 
 # Files
-LIBRARY := data_extractor
+LIBRARY := data_handler
 TARGET := $(BUILD_DIR)/lib$(LIBRARY).a
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
