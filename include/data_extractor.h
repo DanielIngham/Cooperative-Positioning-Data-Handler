@@ -5,8 +5,9 @@
  * @author Daniel Ingham
  * @date 2025-04-04
  */
-#ifndef DATA_EXTRACTOR_H
-#define DATA_EXTRACTOR_H
+#ifndef INCLUDE_INCLUDE_DATA_EXTRACTOR_H_
+#define INCLUDE_INCLUDE_DATA_EXTRACTOR_H_
+
 #include <fstream>	// std::ifstream
 #include <string>	// std::string
 #include <algorithm>	// std::remove_if and std::find
@@ -154,6 +155,8 @@ private:
 
 	void calculateGroundtruthMeasurement();
 	void calculateMeasurementError();
+
+	int getID(int);
 public:
 	DataExtractor(); 
 	explicit DataExtractor(const std::string&, const double& sampling_period = 0.02);
@@ -166,4 +169,4 @@ public:
 	double getSamplePeriod();
 
 };
-#endif
+#endif  // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_
