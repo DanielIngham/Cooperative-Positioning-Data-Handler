@@ -550,15 +550,12 @@ void DataExtractor::calculateGroundtruthOdometry() {
 
 			double x_difference = (robots_[id].groundtruth.states[k+1].x - robots_[id].groundtruth.states[k].x);
 			double y_difference = (robots_[id].groundtruth.states[k+1].y - robots_[id].groundtruth.states[k].y);
-			double value = std::atan2(std::sin(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation), std::cos(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation)) / this->sampling_period_ ;
-			// value = (robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation) / this->sampling_period_ ;
-			// if (value > 40 && 1 == id ) {
-			// 	std::cout << robots_[id].groundtruth.states[k].time << " Robot " << id << ": " << value << " = atan2(" << std::sin(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation) << " , " << std::cos(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation) << ") / " << this->sampling_period_ << std::endl;
-			// } 
+
 			robots_[id].groundtruth.odometry.push_back( Odometry(
 				robots_[id].groundtruth.states[k].time, 
 				std::sqrt(x_difference*x_difference + y_difference*y_difference) / this->sampling_period_ ,
-				value
+				std::atan2(std::sin(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation), std::cos(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation)) / this->sampling_period_ 
+
 			));
 		}
 		/* NOTE: Since the last groundtruth value can not be calculated, it is set equal to the synced measured value */
@@ -577,14 +574,48 @@ void DataExtractor::calculateOdometryError() {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		for (std::size_t k = 0; k < robots_[id].groundtruth.states.size() - 1; k++) {
 
-			if (id == 0 && (robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity) > 40 ) {
-				std::cout << (robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity) << " = " << robots_[id].groundtruth.odometry[k].angular_velocity<< " - " << robots_[id].synced.odometry[k].angular_velocity << std::endl;
+			// if ( k < 10 && id == 0) {
+			// 	std::cout << robots_[id].groundtruth.odometry[k].time << '>' << robots_[id].raw.odometry.front().time << " || " << robots_[id].groundtruth.odometry[k].time << " < "<< robots_[id].raw.odometry.back().time << std::endl;
+			// }
+
+			/* Ignore stationary odometry values before the system starts and after it ends. These readings cause a disproportionate amount of zero error readings */
+			// if (robots_[id].groundtruth.odometry[k].time > robots_[id].raw.odometry.front().time && robots_[id].groundtruth.odometry[k].time < robots_[id].raw.odometry.back().time) {
+			if (robots_[id].synced.odometry[k].angular_velocity != 0 && robots_[id].synced.odometry[k].forward_velocity != 0) {
+				if (id == 0 && (robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity) < 0.01 && robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity > 0.0) {
+					std::cout << robots_[id].groundtruth.odometry[k].time << '>' << robots_[id].raw.odometry.front().time << " || " << robots_[id].groundtruth.odometry[k].time << " < "<< robots_[id].raw.odometry.back().time << std::endl;
+					std::cout << (robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity) << " = " << robots_[id].groundtruth.odometry[k].angular_velocity<< " - " << robots_[id].synced.odometry[k].angular_velocity << std::endl;
+				}
+				robots_[id].error.odometry.push_back( Odometry(
+					robots_[id].groundtruth.odometry[k].time,
+					robots_[id].groundtruth.odometry[k].forward_velocity - robots_[id].synced.odometry[k].forward_velocity,
+					robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity
+				));
 			}
-			robots_[id].error.odometry.push_back( Odometry(
-				robots_[id].groundtruth.odometry[k].time,
-				robots_[id].groundtruth.odometry[k].forward_velocity - robots_[id].synced.odometry[k].forward_velocity,
-				robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity
-			));
 		}
 	}
+}
+
+void DataExtractor::calculateGroundtruthMeasurement() {
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		auto iterator = robots_[id].groundtruth.measurements.begin();
+		for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
+			double time = robots_[id].synced.measurements[k].time;
+
+			/* Loop through each of the subjects and in the measurements and extract the landmarks */
+			for (int s = 0; s < robots_[id].synced.measurements[k].subjects.size(); s++) {
+				double barcode = robots_[id].synced.measurements[k].subjects[s];
+
+
+			}
+			// /* Find the groundtruth position of the robot being measured that matches the timestamp of the current measurment. */
+			// iterator = std::find_if(iterator, robots_[id].synced.measurements.end(), [&](Measurement element) {
+			// 	return 
+			// })
+		}
+	} 
+}
+void DataExtractor::calculateMeasurementError() {
+	// for (int id = 0; id < TOTAL_ROBOTS; id++) {
+	// 	for (std::size_t k = 0; k < robots_[id].synced)
+	// }
 }

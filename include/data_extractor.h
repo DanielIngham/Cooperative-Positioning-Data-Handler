@@ -151,6 +151,9 @@ private:
 
 	void calculateGroundtruthOdometry();
 	void calculateOdometryError();
+
+	void calculateGroundtruthMeasurement();
+	void calculateMeasurementError();
 public:
 	DataExtractor(); 
 	explicit DataExtractor(const std::string&, const double& sampling_period = 0.02);
