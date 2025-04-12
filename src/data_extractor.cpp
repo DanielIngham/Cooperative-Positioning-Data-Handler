@@ -7,6 +7,7 @@
  */
 
 #include "../include/data_extractor.h"
+#include <stdexcept>
 
 /**
  * @brief Default constructor.
@@ -375,6 +376,18 @@ int* DataExtractor::getBarcodes() {
 }
 
 /**
+ * @brief returns the ID of the robot or landmark based on the barcode provided. 
+ * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array DataExtractor::robots_.
+ */
+int DataExtractor::getID(int barcode) {
+	for (int i = 0; i < TOTAL_BARCODES; i++) {
+		if (barcodes_[i] == barcode) {
+			return i + 1;
+		}
+	}
+	throw std::runtime_error("The barcode specified does not exist.");
+}
+/**
  * @brief Getter for the array of Landmarks.
  * @return Returns a pointer to the Landmarks structure member, populated by extracting data form Landmarks.dat.
  */
@@ -573,18 +586,8 @@ void DataExtractor::calculateGroundtruthOdometry() {
 void DataExtractor::calculateOdometryError() {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		for (std::size_t k = 0; k < robots_[id].groundtruth.states.size() - 1; k++) {
-
-			// if ( k < 10 && id == 0) {
-			// 	std::cout << robots_[id].groundtruth.odometry[k].time << '>' << robots_[id].raw.odometry.front().time << " || " << robots_[id].groundtruth.odometry[k].time << " < "<< robots_[id].raw.odometry.back().time << std::endl;
-			// }
-
 			/* Ignore stationary odometry values before the system starts and after it ends. These readings cause a disproportionate amount of zero error readings */
-			// if (robots_[id].groundtruth.odometry[k].time > robots_[id].raw.odometry.front().time && robots_[id].groundtruth.odometry[k].time < robots_[id].raw.odometry.back().time) {
 			if (robots_[id].synced.odometry[k].angular_velocity != 0 && robots_[id].synced.odometry[k].forward_velocity != 0) {
-				if (id == 0 && (robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity) < 0.01 && robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity > 0.0) {
-					std::cout << robots_[id].groundtruth.odometry[k].time << '>' << robots_[id].raw.odometry.front().time << " || " << robots_[id].groundtruth.odometry[k].time << " < "<< robots_[id].raw.odometry.back().time << std::endl;
-					std::cout << (robots_[id].groundtruth.odometry[k].angular_velocity - robots_[id].synced.odometry[k].angular_velocity) << " = " << robots_[id].groundtruth.odometry[k].angular_velocity<< " - " << robots_[id].synced.odometry[k].angular_velocity << std::endl;
-				}
 				robots_[id].error.odometry.push_back( Odometry(
 					robots_[id].groundtruth.odometry[k].time,
 					robots_[id].groundtruth.odometry[k].forward_velocity - robots_[id].synced.odometry[k].forward_velocity,
@@ -595,27 +598,62 @@ void DataExtractor::calculateOdometryError() {
 	}
 }
 
+/**
+ * @brief Calculates the ground truth measurements for a given robot. 
+ */
 void DataExtractor::calculateGroundtruthMeasurement() {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		auto iterator = robots_[id].groundtruth.measurements.begin();
 		for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
-			double time = robots_[id].synced.measurements[k].time;
 
 			/* Loop through each of the subjects and in the measurements and extract the landmarks */
-			for (int s = 0; s < robots_[id].synced.measurements[k].subjects.size(); s++) {
-				double barcode = robots_[id].synced.measurements[k].subjects[s];
+			for (std::size_t s = 0; s < robots_[id].synced.measurements[k].subjects.size(); s++) {
+				int subject_ID =  getID(robots_[id].synced.measurements[k].subjects[s]);
+				double x_difference;
+				double y_difference;
+				/* All robots have ID's [1,5] */
+				if (id < 6) {
+					subject_ID--;
+					x_difference = robots_[id].groundtruth.states[k].x - robots_[subject_ID].groundtruth.states[k].x;
+					y_difference = robots_[id].groundtruth.states[k].y - robots_[subject_ID].groundtruth.states[k].y; 
+				}
+				/* All landmarks have ID's [6,20] */
+				else {
+					subject_ID -= 6;
+					x_difference = robots_[id].groundtruth.states[k].x - landmarks_[subject_ID].x;
+					y_difference = robots_[id].groundtruth.states[k].y - landmarks_[subject_ID].y; 
+				}
+				/*  */
+				if (s == 0) {
+					/* Create a new instance of the Measurement struct on the first */
+					robots_[id].groundtruth.measurements.push_back( Measurement(
+						robots_[id].synced.measurements[k].time,
+						robots_[id].synced.measurements[k].subjects[s],
+						std::sqrt(x_difference * x_difference + y_difference * y_difference),
+						std::atan2(y_difference, x_difference) - robots_[id].groundtruth.states[k].orientation
+					)); 
 
+					/* Move the iterator to the newly created instance*/
+					iterator = robots_[id].groundtruth.measurements.end() - 1;
+					continue;
+				}
+
+				iterator->subjects.push_back(robots_[id].synced.measurements[k].subjects[s]);
+				iterator->ranges.push_back(std::sqrt(x_difference * x_difference + y_difference * y_difference));
+				iterator->bearings.push_back(std::atan2(y_difference, x_difference) - robots_[id].groundtruth.states[k].orientation);
 
 			}
-			// /* Find the groundtruth position of the robot being measured that matches the timestamp of the current measurment. */
-			// iterator = std::find_if(iterator, robots_[id].synced.measurements.end(), [&](Measurement element) {
-			// 	return 
-			// })
 		}
 	} 
 }
+
 void DataExtractor::calculateMeasurementError() {
+				// /* Ignore all measurments associated with robots. Only use measurements of landmarks. */
+				// if (id < 6) {
+				// 	continue;
+				// }
 	// for (int id = 0; id < TOTAL_ROBOTS; id++) {
 	// 	for (std::size_t k = 0; k < robots_[id].synced)
 	// }
 }
+
