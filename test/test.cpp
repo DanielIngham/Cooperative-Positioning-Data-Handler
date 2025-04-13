@@ -721,7 +721,6 @@ void checkSamplingRate(bool& flag) {
  */
 void testGroundtruthOdometry(bool& flag) {
 	for (int dataset = 0; dataset < TOTAL_DATASETS; dataset++) {
-		std::cout << "./data/MRCLAM_Dataset" + std::to_string(dataset+1) << std::endl;
 		DataHandler data("./data/MRCLAM_Dataset" + std::to_string(dataset+1));
 
 		auto* robots = data.getRobots();
@@ -754,8 +753,6 @@ void testGroundtruthOdometry(bool& flag) {
 
 				average_orientation_difference += std::abs(orientation - robots[id].groundtruth.states[k+1].orientation);
 			}
-			std::cout << average_x_difference / (robots[id].groundtruth.states.size() - 1) << ", " << average_y_difference / (robots[id].groundtruth.states.size() - 1) << ", " <<  average_orientation_difference / (robots[id].groundtruth.states.size() - 1) << std::endl;
-
 		}
 	}
 	flag = true;
@@ -783,7 +780,6 @@ int main() {
 	bool correct_measurements = true;
 	bool correct_interpolation = true;
 	bool correct_sampling_rate= true;
-	bool plot_data_saved = true;
 	bool correct_groundtruth_odometry = true;
 
 	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
@@ -793,7 +789,6 @@ int main() {
 	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
 	// std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
 	// std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
-	std::thread unit_test_8(saveData, std::ref(plot_data_saved));
 	std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
 	//
 	// unit_test_1.join();
@@ -803,7 +798,6 @@ int main() {
 	// unit_test_5.join();
 	// unit_test_6.join();
 	// unit_test_7.join();
-	unit_test_8.join();
 	unit_test_9.join();
 
 	barcodes_set ? std::cout << "\033[1;32m[U1 PASS]\033[0m All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
@@ -820,7 +814,6 @@ int main() {
 	
 	correct_sampling_rate ? std:: cout << "\033[1;32m[U7 PASS]\033[0m All resampled data have the same time stamps \n" : std::cerr << "\033[1;31m[U7 FAIL] The timesteps in the synced datasets did not match.\n";
 
-	plot_data_saved ? std::cout << "\033[1;32m[U8 PASS]\033[0m Plot saved.\n" : std::cerr << "\033[1;32m[U8 FAIL]\033[0m Failed to save plot.\n";
 
 	correct_groundtruth_odometry ? std::cout << "\033[1;32m[U9 PASS]\033[0m All Robots have the correct groundtruth odometry values\n" : std::cerr << "\033[1;31m[U9 FAIL]\033[0m Not all robots have the correctly calculated groundtruth odometry values.\n";
 	

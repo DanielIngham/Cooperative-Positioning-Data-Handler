@@ -16,6 +16,7 @@
 #include <sys/stat.h>	// std::stat
 #include <vector>	// std::vector
 #include <cmath>	// std::floor
+#include <unordered_map>// std::unordered_map
 
 #include "../include/robot.h"
 #include "../include/landmark.h"
@@ -23,6 +24,7 @@
 #define TOTAL_LANDMARKS 15
 #define TOTAL_ROBOTS 5
 #define TOTAL_BARCODES (TOTAL_ROBOTS + TOTAL_LANDMARKS)
+#define TOTAL_DATASETS 9
 
 /**
  * @class DataHandler
@@ -69,6 +71,12 @@ private:
 	void calculateGroundtruthMeasurement();
 
 	int getID(int);
+
+	void saveStateData(bool&);
+	void saveOdometryData(bool&);
+	void saveMeasurementData(bool&);
+	void saveErrorData(bool&);
+	void saveErrorPDF(bool&);
 public:
 	DataHandler(); 
 	explicit DataHandler(const std::string&, const double& sampling_period = 0.02);
@@ -80,6 +88,7 @@ public:
 	Robot* getRobots();
 	double getSamplePeriod();
 
+	void saveData(bool&);
 };
 
 #endif  // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_
