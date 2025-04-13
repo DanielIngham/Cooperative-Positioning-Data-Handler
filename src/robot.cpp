@@ -15,7 +15,7 @@ Robot::~Robot() {
 void Robot::calculateOdometryError() {
 
 	/* Check if the groundtruth has been set. */
-	if (this->groundtruth.states.size() == 0) {
+	if (this->groundtruth.odometry.size() == 0) {
 		throw std::runtime_error("Groundtruth state values for robot " + std::to_string(this->id) + " have not been set."); 
 	}
 
@@ -30,7 +30,7 @@ void Robot::calculateOdometryError() {
 	}
 
 	/* Calculate groundtruth error. */
-	for (std::size_t k = 0; k < this->groundtruth.states.size() - 1; k++) {
+	for (std::size_t k = 0; k < this->groundtruth.odometry.size() - 1; k++) {
 		/* Ignore stationary odometry values before the system starts and after it ends. These readings cause a disproportionate amount of zero error readings. */
 		if (this->synced.odometry[k].angular_velocity != 0 && this->synced.odometry[k].forward_velocity != 0) {
 			this->error.odometry.push_back( Odometry(
