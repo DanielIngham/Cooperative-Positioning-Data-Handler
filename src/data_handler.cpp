@@ -7,6 +7,8 @@
  */
 
 #include "../include/data_handler.h"
+#include <filesystem>
+#include <fstream>
 
 /**
  * @brief Default constructor.
@@ -334,7 +336,7 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 		this->dataset_ = dataset;
 	}
 	else {
-		throw std::runtime_error("Dataset file path does not exist"); 
+		throw std::runtime_error("Dataset file path does not exist: " + dataset); 
 	}
 
 	/* Set the sample period for this dataset. */
@@ -665,30 +667,27 @@ void DataHandler::calculateGroundtruthMeasurement() {
  * @brief Saves the data from the DataHandler class into .dat files to be plotted by gnuplot.
  */
 void DataHandler::saveMeasurementData(bool& flag) {
-	DataHandler data;
-	data.setDataSet("./data/MRCLAM_Dataset1");
-	const auto* robots = data.getRobots();
 
 	std::ofstream robot_file;
+	std::string filename = output_directory_ + "Measurement.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+	robot_file << "# Time [s]	Subjects	Ranges [m]	Bearings [m]	Robot ID\n";
 	/* Save the values of the raw and synced measurment values of a given robot into the same file with the last row indicating 'g' for raw  and 'i' for synced.*/
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
-		std::string filename = "./test/data/robot" + std::to_string(id) + "-Meaurement" + ".dat";
-		robot_file.open(filename);
 
-		if (!robot_file.is_open()) {
-			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-			flag = false;
-			return;
+		/* NOTE: when the "raw" measurement data structure is populated, it only adds one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
+		for (std::size_t j = 0; j < robots_[id].raw.measurements.size(); j++) {
+			robot_file << robots_[id].raw.measurements[j].time << '\t' << robots_[id].raw.measurements[j].subjects[0] << '\t' << robots_[id].raw.measurements[j].ranges[0] << '\t' <<  robots_[id].raw.measurements[j].bearings[0] << '\t' << 'r' << '\t' << id << '\n';
 		}
-
-		/* Note that when the "raw" measurement data structure is populated, it only adds one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
-		robot_file << "# Time [s]	Subjects	Ranges [m]	Bearings [m]\n";
-		for (std::size_t j = 0; j < robots[id].raw.measurements.size(); j++) {
-			robot_file << robots[id].raw.measurements[j].time << '\t' << robots[id].raw.measurements[j].subjects[0] << '\t' << robots[id].raw.measurements[j].ranges[0] << '\t' <<  robots[id].raw.measurements[j].bearings[0] << '\t' << 'r' << '\n';
-		}
-		for (std::size_t j = 0; j < robots[id].synced.measurements.size(); j++) {
-			for (std::size_t k = 0; k < robots[id].synced.measurements[j].subjects.size(); k++) {
-				robot_file << robots[id].synced.measurements[j].time << '\t' << robots[id].synced.measurements[j].subjects[k] << '\t' << robots[id].synced.measurements[j].ranges[k] << '\t' << robots[id].synced.measurements[j].bearings[k] << '\t' << 's' << '\n';
+		for (std::size_t j = 0; j < robots_[id].synced.measurements.size(); j++) {
+			for (std::size_t k = 0; k < robots_[id].synced.measurements[j].subjects.size(); k++) {
+				robot_file << robots_[id].synced.measurements[j].time << '\t' << robots_[id].synced.measurements[j].subjects[k] << '\t' << robots_[id].synced.measurements[j].ranges[k] << '\t' << robots_[id].synced.measurements[j].bearings[k] << '\t' << 's' << '\t' << id << '\n';
 			}
 		}
 	}
@@ -696,162 +695,157 @@ void DataHandler::saveMeasurementData(bool& flag) {
 }
 
 void DataHandler::saveOdometryData(bool& flag) {
-	DataHandler data;
 
-	for (int dataset = 1; dataset <= TOTAL_DATASETS; dataset++) {
-		data.setDataSet("./data/MRCLAM_Dataset" + std::to_string(dataset));
-		const auto* robots = data.getRobots();
+	std::ofstream robot_file;
+	std::string filename = output_directory_ + "Odometry.dat";
+	robot_file.open(filename);
 
-		std::ofstream robot_file;
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Raw (r) / Synced (s)	Robot ID\n";
 
-		for (int id = 0; id < TOTAL_ROBOTS; id++) {
-			std::string filename = "./test/data/DS" + std::to_string(dataset) + "-Odometry.dat";
-			robot_file.open(filename);
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		std::size_t largest_vector_size = std::max({robots_[id].raw.odometry.size(), robots_[id].synced.odometry.size()});
 
-			if (!robot_file.is_open()) {
-				std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-				flag = false;
-				return;
+		for (std::size_t k = 0; k < largest_vector_size; k++) {
+			if (k < robots_[id].raw.odometry.size()) {
+				robot_file << robots_[id].raw.odometry[k].time << '\t' << robots_[id].raw.odometry[k].forward_velocity << '\t' << robots_[id].raw.odometry[k].angular_velocity << '\t' << 'r' << '\t' << id + 1 << '\n';
 			}
-
-			robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Raw (r) / Synced (s)	Robot ID\n";
-			for (std::size_t j = 0; j < robots[id].raw.odometry.size(); j++) {
-				robot_file << robots[id].raw.odometry[j].time << '\t' << robots[id].raw.odometry[j].forward_velocity << '\t' << robots[id].raw.odometry[j].angular_velocity << '\t' << 'r' << '\t' << std::to_string(id + 1) <<'\n';
-				
-				if (j < robots[id].synced.odometry.size()){
-					robot_file << robots[id].synced.odometry[j].time << '\t' << robots[id].synced.odometry[j].forward_velocity << '\t' << robots[id].synced.odometry[j].angular_velocity << '\t' << 's' << std::to_string(id + 1) << '\n';
-				}
+			
+			if (k < robots_[id].synced.odometry.size()){
+				robot_file << robots_[id].synced.odometry[k].time << '\t' << robots_[id].synced.odometry[k].forward_velocity << '\t' << robots_[id].synced.odometry[k].angular_velocity << '\t' << 's' << '\t' << id + 1 << '\n';
 			}
 		}
-		robot_file.close();
 	}
+	robot_file.close();
 }
 
 void DataHandler::saveErrorPDF(bool& flag) {
-	DataHandler data;
-	data.setDataSet("./data/MRCLAM_Dataset" + std::to_string(1));
-	const auto* robots = data.getRobots();
+	double bin_size = 0.0010;
+	std::string filename = output_directory_ + "Forward-Velocity-Error-PDF.dat";
+
+	std::ofstream robot_file;
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
+	/* Save the plot data for the Forward Velocity Error  */
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
-		std::string filename = "./test/data/robot-" + std::to_string(id) + "-Forward-Error-PDF.dat";
-		/* Save the plot data for the Forward Velocity Error  */
-
-		std::ofstream robot_file;
-		robot_file.open(filename);
-
-		if (!robot_file.is_open()) {
-			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-			flag = false;
-			return;
-		}
-
-		double bin_size = 0.0010;
-
 		std::unordered_map<int, double> forward_velocity_bin_counts;
 
-		for (auto odometry: robots[id].error.odometry) {
+		for (auto odometry: robots_[id].error.odometry) {
 			int bin_index = static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
-			forward_velocity_bin_counts[bin_index] += 1.0/robots[id].error.odometry.size();
+			forward_velocity_bin_counts[bin_index] += 1.0/robots_[id].error.odometry.size();
 		}
 
-		robot_file << "# Bin Centre	Bin Width	Count"<< '\n';
 		for (const auto& [bin_index, count] : forward_velocity_bin_counts) {
 			double bin_start = bin_index * bin_size;
 			double bin_end = bin_start + bin_size;
 
-			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\n';
+			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\t' << id + 1 << '\n';
 		}
+	}
 
-		robot_file.close();
+	robot_file.close();
 
+	filename = output_directory_ + "Angular-Velocity-Error-PDF.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
+
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		/* Save the plot data for the Angular Velocity Error  */
-		filename = "./test/data/robot" + std::to_string(id) + "-Angular-Error-PDF" + ".dat";
-		robot_file.open(filename);
-
-		if (!robot_file.is_open()) {
-			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-			flag = false;
-			return;
-		}
 
 		std::unordered_map<int, double> angular_velocity_bin_counts;
 
-		for (auto odometry: robots[id].error.odometry) {
+		for (auto odometry: robots_[id].error.odometry) {
 			int bin_index = static_cast<int>(std::floor(odometry.angular_velocity / bin_size));
-			forward_velocity_bin_counts[bin_index] += 1.0/robots[id].error.odometry.size();
+			angular_velocity_bin_counts[bin_index] += 1.0/robots_[id].error.odometry.size();
 		}
 
-		robot_file << "# Bin Centre	Bin Width	Count"<< '\n';
-		for (const auto& [bin_index, count] : forward_velocity_bin_counts) {
+		for (const auto& [bin_index, count] : angular_velocity_bin_counts) {
 			double bin_start = bin_index * bin_size;
 			double bin_end = bin_start + bin_size;
 
-			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\n';
+			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\t' << id + 1 << '\n';
 		}
-
-		robot_file.close();
 	}
+	robot_file.close();
 }
 
 void DataHandler::saveErrorData(bool& flag) {
-	DataHandler data;
-
-	data.setDataSet("./data/MRCLAM_Dataset1");
-	const auto* robots = data.getRobots();
 
 	std::ofstream robot_file;
+	std::string filename = output_directory_ + "Odometry-Error.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Robot ID\n";
 	/* Save the error values of the odometry.*/
 	for (int id = 0; id < TOTAL_ROBOTS ; id ++) {
-		std::string filename = "./test/data/robot" + std::to_string(id) + "-Odometry-Error" + ".dat";
-		robot_file.open(filename);
-
-		if (!robot_file.is_open()) {
-			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-			flag = false;
-			return;
+		for (std::size_t k = 0; k < robots_[id].error.odometry.size(); k++) {
+			robot_file << robots_[id].error.odometry[k].time << '\t' << robots_[id].error.odometry[k].forward_velocity << '\t' << robots_[id].error.odometry[k].angular_velocity << '\t' << id + 1 << '\n';
 		}
-
-		robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]\n";
-		for (std::size_t k = 0; k < robots[id].error.odometry.size(); k++) {
-			robot_file << robots[id].error.odometry[k].time << '\t' << robots[id].error.odometry[k].forward_velocity << '\t' << robots[id].error.odometry[k].angular_velocity <<  '\n';
-		}
-
-		robot_file.close();
 	}
+	robot_file.close();
 }
 
 void DataHandler::saveStateData(bool& flag) {
-	DataHandler data;
-
-	data.setDataSet("./data/MRCLAM_Dataset1");
-	const auto* robots = data.getRobots();
 
 	std::ofstream robot_file;
+	std::string filename = output_directory_ +  "Groundtruth.dat";
+	robot_file.open(filename);
 
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Time [s]	x [m]	y [m]	orientation [rad]	Raw (r) / Synced (s)	Robot ID\n";
 	/* Loop through the data structures for each robot */
 	for (int id = 0; id < TOTAL_ROBOTS; id++ ) {
-		/* Save the values of the raw and synced groundtruth values of a given robot into the same file with the last row indicating 'r' for raw and 's' for synced.*/
-		std::string filename = "./test/data/robot" + std::to_string(id) + "-Groundtruth" + ".dat";
-
-		robot_file.open(filename);
-
-		if (!robot_file.is_open()) {
-			std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-			flag = false;
-			return;
-		}
-
-		robot_file << "# Time [s]	x [m]	y [m]	orientation [rad]	Raw (r) / Synced (s)\n";
-		for (std::size_t j = 0; j < robots[id].raw.states.size(); j++) {
-			robot_file << robots[id].raw.states[j].time << '\t' << robots[id].raw.states[j].x << '\t' << robots[id].raw.states[j].y << '\t' << robots[id].raw.states[j].orientation << '\t' << 'r' << '\n';
+		/* Determine which dataset is larger and set that as the loop iterations */
+		std::size_t largest_vector_size = std::max({robots_[id].raw.states.size(), robots_[id].groundtruth.states.size()});
+		for (std::size_t k = 0; k < largest_vector_size; k++) {
+			/* Write the raw ground truth file for the current timestep 'r'  */
+			if (k < robots_[id].raw.states.size()) {
+				robot_file << robots_[id].raw.states[k].time << '\t' << robots_[id].raw.states[k].x << '\t' << robots_[id].raw.states[k].y << '\t' << robots_[id].raw.states[k].orientation << '\t' << 'r' << '\t' << id + 1<< "\n";
+			}
 			
-			if (j < robots[id].groundtruth.states.size()){
-				robot_file << robots[id].groundtruth.states[j].time << '\t' << robots[id].groundtruth.states[j].x << '\t' << robots[id].groundtruth.states[j].y << '\t'<< robots[id].groundtruth.states[j].orientation << '\t' << 's' << '\n';
+			/* Write the synced ground truth file for the current timestep 'r'  */
+			if (k < robots_[id].groundtruth.states.size()){
+				robot_file << robots_[id].groundtruth.states[k].time << '\t' << robots_[id].groundtruth.states[k].x << '\t' << robots_[id].groundtruth.states[k].y << '\t'<< robots_[id].groundtruth.states[k].orientation << '\t' << 's' << '\t' << id + 1 << '\n';
 			}
 		}
 	}
+	robot_file.close();
 }
 
 void DataHandler::saveData(bool& flag) {
+
+	output_directory_ = dataset_ + "/output/";
+	std::filesystem::create_directories(output_directory_);
+
 	saveStateData(flag);
 	saveOdometryData(flag);
 	saveMeasurementData(flag);
