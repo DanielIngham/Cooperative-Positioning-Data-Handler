@@ -7,6 +7,7 @@
  */
 
 #include "../include/data_handler.h"
+#include <string>
 
 /**
  * @brief Default constructor.
@@ -258,6 +259,7 @@ bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
  * @brief Extracts data from the groundtruth data file: Robotx_Measurement.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
+ * @note The data values are tab seperated '\t'.
  * @note Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the DataHandler::syncData function.
  */
 bool DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
@@ -285,7 +287,7 @@ bool DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
 		/* Remove Whitespaces */
 		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
-		/* Extract Data into thier respective variables */
+		/* Extract Data into thier respective variables.  */
 		/* - Time [s]*/
 		std::size_t start_index = 0;
 		std::size_t end_index = line.find('\t', 0);
@@ -296,6 +298,11 @@ bool DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
 		end_index = line.find('\t', ++end_index);
 		int subject = std::stoi(line.substr(start_index, end_index));
 
+		/* If the subjects barcode extracted does not correspond to any of the barcodes extracted, then don't add the measurement. 
+		 * NOTE: As far as I know, this occurs twice for robot 3 in dataset 1. It references barcode 43, which does not exists. */
+		if (-1 == getID(subject)) {
+			continue;
+		}
 		/* - Range [m] */
 		start_index = end_index;
 		end_index = line.find('\t', ++end_index);
@@ -359,12 +366,24 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 	syncData(sample_period);
 
 	/* Calculate the odometry values that would correspond to the ground truth position and heading values after synchronsation. */
+	std::cout << "Calculate Groundtruth" << std::endl;
 	calculateGroundtruthOdometry();
+
+	/* Calculate the measurement values that would correspond to the ground truth range and bearing values. */
+	std::cout << "Calculate Measurement" << std::endl;
+	calculateGroundtruthMeasurement();
+
+	/* Ensure the odometry and measurement errors are calculated. */
+	std::cout << "Calculate Errors" << std::endl;
+	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		robots_[i].calculateOdometryError();
+		// robots_[i].calculateMeasurementError();
+	}
 }
 
 /**
  * @brief Getter for the array of Barcodes.
- * @return Returns an integer pointer to the array of barcodes extracted from the barcodes data file: Barcodes.dat.
+ * @return an integer pointer to the array of barcodes extracted from the barcodes data file: Barcodes.dat.
  */
 int* DataHandler::getBarcodes() {
 	if ("" ==  this->dataset_) {
@@ -374,8 +393,10 @@ int* DataHandler::getBarcodes() {
 }
 
 /**
- * @brief returns the ID of the robot or landmark based on the barcode provided. 
+ * @brief Searches trough the list of barcodes to find the index ID of the robot or landmark.
+ * @param barcode the 
  * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array DataHandler::robots_.
+ * @return the id of the robot of landmark. If the ID is not found -1 is returned.
  */
 int DataHandler::getID(int barcode) {
 	for (int i = 0; i < TOTAL_BARCODES; i++) {
@@ -383,7 +404,7 @@ int DataHandler::getID(int barcode) {
 			return i + 1;
 		}
 	}
-	throw std::runtime_error("The barcode specified does not exist.");
+	return -1;
 }
 /**
  * @brief Getter for the array of Landmarks.
@@ -605,8 +626,9 @@ void DataHandler::calculateGroundtruthMeasurement() {
 				int subject_ID =  getID(robots_[id].synced.measurements[k].subjects[s]);
 				double x_difference;
 				double y_difference;
+
 				/* All robots have ID's [1,5] */
-				if (id < 6) {
+				if (subject_ID < 6) {
 					subject_ID--;
 					x_difference = robots_[id].groundtruth.states[k].x - robots_[subject_ID].groundtruth.states[k].x;
 					y_difference = robots_[id].groundtruth.states[k].y - robots_[subject_ID].groundtruth.states[k].y; 
@@ -619,6 +641,7 @@ void DataHandler::calculateGroundtruthMeasurement() {
 				}
 				/*  */
 				if (s == 0) {
+
 					/* Create a new instance of the Measurement struct on the first */
 					robots_[id].groundtruth.measurements.push_back( Robot::Measurement(
 						robots_[id].synced.measurements[k].time,
