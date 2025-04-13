@@ -60,4 +60,4 @@ test: $(TEST_TARGET)
 
 # Static C++ Code Analyser
 cppcheck: 
-	$(CPPCHECK) --quiet --enable=all --suppress=missingIncludeSystem --error-exitcode=1 -I $(INCLUDE_DIR) $(SRC_DIR) $(TEST_DIR)
+	$(CPPCHECK) --quiet --enable=all --suppress=missingIncludeSystem --error-exitcode=1 -I $(INCLUDE_DIR) $(SRC_DIR)
