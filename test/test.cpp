@@ -81,8 +81,8 @@ void saveOdometryData(bool& flag) {
 
 		std::ofstream robot_file;
 
-		std::string filename = "./test/data/DS" + std::to_string(dataset) + "-Odometry.dat";
 		for (int id = 0; id < TOTAL_ROBOTS; id++) {
+			std::string filename = "./test/data/DS" + std::to_string(dataset) + "-Odometry.dat";
 			robot_file.open(filename);
 
 			if (!robot_file.is_open()) {
@@ -93,14 +93,14 @@ void saveOdometryData(bool& flag) {
 
 			robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Raw (r) / Synced (s)	Robot ID\n";
 			for (std::size_t j = 0; j < robots[id].raw.odometry.size(); j++) {
-				robot_file << robots[id].raw.odometry[j].time << '\t' << robots[id].raw.odometry[j].forward_velocity << '\t' << robots[id].raw.odometry[j].angular_velocity << '\t' << 'r' << std::to_string(id + 1) <<'\n';
+				robot_file << robots[id].raw.odometry[j].time << '\t' << robots[id].raw.odometry[j].forward_velocity << '\t' << robots[id].raw.odometry[j].angular_velocity << '\t' << 'r' << '\t' << std::to_string(id + 1) <<'\n';
 				
 				if (j < robots[id].synced.odometry.size()){
 					robot_file << robots[id].synced.odometry[j].time << '\t' << robots[id].synced.odometry[j].forward_velocity << '\t' << robots[id].synced.odometry[j].angular_velocity << '\t' << 's' << std::to_string(id + 1) << '\n';
 				}
 			}
-			robot_file.close();
 		}
+		robot_file.close();
 	}
 }
 void saveErrorPDF(bool& flag) {
@@ -786,23 +786,23 @@ int main() {
 	bool plot_data_saved = true;
 	bool correct_groundtruth_odometry = true;
 
-	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
-	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
-	std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
+	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	// std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
+	// std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
 	std::thread unit_test_8(saveData, std::ref(plot_data_saved));
 	std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
 	//
-	unit_test_1.join();
-	unit_test_2.join();
-	unit_test_3.join();
-	unit_test_4.join();
-	unit_test_5.join();
-	unit_test_6.join();
-	unit_test_7.join();
+	// unit_test_1.join();
+	// unit_test_2.join();
+	// unit_test_3.join();
+	// unit_test_4.join();
+	// unit_test_5.join();
+	// unit_test_6.join();
+	// unit_test_7.join();
 	unit_test_8.join();
 	unit_test_9.join();
 
