@@ -17,6 +17,7 @@
 #include <vector>	// std::vector
 #include <cmath>	// std::floor
 #include <unordered_map>// std::unordered_map
+#include <filesystem>	// std::filesystem
 
 #include "../include/robot.h"
 #include "../include/landmark.h"
@@ -36,6 +37,11 @@ private:
 	 * @brief Folder location for the dataset.
 	 */
 	std::string dataset_ = "";
+
+	/**
+	 * @brief Folder location for the output data.
+	 */
+	std::string output_directory_ = "";
 	
 	/**
 	 * @brief the desired sample period for resampling the data to sync the timesteps between the vehicles.
