@@ -18,9 +18,10 @@ set xrange[1271.5:1272.2]
 #### Ground truth plot
 set title "Robot x Groundtruth Trajectory"
 set ylabel "x Position [m]"
-plot "./data/robot0-Groundtruth.dat" using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $2 : 1/0) with points pointsize 1.4 linecolor rgb "red" pointtype 7 title "Raw",\
-	"./Matlab_output/Robot1_Groundtruth.csv" using 1:2 with points pointsize 1.4 linecolor rgb "blue" title "Matlab Interpolated", \
-	"./data/robot0-Groundtruth.dat" using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $2 : 1/0) with points pointsize 1.4 linecolor rgb "purple" title "Interpolated"
+plot \ 
+"./data/robot0-Groundtruth.dat" using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $2 : 1/0) with points pointsize 1.4 linecolor rgb "red" pointtype 7 title "Raw",\
+"./Matlab_output/Robot1_Groundtruth.csv" using 1:2 with points pointsize 1.4 linecolor rgb "blue" title "Matlab Interpolated", \
+"./data/robot0-Groundtruth.dat" using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $2 : 1/0) with points pointsize 1.4 linecolor rgb "purple" title "Interpolated"
 
 set title "Robot y trajectory"
 set ylabel "y Position [m]"
