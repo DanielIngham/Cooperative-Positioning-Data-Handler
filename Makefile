@@ -7,8 +7,10 @@ SRC_DIR := src
 CXX := g++
 
 # Flags
-WFLAGS := -Wall -Wextra -Werror -Wshadow -ffloat-store -fno-fast-math
-CFLAGS := $(WFLAGS)
+WFLAGS := -Wall -Wextra -Werror -Wshadow 
+MFLAGS := -ffloat-store -fno-fast-math
+GDB := -g 
+CFLAGS := $(WFLAGS) $(MFLAGS) $(GDB)
 
 # Files
 LIBRARY := data_handler
