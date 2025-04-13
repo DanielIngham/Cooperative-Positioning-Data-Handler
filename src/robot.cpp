@@ -1,6 +1,7 @@
 #include <../include/robot.h>
 #include <stdexcept>
 #include <string>
+#include <iostream>
 
 Robot::Robot() {
 }
@@ -15,13 +16,13 @@ void Robot::calculateOdometryError() {
 
 	/* Check if the groundtruth has been set. */
 	if (this->groundtruth.states.size() == 0) {
-		throw std::runtime_error("Groundtruth state values for robot" + std::to_string(this->id) + " have not been set."); 
+		throw std::runtime_error("Groundtruth state values for robot " + std::to_string(this->id) + " have not been set."); 
 	}
 
 	/* Check if the synced data has been set. */
-	if (this->synced.states.size() == 0) {
-		throw std::runtime_error("Synced values for robot" + std::to_string(this->id) + " have not been set."); 
-	}
+	if (this->synced.odometry.size() == 0) {
+		throw std::runtime_error("Synced values for robot " + std::to_string(this->id) + " have not been set."); 
+	} 
 
 	/* If the odometry error vector is not empty, empty it before calculation. */
 	if (this->error.odometry.size() > 0) {
@@ -41,3 +42,5 @@ void Robot::calculateOdometryError() {
 	}
 
 }
+
+
