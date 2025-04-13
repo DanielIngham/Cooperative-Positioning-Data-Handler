@@ -9,8 +9,7 @@ CXX := g++
 # Flags
 WFLAGS := -Wall -Wextra -Werror -Wshadow 
 MFLAGS := -ffloat-store -fno-fast-math
-GDB := -g 
-CFLAGS := $(WFLAGS) $(MFLAGS) $(GDB)
+CFLAGS := $(WFLAGS) $(MFLAGS) 
 
 # Files
 LIBRARY := data_handler
@@ -40,12 +39,13 @@ $(TARGET): $(OBJECTS)
 # Compiling 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
+	$(CXX) -g -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
 
 all: $(TARGET)
 
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -rf $(TEST_BUILD)
 
 # Test Linking
 $(TEST_TARGET): $(TARGET) $(TEST_OBJECTS) 
@@ -55,7 +55,7 @@ $(TEST_TARGET): $(TARGET) $(TEST_OBJECTS)
 # Test Compling
 $(TEST_BUILD)/%.o: $(TEST_DIR)/%.cpp 
 	@mkdir -p $(dir $@)
-	$(CXX) -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
+	$(CXX) -g -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
 
 test: $(TEST_TARGET)
 	$(TEST_TARGET)
