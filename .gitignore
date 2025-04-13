@@ -2,3 +2,4 @@ lib
 test/build
 test/data
 core
+data/*/output
