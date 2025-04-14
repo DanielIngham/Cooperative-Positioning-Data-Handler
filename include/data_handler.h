@@ -82,7 +82,10 @@ private:
 	void saveOdometryData(bool&);
 	void saveMeasurementData(bool&);
 	void saveErrorData(bool&);
-	void saveErrorPDF(bool&);
+	void saveOdometryErrorPDF(bool&);
+
+	void relativeRobotDistance();
+	void relativeLandmarkDistance();
 public:
 	DataHandler(); 
 	explicit DataHandler(const std::string&, const double& sampling_period = 0.02);

@@ -7,8 +7,6 @@
  */
 
 #include "../include/data_handler.h"
-#include <filesystem>
-#include <fstream>
 
 /**
  * @brief Default constructor.
@@ -375,7 +373,7 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 	/* Ensure the odometry and measurement errors are calculated. */
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
 		robots_[i].calculateOdometryError();
-		// robots_[i].calculateMeasurementError();
+		robots_[i].calculateMeasurementError();
 	}
 }
 
@@ -399,7 +397,7 @@ int* DataHandler::getBarcodes() {
 int DataHandler::getID(int barcode) {
 	for (int i = 0; i < TOTAL_BARCODES; i++) {
 		if (barcodes_[i] == barcode) {
-			return i + 1;
+			return (i + 1);
 		}
 	}
 	return -1;
@@ -618,34 +616,47 @@ void DataHandler::calculateGroundtruthMeasurement() {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		auto iterator = robots_[id].groundtruth.measurements.begin();
 		for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
-
+			/* For loop iterator. Since the extracted data values ordered by time in ascending order, once a time value is found, prior time values do not need to be checked for newer time stamps. */
+			size_t t = 0;
 			/* Loop through each of the subjects and in the measurements and extract the landmarks */
 			for (std::size_t s = 0; s < robots_[id].synced.measurements[k].subjects.size(); s++) {
+				/* Get the subjects ID from its barcode. */
 				int subject_ID =  getID(robots_[id].synced.measurements[k].subjects[s]);
+
+				/* Find the value of the ground truth with the same time stamp as the measurement */
+				for (; t < robots_[id].groundtruth.states.size(); t++) {
+					if (std::round((robots_[id].groundtruth.states[t].time - robots_[id].synced.measurements[k].time) * 1000.0)/1000.0 == 0.0) {
+						break;
+					}
+				}
+
 				double x_difference;
 				double y_difference;
 
 				/* All robots have ID's [1,5] */
 				if (subject_ID < 6) {
 					subject_ID--;
-					x_difference = robots_[id].groundtruth.states[k].x - robots_[subject_ID].groundtruth.states[k].x;
-					y_difference = robots_[id].groundtruth.states[k].y - robots_[subject_ID].groundtruth.states[k].y; 
+					x_difference = robots_[subject_ID].groundtruth.states[t].x - robots_[id].groundtruth.states[t].x;
+					y_difference = robots_[subject_ID].groundtruth.states[t].y - robots_[id].groundtruth.states[t].y; 
 				}
 				/* All landmarks have ID's [6,20] */
 				else {
 					subject_ID -= 6;
-					x_difference = robots_[id].groundtruth.states[k].x - landmarks_[subject_ID].x;
-					y_difference = robots_[id].groundtruth.states[k].y - landmarks_[subject_ID].y; 
+					x_difference = landmarks_[subject_ID].x - robots_[id].groundtruth.states[t].x;
+					y_difference = landmarks_[subject_ID].y - robots_[id].groundtruth.states[t].y; 
 				}
+
+				double orientation = std::atan2(y_difference, x_difference) - robots_[id].groundtruth.states[t].orientation;
+				while (orientation >= M_PI) orientation -= 2.0 * M_PI;
+				while (orientation < -M_PI) orientation += 2.0 * M_PI;
 				/*  */
 				if (s == 0) {
-
 					/* Create a new instance of the Measurement struct on the first */
 					robots_[id].groundtruth.measurements.push_back( Robot::Measurement(
 						robots_[id].synced.measurements[k].time,
 						robots_[id].synced.measurements[k].subjects[s],
 						std::sqrt(x_difference * x_difference + y_difference * y_difference),
-						std::atan2(y_difference, x_difference) - robots_[id].groundtruth.states[k].orientation
+						orientation
 					)); 
 
 					/* Move the iterator to the newly created instance*/
@@ -655,13 +666,55 @@ void DataHandler::calculateGroundtruthMeasurement() {
 
 				iterator->subjects.push_back(robots_[id].synced.measurements[k].subjects[s]);
 				iterator->ranges.push_back(std::sqrt(x_difference * x_difference + y_difference * y_difference));
-				iterator->bearings.push_back(std::atan2(y_difference, x_difference) - robots_[id].groundtruth.states[k].orientation);
+				iterator->bearings.push_back(orientation);
 
 			}
 		}
 	} 
 }
 
+void DataHandler::relativeRobotDistance() {
+	std::ofstream robot_file;
+	std::string filename = output_directory_ + "Relative_robot.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		return;
+	}
+
+	robot_file << "# Time [s]	Robot	Ranges [m]	Robot ID\n";
+	for (std::size_t k =0; k < robots_[0].groundtruth.states.size(); k++) {
+		for (int id = 0; id < TOTAL_ROBOTS; id++) {
+			double x = robots_[0].groundtruth.states[k].x - robots_[id].groundtruth.states[k].x;
+			double y = robots_[0].groundtruth.states[k].y - robots_[id].groundtruth.states[k].y;
+			double range = std::sqrt(x*x + y*y);
+			robot_file << robots_[0].groundtruth.states[k].time << '\t' << id << '\t' << range << '\t' << 1 << '\n';
+		}
+	}
+	robot_file.close();
+}
+void DataHandler::relativeLandmarkDistance() {
+	std::ofstream robot_file;
+	std::string filename = output_directory_ + "Relative_landmark.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		return;
+	}
+
+	robot_file << "# Time [s]	Landmark	Ranges [m]	Robot ID\n";
+	for (std::size_t k =0; k < robots_[0].groundtruth.states.size(); k++) {
+		for (int l = 0; l < TOTAL_LANDMARKS; l++) {
+			double x = robots_[0].groundtruth.states[k].x - landmarks_[l].x;
+			double y = robots_[0].groundtruth.states[k].y - landmarks_[l].y;
+			double range = std::sqrt(x*x + y*y);
+			robot_file << robots_[0].groundtruth.states[k].time << '\t' << l + 6 << '\t' << range << '\t' << 1 << '\n';
+		}
+	}
+	robot_file.close();
+}
 
 /**
  * @brief Saves the data from the DataHandler class into .dat files to be plotted by gnuplot.
@@ -682,12 +735,12 @@ void DataHandler::saveMeasurementData(bool& flag) {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 
 		/* NOTE: when the "raw" measurement data structure is populated, it only adds one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
-		for (std::size_t j = 0; j < robots_[id].raw.measurements.size(); j++) {
-			robot_file << robots_[id].raw.measurements[j].time << '\t' << robots_[id].raw.measurements[j].subjects[0] << '\t' << robots_[id].raw.measurements[j].ranges[0] << '\t' <<  robots_[id].raw.measurements[j].bearings[0] << '\t' << 'r' << '\t' << id << '\n';
+		for (std::size_t k = 0; k < robots_[id].raw.measurements.size(); k++) {
+			robot_file << robots_[id].raw.measurements[k].time << '\t' << robots_[id].raw.measurements[k].subjects[0] << '\t' << robots_[id].raw.measurements[k].ranges[0] << '\t' <<  robots_[id].raw.measurements[k].bearings[0] << '\t' << 'r' << '\t' << id + 1 << '\n';
 		}
-		for (std::size_t j = 0; j < robots_[id].synced.measurements.size(); j++) {
-			for (std::size_t k = 0; k < robots_[id].synced.measurements[j].subjects.size(); k++) {
-				robot_file << robots_[id].synced.measurements[j].time << '\t' << robots_[id].synced.measurements[j].subjects[k] << '\t' << robots_[id].synced.measurements[j].ranges[k] << '\t' << robots_[id].synced.measurements[j].bearings[k] << '\t' << 's' << '\t' << id << '\n';
+		for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
+			for (std::size_t s = 0; s < robots_[id].synced.measurements[s].subjects.size(); s++) {
+				robot_file << robots_[id].synced.measurements[s].time << '\t' << robots_[id].synced.measurements[s].subjects[s] << '\t' << robots_[id].synced.measurements[s].ranges[s] << '\t' << robots_[id].synced.measurements[s].bearings[s] << '\t' << 's' << '\t' << id + 1 << '\n';
 			}
 		}
 		/* Add two empty lines after robot entires for gnuplot */
@@ -695,6 +748,35 @@ void DataHandler::saveMeasurementData(bool& flag) {
 		robot_file << '\n';
 	}
 	robot_file.close();
+
+	filename = output_directory_ + "Groundtruth-Measurement.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR] Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Time [s]	Subject	Landmark (l) / Robot (r)	Range [m]	Bearing [rad]	Robot ID\n";
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		for (std::size_t k = 0; k < robots_[id].groundtruth.measurements.size(); k++ ) {
+			for (std::size_t s = 0; s < robots_[id].groundtruth.measurements[k].subjects.size(); s++) {
+				int subject_ID = getID(robots_[id].groundtruth.measurements[k].subjects[s]);
+				if (subject_ID < 6) {
+					robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << 'r' << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << id << '\n';
+				}
+				else {
+					robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << 'l' << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << id << '\n';
+				}
+			}
+		}
+
+		robot_file << '\n';
+		robot_file << '\n';
+	}
+	robot_file.close();
+	
 }
 
 void DataHandler::saveOdometryData(bool& flag) {
@@ -729,7 +811,7 @@ void DataHandler::saveOdometryData(bool& flag) {
 	robot_file.close();
 }
 
-void DataHandler::saveErrorPDF(bool& flag) {
+void DataHandler::saveOdometryErrorPDF(bool& flag) {
 	double bin_size = 0.0010;
 	std::string filename = output_directory_ + "Forward-Velocity-Error-PDF.dat";
 
@@ -822,12 +904,36 @@ void DataHandler::saveErrorData(bool& flag) {
 		robot_file << '\n';
 	}
 	robot_file.close();
+
+	filename = output_directory_ + "Measurement-Error.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Time [s]	Subject	Range [m]	Bearing[rad]	Robot ID\n";
+	/* Save the error values of the odometry.*/
+	for (int id = 0; id < TOTAL_ROBOTS ; id ++) {
+
+		for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
+			for (std::size_t s = 0; s < robots_[id].error.measurements[k].subjects.size(); s++){
+				robot_file << robots_[id].error.measurements[k].time << '\t' << robots_[id].error.measurements[k].subjects[s] << '\t' << robots_[id].error.measurements[k].ranges[s] << '\t' << robots_[id].error.measurements[k].bearings[s] << '\t' << id + 1 << '\n';
+			} 
+		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
+	}
+	robot_file.close();
 }
 
 void DataHandler::saveStateData(bool& flag) {
 
 	std::ofstream robot_file;
-	std::string filename = output_directory_ +  "Groundtruth.dat";
+	std::string filename = output_directory_ +  "Groundtruth-State.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -857,6 +963,7 @@ void DataHandler::saveStateData(bool& flag) {
 		robot_file << '\n';
 	}
 	robot_file.close();
+
 }
 
 void DataHandler::saveData(bool& flag) {
@@ -868,5 +975,7 @@ void DataHandler::saveData(bool& flag) {
 	saveOdometryData(flag);
 	saveMeasurementData(flag);
 	saveErrorData(flag);
-	saveErrorPDF(flag);
+	saveOdometryErrorPDF(flag);
+	relativeLandmarkDistance();
+	relativeRobotDistance();
 }
