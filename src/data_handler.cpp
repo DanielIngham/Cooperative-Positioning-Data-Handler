@@ -690,6 +690,9 @@ void DataHandler::saveMeasurementData(bool& flag) {
 				robot_file << robots_[id].synced.measurements[j].time << '\t' << robots_[id].synced.measurements[j].subjects[k] << '\t' << robots_[id].synced.measurements[j].ranges[k] << '\t' << robots_[id].synced.measurements[j].bearings[k] << '\t' << 's' << '\t' << id << '\n';
 			}
 		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
 	}
 	robot_file.close();
 }
@@ -719,6 +722,9 @@ void DataHandler::saveOdometryData(bool& flag) {
 				robot_file << robots_[id].synced.odometry[k].time << '\t' << robots_[id].synced.odometry[k].forward_velocity << '\t' << robots_[id].synced.odometry[k].angular_velocity << '\t' << 's' << '\t' << id + 1 << '\n';
 			}
 		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
 	}
 	robot_file.close();
 }
@@ -752,6 +758,9 @@ void DataHandler::saveErrorPDF(bool& flag) {
 
 			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\t' << id + 1 << '\n';
 		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
 	}
 
 	robot_file.close();
@@ -783,6 +792,9 @@ void DataHandler::saveErrorPDF(bool& flag) {
 
 			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\t' << id + 1 << '\n';
 		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
 	}
 	robot_file.close();
 }
@@ -805,6 +817,9 @@ void DataHandler::saveErrorData(bool& flag) {
 		for (std::size_t k = 0; k < robots_[id].error.odometry.size(); k++) {
 			robot_file << robots_[id].error.odometry[k].time << '\t' << robots_[id].error.odometry[k].forward_velocity << '\t' << robots_[id].error.odometry[k].angular_velocity << '\t' << id + 1 << '\n';
 		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
 	}
 	robot_file.close();
 }
@@ -837,6 +852,9 @@ void DataHandler::saveStateData(bool& flag) {
 				robot_file << robots_[id].groundtruth.states[k].time << '\t' << robots_[id].groundtruth.states[k].x << '\t' << robots_[id].groundtruth.states[k].y << '\t'<< robots_[id].groundtruth.states[k].orientation << '\t' << 's' << '\t' << id + 1 << '\n';
 			}
 		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
 	}
 	robot_file.close();
 }
