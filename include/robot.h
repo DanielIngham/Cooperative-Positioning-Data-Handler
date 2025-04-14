@@ -1,7 +1,9 @@
 #ifndef INCLUDE_INCLUDE_ROBOT_H_
 #define INCLUDE_INCLUDE_ROBOT_H_
-#include <vector>
 
+#include <vector>
+#include <stdexcept>
+#include <string>
 
 class Robot {
 private:
