@@ -6,7 +6,6 @@
 #include <thread>	// std::thread
 #include <chrono>	// std::chrono
 #include <algorithm>	// std::find
-#include <unordered_map>// std::unordered_map
 
 #include "../include/data_handler.h" // DataHandler
 
@@ -40,8 +39,10 @@ std::size_t countFileLines(const std::string& filename) {
 }
 
 void saveData(bool& flag) {
-	DataHandler data("./data/MRCLAM_Dataset1");
-	data.saveData(flag);
+	for (unsigned short int d  = 0; d < TOTAL_DATASETS; d++) {
+		DataHandler data("./data/MRCLAM_Dataset" + std::to_string(d + 1));
+		data.saveData(flag);
+	}
 }
 
 /**
@@ -51,13 +52,14 @@ void saveData(bool& flag) {
 void checkBarcodes(bool& flag) {
 	DataHandler data;
 
-	for (int i = 1; i <= TOTAL_DATASETS; i++) {
-		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
+	for (unsigned short int d = 1; d <= TOTAL_DATASETS; d++) {
+		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(d);
 		data.setDataSet(dataset);
 
 		/* Unit Test 1: check if barcodes were set. */	
-		const int* barcodes = data.getBarcodes();
-		for (int j = 0; j < TOTAL_BARCODES; j++) {
+		const auto barcodes = data.getBarcodes();
+
+		for (unsigned short int j = 0; j < data.getNumberOfBarcodes(); j++) {
 			if (barcodes[j] == 0) {
 				flag = false; 
 			}
@@ -73,14 +75,14 @@ void checkBarcodes(bool& flag) {
 void checkLandmarkBarcodes(bool& flag) {
 	DataHandler data;
 
-	for (int i = 1; i <= TOTAL_DATASETS; i++) {
+	for (unsigned short int i = 1; i <= TOTAL_DATASETS; i++) {
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
 		data.setDataSet(dataset);
 
-		const int* barcodes = data.getBarcodes();
-		const auto* landmarks = data.getLandmarks();
+		const auto barcodes = data.getBarcodes();
+		const auto landmarks = data.getLandmarks();
 
-		for (int j = 0; j < TOTAL_LANDMARKS; j++) {
+		for (int j = 0; j < data.getNumberOfLandmarks(); j++) {
 			if (landmarks[j].barcode != barcodes[landmarks[j].id - 1]) {
 				flag = false;
 			}
@@ -96,14 +98,14 @@ void checkLandmarkBarcodes(bool& flag) {
 void checkGroundtruthExtraction(bool& flag) {
 	DataHandler data;
 
-	for (int d = 1; d <= TOTAL_DATASETS; d++) {
+	for (unsigned short int d = 1; d <= TOTAL_DATASETS; d++) {
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(d);
 
 		data.setDataSet(dataset);
 
-		const auto* robots = data.getRobots();
+		const auto robots = data.getRobots();
 
-		for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		for (unsigned short int id = 0; id < data.getNumberOfRobots(); id++) {
 			std::string groundtruth_file = dataset + "/Robot" + std::to_string(id+1) + "_Groundtruth.dat";
 
 			long unsigned int counter = countFileLines(groundtruth_file);
@@ -129,16 +131,16 @@ void checkOdometryExtraction(bool& flag) {
 	DataHandler data;
 
 	/* Loop through every data */
-	for (int d = 1; d <= TOTAL_DATASETS; d++) {
+	for (unsigned short int d = 1; d <= TOTAL_DATASETS; d++) {
 
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(d);
 
 		data.setDataSet(dataset);
 
-		const auto* robots = data.getRobots();
+		const auto robots = data.getRobots();
 
 		/* Loop through every robot */
-		for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		for (unsigned short int id = 0; id < data.getNumberOfRobots(); id++) {
 
 			std::string odometry_file = dataset + "/Robot" + std::to_string(id+1) + "_Odometry.dat";
 
@@ -164,14 +166,14 @@ void checkMeasurementExtraction(bool& flag) {
 	DataHandler data;
 
 	/* Loop through every data */
-	for (int i = 1; i <= TOTAL_DATASETS; i++) {
+	for (unsigned short int i = 1; i <= TOTAL_DATASETS; i++) {
 		const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
 		data.setDataSet(dataset);
 
-		const auto* robots = data.getRobots();
+		const auto robots = data.getRobots();
 
 		/* Loop through every robot */
-		for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		for (unsigned short int id = 0; id < data.getNumberOfRobots(); id++) {
 			std::string measurement_file = dataset + "/Robot" + std::to_string(id+1) + "_Measurement.dat";
 
 			long unsigned int counter = countFileLines(measurement_file);
@@ -184,7 +186,10 @@ void checkMeasurementExtraction(bool& flag) {
 			long unsigned int measurement_counter = 0;
 
 			for (std::size_t k = 0; k < robots[id].raw.measurements.size(); k++) {
-				if ((robots[id].raw.measurements[k].bearings.size() == robots[id].raw.measurements[k].ranges.size()) && (robots[id].raw.measurements[k].ranges.size() == robots[id].raw.measurements[k].subjects.size())) {
+
+				if ((robots[id].raw.measurements[k].bearings.size() == robots[id].raw.measurements[k].ranges.size()) && 
+					(robots[id].raw.measurements[k].ranges.size() == robots[id].raw.measurements[k].subjects.size())) {
+
 					measurement_counter += robots[id].raw.measurements[k].subjects.size();
 				}
 				else {
@@ -206,9 +211,9 @@ void checkMeasurementExtraction(bool& flag) {
  */
 void testInterpolation(bool& flag) { 
 	DataHandler data("./data/MRCLAM_Dataset1");
-	auto* robots = data.getRobots();
+	const auto robots = data.getRobots();
 
-	for (std::uint8_t id = 0; id < TOTAL_ROBOTS; id++) {
+	for (unsigned int id = 0; id < data.getNumberOfRobots(); id++) {
 
 		/* Check Groundtruth Interpolation  */
 		std::string filename = "./test/Matlab_output/Robot" + std::to_string(id+ 1) + "_Groundtruth.csv";
@@ -231,10 +236,12 @@ void testInterpolation(bool& flag) {
 		for (std::size_t k = 0; k < robots[id].groundtruth.states.size(); k++) {
 			std::string line;
 			std::getline(file, line); 
+
 			if ('#' == line[0]) {
 				k--;
 				continue;
 			}
+
 			/* Remove whitespaces */
 			line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
@@ -466,10 +473,10 @@ void testInterpolation(bool& flag) {
 void checkSamplingRate(bool& flag) {
 	DataHandler data("./data/MRCLAM_Dataset1");
 
-	auto* robots = data.getRobots();
+	auto robots = data.getRobots();
 	double sample_period = data.getSamplePeriod();
 
-	for (int k = 0; k < TOTAL_ROBOTS; k++) {
+	for (unsigned short int k = 0; k < data.getNumberOfRobots(); k++) {
 		/* Check if the synced groundtruth and odometry are the same length */
 		if (robots[k].groundtruth.states.size() != robots[k].synced.odometry.size()) {
 			std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " groundtruth and odometry vectors are not the same length\n";
@@ -499,8 +506,7 @@ void checkSamplingRate(bool& flag) {
 		}
 
 		/* Check if all the sample time stamps are the same between Groundtruth and odometry.
-		 * NOTE: The sizes of the measurements and groundtruth vectors are checked above, so they are assumed to be equal here. 
-		 */ 
+		 * NOTE: The sizes of the measurements and groundtruth vectors are checked above, so they are assumed to be equal here. */ 
 		for (std::size_t i = 0; i < robots[k].synced.measurements.size(); i++) {
 			if (robots[k].synced.odometry[i].time != robots[k].groundtruth.states[i].time) {
 			std::cerr << "\033[1;31m[ERROR]\033[0m Robot " << k << " Time stamp mismatch between odometry and groundtruth: " << robots[k].synced.odometry[i].time << " ≠ " << robots[k].groundtruth.states[i].time << std::endl;
@@ -529,12 +535,12 @@ void checkSamplingRate(bool& flag) {
  * @param [in,out] flag confirms that the test was passed or failed.
  */
 void testGroundtruthOdometry(bool& flag) {
-	for (int dataset = 0; dataset < TOTAL_DATASETS; dataset++) {
+	for (unsigned short int dataset = 0; dataset < TOTAL_DATASETS; dataset++) {
 		DataHandler data("./data/MRCLAM_Dataset" + std::to_string(dataset+1));
 
-		auto* robots = data.getRobots();
+		auto robots = data.getRobots();
 
-		for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		for (unsigned short int id = 0; id < data.getNumberOfRobots(); id++) {
 			double average_x_difference = 0;
 			double average_y_difference = 0;
 			double average_orientation_difference = 0;
@@ -592,23 +598,23 @@ int main() {
 	bool data_saved= true;
 	bool correct_groundtruth_odometry = true;
 
-	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
-	// std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
-	// std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
+	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
+	std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
 	std::thread unit_test_8(saveData, std::ref(data_saved));
 	std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
-	//
-	// unit_test_1.join();
-	// unit_test_2.join();
-	// unit_test_3.join();
-	// unit_test_4.join();
-	// unit_test_5.join();
-	// unit_test_6.join();
-	// unit_test_7.join();
+
+	unit_test_1.join();
+	unit_test_2.join();
+	unit_test_3.join();
+	unit_test_4.join();
+	unit_test_5.join();
+	unit_test_6.join();
+	unit_test_7.join();
 	unit_test_8.join();
 	unit_test_9.join();
 
@@ -625,7 +631,6 @@ int main() {
 	correct_interpolation ? std::cout << "\033[1;32m[U6 PASS]\033[0m All raw extracted values were correctly interpolated\n" : std::cerr << "\033[1;31m[U6 FAIL]\033[0m Raw extraced values were not correctly interpolated\n";
 	
 	correct_sampling_rate ? std:: cout << "\033[1;32m[U7 PASS]\033[0m All resampled data have the same time stamps \n" : std::cerr << "\033[1;31m[U7 FAIL] The timesteps in the synced datasets did not match.\n";
-
 
 	data_saved ? std::cout << "\033[1;32m[U9 PASS]\033[0m Data succesfully saved.\n" : std::cerr << "\033[1;31m[U9 FAIL]\033[0m An error occured saving the data.\n";
 

@@ -22,11 +22,6 @@
 #include "../include/robot.h"
 #include "../include/landmark.h"
 
-#define TOTAL_LANDMARKS 15
-#define TOTAL_ROBOTS 5
-#define TOTAL_BARCODES (TOTAL_ROBOTS + TOTAL_LANDMARKS)
-#define TOTAL_DATASETS 9
-
 /**
  * @class DataHandler
  * @brief Extracts the data from the UTIAS Multi-robot Dataset.
@@ -48,22 +43,25 @@ private:
 	 */
 	double sampling_period_ = 0.2;
 
+	unsigned short int TOTAL_BARCODES = 0;
+	unsigned short int TOTAL_LANDMARKS = 0;
+	unsigned short int TOTAL_ROBOTS = 0;
 	/**
 	 * @brief  List of all barcodes corresponding to the robots and landmarks. 
 	 * @note The index of the element in the array corresponds to its id minus one.
 	 * @details Initialise all barcodes to 0. Since none of the barcodes have a value of 0, this will be used as a check by DataHandler::readLandmarks to see if all the barcodes were correctly set.
 	 */
-	int barcodes_[TOTAL_BARCODES] = {0}; 
+	std::vector<int> barcodes_; 
 	
 	/**
 	 * @brief All landmarks containing all the data extracted form Landmarks.dat. 
 	 */
-	Landmark landmarks_[TOTAL_LANDMARKS];
+	std::vector<Landmark> landmarks_;
 
 	/**
 	 * @brief  All data for all robots.
 	 */
-	Robot robots_[TOTAL_ROBOTS];
+	std::vector<Robot> robots_;
 
 	bool readBarcodes(const std::string&);
 	bool readLandmarks(const std::string&);
@@ -92,10 +90,15 @@ public:
 
 	void setDataSet(const std::string&, const double& sampling_period = 0.02);
 
-	int* getBarcodes();
-	Landmark* getLandmarks();
-	Robot* getRobots();
+	std::vector<int>& getBarcodes();
+	std::vector<Landmark>& getLandmarks();
+	std::vector<Robot>& getRobots();
+
 	double getSamplePeriod();
+
+	unsigned short int getNumberOfRobots();
+	unsigned short int getNumberOfLandmarks();
+	unsigned short int getNumberOfBarcodes();
 
 	void saveData(bool&);
 };

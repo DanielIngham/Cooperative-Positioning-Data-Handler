@@ -20,8 +20,75 @@ DataHandler::DataHandler(){
  * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
-DataHandler::DataHandler(const std::string& dataset,const double& sample_period){
+DataHandler::DataHandler(const std::string& dataset,const double& sample_period): TOTAL_BARCODES(20), TOTAL_LANDMARKS(15), TOTAL_ROBOTS(5), barcodes_(TOTAL_BARCODES, 0), landmarks_(TOTAL_LANDMARKS), robots_(TOTAL_ROBOTS) {
 	setDataSet(dataset, sample_period);
+}
+
+/**
+ * @brief Extracts data from the all files in the specified dataset folder.
+ * @param[in] dataset dataset path to the dataset folder.
+ * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
+ * @note All datasets in the UTIAS Multi-robot Localisation and mapping dataset have the same number of landmarks and robots. Therefore, if the dataset directory is provided, it is assumed that the number of landmarks and robots will be 5 and 15 respectively. The number of barcodes is 
+ * @note The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: DataHandler::readBarcodes, DataHandler::readLandmarks, DataHandler::readGroundTruth, DataHandler::readOdometry, and DataHandler::readMeasurements. Additionally, the DataHandler::syncData function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps.
+ */
+void DataHandler::setDataSet(const std::string& dataset, const double& sample_period) {
+	/* Check if the data set directory exists */
+	struct stat sb;
+	const char* directory = dataset.c_str();
+
+	if (stat(directory, &sb) == 0) {
+		this->dataset_ = dataset;
+	}
+	else {
+		throw std::runtime_error("Dataset file path does not exist: " + dataset); 
+	}
+
+	/* Set the sample period for this dataset. */
+	this->sampling_period_ = sample_period;
+
+	this->TOTAL_BARCODES = 20; 
+	this->TOTAL_LANDMARKS = 15; 
+	this->TOTAL_ROBOTS = 5; 
+
+	this->barcodes_.resize(TOTAL_BARCODES, 0); 
+	this->landmarks_.resize(TOTAL_LANDMARKS); 
+	this->robots_.resize(TOTAL_ROBOTS);
+
+	/* Perform data extraction in the directory */
+	bool barcodes_correct = readBarcodes(dataset);
+	bool landmarks_correct = readLandmarks(dataset);
+	bool groundtruth_correct = true;
+	bool odometry_correct = true;
+	bool measurement_correct = true;
+
+	/* Populate the values for each robot from the dataset */
+	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		groundtruth_correct &= readGroundTruth(dataset, i);
+		odometry_correct &= readOdometry(dataset, i);
+		measurement_correct &= readMeasurements(dataset, i);
+	}
+
+	/* Checks that the setting of all data attributes have been succesful */
+	bool successful_extraction = barcodes_correct & landmarks_correct & groundtruth_correct & odometry_correct & measurement_correct;
+
+	if (!successful_extraction) {
+		throw std::runtime_error("Unable to extract data from dataset");
+	}
+
+	/* Perform Time Stamp Synchronisation. This performs the linear interpolations of the values — ensuring all values have the same time steps  */
+	syncData(sample_period);
+
+	/* Calculate the odometry values that would correspond to the ground truth position and heading values after synchronsation. */
+	calculateGroundtruthOdometry();
+
+	/* Calculate the measurement values that would correspond to the ground truth range and bearing values. */
+	calculateGroundtruthMeasurement();
+
+	/* Ensure the odometry and measurement errors are calculated. */
+	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		robots_[i].calculateOdometryError();
+		robots_[i].calculateMeasurementError();
+	}
 }
 
 /**
@@ -57,19 +124,22 @@ bool DataHandler::readBarcodes(const std::string& dataset) {
 		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 		
 		if (i >= TOTAL_BARCODES) {
-			std::cerr << "[ERROR] total read barcodes exceeds TOTAL_BARCODES\n";
+			std::cerr << "[ERROR] The number of barcodes read exceeds total number of barcodes specified." << std::endl;
 			return false;
 		}
 
+		if (barcodes_.size() == 0) {
+			std::cerr << "\033[1;32m[ERROR]\033[0m The total number of barcodes was not specified." << std::endl;
+		}
+
 		/* Extract barcodes into barcodes array */
-		barcodes_[i++] = std::stoi(line.substr(line.find('\t', 0))) ;
+		barcodes_[i++] = std::stoi(line.substr(line.find('\t', 0)));
 	}
 
 	file.close();
 
 	return true;
 }
-
 /**
  * @brief Extracts data from the landmarks data file: Landmark_Groundtruth.dat.
  * @param[in] dataset path to the dataset folder.
@@ -319,115 +389,6 @@ bool DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
 	return true;
 }
 
-/**
- * @brief Extracts data from the all files in the specified dataset folder.
- * @param[in] dataset dataset path to the dataset folder.
- * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
- * @note The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: DataHandler::readBarcodes, DataHandler::readLandmarks, DataHandler::readGroundTruth, DataHandler::readOdometry, and DataHandler::readMeasurements. Additionally, the DataHandler::syncData function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps.
- */
-void DataHandler::setDataSet(const std::string& dataset, const double& sample_period) {
-	/* Check if the data set directory exists */
-	struct stat sb;
-	const char* directory = dataset.c_str();
-
-	if (stat(directory, &sb) == 0) {
-		this->dataset_ = dataset;
-	}
-	else {
-		throw std::runtime_error("Dataset file path does not exist: " + dataset); 
-	}
-
-	/* Set the sample period for this dataset. */
-	this->sampling_period_ = sample_period;
-	
-	/* Perform data extraction in the directory */
-	bool barcodes_correct = readBarcodes(dataset);
-	bool landmarks_correct = readLandmarks(dataset);
-	bool groundtruth_correct = true;
-	bool odometry_correct = true;
-	bool measurement_correct = true;
-
-	/* Populate the values for each robot from the dataset */
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		groundtruth_correct &= readGroundTruth(dataset, i);
-		odometry_correct &= readOdometry(dataset, i);
-		measurement_correct &= readMeasurements(dataset, i);
-	}
-
-	/* Checks that the setting of all data attributes have been succesful */
-	bool successful_extraction = barcodes_correct & landmarks_correct & groundtruth_correct & odometry_correct & measurement_correct;
-
-	if (!successful_extraction) {
-		throw std::runtime_error("Unable to extract data from dataset");
-	}
-
-	/* Perform Time Stamp Synchronisation. This performs the linear interpolations of the values — ensuring all values have the same time steps  */
-	syncData(sample_period);
-
-	/* Calculate the odometry values that would correspond to the ground truth position and heading values after synchronsation. */
-	calculateGroundtruthOdometry();
-
-	/* Calculate the measurement values that would correspond to the ground truth range and bearing values. */
-	calculateGroundtruthMeasurement();
-
-	/* Ensure the odometry and measurement errors are calculated. */
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		robots_[i].calculateOdometryError();
-		robots_[i].calculateMeasurementError();
-	}
-}
-
-/**
- * @brief Getter for the array of Barcodes.
- * @return an integer pointer to the array of barcodes extracted from the barcodes data file: Barcodes.dat.
- */
-int* DataHandler::getBarcodes() {
-	if ("" ==  this->dataset_) {
-		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data."); 
-	}
-	return barcodes_;
-}
-
-/**
- * @brief Searches trough the list of barcodes to find the index ID of the robot or landmark.
- * @param barcode the 
- * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array DataHandler::robots_.
- * @return the id of the robot of landmark. If the ID is not found -1 is returned.
- */
-int DataHandler::getID(int barcode) {
-	for (int i = 0; i < TOTAL_BARCODES; i++) {
-		if (barcodes_[i] == barcode) {
-			return (i + 1);
-		}
-	}
-	return -1;
-}
-/**
- * @brief Getter for the array of Landmarks.
- * @return Returns a pointer to the Landmarks structure member, populated by extracting data form Landmarks.dat.
- */
-Landmark* DataHandler::getLandmarks() {
-	if ("" ==  this->dataset_) {
-		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
-	}
-	return landmarks_;
-}
-
-/**
- * @brief Getter for the array of robots.
- * @return Returns a pointer to the Robot structure member, populated by extracting datefrom Robotx_Groundtruth.dat, Robotx_Odometry.dat, and Robotx_Measurement.dat.
- */
-Robot* DataHandler::getRobots() {
-	if ("" == this->dataset_) {
-		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
-	}
-
-	return robots_;
-}
-
-double DataHandler::getSamplePeriod() {
-	return sampling_period_;
-}
 
 /**
  * @brief Syncs the time steps for the extracted data according to the specified sampling period.
@@ -472,34 +433,39 @@ void DataHandler::syncData(const double& sample_period) {
 	maximum_time -= minimum_time;
 
 	/* Linear Interpolation. This section performs linear interpolation on the ground truth and odometry values to ensure that all robots have syncronised time steps. */
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		auto groundtruth_iterator = robots_[i].raw.states.begin();
-		auto odometry_iterator = robots_[i].raw.odometry.begin();
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		/* Clear all previously interpolated values */
+		robots_[id].groundtruth.states.clear();
+		robots_[id].synced.odometry.clear();
+		robots_[id].synced.measurements.clear();
+
+		auto groundtruth_iterator = robots_[id].raw.states.begin();
+		auto odometry_iterator = robots_[id].raw.odometry.begin();
 
 		for (double t = 0.0; t <= maximum_time; t+=sample_period) {
 
 			/* Find the first element that is larger than the current time step */
-			groundtruth_iterator = std::find_if(groundtruth_iterator, robots_[i].raw.states.end(), [t](const Robot::State& element) {
+			groundtruth_iterator = std::find_if(groundtruth_iterator, robots_[id].raw.states.end(), [t](const Robot::State& element) {
 			    return element.time > t;
 			});
 			/* If the element is the first item in the raw values, copy the raw values (no interpolation). This is assuming that the robot was stationary before its ground truth was recorded. */
-			if (groundtruth_iterator == robots_[i].raw.states.begin()) {
-				robots_[i].groundtruth.states.push_back( Robot::State(
+			if (groundtruth_iterator == robots_[id].raw.states.begin()) {
+				robots_[id].groundtruth.states.push_back( Robot::State(
 					t, 
-					robots_[i].raw.states.front().x, 
-					robots_[i].raw.states.front().y, 
-					robots_[i].raw.states.front().orientation
+					robots_[id].raw.states.front().x, 
+					robots_[id].raw.states.front().y, 
+					robots_[id].raw.states.front().orientation
 				)); 
 				continue;
 			}
 
 			/* If the element is the larst item in the raw values, copy the raw values (no interpolation). This is assuming that the robot remains stationary after the ground truth recording ended. */
-			else if (groundtruth_iterator == robots_[i].raw.states.end()) {
-				robots_[i].groundtruth.states.push_back( Robot::State(
+			else if (groundtruth_iterator == robots_[id].raw.states.end()) {
+				robots_[id].groundtruth.states.push_back( Robot::State(
 					t, 
-					robots_[i].raw.states.back().x,
-					robots_[i].raw.states.back().y, 
-					robots_[i].raw.states.back().orientation
+					robots_[id].raw.states.back().x,
+					robots_[id].raw.states.back().y, 
+					robots_[id].raw.states.back().orientation
 				));
 				continue;
 			}
@@ -521,7 +487,7 @@ void DataHandler::syncData(const double& sample_period) {
 			while (next_orientation >= M_PI) next_orientation -= 2.0 * M_PI;
 			while (next_orientation < -M_PI) next_orientation += 2.0 * M_PI;
 
-			robots_[i].groundtruth.states.push_back( Robot::State(
+			robots_[id].groundtruth.states.push_back( Robot::State(
 				t,
 				interpolation_factor * (groundtruth_iterator->x - (groundtruth_iterator - 1)->x) + (groundtruth_iterator - 1)->x,
 				interpolation_factor * (groundtruth_iterator->y - (groundtruth_iterator - 1)->y) + (groundtruth_iterator - 1)->y,
@@ -529,19 +495,19 @@ void DataHandler::syncData(const double& sample_period) {
 			));
 
 			/* The same process as above is repeated for the odometry, except assume the robot is stationary prior to ground truth readings */
-			odometry_iterator = std::find_if(odometry_iterator, robots_[i].raw.odometry.end(), [t](const Robot::Odometry& element) {
+			odometry_iterator = std::find_if(odometry_iterator, robots_[id].raw.odometry.end(), [t](const Robot::Odometry& element) {
 			    return element.time > t;
 			});
 
-			if (odometry_iterator == robots_[i].raw.odometry.begin() || odometry_iterator == robots_[i].raw.odometry.end()-1) {
-				robots_[i].synced.odometry.push_back(Robot::Odometry(t, 0, 0));
+			if (odometry_iterator == robots_[id].raw.odometry.begin() || odometry_iterator == robots_[id].raw.odometry.end()-1) {
+				robots_[id].synced.odometry.push_back(Robot::Odometry(t, 0, 0));
 				continue;
 			}
 
 			/* Calculating Odometry Interpolation */
 			interpolation_factor = (t -  (odometry_iterator-1)->time) / (odometry_iterator->time - (odometry_iterator -1)->time); 
 
-			robots_[i].synced.odometry.push_back( Robot::Odometry(
+			robots_[id].synced.odometry.push_back( Robot::Odometry(
 				t,
 				interpolation_factor * (odometry_iterator->forward_velocity - (odometry_iterator - 1)->forward_velocity) + (odometry_iterator - 1)->forward_velocity,
 				interpolation_factor * (odometry_iterator->angular_velocity - (odometry_iterator - 1)->angular_velocity) + (odometry_iterator - 1)->angular_velocity
@@ -549,31 +515,32 @@ void DataHandler::syncData(const double& sample_period) {
 		}
 
 		/* The orginal UTIAS data extractor did NOT perform any linear interpolation on the meaurement values. The only action that was performed on the measurements was time stamp realignment according to the new timestamps. */
-		robots_[i].synced.measurements.push_back( Robot::Measurement(
-			std::floor(robots_[i].raw.measurements[0].time / sample_period + 0.5) * sample_period,
-			robots_[i].raw.measurements[0].subjects,
-			robots_[i].raw.measurements[0].ranges,
-			robots_[i].raw.measurements[0].bearings
+		robots_[id].synced.measurements.push_back( Robot::Measurement(
+			std::floor(robots_[id].raw.measurements[0].time / sample_period + 0.5) * sample_period,
+			robots_[id].raw.measurements[0].subjects,
+			robots_[id].raw.measurements[0].ranges,
+			robots_[id].raw.measurements[0].bearings
 		));
 
-		std::vector<Robot::Measurement>::iterator iterator = robots_[i].synced.measurements.end() - 1;
+		std::vector<Robot::Measurement>::iterator iterator = robots_[id].synced.measurements.end() - 1;
 
 		/* Time stamp grouping: measurements with the same timestamps are grouped together to improve accessability. */
-		for (std::size_t j = 1; j < robots_[i].raw.measurements.size(); j++) {
-			double synced_time = std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5) * sample_period;
+		for (std::size_t j = 1; j < robots_[id].raw.measurements.size(); j++) {
+			double synced_time = std::floor(robots_[id].raw.measurements[j].time / sample_period + 0.5) * sample_period;
+			/* If the current measurment has the same time stamp the previous measurment, join them. */
 			if (synced_time == iterator->time) {
-				iterator->subjects.push_back(robots_[i].raw.measurements[j].subjects[0]);
-				iterator->ranges.push_back(robots_[i].raw.measurements[j].ranges[0]);
-				iterator->bearings.push_back(robots_[i].raw.measurements[j].bearings[0]);
+				iterator->subjects.push_back(robots_[id].raw.measurements[j].subjects[0]);
+				iterator->ranges.push_back(robots_[id].raw.measurements[j].ranges[0]);
+				iterator->bearings.push_back(robots_[id].raw.measurements[j].bearings[0]);
 			}
 			else {
-				robots_[i].synced.measurements.push_back( Robot::Measurement(
-					std::floor(robots_[i].raw.measurements[j].time / sample_period + 0.5) * sample_period,
-					robots_[i].raw.measurements[j].subjects,
-					robots_[i].raw.measurements[j].ranges,
-					robots_[i].raw.measurements[j].bearings
+				robots_[id].synced.measurements.push_back( Robot::Measurement(
+					std::floor(robots_[id].raw.measurements[j].time / sample_period + 0.5) * sample_period,
+					robots_[id].raw.measurements[j].subjects,
+					robots_[id].raw.measurements[j].ranges,
+					robots_[id].raw.measurements[j].bearings
 				));
-				iterator = robots_[i].synced.measurements.end() - 1;
+				iterator = robots_[id].synced.measurements.end() - 1;
 			}
 		}
 	}
@@ -587,6 +554,8 @@ void DataHandler::syncData(const double& sample_period) {
  */
 void DataHandler::calculateGroundtruthOdometry() {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		robots_[id].groundtruth.odometry.clear();
+
 		for (std::size_t k = 0; k < robots_[id].groundtruth.states.size() - 1; k++) {
 
 			double x_difference = (robots_[id].groundtruth.states[k+1].x - robots_[id].groundtruth.states[k].x);
@@ -614,7 +583,10 @@ void DataHandler::calculateGroundtruthOdometry() {
  */
 void DataHandler::calculateGroundtruthMeasurement() {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+
+		robots_[id].groundtruth.measurements.clear();
 		auto iterator = robots_[id].groundtruth.measurements.begin();
+
 		for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
 			/* For loop iterator. Since the extracted data values ordered by time in ascending order, once a time value is found, prior time values do not need to be checked for newer time stamps. */
 			size_t t = 0;
@@ -650,7 +622,7 @@ void DataHandler::calculateGroundtruthMeasurement() {
 				while (orientation >= M_PI) orientation -= 2.0 * M_PI;
 				while (orientation < -M_PI) orientation += 2.0 * M_PI;
 				/*  */
-				if (s == 0) {
+				if (0 == s) {
 					/* Create a new instance of the Measurement struct on the first */
 					robots_[id].groundtruth.measurements.push_back( Robot::Measurement(
 						robots_[id].synced.measurements[k].time,
@@ -667,10 +639,13 @@ void DataHandler::calculateGroundtruthMeasurement() {
 				iterator->subjects.push_back(robots_[id].synced.measurements[k].subjects[s]);
 				iterator->ranges.push_back(std::sqrt(x_difference * x_difference + y_difference * y_difference));
 				iterator->bearings.push_back(orientation);
-
 			}
 		}
-	} 
+		std::cout << "Robot " << id;
+		std::cout << "Groundtruth Measurement Size " << robots_[id].groundtruth.measurements.size() << std::endl;
+		std::cout << "Synced Measurement Size " << robots_[id].synced.measurements.size() << std::endl;\
+		std::cout << std::endl;
+	}
 }
 
 void DataHandler::relativeRobotDistance() {
@@ -979,3 +954,68 @@ void DataHandler::saveData(bool& flag) {
 	relativeLandmarkDistance();
 	relativeRobotDistance();
 }
+
+/**
+ * @brief Getter for the array of Barcodes.
+ * @return an integer pointer to the array of barcodes extracted from the barcodes data file: Barcodes.dat.
+ */
+std::vector<int>& DataHandler::getBarcodes() {
+	if ("" ==  this->dataset_) {
+		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data."); 
+	}
+	return barcodes_;
+}
+
+/**
+ * @brief Searches trough the list of barcodes to find the index ID of the robot or landmark.
+ * @param barcode the 
+ * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array DataHandler::robots_.
+ * @return the id of the robot of landmark. If the ID is not found -1 is returned.
+ */
+int DataHandler::getID(int barcode) {
+	for (int i = 0; i < TOTAL_BARCODES; i++) {
+		if (barcodes_[i] == barcode) {
+			return (i + 1);
+		}
+	}
+	return -1;
+}
+/**
+ * @brief Getter for the array of Landmarks.
+ * @return Returns a pointer to the Landmarks structure member, populated by extracting data form Landmarks.dat.
+ */
+std::vector<Landmark>& DataHandler::getLandmarks() {
+	if ("" ==  this->dataset_) {
+		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
+	}
+	return landmarks_;
+}
+
+/**
+ * @brief Getter for the array of robots.
+ * @return Returns a pointer to the Robot structure member, populated by extracting datefrom Robotx_Groundtruth.dat, Robotx_Odometry.dat, and Robotx_Measurement.dat.
+ */
+std::vector<Robot>& DataHandler::getRobots() {
+	if ("" == this->dataset_) {
+		throw std::runtime_error("Dataset has not been specified during object instantiation. Please ensure you call void setDataSet(std::string) before attempting to get data.");
+	}
+
+	return robots_;
+}
+
+double DataHandler::getSamplePeriod() {
+	return sampling_period_;
+}
+
+unsigned short int DataHandler::getNumberOfRobots() {
+	return TOTAL_ROBOTS;
+}
+
+unsigned short int DataHandler::getNumberOfLandmarks() {
+	return TOTAL_LANDMARKS;
+}
+
+unsigned short int DataHandler::getNumberOfBarcodes() {
+	return TOTAL_BARCODES;
+}
+
