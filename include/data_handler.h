@@ -1,6 +1,6 @@
 /**
  * @file data_extractor.h
- * @brief Header file of the DataExtractor class,  
+ * @brief Header file of the DataHandler class,  
  * @author Daniel Ingham
  * @date 2025-04-04
  */
@@ -24,7 +24,7 @@
 /**
  * @class DataHandler
  * @brief Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.
- * @details The class extracts the textfile dataset form UTIAS multi-robot localisation and mapping dataset into three members: DataExtractor::barcodes_, DataExtractor::landmarks_, and DataExtractor::robots_. 
+ * @details The class extracts the textfile dataset form UTIAS multi-robot localisation and mapping dataset into three members: DataHandler::barcodes_, DataHandler::landmarks_, and DataHandler::robots_. 
  */
 class DataHandler {
 private:
@@ -45,7 +45,7 @@ private:
 
 	/**
 	 * @brief the total number of barcodes in the dataset. 
-	 * @note the value of this variable is the summation of the DataExtractor::TOTAL_LANDMARKS and DataExtractor::TOTAL_ROBOTS.
+	 * @note the value of this variable is the summation of the DataHandler::TOTAL_LANDMARKS and DataHandler::TOTAL_ROBOTS.
 	 */
 	unsigned short int TOTAL_BARCODES = 0;
 
@@ -73,7 +73,7 @@ private:
 
 	/**
 	 * @brief std::vector the Robot class. This class contains all information pertaining to the robots. 
-	 * This class contains all information pertaining to the robots. The 'Robotx_Odometry.dat', 'Robotx_Measurement.dat' and 'Robotx_Groundtruth.dat' are used to populate the class. Additionally, the groundtruth values that are not provided by the dataset are calculated using DataExtractor::calculateGroundtruthOdometry and DataExtractor::calculateGroundtruthMeasurement.
+	 * This class contains all information pertaining to the robots. The 'Robotx_Odometry.dat', 'Robotx_Measurement.dat' and 'Robotx_Groundtruth.dat' are used to populate the class. Additionally, the groundtruth values that are not provided by the dataset are calculated using DataHandler::calculateGroundtruthOdometry and DataHandler::calculateGroundtruthMeasurement.
 	 */
 	std::vector<Robot> robots_;
 

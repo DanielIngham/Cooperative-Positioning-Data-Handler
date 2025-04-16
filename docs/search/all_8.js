@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['landmark_0',['Landmark',['../structDataHandler_1_1Landmark.html',1,'DataHandler']]],
-  ['landmarks_5f_1',['landmarks_',['../classDataHandler.html#ae27cb9f8af33052f9c22ca9830186a2c',1,'DataHandler']]]
+  ['landmark_0',['Landmark',['../structLandmark.html',1,'']]],
+  ['landmark_2eh_1',['landmark.h',['../landmark_8h.html',1,'']]],
+  ['landmarks_5f_2',['landmarks_',['../classDataHandler.html#a13e2b0e8726025195db9a97415f97e06',1,'DataHandler']]]
 ];

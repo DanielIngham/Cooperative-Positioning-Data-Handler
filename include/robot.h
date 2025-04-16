@@ -1,3 +1,9 @@
+/**
+ * @file robot.h
+ * @brief Header file of the Robot class.
+ * @author Daniel Ingham
+ * @date 2025-04-16
+ */
 #ifndef INCLUDE_INCLUDE_ROBOT_H_
 #define INCLUDE_INCLUDE_ROBOT_H_
 
@@ -5,6 +11,10 @@
 #include <stdexcept>
 #include <string>
 
+/**
+ * @class Robot
+ * @brief Houses all data and functionality related to a given robot in a multi-robot localisation environment
+ */
 class Robot {
 private:
 public:
@@ -20,7 +30,7 @@ public:
 
 	/**
 	 * @brief Data attributes for a single groundtruth reading extracted from Robotx_Groundtruth.dat.
-	 * @note According the UTIAS website, the groundtruth readings are accurate to the order of 1mm (1E^-3 m). Additionally, the NTP deamon used to synchronise the clocks between robots has an average timing error of 1ms (1E-3 s).
+	 * @note According the UTIAS website, the groundtruth readings are accurate to the order of 1mm (1E^-3 m). Additionally, the NTP deamon used to synchronise the clocks between robots has an average timing error of 1ms (1E-3 seconds).
 	 */
 	struct State {
 		/* The following attributes are extracted directly from the robots groundtruth datafile. */

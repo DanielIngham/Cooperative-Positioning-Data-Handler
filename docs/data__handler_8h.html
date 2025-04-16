@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>UTIAS Multi-Robot Data Extractor: /home/dan/Code/UTIAS-Multi-Robot/Data-Extractor/include/data_handler.h File Reference</title>
+<title>UTIAS Multi-Robot Data Extractor: /home/dan/Code/UTIAS-Multi-Robot/Data-Handler/include/data_handler.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -81,8 +81,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle"><div class="title">data_handler.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -94,16 +93,19 @@ $(function() {
 <code>#include &lt;sys/stat.h&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
-<code>#include &lt;<a class="el" href="robot_8h_source.html">../include/robot.h</a>&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
+<code>#include &quot;<a class="el" href="robot_8h_source.html">../include/robot.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="landmark_8h_source.html">../include/landmark.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for data_handler.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="data__handler_8h__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Extractor_2include_2data__handler_8h" alt=""/></div>
+<div class="center"><img src="data__handler_8h__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2include_2data__handler_8h" alt=""/></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="data__handler_8h__dep__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Extractor_2include_2data__handler_8hdep" alt=""/></div>
+<div class="center"><img src="data__handler_8h__dep__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2include_2data__handler_8hdep" alt=""/></div>
 </div>
 </div>
 <p><a href="data__handler_8h_source.html">Go to the source code of this file.</a></p>
@@ -111,64 +113,9 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html">DataHandler</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the data from the UTIAS Multi-robot Dataset.  <a href="classDataHandler.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.  <a href="classDataHandler.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDataHandler_1_1Landmark.html">DataHandler::Landmark</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data attributes for a given landmark extracted from the dataset file.  <a href="structDataHandler_1_1Landmark.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:ae64fbd84f3b95d0a1677950ba5535d2a" id="r_ae64fbd84f3b95d0a1677950ba5535d2a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data__handler_8h.html#ae64fbd84f3b95d0a1677950ba5535d2a">TOTAL_LANDMARKS</a>&#160;&#160;&#160;15</td></tr>
-<tr class="separator:ae64fbd84f3b95d0a1677950ba5535d2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d7e3126c3d5577b42c708bde8b73ca5" id="r_a4d7e3126c3d5577b42c708bde8b73ca5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data__handler_8h.html#a4d7e3126c3d5577b42c708bde8b73ca5">TOTAL_ROBOTS</a>&#160;&#160;&#160;5</td></tr>
-<tr class="separator:a4d7e3126c3d5577b42c708bde8b73ca5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0060507120fd9fcee92c6c50f40f388" id="r_ab0060507120fd9fcee92c6c50f40f388"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data__handler_8h.html#ab0060507120fd9fcee92c6c50f40f388">TOTAL_BARCODES</a>&#160;&#160;&#160;(<a class="el" href="data__handler_8h.html#a4d7e3126c3d5577b42c708bde8b73ca5">TOTAL_ROBOTS</a> + <a class="el" href="data__handler_8h.html#ae64fbd84f3b95d0a1677950ba5535d2a">TOTAL_LANDMARKS</a>)</td></tr>
-<tr class="separator:ab0060507120fd9fcee92c6c50f40f388"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="ab0060507120fd9fcee92c6c50f40f388" name="ab0060507120fd9fcee92c6c50f40f388"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab0060507120fd9fcee92c6c50f40f388">&#9670;&#160;</a></span>TOTAL_BARCODES</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define TOTAL_BARCODES&#160;&#160;&#160;(<a class="el" href="data__handler_8h.html#a4d7e3126c3d5577b42c708bde8b73ca5">TOTAL_ROBOTS</a> + <a class="el" href="data__handler_8h.html#ae64fbd84f3b95d0a1677950ba5535d2a">TOTAL_LANDMARKS</a>)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae64fbd84f3b95d0a1677950ba5535d2a" name="ae64fbd84f3b95d0a1677950ba5535d2a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae64fbd84f3b95d0a1677950ba5535d2a">&#9670;&#160;</a></span>TOTAL_LANDMARKS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define TOTAL_LANDMARKS&#160;&#160;&#160;15</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4d7e3126c3d5577b42c708bde8b73ca5" name="a4d7e3126c3d5577b42c708bde8b73ca5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d7e3126c3d5577b42c708bde8b73ca5">&#9670;&#160;</a></span>TOTAL_ROBOTS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define TOTAL_ROBOTS&#160;&#160;&#160;5</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

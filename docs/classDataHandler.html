@@ -77,7 +77,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
@@ -86,22 +85,11 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Extracts the data from the UTIAS Multi-robot Dataset.  
+<p>Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.  
  <a href="classDataHandler.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="data__handler_8h_source.html">data_handler.h</a>&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for DataHandler:</div>
-<div class="dyncontent">
-<div class="center"><img src="classDataHandler__coll__graph.png" border="0" usemap="#aDataHandler_coll__map" alt="Collaboration graph"/></div>
-<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDataHandler_1_1Landmark.html">Landmark</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data attributes for a given landmark extracted from the dataset file.  <a href="structDataHandler_1_1Landmark.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a51d845c1d9bbeef44607ec7592ba3c1d" id="r_a51d845c1d9bbeef44607ec7592ba3c1d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a51d845c1d9bbeef44607ec7592ba3c1d">DataHandler</a> ()</td></tr>
@@ -113,17 +101,33 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a418461e98948dd4a37ed5b3af24e6e6e" id="r_a418461e98948dd4a37ed5b3af24e6e6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a418461e98948dd4a37ed5b3af24e6e6e">setDataSet</a> (const std::string &amp;, const double &amp;sampling_period=0.02)</td></tr>
 <tr class="memdesc:a418461e98948dd4a37ed5b3af24e6e6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the all files in the specified dataset folder.  <br /></td></tr>
 <tr class="separator:a418461e98948dd4a37ed5b3af24e6e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c52c4a6d2c80544455fa93772726b66" id="r_a1c52c4a6d2c80544455fa93772726b66"><td class="memItemLeft" align="right" valign="top">int *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a1c52c4a6d2c80544455fa93772726b66">getBarcodes</a> ()</td></tr>
-<tr class="memdesc:a1c52c4a6d2c80544455fa93772726b66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the array of Barcodes.  <br /></td></tr>
-<tr class="separator:a1c52c4a6d2c80544455fa93772726b66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4c02bc4bf75d73fcd79e0f1443ba06e" id="r_ae4c02bc4bf75d73fcd79e0f1443ba06e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDataHandler_1_1Landmark.html">Landmark</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ae4c02bc4bf75d73fcd79e0f1443ba06e">getLandmarks</a> ()</td></tr>
-<tr class="memdesc:ae4c02bc4bf75d73fcd79e0f1443ba06e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the array of Landmarks.  <br /></td></tr>
-<tr class="separator:ae4c02bc4bf75d73fcd79e0f1443ba06e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4adda21f9f6d8c7585c06197f5e391d2" id="r_a4adda21f9f6d8c7585c06197f5e391d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classRobot.html">Robot</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a4adda21f9f6d8c7585c06197f5e391d2">getRobots</a> ()</td></tr>
-<tr class="memdesc:a4adda21f9f6d8c7585c06197f5e391d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the array of robots.  <br /></td></tr>
-<tr class="separator:a4adda21f9f6d8c7585c06197f5e391d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c4836020e63e13c4dc6bbb8a45c830e" id="r_a9c4836020e63e13c4dc6bbb8a45c830e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a9c4836020e63e13c4dc6bbb8a45c830e">getBarcodes</a> ()</td></tr>
+<tr class="memdesc:a9c4836020e63e13c4dc6bbb8a45c830e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the array of Barcodes.  <br /></td></tr>
+<tr class="separator:a9c4836020e63e13c4dc6bbb8a45c830e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fc08eea7f3ea6b7999c3b00bdec00ea" id="r_a6fc08eea7f3ea6b7999c3b00bdec00ea"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structLandmark.html">Landmark</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a6fc08eea7f3ea6b7999c3b00bdec00ea">getLandmarks</a> ()</td></tr>
+<tr class="memdesc:a6fc08eea7f3ea6b7999c3b00bdec00ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the array of Landmarks.  <br /></td></tr>
+<tr class="separator:a6fc08eea7f3ea6b7999c3b00bdec00ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9627420edb689af9c1463e4815693da4" id="r_a9627420edb689af9c1463e4815693da4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classRobot.html">Robot</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a9627420edb689af9c1463e4815693da4">getRobots</a> ()</td></tr>
+<tr class="memdesc:a9627420edb689af9c1463e4815693da4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the array of robots.  <br /></td></tr>
+<tr class="separator:a9627420edb689af9c1463e4815693da4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb04d371c2be3284199e81d4188700d0" id="r_afb04d371c2be3284199e81d4188700d0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#afb04d371c2be3284199e81d4188700d0">getSamplePeriod</a> ()</td></tr>
+<tr class="memdesc:afb04d371c2be3284199e81d4188700d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the <a class="el" href="classDataHandler.html#ab78d2ee79468cdc819f039cc850ce0d5" title="the desired sample period for resampling the data to sync the timesteps between the vehicles.">DataHandler::sampling_period_</a> field.  <br /></td></tr>
 <tr class="separator:afb04d371c2be3284199e81d4188700d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab894ac8650fdaf7d7510254909e04f0c" id="r_ab894ac8650fdaf7d7510254909e04f0c"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ab894ac8650fdaf7d7510254909e04f0c">getNumberOfRobots</a> ()</td></tr>
+<tr class="memdesc:ab894ac8650fdaf7d7510254909e04f0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the <a class="el" href="classDataHandler.html#a1f6ec1bf1a5a47b8515d1e21538ff9d0" title="The total number of robots in the dataset.">DataHandler::TOTAL_ROBOTS</a> field.  <br /></td></tr>
+<tr class="separator:ab894ac8650fdaf7d7510254909e04f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31bb832993e948b6346f2bd30ebbb4cf" id="r_a31bb832993e948b6346f2bd30ebbb4cf"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a31bb832993e948b6346f2bd30ebbb4cf">getNumberOfLandmarks</a> ()</td></tr>
+<tr class="memdesc:a31bb832993e948b6346f2bd30ebbb4cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the <a class="el" href="classDataHandler.html#af6eb4347c65db66358412db1f325eda4" title="The total number of landmarks in the dataset.">DataHandler::TOTAL_LANDMARKS</a> field.  <br /></td></tr>
+<tr class="separator:a31bb832993e948b6346f2bd30ebbb4cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae491399396321214011ca5c86d0d5e6e" id="r_ae491399396321214011ca5c86d0d5e6e"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ae491399396321214011ca5c86d0d5e6e">getNumberOfBarcodes</a> ()</td></tr>
+<tr class="memdesc:ae491399396321214011ca5c86d0d5e6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the DataHandler::BARCODES field.  <br /></td></tr>
+<tr class="separator:ae491399396321214011ca5c86d0d5e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae37e377187143c400c6fe3bf82aa81fa" id="r_ae37e377187143c400c6fe3bf82aa81fa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ae37e377187143c400c6fe3bf82aa81fa">getID</a> (int)</td></tr>
+<tr class="memdesc:ae37e377187143c400c6fe3bf82aa81fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches trough the list of barcodes to find the index ID of the robot or landmark.  <br /></td></tr>
+<tr class="separator:ae37e377187143c400c6fe3bf82aa81fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac00a9306bdd2a09410cad7fc4a2203f7" id="r_ac00a9306bdd2a09410cad7fc4a2203f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ac00a9306bdd2a09410cad7fc4a2203f7">saveData</a> (bool &amp;)</td></tr>
+<tr class="memdesc:ac00a9306bdd2a09410cad7fc4a2203f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves all the extracted and processed data in the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class after data extraction and processing.  <br /></td></tr>
+<tr class="separator:ac00a9306bdd2a09410cad7fc4a2203f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -151,30 +155,64 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a1d3466847c92c0252729186cf54735ef" id="r_a1d3466847c92c0252729186cf54735ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a1d3466847c92c0252729186cf54735ef">calculateGroundtruthMeasurement</a> ()</td></tr>
 <tr class="memdesc:a1d3466847c92c0252729186cf54735ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the ground truth measurements for a given robot.  <br /></td></tr>
 <tr class="separator:a1d3466847c92c0252729186cf54735ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae37e377187143c400c6fe3bf82aa81fa" id="r_ae37e377187143c400c6fe3bf82aa81fa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ae37e377187143c400c6fe3bf82aa81fa">getID</a> (int)</td></tr>
-<tr class="memdesc:ae37e377187143c400c6fe3bf82aa81fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the ID of the robot or landmark based on the barcode provided.  <br /></td></tr>
-<tr class="separator:ae37e377187143c400c6fe3bf82aa81fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a482008ec45d2af860141430f06f2562f" id="r_a482008ec45d2af860141430f06f2562f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a482008ec45d2af860141430f06f2562f">saveStateData</a> (bool &amp;)</td></tr>
+<tr class="memdesc:a482008ec45d2af860141430f06f2562f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the synced (performed by <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a>) and raw groundtruth robot state data extracted from the dataset after, which includes its x-coordinate, y-coordinate and heading.  <br /></td></tr>
+<tr class="separator:a482008ec45d2af860141430f06f2562f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46e41590bad51155973228885affe741" id="r_a46e41590bad51155973228885affe741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a46e41590bad51155973228885affe741">saveOdometryData</a> (bool &amp;)</td></tr>
+<tr class="memdesc:a46e41590bad51155973228885affe741"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the measured odometry data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into a .dat file to be plotted by gnuplot.  <br /></td></tr>
+<tr class="separator:a46e41590bad51155973228885affe741"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0a2e15b54286c000e784fbe5749d0c7" id="r_ad0a2e15b54286c000e784fbe5749d0c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ad0a2e15b54286c000e784fbe5749d0c7">saveMeasurementData</a> (bool &amp;)</td></tr>
+<tr class="memdesc:ad0a2e15b54286c000e784fbe5749d0c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the extracted measurement and calculated groundtruth measurement data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into .dat files to be plotted by gnuplot.  <br /></td></tr>
+<tr class="separator:ad0a2e15b54286c000e784fbe5749d0c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc2b584881e85912ca1a432bf86bc34d" id="r_acc2b584881e85912ca1a432bf86bc34d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#acc2b584881e85912ca1a432bf86bc34d">saveErrorData</a> (bool &amp;)</td></tr>
+<tr class="memdesc:acc2b584881e85912ca1a432bf86bc34d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves calculated error between the measured data (as extracted form the dataset) and the calculated groundtruth values.  <br /></td></tr>
+<tr class="separator:acc2b584881e85912ca1a432bf86bc34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33a47075c7f312c02263708e5d9695f3" id="r_a33a47075c7f312c02263708e5d9695f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a33a47075c7f312c02263708e5d9695f3">saveOdometryErrorPDF</a> (bool &amp;, double)</td></tr>
+<tr class="memdesc:a33a47075c7f312c02263708e5d9695f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF).  <br /></td></tr>
+<tr class="separator:a33a47075c7f312c02263708e5d9695f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8081109e71d978ccfb09596b9b20b8d" id="r_af8081109e71d978ccfb09596b9b20b8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#af8081109e71d978ccfb09596b9b20b8d">saveMeasurementErrorPDF</a> (bool &amp;, double)</td></tr>
+<tr class="memdesc:af8081109e71d978ccfb09596b9b20b8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the measurement error for the determination of a discretized Probability Density Function (PDF).  <br /></td></tr>
+<tr class="separator:af8081109e71d978ccfb09596b9b20b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceeae17f8c300f0c82f55de7567bb583" id="r_aceeae17f8c300f0c82f55de7567bb583"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#aceeae17f8c300f0c82f55de7567bb583">relativeRobotDistance</a> ()</td></tr>
+<tr class="memdesc:aceeae17f8c300f0c82f55de7567bb583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the relative distance of robots from an ego robot and saves the data.  <br /></td></tr>
+<tr class="separator:aceeae17f8c300f0c82f55de7567bb583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc8d74867aa39b8095a52bac985065c9" id="r_acc8d74867aa39b8095a52bac985065c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#acc8d74867aa39b8095a52bac985065c9">relativeLandmarkDistance</a> ()</td></tr>
+<tr class="memdesc:acc8d74867aa39b8095a52bac985065c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the relative distance of the landmarks from an ego robot and saves the data.  <br /></td></tr>
+<tr class="separator:acc8d74867aa39b8095a52bac985065c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:aed9b3567fa755a3111aeaecf841aa924" id="r_aed9b3567fa755a3111aeaecf841aa924"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#aed9b3567fa755a3111aeaecf841aa924">dataset_</a> = &quot;&quot;</td></tr>
 <tr class="memdesc:aed9b3567fa755a3111aeaecf841aa924"><td class="mdescLeft">&#160;</td><td class="mdescRight">Folder location for the dataset.  <br /></td></tr>
 <tr class="separator:aed9b3567fa755a3111aeaecf841aa924"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10da302af9e09e16272ca5ca1085ae57" id="r_a10da302af9e09e16272ca5ca1085ae57"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a10da302af9e09e16272ca5ca1085ae57">output_directory_</a> = &quot;&quot;</td></tr>
+<tr class="memdesc:a10da302af9e09e16272ca5ca1085ae57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Folder location for the output data.  <br /></td></tr>
+<tr class="separator:a10da302af9e09e16272ca5ca1085ae57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab78d2ee79468cdc819f039cc850ce0d5" id="r_ab78d2ee79468cdc819f039cc850ce0d5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ab78d2ee79468cdc819f039cc850ce0d5">sampling_period_</a> = 0.2</td></tr>
 <tr class="memdesc:ab78d2ee79468cdc819f039cc850ce0d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">the desired sample period for resampling the data to sync the timesteps between the vehicles.  <br /></td></tr>
 <tr class="separator:ab78d2ee79468cdc819f039cc850ce0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95df3cab31f6570832b04ac6bdd98dd6" id="r_a95df3cab31f6570832b04ac6bdd98dd6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a95df3cab31f6570832b04ac6bdd98dd6">barcodes_</a> [<a class="el" href="data__handler_8h.html#ab0060507120fd9fcee92c6c50f40f388">TOTAL_BARCODES</a>] = {0}</td></tr>
-<tr class="memdesc:a95df3cab31f6570832b04ac6bdd98dd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all barcodes corresponding to the robots and landmarks.  <br /></td></tr>
-<tr class="separator:a95df3cab31f6570832b04ac6bdd98dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae27cb9f8af33052f9c22ca9830186a2c" id="r_ae27cb9f8af33052f9c22ca9830186a2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDataHandler_1_1Landmark.html">Landmark</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ae27cb9f8af33052f9c22ca9830186a2c">landmarks_</a> [<a class="el" href="data__handler_8h.html#ae64fbd84f3b95d0a1677950ba5535d2a">TOTAL_LANDMARKS</a>]</td></tr>
-<tr class="memdesc:ae27cb9f8af33052f9c22ca9830186a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">All landmarks containing all the data extracted form Landmarks.dat.  <br /></td></tr>
-<tr class="separator:ae27cb9f8af33052f9c22ca9830186a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83cbe58eb101b8599bffef33bbfc9070" id="r_a83cbe58eb101b8599bffef33bbfc9070"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classRobot.html">Robot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a83cbe58eb101b8599bffef33bbfc9070">robots_</a> [<a class="el" href="data__handler_8h.html#a4d7e3126c3d5577b42c708bde8b73ca5">TOTAL_ROBOTS</a>]</td></tr>
-<tr class="memdesc:a83cbe58eb101b8599bffef33bbfc9070"><td class="mdescLeft">&#160;</td><td class="mdescRight">All data for all robots.  <br /></td></tr>
-<tr class="separator:a83cbe58eb101b8599bffef33bbfc9070"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63454dbdea926e6ab813e8022d667f34" id="r_a63454dbdea926e6ab813e8022d667f34"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a63454dbdea926e6ab813e8022d667f34">TOTAL_BARCODES</a> = 0</td></tr>
+<tr class="memdesc:a63454dbdea926e6ab813e8022d667f34"><td class="mdescLeft">&#160;</td><td class="mdescRight">the total number of barcodes in the dataset.  <br /></td></tr>
+<tr class="separator:a63454dbdea926e6ab813e8022d667f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6eb4347c65db66358412db1f325eda4" id="r_af6eb4347c65db66358412db1f325eda4"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#af6eb4347c65db66358412db1f325eda4">TOTAL_LANDMARKS</a> = 0</td></tr>
+<tr class="memdesc:af6eb4347c65db66358412db1f325eda4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total number of landmarks in the dataset.  <br /></td></tr>
+<tr class="separator:af6eb4347c65db66358412db1f325eda4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f6ec1bf1a5a47b8515d1e21538ff9d0" id="r_a1f6ec1bf1a5a47b8515d1e21538ff9d0"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a1f6ec1bf1a5a47b8515d1e21538ff9d0">TOTAL_ROBOTS</a> = 0</td></tr>
+<tr class="memdesc:a1f6ec1bf1a5a47b8515d1e21538ff9d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total number of robots in the dataset.  <br /></td></tr>
+<tr class="separator:a1f6ec1bf1a5a47b8515d1e21538ff9d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ba2eeef2f26cdd022f2b6a3afebbce" id="r_ab1ba2eeef2f26cdd022f2b6a3afebbce"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ab1ba2eeef2f26cdd022f2b6a3afebbce">barcodes_</a></td></tr>
+<tr class="memdesc:ab1ba2eeef2f26cdd022f2b6a3afebbce"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all barcodes corresponding to the robots and landmarks.  <br /></td></tr>
+<tr class="separator:ab1ba2eeef2f26cdd022f2b6a3afebbce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13e2b0e8726025195db9a97415f97e06" id="r_a13e2b0e8726025195db9a97415f97e06"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structLandmark.html">Landmark</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a13e2b0e8726025195db9a97415f97e06">landmarks_</a></td></tr>
+<tr class="memdesc:a13e2b0e8726025195db9a97415f97e06"><td class="mdescLeft">&#160;</td><td class="mdescRight">All landmarks containing all the data extracted form "Landmarks.dat".  <br /></td></tr>
+<tr class="separator:a13e2b0e8726025195db9a97415f97e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0898e8accf765b32e71b74eaee96a2ff" id="r_a0898e8accf765b32e71b74eaee96a2ff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classRobot.html">Robot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff">robots_</a></td></tr>
+<tr class="memdesc:a0898e8accf765b32e71b74eaee96a2ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">std::vector the <a class="el" href="classRobot.html" title="Houses all data and functionality related to a given robot in a multi-robot localisation environment.">Robot</a> class. This class contains all information pertaining to the robots. This class contains all information pertaining to the robots. The 'Robotx_Odometry.dat', 'Robotx_Measurement.dat' and 'Robotx_Groundtruth.dat' are used to populate the class. Additionally, the groundtruth values that are not provided by the dataset are calculated using <a class="el" href="classDataHandler.html#a1b52c287f259b3e02c37b1686febf073" title="Utilises the extracted robots groundtruth position and heading values to calculate their associated g...">DataHandler::calculateGroundtruthOdometry</a> and <a class="el" href="classDataHandler.html#a1d3466847c92c0252729186cf54735ef" title="Calculates the ground truth measurements for a given robot.">DataHandler::calculateGroundtruthMeasurement</a>.  <br /></td></tr>
+<tr class="separator:a0898e8accf765b32e71b74eaee96a2ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Extracts the data from the UTIAS Multi-robot Dataset. </p>
+<div class="textblock"><p>Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset. </p>
+<p>The class extracts the textfile dataset form UTIAS multi-robot localisation and mapping dataset into three members: <a class="el" href="classDataHandler.html#ab1ba2eeef2f26cdd022f2b6a3afebbce" title="List of all barcodes corresponding to the robots and landmarks.">DataHandler::barcodes_</a>, <a class="el" href="classDataHandler.html#a13e2b0e8726025195db9a97415f97e06" title="All landmarks containing all the data extracted form &quot;Landmarks.dat&quot;.">DataHandler::landmarks_</a>, and <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a51d845c1d9bbeef44607ec7592ba3c1d" name="a51d845c1d9bbeef44607ec7592ba3c1d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a51d845c1d9bbeef44607ec7592ba3c1d">&#9670;&#160;</a></span>DataHandler() <span class="overload">[1/2]</span></h2>
@@ -266,6 +304,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Calculates the ground truth measurements for a given robot. </p>
+<p>The following expression is utilised to calculate the groundtruth measurement values using the groundtruth robot state values extracted from the dataset: $$\begin{bmatrix} r_{ij}^{(k)} &amp; \phi_{ij}{(k)} \end{bmatrix}^\top = \begin{bmatrix} \sqrt{\left(x_i^{(k)} - x_j^{(k)}\right)^2 + \left(y_i^{(k)} - y_j^{(j)}\right)^2} &amp; \text{atan2}\left(y_j^{(k)} - y_i^{(k)}, x_j^{(k)} - x_i^{(k)}\right) - \theta_i^{(k)}\end{bmatrix}^\top, $$ where \(i\) denotes the ego robot; \(j\) denotes the measured robot; \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; and \( y\) denotes the robot's y-coordinate. </p>
 
 </div>
 </div>
@@ -293,18 +332,18 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utilises the extracted robots groundtruth position and heading values to calculate their associated groundtruth odometry values. </p>
-<p>The following expression is utilsed to calculate the odomotery values $$\begin{bmatrix} \omega_k &amp; v_k \end{bmatrix}^\top = \begin{bmatrix} \text{arctan}(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} - \theta_{k})) / \Delta t &amp; sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2} \end{bmatrix}^\top, $$ where \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; \( y\) denotes the robot's y-coordinate; \(\Delta t\) is the user defined sample period; \(\omega\) and \(v\) denotes the angular velocity and forward velocity of the robot respectively. </p>
+<p>The following expression is utilsed to calculate the groundtruth odomotery values using the groundtruth states values extracted from the dataset: $$\begin{bmatrix} \omega_k &amp; v_k \end{bmatrix}^\top = \begin{bmatrix} \text{arctan2}(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} - \theta_{k})) / \Delta t &amp; \sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2} \end{bmatrix}^\top, $$ where \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; \( y\) denotes the robot's y-coordinate; \(\Delta t\) is the user defined sample period; \(\omega\) and \(v\) denotes the angular velocity and forward velocity of the robot respectively. </p>
 
 </div>
 </div>
-<a id="a1c52c4a6d2c80544455fa93772726b66" name="a1c52c4a6d2c80544455fa93772726b66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c52c4a6d2c80544455fa93772726b66">&#9670;&#160;</a></span>getBarcodes()</h2>
+<a id="a9c4836020e63e13c4dc6bbb8a45c830e" name="a9c4836020e63e13c4dc6bbb8a45c830e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c4836020e63e13c4dc6bbb8a45c830e">&#9670;&#160;</a></span>getBarcodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int * DataHandler::getBarcodes </td>
+          <td class="memname">std::vector&lt; int &gt; &amp; DataHandler::getBarcodes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -313,7 +352,8 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Getter for the array of Barcodes. </p>
-<dl class="section return"><dt>Returns</dt><dd>Returns an integer pointer to the array of barcodes extracted from the barcodes data file: Barcodes.dat. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a reference the barcodes integer vector extracted from the barcodes data file: Barcodes.dat. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>if the dataset has not been set, the function will throw a std::runtime_error. </dd></dl>
 
 </div>
 </div>
@@ -322,9 +362,6 @@ Private Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">int DataHandler::getID </td>
@@ -334,26 +371,30 @@ Private Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>returns the ID of the robot or landmark based on the barcode provided. </p>
-<dl class="section note"><dt>Note</dt><dd>the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array <a class="el" href="classDataHandler.html#a83cbe58eb101b8599bffef33bbfc9070" title="All data for all robots.">DataHandler::robots_</a>. </dd></dl>
+<p>Searches trough the list of barcodes to find the index ID of the robot or landmark. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">barcode</td><td>the barcode value for which the ID needs to be found. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the ID of the robot of landmark. If the ID is not found -1 is returned. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </dd>
+<dd>
+if the dataset has not been set, the function will throw a std::runtime_error. </dd></dl>
 
 </div>
 </div>
-<a id="ae4c02bc4bf75d73fcd79e0f1443ba06e" name="ae4c02bc4bf75d73fcd79e0f1443ba06e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4c02bc4bf75d73fcd79e0f1443ba06e">&#9670;&#160;</a></span>getLandmarks()</h2>
+<a id="a6fc08eea7f3ea6b7999c3b00bdec00ea" name="a6fc08eea7f3ea6b7999c3b00bdec00ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fc08eea7f3ea6b7999c3b00bdec00ea">&#9670;&#160;</a></span>getLandmarks()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structDataHandler_1_1Landmark.html">DataHandler::Landmark</a> * DataHandler::getLandmarks </td>
+          <td class="memname">std::vector&lt; <a class="el" href="structLandmark.html">Landmark</a> &gt; &amp; DataHandler::getLandmarks </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -362,18 +403,81 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Getter for the array of Landmarks. </p>
-<dl class="section return"><dt>Returns</dt><dd>Returns a pointer to the Landmarks structure member, populated by extracting data form Landmarks.dat. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a reference to the Landmarks class vector, populated by extracting data form Landmarks.dat. </dd></dl>
 
 </div>
 </div>
-<a id="a4adda21f9f6d8c7585c06197f5e391d2" name="a4adda21f9f6d8c7585c06197f5e391d2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4adda21f9f6d8c7585c06197f5e391d2">&#9670;&#160;</a></span>getRobots()</h2>
+<a id="ae491399396321214011ca5c86d0d5e6e" name="ae491399396321214011ca5c86d0d5e6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae491399396321214011ca5c86d0d5e6e">&#9670;&#160;</a></span>getNumberOfBarcodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classRobot.html">Robot</a> * DataHandler::getRobots </td>
+          <td class="memname">unsigned short int DataHandler::getNumberOfBarcodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Getter for the DataHandler::BARCODES field. </p>
+<dl class="section return"><dt>Returns</dt><dd>the number of landmarks set by the user or the dataset. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>the field is initialised to zero, therefore if it is not set, a std::runtime_error will be throw. </dd></dl>
+
+</div>
+</div>
+<a id="a31bb832993e948b6346f2bd30ebbb4cf" name="a31bb832993e948b6346f2bd30ebbb4cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31bb832993e948b6346f2bd30ebbb4cf">&#9670;&#160;</a></span>getNumberOfLandmarks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned short int DataHandler::getNumberOfLandmarks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Getter for the <a class="el" href="classDataHandler.html#af6eb4347c65db66358412db1f325eda4" title="The total number of landmarks in the dataset.">DataHandler::TOTAL_LANDMARKS</a> field. </p>
+<dl class="section return"><dt>Returns</dt><dd>the number of landmarks set by the user or the dataset. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>the field is initialised to zero, therefore if it is not set, a std::runtime_error will be throw. </dd></dl>
+
+</div>
+</div>
+<a id="ab894ac8650fdaf7d7510254909e04f0c" name="ab894ac8650fdaf7d7510254909e04f0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab894ac8650fdaf7d7510254909e04f0c">&#9670;&#160;</a></span>getNumberOfRobots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned short int DataHandler::getNumberOfRobots </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Getter for the <a class="el" href="classDataHandler.html#a1f6ec1bf1a5a47b8515d1e21538ff9d0" title="The total number of robots in the dataset.">DataHandler::TOTAL_ROBOTS</a> field. </p>
+<dl class="section return"><dt>Returns</dt><dd>the number of robots set by the user dataset. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>the field is initialised to zero, therefore if it is not set, a std::runtime_error will be throw. </dd></dl>
+
+</div>
+</div>
+<a id="a9627420edb689af9c1463e4815693da4" name="a9627420edb689af9c1463e4815693da4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9627420edb689af9c1463e4815693da4">&#9670;&#160;</a></span>getRobots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classRobot.html">Robot</a> &gt; &amp; DataHandler::getRobots </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -382,7 +486,8 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Getter for the array of robots. </p>
-<dl class="section return"><dt>Returns</dt><dd>Returns a pointer to the <a class="el" href="classRobot.html">Robot</a> structure member, populated by extracting datefrom Robotx_Groundtruth.dat, Robotx_Odometry.dat, and Robotx_Measurement.dat. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a reference to the <a class="el" href="classRobot.html" title="Houses all data and functionality related to a given robot in a multi-robot localisation environment.">Robot</a> class vector, populated by extracting datefrom Robotx_Groundtruth.dat, Robotx_Odometry.dat, and Robotx_Measurement.dat. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>if the dataset has not been set, the function will throw a std::runtime_error. </dd></dl>
 
 </div>
 </div>
@@ -400,6 +505,10 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Getter for the <a class="el" href="classDataHandler.html#ab78d2ee79468cdc819f039cc850ce0d5" title="the desired sample period for resampling the data to sync the timesteps between the vehicles.">DataHandler::sampling_period_</a> field. </p>
+<dl class="section return"><dt>Returns</dt><dd>the sampling period set by the user. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>DataExtractor::sampling_period_ has a default value of 0.02. </dd></dl>
 
 </div>
 </div>
@@ -430,10 +539,11 @@ Private Attributes</h2></td></tr>
 <p>Extracts data from the barcodes data file: Barcodes.dat. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">directory</td><td>path to the dataset folder. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the barcodes were succesfully extracted from the dataset. </dd></dl>
 
 </div>
 </div>
@@ -479,6 +589,8 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the groundtruth was succesfully extracted from the dataset.</dd></dl>
+<p>The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the <a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588" title="struct containing vectors related to the robot data files.">Robot::raw</a> states member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
 
 </div>
 </div>
@@ -513,7 +625,8 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd><a class="el" href="classDataHandler.html#abe872b9acd46177aec82b248dacb3fb0" title="Extracts data from the barcodes data file: Barcodes.dat.">DataHandler::readBarcodes</a> needs to be called before this function since this function relies on the barcodes it extracted. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the landmarks were succesfully extracted from the dataset. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd><a class="el" href="classDataHandler.html#abe872b9acd46177aec82b248dacb3fb0" title="Extracts data from the barcodes data file: Barcodes.dat.">DataHandler::readBarcodes</a> needs to be called before this function since this function relies on the barcodes extracted. </dd></dl>
 
 </div>
 </div>
@@ -559,7 +672,10 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a> function. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the robot's measurements was succesfully extracted from the dataset. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The data values are tab seperated '\t'. </dd>
+<dd>
+Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a> function. </dd></dl>
 
 </div>
 </div>
@@ -605,6 +721,318 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the robot odometry was succesfully extracted from the dataset.</dd></dl>
+<p>The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the <a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588" title="struct containing vectors related to the robot data files.">Robot::raw</a> odometry member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
+
+</div>
+</div>
+<a id="acc8d74867aa39b8095a52bac985065c9" name="acc8d74867aa39b8095a52bac985065c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc8d74867aa39b8095a52bac985065c9">&#9670;&#160;</a></span>relativeLandmarkDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::relativeLandmarkDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculates the relative distance of the landmarks from an ego robot and saves the data. </p>
+<p>The relative distance between the landmarks and the ego robot is calculated using the landmarks and groundtruth state values extracted from the dataset for each landmark and the ego robot respectively. </p><dl class="section note"><dt>Note</dt><dd>this is only for robot 1 at this stage. </dd></dl>
+
+</div>
+</div>
+<a id="aceeae17f8c300f0c82f55de7567bb583" name="aceeae17f8c300f0c82f55de7567bb583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceeae17f8c300f0c82f55de7567bb583">&#9670;&#160;</a></span>relativeRobotDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::relativeRobotDistance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculates the relative distance of robots from an ego robot and saves the data. </p>
+<p>The relative distance between robots and the ego robot is calculated using the groundtruth state values extracted from the dataset for each robot. </p><dl class="section note"><dt>Note</dt><dd>this is only for robot 1 at this stage. </dd></dl>
+
+</div>
+</div>
+<a id="ac00a9306bdd2a09410cad7fc4a2203f7" name="ac00a9306bdd2a09410cad7fc4a2203f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac00a9306bdd2a09410cad7fc4a2203f7">&#9670;&#160;</a></span>saveData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveData </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Saves all the extracted and processed data in the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class after data extraction and processing. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether the saving of all data was succesfull. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acc2b584881e85912ca1a432bf86bc34d" name="acc2b584881e85912ca1a432bf86bc34d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc2b584881e85912ca1a432bf86bc34d">&#9670;&#160;</a></span>saveErrorData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveErrorData </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Saves calculated error between the measured data (as extracted form the dataset) and the calculated groundtruth values. </p>
+<p>The error between the measured odometry and the calculated groundtruth odometry produced by <a class="el" href="classRobot.html#a8d9b81c0a6d74fb930de1f097e5d6be4" title="Calculates the absolute error between the groundtruth odometry values and the values measured.">Robot::calculateOdometryError</a> and the error between the measured measurements and the groundtruth measurements produced bye <a class="el" href="classRobot.html#a4a5c0633e46aa43edca4bd835fd9dcfd">Robot::calculateMeasurementError</a> is saved into their respective .dat files. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the odometry and measurement error data was succesfull. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad0a2e15b54286c000e784fbe5749d0c7" name="ad0a2e15b54286c000e784fbe5749d0c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0a2e15b54286c000e784fbe5749d0c7">&#9670;&#160;</a></span>saveMeasurementData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveMeasurementData </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Saves the extracted measurement and calculated groundtruth measurement data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into .dat files to be plotted by gnuplot. </p>
+<p>Saves both the measurement data (as extracted from the dataset) and the calculated groundtruth measurement values (calculated by <a class="el" href="classDataHandler.html#a1d3466847c92c0252729186cf54735ef" title="Calculates the ground truth measurements for a given robot.">DataHandler::calculateGroundtruthMeasurement</a>) into Measurement.dat and Groundtruth-Measurement.dat respectively. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether the saving of measurement data was succesfull. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="af8081109e71d978ccfb09596b9b20b8d" name="af8081109e71d978ccfb09596b9b20b8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8081109e71d978ccfb09596b9b20b8d">&#9670;&#160;</a></span>saveMeasurementErrorPDF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveMeasurementErrorPDF </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>flag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bin_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs binning on the measurement error for the determination of a discretized Probability Density Function (PDF). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the measurment error PDF was succesfull. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bin_size</td><td>the size of the bins (denoting the range of values) that measurement values gets grouped into. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>The bin count is actually the area contribution of the odometry error for a given odometry measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. </dd></dl>
+
+</div>
+</div>
+<a id="a46e41590bad51155973228885affe741" name="a46e41590bad51155973228885affe741"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46e41590bad51155973228885affe741">&#9670;&#160;</a></span>saveOdometryData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveOdometryData </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Saves the measured odometry data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into a .dat file to be plotted by gnuplot. </p>
+<p>Saves the odometry data (as extracted from the dataset) into Odometry.dat. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the odometry data was succesfull. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a33a47075c7f312c02263708e5d9695f3" name="a33a47075c7f312c02263708e5d9695f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33a47075c7f312c02263708e5d9695f3">&#9670;&#160;</a></span>saveOdometryErrorPDF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveOdometryErrorPDF </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>flag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>bin_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the odometry error PDF was succesfull. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bin_size</td><td>the size of the bins (denoting the range of values) that odometry measurement values gets grouped into. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>The bin count is actually the area contribution of the odometry error for a given odometry measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. </dd></dl>
+
+</div>
+</div>
+<a id="a482008ec45d2af860141430f06f2562f" name="a482008ec45d2af860141430f06f2562f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a482008ec45d2af860141430f06f2562f">&#9670;&#160;</a></span>saveStateData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveStateData </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes the synced (performed by <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a>) and raw groundtruth robot state data extracted from the dataset after, which includes its x-coordinate, y-coordinate and heading. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the groundtruth state data was succesfull. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -642,7 +1070,9 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: <a class="el" href="classDataHandler.html#abe872b9acd46177aec82b248dacb3fb0" title="Extracts data from the barcodes data file: Barcodes.dat.">DataHandler::readBarcodes</a>, <a class="el" href="classDataHandler.html#a2894967171b3cb9a85a635d828ac6b5d" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataHandler::readLandmarks</a>, <a class="el" href="classDataHandler.html#a0da2c887ca2d4715d03722d58fe00119" title="Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.">DataHandler::readGroundTruth</a>, <a class="el" href="classDataHandler.html#a505750357f67244d7f7d8b24cd728358" title="Extracts data from the groundtruth data file: Robotx_Odometry.dat.">DataHandler::readOdometry</a>, and <a class="el" href="classDataHandler.html#a5cf04417a963eeca9ee3a9e3b621f3ec" title="Extracts data from the groundtruth data file: Robotx_Measurement.dat.">DataHandler::readMeasurements</a>. Additionally, the <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a> function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>All datasets in the UTIAS Multi-robot Localisation and mapping dataset have the same number of landmarks and robots. Therefore, if the dataset directory is provided, it is assumed that the number of landmarks and robots will be 5 and 15 respectively. The number of barcodes is the summation and these two values. </dd>
+<dd>
+The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: <a class="el" href="classDataHandler.html#abe872b9acd46177aec82b248dacb3fb0" title="Extracts data from the barcodes data file: Barcodes.dat.">DataHandler::readBarcodes</a>, <a class="el" href="classDataHandler.html#a2894967171b3cb9a85a635d828ac6b5d" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataHandler::readLandmarks</a>, <a class="el" href="classDataHandler.html#a0da2c887ca2d4715d03722d58fe00119" title="Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.">DataHandler::readGroundTruth</a>, <a class="el" href="classDataHandler.html#a505750357f67244d7f7d8b24cd728358" title="Extracts data from the groundtruth data file: Robotx_Odometry.dat.">DataHandler::readOdometry</a>, and <a class="el" href="classDataHandler.html#a5cf04417a963eeca9ee3a9e3b621f3ec" title="Extracts data from the groundtruth data file: Robotx_Measurement.dat.">DataHandler::readMeasurements</a>. Additionally, the <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a> function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps. </dd></dl>
 
 </div>
 </div>
@@ -677,13 +1107,13 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>Synced values for the ground truth are saved in the <a class="el" href="classDataHandler.html#a83cbe58eb101b8599bffef33bbfc9070" title="All data for all robots.">DataHandler::robots_</a>-&gt;groundtruth struct vector whereas synced odometry are saved in the <a class="el" href="classDataHandler.html#a83cbe58eb101b8599bffef33bbfc9070" title="All data for all robots.">DataHandler::robots_</a>-&gt;synced struct </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Synced values for the ground truth are saved in the <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>-&gt;groundtruth struct vector whereas synced odometry are saved in the <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>-&gt;synced struct </dd></dl>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a95df3cab31f6570832b04ac6bdd98dd6" name="a95df3cab31f6570832b04ac6bdd98dd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95df3cab31f6570832b04ac6bdd98dd6">&#9670;&#160;</a></span>barcodes_</h2>
+<a id="ab1ba2eeef2f26cdd022f2b6a3afebbce" name="ab1ba2eeef2f26cdd022f2b6a3afebbce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1ba2eeef2f26cdd022f2b6a3afebbce">&#9670;&#160;</a></span>barcodes_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -692,7 +1122,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int DataHandler::barcodes_[<a class="el" href="data__handler_8h.html#ab0060507120fd9fcee92c6c50f40f388">TOTAL_BARCODES</a>] = {0}</td>
+          <td class="memname">std::vector&lt;int&gt; DataHandler::barcodes_</td>
         </tr>
       </table>
   </td>
@@ -703,8 +1133,8 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>List of all barcodes corresponding to the robots and landmarks. </p>
-<dl class="section note"><dt>Note</dt><dd>The index of the element in the array corresponds to its id minus one.</dd></dl>
-<p>Initialise all barcodes to 0. Since none of the barcodes have a value of 0, this will be used as a check by <a class="el" href="classDataHandler.html#a2894967171b3cb9a85a635d828ac6b5d" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataHandler::readLandmarks</a> to see if all the barcodes were correctly set. </p>
+<dl class="section note"><dt>Note</dt><dd>The index of the element in the array corresponds to its ID minus one.</dd></dl>
+<p>The list of barcodes corresponding to both the robots and the landmarks exctracted from the 'Barcodes.dat' file. The UTIAS dataset contains 20 barcodes: 5 robots and 15 landmarks. All barcodes are initialised to 0. Since none of the barcodes have a value of 0, this will be used as a check by <a class="el" href="classDataHandler.html#a2894967171b3cb9a85a635d828ac6b5d" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataHandler::readLandmarks</a> to see if all the barcodes were correctly set. </p>
 
 </div>
 </div>
@@ -732,8 +1162,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae27cb9f8af33052f9c22ca9830186a2c" name="ae27cb9f8af33052f9c22ca9830186a2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae27cb9f8af33052f9c22ca9830186a2c">&#9670;&#160;</a></span>landmarks_</h2>
+<a id="a13e2b0e8726025195db9a97415f97e06" name="a13e2b0e8726025195db9a97415f97e06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13e2b0e8726025195db9a97415f97e06">&#9670;&#160;</a></span>landmarks_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -742,7 +1172,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structDataHandler_1_1Landmark.html">Landmark</a> DataHandler::landmarks_[<a class="el" href="data__handler_8h.html#ae64fbd84f3b95d0a1677950ba5535d2a">TOTAL_LANDMARKS</a>]</td>
+          <td class="memname">std::vector&lt;<a class="el" href="structLandmark.html">Landmark</a>&gt; DataHandler::landmarks_</td>
         </tr>
       </table>
   </td>
@@ -752,12 +1182,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>All landmarks containing all the data extracted form Landmarks.dat. </p>
+<p>All landmarks containing all the data extracted form "Landmarks.dat". </p>
 
 </div>
 </div>
-<a id="a83cbe58eb101b8599bffef33bbfc9070" name="a83cbe58eb101b8599bffef33bbfc9070"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83cbe58eb101b8599bffef33bbfc9070">&#9670;&#160;</a></span>robots_</h2>
+<a id="a10da302af9e09e16272ca5ca1085ae57" name="a10da302af9e09e16272ca5ca1085ae57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10da302af9e09e16272ca5ca1085ae57">&#9670;&#160;</a></span>output_directory_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -766,7 +1196,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classRobot.html">Robot</a> DataHandler::robots_[<a class="el" href="data__handler_8h.html#a4d7e3126c3d5577b42c708bde8b73ca5">TOTAL_ROBOTS</a>]</td>
+          <td class="memname">std::string DataHandler::output_directory_ = &quot;&quot;</td>
         </tr>
       </table>
   </td>
@@ -776,7 +1206,31 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>All data for all robots. </p>
+<p>Folder location for the output data. </p>
+
+</div>
+</div>
+<a id="a0898e8accf765b32e71b74eaee96a2ff" name="a0898e8accf765b32e71b74eaee96a2ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0898e8accf765b32e71b74eaee96a2ff">&#9670;&#160;</a></span>robots_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classRobot.html">Robot</a>&gt; DataHandler::robots_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>std::vector the <a class="el" href="classRobot.html" title="Houses all data and functionality related to a given robot in a multi-robot localisation environment.">Robot</a> class. This class contains all information pertaining to the robots. This class contains all information pertaining to the robots. The 'Robotx_Odometry.dat', 'Robotx_Measurement.dat' and 'Robotx_Groundtruth.dat' are used to populate the class. Additionally, the groundtruth values that are not provided by the dataset are calculated using <a class="el" href="classDataHandler.html#a1b52c287f259b3e02c37b1686febf073" title="Utilises the extracted robots groundtruth position and heading values to calculate their associated g...">DataHandler::calculateGroundtruthOdometry</a> and <a class="el" href="classDataHandler.html#a1d3466847c92c0252729186cf54735ef" title="Calculates the ground truth measurements for a given robot.">DataHandler::calculateGroundtruthMeasurement</a>. </p>
 
 </div>
 </div>
@@ -804,9 +1258,82 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a63454dbdea926e6ab813e8022d667f34" name="a63454dbdea926e6ab813e8022d667f34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63454dbdea926e6ab813e8022d667f34">&#9670;&#160;</a></span>TOTAL_BARCODES</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned short int DataHandler::TOTAL_BARCODES = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>the total number of barcodes in the dataset. </p>
+<dl class="section note"><dt>Note</dt><dd>the value of this variable is the summation of the <a class="el" href="classDataHandler.html#af6eb4347c65db66358412db1f325eda4" title="The total number of landmarks in the dataset.">DataHandler::TOTAL_LANDMARKS</a> and <a class="el" href="classDataHandler.html#a1f6ec1bf1a5a47b8515d1e21538ff9d0" title="The total number of robots in the dataset.">DataHandler::TOTAL_ROBOTS</a>. </dd></dl>
+
+</div>
+</div>
+<a id="af6eb4347c65db66358412db1f325eda4" name="af6eb4347c65db66358412db1f325eda4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6eb4347c65db66358412db1f325eda4">&#9670;&#160;</a></span>TOTAL_LANDMARKS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned short int DataHandler::TOTAL_LANDMARKS = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The total number of landmarks in the dataset. </p>
+
+</div>
+</div>
+<a id="a1f6ec1bf1a5a47b8515d1e21538ff9d0" name="a1f6ec1bf1a5a47b8515d1e21538ff9d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f6ec1bf1a5a47b8515d1e21538ff9d0">&#9670;&#160;</a></span>TOTAL_ROBOTS</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned short int DataHandler::TOTAL_ROBOTS = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The total number of robots in the dataset. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/dan/Code/UTIAS-Multi-Robot/Data-Extractor/include/<a class="el" href="data__handler_8h_source.html">data_handler.h</a></li>
-<li>/home/dan/Code/UTIAS-Multi-Robot/Data-Extractor/src/<a class="el" href="data__handler_8cpp.html">data_handler.cpp</a></li>
+<li>/home/dan/Code/UTIAS-Multi-Robot/Data-Handler/include/<a class="el" href="data__handler_8h_source.html">data_handler.h</a></li>
+<li>/home/dan/Code/UTIAS-Multi-Robot/Data-Handler/src/<a class="el" href="data__handler_8cpp.html">data_handler.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

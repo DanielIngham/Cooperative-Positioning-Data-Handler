@@ -221,7 +221,7 @@ bool DataHandler::readLandmarks(const std::string& dataset) {
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
  * @return a flag indicating whether the groundtruth was succesfully extracted from the dataset.
- * @details The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the Robot::raw.states member for a given robot in DataHandler::robots_.
+ * @details The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the Robot::raw states member for a given robot in DataHandler::robots_.
  */
 bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the ground truth vector. */
@@ -282,7 +282,7 @@ bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
  * @return a flag indicating whether the robot odometry was succesfully extracted from the dataset.
- * @details The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the Robot::raw.odometry member for a given robot in DataHandler::robots_.
+ * @details The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the Robot::raw odometry member for a given robot in DataHandler::robots_.
  */
 bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the odometry vector. */
@@ -590,7 +590,7 @@ void DataHandler::calculateGroundtruthOdometry() {
 /**
  * @brief Calculates the ground truth measurements for a given robot.
  * @details The following expression is utilised to calculate the groundtruth measurement values using the groundtruth robot state values extracted from the dataset:
- * $$\begin{bmatrix} \r_{ij}^{(k)} & \phi_{ij}{(k)} \end{bmatrix}^\top = \begin{bmatrix} \sqrt{\left(x_i^{(k)} - x_j^{(k)}\right)^2  + \left(y_i^{(k)} - y_j^{(j)}\right)^2} & \text{atan2}(y_j^{(k)} - y_j^{(k)}, x_j^{(k)} - x_i^{(k)) - \theta_i^{(k)}\end{bmatrix}^\top, $$ 
+ * $$\begin{bmatrix} r_{ij}^{(k)} & \phi_{ij}{(k)} \end{bmatrix}^\top = \begin{bmatrix} \sqrt{\left(x_i^{(k)} - x_j^{(k)}\right)^2  + \left(y_i^{(k)} - y_j^{(j)}\right)^2} & \text{atan2}\left(y_j^{(k)} - y_i^{(k)}, x_j^{(k)} - x_i^{(k)}\right) - \theta_i^{(k)}\end{bmatrix}^\top, $$
  * where \f$i\f$ denotes the ego robot; \f$j\f$ denotes the measured robot; \f$k\f$ denotes the current time step; \f$\theta\f$ denotes the robot's orientation; and \f$ y\f$ denotes the robot's y-coordinate.
  */
 void DataHandler::calculateGroundtruthMeasurement() {
@@ -1107,8 +1107,8 @@ std::vector<int>& DataHandler::getBarcodes() {
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the robot or landmark.
  * @param[in] barcode the barcode value for which the ID needs to be found.
- * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array DataHandler::robots_.
  * @return the ID of the robot of landmark. If the ID is not found -1 is returned.
+ * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array DataHandler::robots_.
  * @note if the dataset has not been set, the function will throw a std::runtime_error.
  */
 int DataHandler::getID(int barcode) {
