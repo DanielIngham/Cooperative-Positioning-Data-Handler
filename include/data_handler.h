@@ -74,13 +74,13 @@ private:
 	void calculateGroundtruthOdometry();
 	void calculateGroundtruthMeasurement();
 
-	int getID(int);
 
 	void saveStateData(bool&);
 	void saveOdometryData(bool&);
 	void saveMeasurementData(bool&);
 	void saveErrorData(bool&);
 	void saveOdometryErrorPDF(bool&);
+	void saveMeasurementErrorPDF(bool&);
 
 	void relativeRobotDistance();
 	void relativeLandmarkDistance();
@@ -100,7 +100,9 @@ public:
 	unsigned short int getNumberOfLandmarks();
 	unsigned short int getNumberOfBarcodes();
 
+	int getID(int);
 	void saveData(bool&);
+
 };
 
 #endif  // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_

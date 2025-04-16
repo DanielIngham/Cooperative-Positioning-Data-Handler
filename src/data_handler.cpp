@@ -7,6 +7,7 @@
  */
 
 #include "../include/data_handler.h"
+#include <stdexcept>
 
 /**
  * @brief Default constructor.
@@ -641,10 +642,6 @@ void DataHandler::calculateGroundtruthMeasurement() {
 				iterator->bearings.push_back(orientation);
 			}
 		}
-		std::cout << "Robot " << id;
-		std::cout << "Groundtruth Measurement Size " << robots_[id].groundtruth.measurements.size() << std::endl;
-		std::cout << "Synced Measurement Size " << robots_[id].synced.measurements.size() << std::endl;\
-		std::cout << std::endl;
 	}
 }
 
@@ -669,6 +666,7 @@ void DataHandler::relativeRobotDistance() {
 	}
 	robot_file.close();
 }
+
 void DataHandler::relativeLandmarkDistance() {
 	std::ofstream robot_file;
 	std::string filename = output_directory_ + "Relative_landmark.dat";
@@ -806,7 +804,7 @@ void DataHandler::saveOdometryErrorPDF(bool& flag) {
 
 		for (auto odometry: robots_[id].error.odometry) {
 			int bin_index = static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
-			forward_velocity_bin_counts[bin_index] += 1.0/robots_[id].error.odometry.size();
+			forward_velocity_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
 		}
 
 		for (const auto& [bin_index, count] : forward_velocity_bin_counts) {
@@ -840,10 +838,84 @@ void DataHandler::saveOdometryErrorPDF(bool& flag) {
 
 		for (auto odometry: robots_[id].error.odometry) {
 			int bin_index = static_cast<int>(std::floor(odometry.angular_velocity / bin_size));
-			angular_velocity_bin_counts[bin_index] += 1.0/robots_[id].error.odometry.size();
+			angular_velocity_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
 		}
 
 		for (const auto& [bin_index, count] : angular_velocity_bin_counts) {
+			double bin_start = bin_index * bin_size;
+			double bin_end = bin_start + bin_size;
+
+			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\t' << id + 1 << '\n';
+		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
+	}
+	robot_file.close();
+}
+
+void DataHandler::saveMeasurementErrorPDF(bool& flag) {
+	double bin_size = 0.0010;
+	std::string filename = output_directory_ + "Range-Error-PDF.dat";
+
+	std::ofstream robot_file;
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
+	/* Save the plot data for the Forward Velocity Error  */
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		std::unordered_map<int, double> range_bin_counts;
+
+		for (auto measurement: robots_[id].error.measurements) {
+			for (auto range :measurement.ranges) {
+				int bin_index = static_cast<int>(std::floor(range / bin_size));
+				range_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
+			}
+		}
+
+		for (const auto& [bin_index, count] : range_bin_counts) {
+			double bin_start = bin_index * bin_size;
+			double bin_end = bin_start + bin_size;
+
+			robot_file << (bin_start + bin_end)/2 << '\t' << bin_size << "\t" << count << '\t' << id + 1 << '\n';
+		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
+	}
+
+	robot_file.close();
+
+	filename = output_directory_ + "Bearing-Error-PDF.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
+
+	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		/* Save the plot data for the Angular Velocity Error  */
+
+		std::unordered_map<int, double> bearing_bin_counts;
+
+		for (auto measurement: robots_[id].error.measurements) {
+			for (auto bearing : measurement.bearings) {
+				int bin_index = static_cast<int>(std::floor(bearing / bin_size));
+				bearing_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
+			}
+		}
+
+		for (const auto& [bin_index, count] : bearing_bin_counts) {
 			double bin_start = bin_index * bin_size;
 			double bin_end = bin_start + bin_size;
 
@@ -951,6 +1023,7 @@ void DataHandler::saveData(bool& flag) {
 	saveMeasurementData(flag);
 	saveErrorData(flag);
 	saveOdometryErrorPDF(flag);
+	saveMeasurementErrorPDF(flag);
 	relativeLandmarkDistance();
 	relativeRobotDistance();
 }
@@ -1008,10 +1081,16 @@ double DataHandler::getSamplePeriod() {
 }
 
 unsigned short int DataHandler::getNumberOfRobots() {
+	if (0 == TOTAL_ROBOTS) {
+		throw std::runtime_error("The total number of robots have not been set.");
+	} 
 	return TOTAL_ROBOTS;
 }
 
 unsigned short int DataHandler::getNumberOfLandmarks() {
+	if (0 == TOTAL_LANDMARKS) {
+		throw std::runtime_error("The total number of landmarks have not been set.");
+	} 
 	return TOTAL_LANDMARKS;
 }
 
