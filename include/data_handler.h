@@ -1,7 +1,6 @@
 /**
  * @file data_extractor.h
- * @brief Class responsible for extracting the data from the UTIAS multi-robot localisation dataset.
- * @details The class extracts the textfile dataset into three members: barcodes, landmarks, and robots. 
+ * @brief Header file of the DataExtractor class,  
  * @author Daniel Ingham
  * @date 2025-04-04
  */
@@ -24,7 +23,8 @@
 
 /**
  * @class DataHandler
- * @brief Extracts the data from the UTIAS Multi-robot Dataset.
+ * @brief Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.
+ * @details The class extracts the textfile dataset form UTIAS multi-robot localisation and mapping dataset into three members: DataExtractor::barcodes_, DataExtractor::landmarks_, and DataExtractor::robots_. 
  */
 class DataHandler {
 private:
@@ -43,23 +43,37 @@ private:
 	 */
 	double sampling_period_ = 0.2;
 
+	/**
+	 * @brief the total number of barcodes in the dataset. 
+	 * @note the value of this variable is the summation of the DataExtractor::TOTAL_LANDMARKS and DataExtractor::TOTAL_ROBOTS.
+	 */
 	unsigned short int TOTAL_BARCODES = 0;
+
+	/**
+	 * @brief The total number of landmarks in the dataset.
+	 */
 	unsigned short int TOTAL_LANDMARKS = 0;
+
+	/**
+	 * @brief The total number of robots in the dataset.
+	 */
 	unsigned short int TOTAL_ROBOTS = 0;
+
 	/**
 	 * @brief  List of all barcodes corresponding to the robots and landmarks. 
-	 * @note The index of the element in the array corresponds to its id minus one.
-	 * @details Initialise all barcodes to 0. Since none of the barcodes have a value of 0, this will be used as a check by DataHandler::readLandmarks to see if all the barcodes were correctly set.
+	 * @note The index of the element in the array corresponds to its ID minus one.
+	 * @details The list of barcodes corresponding to both the robots and the landmarks exctracted from the 'Barcodes.dat' file. The UTIAS dataset contains 20 barcodes: 5 robots and 15 landmarks. All barcodes are initialised to 0. Since none of the barcodes have a value of 0, this will be used as a check by DataHandler::readLandmarks to see if all the barcodes were correctly set.
 	 */
 	std::vector<int> barcodes_; 
 	
 	/**
-	 * @brief All landmarks containing all the data extracted form Landmarks.dat. 
+	 * @brief All landmarks containing all the data extracted form "Landmarks.dat". 
 	 */
 	std::vector<Landmark> landmarks_;
 
 	/**
-	 * @brief  All data for all robots.
+	 * @brief std::vector the Robot class. This class contains all information pertaining to the robots. 
+	 * This class contains all information pertaining to the robots. The 'Robotx_Odometry.dat', 'Robotx_Measurement.dat' and 'Robotx_Groundtruth.dat' are used to populate the class. Additionally, the groundtruth values that are not provided by the dataset are calculated using DataExtractor::calculateGroundtruthOdometry and DataExtractor::calculateGroundtruthMeasurement.
 	 */
 	std::vector<Robot> robots_;
 
@@ -74,14 +88,13 @@ private:
 	void calculateGroundtruthOdometry();
 	void calculateGroundtruthMeasurement();
 
-
 	void saveStateData(bool&);
 	void saveOdometryData(bool&);
 	void saveMeasurementData(bool&);
 	void saveErrorData(bool&);
-	void saveOdometryErrorPDF(bool&);
-	void saveMeasurementErrorPDF(bool&);
 
+	void saveOdometryErrorPDF(bool&, double);
+	void saveMeasurementErrorPDF(bool&, double);
 	void relativeRobotDistance();
 	void relativeLandmarkDistance();
 public:

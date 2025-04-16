@@ -1,7 +1,7 @@
 /**
+ * The class extracts the data from the groundtruth states, measured range and bearings, and odometry. These values are used to populate three main data structs: Barcodes, Landmarks, and Robots. 
  * @file data_extractor.cpp
  * @brief Class implementation file responsible for exracting the ground-truth, odometry and measurement data from the UTIAS multi-robot localisation dataset.
- * @details The class extracts the data from the groundtruth, measurement, and populates three main 
  * @author Daniel Ingham
  * @date 2025-03-28
  */
@@ -29,7 +29,7 @@ DataHandler::DataHandler(const std::string& dataset,const double& sample_period)
  * @brief Extracts data from the all files in the specified dataset folder.
  * @param[in] dataset dataset path to the dataset folder.
  * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
- * @note All datasets in the UTIAS Multi-robot Localisation and mapping dataset have the same number of landmarks and robots. Therefore, if the dataset directory is provided, it is assumed that the number of landmarks and robots will be 5 and 15 respectively. The number of barcodes is 
+ * @note All datasets in the UTIAS Multi-robot Localisation and mapping dataset have the same number of landmarks and robots. Therefore, if the dataset directory is provided, it is assumed that the number of landmarks and robots will be 5 and 15 respectively. The number of barcodes is the summation and these two values. 
  * @note The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: DataHandler::readBarcodes, DataHandler::readLandmarks, DataHandler::readGroundTruth, DataHandler::readOdometry, and DataHandler::readMeasurements. Additionally, the DataHandler::syncData function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps.
  */
 void DataHandler::setDataSet(const std::string& dataset, const double& sample_period) {
@@ -47,10 +47,11 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 	/* Set the sample period for this dataset. */
 	this->sampling_period_ = sample_period;
 
-	this->TOTAL_BARCODES = 20; 
-	this->TOTAL_LANDMARKS = 15; 
-	this->TOTAL_ROBOTS = 5; 
+	this->TOTAL_BARCODES = 20U; 
+	this->TOTAL_LANDMARKS = 15U; 
+	this->TOTAL_ROBOTS = 5U; 
 
+	/* Resize the dataset vectors */
 	this->barcodes_.resize(TOTAL_BARCODES, 0); 
 	this->landmarks_.resize(TOTAL_LANDMARKS); 
 	this->robots_.resize(TOTAL_ROBOTS);
@@ -85,7 +86,7 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 	/* Calculate the measurement values that would correspond to the ground truth range and bearing values. */
 	calculateGroundtruthMeasurement();
 
-	/* Ensure the odometry and measurement errors are calculated. */
+	/* Calculate odometry and measurement errors. */
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
 		robots_[i].calculateOdometryError();
 		robots_[i].calculateMeasurementError();
@@ -94,7 +95,8 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 
 /**
  * @brief Extracts data from the barcodes data file: Barcodes.dat.
- * @param[in] dataset path to the dataset folder.
+ * @param[in] directory path to the dataset folder.
+ * @return a flag indicating whether the barcodes were succesfully extracted from the dataset.
  */
 bool DataHandler::readBarcodes(const std::string& dataset) {
 	/* Check that the dataset was specified */
@@ -144,7 +146,8 @@ bool DataHandler::readBarcodes(const std::string& dataset) {
 /**
  * @brief Extracts data from the landmarks data file: Landmark_Groundtruth.dat.
  * @param[in] dataset path to the dataset folder.
- * @note DataHandler::readBarcodes needs to be called before this function since this function relies on the barcodes it extracted.
+ * @return a flag indicating whether the landmarks were succesfully extracted from the dataset.
+ * @note DataHandler::readBarcodes needs to be called before this function since this function relies on the barcodes extracted.
  */
 bool DataHandler::readLandmarks(const std::string& dataset) {
 
@@ -217,6 +220,8 @@ bool DataHandler::readLandmarks(const std::string& dataset) {
  * @brief Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
+ * @return a flag indicating whether the groundtruth was succesfully extracted from the dataset.
+ * @details The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the Robot::raw.states member for a given robot in DataHandler::robots_.
  */
 bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the ground truth vector. */
@@ -264,7 +269,7 @@ bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
 		end_index = line.find('\t', start_index);
 		double orientation = std::stod(line.substr(start_index, end_index - start_index));
 
-		/* Populate robot groundtruth with exracted values. */
+		/* Populate robot states with exracted values. */
 		robots_[robot_id].raw.states.push_back(Robot::State(time, x_coordinate, y_coordinate, orientation));
 	}
 
@@ -276,6 +281,8 @@ bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
  * @brief Extracts data from the groundtruth data file: Robotx_Odometry.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
+ * @return a flag indicating whether the robot odometry was succesfully extracted from the dataset.
+ * @details The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the Robot::raw.odometry member for a given robot in DataHandler::robots_.
  */
 bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the odometry vector. */
@@ -317,7 +324,7 @@ bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
 		end_index = line.find('\t', start_index);
 		double angular_velocity = std::stod(line.substr(start_index, end_index - start_index));
 ;
-		/* Populate the robot struct with the extracted values. */
+		/* Populate the robot class with the extracted values. */
 		robots_[robot_id].raw.odometry.push_back(Robot::Odometry(time, forward_velocity, angular_velocity));
 	}
 
@@ -329,6 +336,7 @@ bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
  * @brief Extracts data from the groundtruth data file: Robotx_Measurement.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
+ * @return a flag indicating whether the robot's measurements was succesfully extracted from the dataset.
  * @note The data values are tab seperated '\t'.
  * @note Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the DataHandler::syncData function.
  */
@@ -549,8 +557,8 @@ void DataHandler::syncData(const double& sample_period) {
 
 /**
  * @brief Utilises the extracted robots groundtruth position and heading values to calculate their associated groundtruth odometry values. 
- * @details The following expression is utilsed to calculate the odomotery values
- * $$\begin{bmatrix} \omega_k & v_k \end{bmatrix}^\top = \begin{bmatrix} \text{arctan}(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} - \theta_{k})) / \Delta t & \sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2} \end{bmatrix}^\top, $$ 
+ * @details The following expression is utilsed to calculate the groundtruth odomotery values using the groundtruth states values extracted from the dataset:
+ * $$\begin{bmatrix} \omega_k & v_k \end{bmatrix}^\top = \begin{bmatrix} \text{arctan2}(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} - \theta_{k})) / \Delta t & \sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2} \end{bmatrix}^\top, $$ 
  * where \f$k\f$ denotes the current time step; \f$\theta\f$ denotes the robot's orientation; \f$ y\f$ denotes the robot's y-coordinate; \f$\Delta t\f$ is the user defined sample period; \f$\omega\f$ and \f$v\f$ denotes the angular velocity and forward velocity of the robot respectively.
  */
 void DataHandler::calculateGroundtruthOdometry() {
@@ -569,7 +577,7 @@ void DataHandler::calculateGroundtruthOdometry() {
 
 			));
 		}
-		/* NOTE: Since the last groundtruth value can not be calculated, it is set equal to the synced measured value */
+		/* NOTE: Since the last groundtruth odometry value can not be calculated, it is set equal to the synced measured value */
 		robots_[id].groundtruth.odometry.push_back( Robot::Odometry(
 			robots_[id].synced.odometry.back().time,
 			robots_[id].synced.odometry.back().forward_velocity,
@@ -580,7 +588,10 @@ void DataHandler::calculateGroundtruthOdometry() {
 
 
 /**
- * @brief Calculates the ground truth measurements for a given robot. 
+ * @brief Calculates the ground truth measurements for a given robot.
+ * @details The following expression is utilised to calculate the groundtruth measurement values using the groundtruth robot state values extracted from the dataset:
+ * $$\begin{bmatrix} \r_{ij}^{(k)} & \phi_{ij}{(k)} \end{bmatrix}^\top = \begin{bmatrix} \sqrt{\left(x_i^{(k)} - x_j^{(k)}\right)^2  + \left(y_i^{(k)} - y_j^{(j)}\right)^2} & \text{atan2}(y_j^{(k)} - y_j^{(k)}, x_j^{(k)} - x_i^{(k)) - \theta_i^{(k)}\end{bmatrix}^\top, $$ 
+ * where \f$i\f$ denotes the ego robot; \f$j\f$ denotes the measured robot; \f$k\f$ denotes the current time step; \f$\theta\f$ denotes the robot's orientation; and \f$ y\f$ denotes the robot's y-coordinate.
  */
 void DataHandler::calculateGroundtruthMeasurement() {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
@@ -645,6 +656,11 @@ void DataHandler::calculateGroundtruthMeasurement() {
 	}
 }
 
+/**
+ * @brief Calculates the relative distance of robots from an ego robot and saves the data. 
+ * @details The relative distance between robots and the ego robot is calculated using the groundtruth state values extracted from the dataset for each robot.
+ * @note this is only for robot 1 at this stage.
+ */
 void DataHandler::relativeRobotDistance() {
 	std::ofstream robot_file;
 	std::string filename = output_directory_ + "Relative_robot.dat";
@@ -667,6 +683,11 @@ void DataHandler::relativeRobotDistance() {
 	robot_file.close();
 }
 
+/**
+ * @brief Calculates the relative distance of the landmarks from an ego robot and saves the data.
+ * @details The relative distance between the landmarks and the ego robot is calculated using the landmarks and groundtruth state values extracted from the dataset for each landmark and the ego robot respectively.
+ * @note this is only for robot 1 at this stage.
+ */
 void DataHandler::relativeLandmarkDistance() {
 	std::ofstream robot_file;
 	std::string filename = output_directory_ + "Relative_landmark.dat";
@@ -690,7 +711,72 @@ void DataHandler::relativeLandmarkDistance() {
 }
 
 /**
- * @brief Saves the data from the DataHandler class into .dat files to be plotted by gnuplot.
+ * @brief Saves all the extracted and processed data in the DataHandler class after data extraction and processing.
+ * @param[in] flag indicates whether the saving of all data was succesfull.
+ */
+void DataHandler::saveData(bool& flag) {
+
+	output_directory_ = dataset_ + "/output/";
+	std::filesystem::create_directories(output_directory_);
+
+	saveStateData(flag);
+	saveOdometryData(flag);
+	saveMeasurementData(flag);
+
+	saveErrorData(flag);
+
+	double bin_size = 0.001;
+	saveOdometryErrorPDF(flag, bin_size);
+	saveMeasurementErrorPDF(flag, bin_size);
+
+	relativeLandmarkDistance();
+	relativeRobotDistance();
+}
+
+/**
+ * @brief Writes the synced (performed by DataHandler::syncData) and raw groundtruth robot state data extracted from the dataset after, which includes its x-coordinate, y-coordinate and heading.
+ * @param[in] flag indicates whether saving the groundtruth state data was succesfull.
+ */
+void DataHandler::saveStateData(bool& flag) {
+
+	std::ofstream robot_file;
+	std::string filename = output_directory_ +  "Groundtruth-State.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Time [s]	x [m]	y [m]	orientation [rad]	Raw (r) / Synced (s)	Robot ID\n";
+	/* Loop through the data structures for each robot */
+	for (int id = 0; id < TOTAL_ROBOTS; id++ ) {
+		/* Determine which dataset is larger and set that as the loop iterations */
+		std::size_t largest_vector_size = std::max({robots_[id].raw.states.size(), robots_[id].groundtruth.states.size()});
+		for (std::size_t k = 0; k < largest_vector_size; k++) {
+			/* Write the raw ground truth file for the current timestep 'r'  */
+			if (k < robots_[id].raw.states.size()) {
+				robot_file << robots_[id].raw.states[k].time << '\t' << robots_[id].raw.states[k].x << '\t' << robots_[id].raw.states[k].y << '\t' << robots_[id].raw.states[k].orientation << '\t' << 'r' << '\t' << id + 1<< "\n";
+			}
+			
+			/* Write the synced ground truth file for the current timestep 'r'  */
+			if (k < robots_[id].groundtruth.states.size()){
+				robot_file << robots_[id].groundtruth.states[k].time << '\t' << robots_[id].groundtruth.states[k].x << '\t' << robots_[id].groundtruth.states[k].y << '\t'<< robots_[id].groundtruth.states[k].orientation << '\t' << 's' << '\t' << id + 1 << '\n';
+			}
+		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
+	}
+	robot_file.close();
+
+}
+
+/**
+ * @brief Saves the extracted measurement and calculated groundtruth measurement data from the DataHandler class into .dat files to be plotted by gnuplot.
+ * @details Saves both the measurement data (as extracted from the dataset) and the calculated groundtruth measurement values (calculated by DataHandler::calculateGroundtruthMeasurement) into Measurement.dat and Groundtruth-Measurement.dat respectively. 
+ * @param[in] flag indicates whether the saving of measurement data was succesfull.
  */
 void DataHandler::saveMeasurementData(bool& flag) {
 
@@ -731,7 +817,9 @@ void DataHandler::saveMeasurementData(bool& flag) {
 		return;
 	}
 
+	/* Write the header. */
 	robot_file << "# Time [s]	Subject	Landmark (l) / Robot (r)	Range [m]	Bearing [rad]	Robot ID\n";
+
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		for (std::size_t k = 0; k < robots_[id].groundtruth.measurements.size(); k++ ) {
 			for (std::size_t s = 0; s < robots_[id].groundtruth.measurements[k].subjects.size(); s++) {
@@ -752,6 +840,11 @@ void DataHandler::saveMeasurementData(bool& flag) {
 	
 }
 
+/**
+ * @brief Saves the measured odometry data from the DataHandler class into a .dat file to be plotted by gnuplot.
+ * @details Saves the odometry data (as extracted from the dataset) into Odometry.dat. 
+ * @param[in] flag indicates whether saving the odometry data was succesfull.
+ */
 void DataHandler::saveOdometryData(bool& flag) {
 
 	std::ofstream robot_file;
@@ -763,6 +856,8 @@ void DataHandler::saveOdometryData(bool& flag) {
 		flag = false;
 		return;
 	}
+
+	/* Write the header file. */
 	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Raw (r) / Synced (s)	Robot ID\n";
 
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
@@ -784,8 +879,69 @@ void DataHandler::saveOdometryData(bool& flag) {
 	robot_file.close();
 }
 
-void DataHandler::saveOdometryErrorPDF(bool& flag) {
-	double bin_size = 0.0010;
+/**
+ * @brief Saves calculated error between the measured data (as extracted form the dataset) and the calculated groundtruth values.
+ * @details The error between the measured odometry and the calculated groundtruth odometry produced by Robot::calculateOdometryError and the error between the measured measurements and the groundtruth measurements produced bye Robot::calculateMeasurementError is saved into their respective .dat files.
+ * @param[in] flag indicates whether saving the odometry and measurement error data was succesfull.
+ */
+void DataHandler::saveErrorData(bool& flag) {
+
+	std::ofstream robot_file;
+	std::string filename = output_directory_ + "Odometry-Error.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	/* Write file header. */
+	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Robot ID\n";
+
+	/* Save the error values of the odometry.*/
+	for (int id = 0; id < TOTAL_ROBOTS ; id ++) {
+		for (std::size_t k = 0; k < robots_[id].error.odometry.size(); k++) {
+			robot_file << robots_[id].error.odometry[k].time << '\t' << robots_[id].error.odometry[k].forward_velocity << '\t' << robots_[id].error.odometry[k].angular_velocity << '\t' << id + 1 << '\n';
+		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
+	}
+	robot_file.close();
+
+	filename = output_directory_ + "Measurement-Error.dat";
+	robot_file.open(filename);
+
+	if (!robot_file.is_open()) {
+		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
+		flag = false;
+		return;
+	}
+
+	robot_file << "# Time [s]	Subject	Range [m]	Bearing[rad]	Robot ID\n";
+	/* Save the error values of the odometry.*/
+	for (int id = 0; id < TOTAL_ROBOTS ; id ++) {
+
+		for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
+			for (std::size_t s = 0; s < robots_[id].error.measurements[k].subjects.size(); s++){
+				robot_file << robots_[id].error.measurements[k].time << '\t' << robots_[id].error.measurements[k].subjects[s] << '\t' << robots_[id].error.measurements[k].ranges[s] << '\t' << robots_[id].error.measurements[k].bearings[s] << '\t' << id + 1 << '\n';
+			} 
+		}
+		/* Add two empty lines after robot entires for gnuplot */
+		robot_file << '\n';
+		robot_file << '\n';
+	}
+	robot_file.close();
+}
+
+/**
+ * @brief Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF).
+ * @param[in] flag indicates whether saving the odometry error PDF was succesfull.
+ * @param[in] bin_size the size of the bins (denoting the range of values) that odometry measurement values gets grouped into. 
+ * @note The bin count is actually the area contribution of the odometry error for a given odometry measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. 
+ */
+void DataHandler::saveOdometryErrorPDF(bool& flag, double bin_size) {
 	std::string filename = output_directory_ + "Forward-Velocity-Error-PDF.dat";
 
 	std::ofstream robot_file;
@@ -797,13 +953,16 @@ void DataHandler::saveOdometryErrorPDF(bool& flag) {
 		return;
 	}
 
+	/* Write the header. */
 	robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
+	
 	/* Save the plot data for the Forward Velocity Error  */
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		std::unordered_map<int, double> forward_velocity_bin_counts;
 
 		for (auto odometry: robots_[id].error.odometry) {
 			int bin_index = static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
+			/* NOTE: The bin count is actually the area contribution of the odometry error for the given measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. */
 			forward_velocity_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
 		}
 
@@ -854,8 +1013,13 @@ void DataHandler::saveOdometryErrorPDF(bool& flag) {
 	robot_file.close();
 }
 
-void DataHandler::saveMeasurementErrorPDF(bool& flag) {
-	double bin_size = 0.0010;
+/**
+ * @brief Performs binning on the measurement error for the determination of a discretized Probability Density Function (PDF).
+ * @param[in] flag indicates whether saving the measurment error PDF was succesfull.
+ * @param[in] bin_size the size of the bins (denoting the range of values) that measurement values gets grouped into. 
+ * @note The bin count is actually the area contribution of the odometry error for a given odometry measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. 
+ */
+void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
 	std::string filename = output_directory_ + "Range-Error-PDF.dat";
 
 	std::ofstream robot_file;
@@ -928,109 +1092,10 @@ void DataHandler::saveMeasurementErrorPDF(bool& flag) {
 	robot_file.close();
 }
 
-void DataHandler::saveErrorData(bool& flag) {
-
-	std::ofstream robot_file;
-	std::string filename = output_directory_ + "Odometry-Error.dat";
-	robot_file.open(filename);
-
-	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
-	}
-
-	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Robot ID\n";
-	/* Save the error values of the odometry.*/
-	for (int id = 0; id < TOTAL_ROBOTS ; id ++) {
-		for (std::size_t k = 0; k < robots_[id].error.odometry.size(); k++) {
-			robot_file << robots_[id].error.odometry[k].time << '\t' << robots_[id].error.odometry[k].forward_velocity << '\t' << robots_[id].error.odometry[k].angular_velocity << '\t' << id + 1 << '\n';
-		}
-		/* Add two empty lines after robot entires for gnuplot */
-		robot_file << '\n';
-		robot_file << '\n';
-	}
-	robot_file.close();
-
-	filename = output_directory_ + "Measurement-Error.dat";
-	robot_file.open(filename);
-
-	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
-	}
-
-	robot_file << "# Time [s]	Subject	Range [m]	Bearing[rad]	Robot ID\n";
-	/* Save the error values of the odometry.*/
-	for (int id = 0; id < TOTAL_ROBOTS ; id ++) {
-
-		for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
-			for (std::size_t s = 0; s < robots_[id].error.measurements[k].subjects.size(); s++){
-				robot_file << robots_[id].error.measurements[k].time << '\t' << robots_[id].error.measurements[k].subjects[s] << '\t' << robots_[id].error.measurements[k].ranges[s] << '\t' << robots_[id].error.measurements[k].bearings[s] << '\t' << id + 1 << '\n';
-			} 
-		}
-		/* Add two empty lines after robot entires for gnuplot */
-		robot_file << '\n';
-		robot_file << '\n';
-	}
-	robot_file.close();
-}
-
-void DataHandler::saveStateData(bool& flag) {
-
-	std::ofstream robot_file;
-	std::string filename = output_directory_ +  "Groundtruth-State.dat";
-	robot_file.open(filename);
-
-	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
-	}
-
-	robot_file << "# Time [s]	x [m]	y [m]	orientation [rad]	Raw (r) / Synced (s)	Robot ID\n";
-	/* Loop through the data structures for each robot */
-	for (int id = 0; id < TOTAL_ROBOTS; id++ ) {
-		/* Determine which dataset is larger and set that as the loop iterations */
-		std::size_t largest_vector_size = std::max({robots_[id].raw.states.size(), robots_[id].groundtruth.states.size()});
-		for (std::size_t k = 0; k < largest_vector_size; k++) {
-			/* Write the raw ground truth file for the current timestep 'r'  */
-			if (k < robots_[id].raw.states.size()) {
-				robot_file << robots_[id].raw.states[k].time << '\t' << robots_[id].raw.states[k].x << '\t' << robots_[id].raw.states[k].y << '\t' << robots_[id].raw.states[k].orientation << '\t' << 'r' << '\t' << id + 1<< "\n";
-			}
-			
-			/* Write the synced ground truth file for the current timestep 'r'  */
-			if (k < robots_[id].groundtruth.states.size()){
-				robot_file << robots_[id].groundtruth.states[k].time << '\t' << robots_[id].groundtruth.states[k].x << '\t' << robots_[id].groundtruth.states[k].y << '\t'<< robots_[id].groundtruth.states[k].orientation << '\t' << 's' << '\t' << id + 1 << '\n';
-			}
-		}
-		/* Add two empty lines after robot entires for gnuplot */
-		robot_file << '\n';
-		robot_file << '\n';
-	}
-	robot_file.close();
-
-}
-
-void DataHandler::saveData(bool& flag) {
-
-	output_directory_ = dataset_ + "/output/";
-	std::filesystem::create_directories(output_directory_);
-
-	saveStateData(flag);
-	saveOdometryData(flag);
-	saveMeasurementData(flag);
-	saveErrorData(flag);
-	saveOdometryErrorPDF(flag);
-	saveMeasurementErrorPDF(flag);
-	relativeLandmarkDistance();
-	relativeRobotDistance();
-}
-
 /**
  * @brief Getter for the array of Barcodes.
- * @return an integer pointer to the array of barcodes extracted from the barcodes data file: Barcodes.dat.
+ * @return a reference the barcodes integer vector extracted from the barcodes data file: Barcodes.dat.
+ * @note if the dataset has not been set, the function will throw a std::runtime_error.
  */
 std::vector<int>& DataHandler::getBarcodes() {
 	if ("" ==  this->dataset_) {
@@ -1041,9 +1106,10 @@ std::vector<int>& DataHandler::getBarcodes() {
 
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the robot or landmark.
- * @param barcode the 
+ * @param[in] barcode the barcode value for which the ID needs to be found.
  * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array DataHandler::robots_.
- * @return the id of the robot of landmark. If the ID is not found -1 is returned.
+ * @return the ID of the robot of landmark. If the ID is not found -1 is returned.
+ * @note if the dataset has not been set, the function will throw a std::runtime_error.
  */
 int DataHandler::getID(int barcode) {
 	for (int i = 0; i < TOTAL_BARCODES; i++) {
@@ -1053,9 +1119,10 @@ int DataHandler::getID(int barcode) {
 	}
 	return -1;
 }
+
 /**
  * @brief Getter for the array of Landmarks.
- * @return Returns a pointer to the Landmarks structure member, populated by extracting data form Landmarks.dat.
+ * @return a reference to the Landmarks class vector, populated by extracting data form Landmarks.dat.
  */
 std::vector<Landmark>& DataHandler::getLandmarks() {
 	if ("" ==  this->dataset_) {
@@ -1066,7 +1133,8 @@ std::vector<Landmark>& DataHandler::getLandmarks() {
 
 /**
  * @brief Getter for the array of robots.
- * @return Returns a pointer to the Robot structure member, populated by extracting datefrom Robotx_Groundtruth.dat, Robotx_Odometry.dat, and Robotx_Measurement.dat.
+ * @return a reference to the Robot class vector, populated by extracting datefrom Robotx_Groundtruth.dat, Robotx_Odometry.dat, and Robotx_Measurement.dat.
+ * @note if the dataset has not been set, the function will throw a std::runtime_error.
  */
 std::vector<Robot>& DataHandler::getRobots() {
 	if ("" == this->dataset_) {
@@ -1076,10 +1144,20 @@ std::vector<Robot>& DataHandler::getRobots() {
 	return robots_;
 }
 
+/**
+ * @brief Getter for the DataHandler::sampling_period_ field.
+ * @return the sampling period set by the user.
+ * @note DataExtractor::sampling_period_ has a default value of 0.02.
+ */
 double DataHandler::getSamplePeriod() {
 	return sampling_period_;
 }
 
+/**
+ * @brief Getter for the DataHandler::TOTAL_ROBOTS field.
+ * @return the number of robots set by the user dataset.
+ * @note the field is initialised to zero, therefore if it is not set, a std::runtime_error will be throw.
+ */
 unsigned short int DataHandler::getNumberOfRobots() {
 	if (0 == TOTAL_ROBOTS) {
 		throw std::runtime_error("The total number of robots have not been set.");
@@ -1087,6 +1165,11 @@ unsigned short int DataHandler::getNumberOfRobots() {
 	return TOTAL_ROBOTS;
 }
 
+/**
+ * @brief Getter for the DataHandler::TOTAL_LANDMARKS field.
+ * @return the number of landmarks set by the user or the dataset.
+ * @note the field is initialised to zero, therefore if it is not set, a std::runtime_error will be throw.
+ */
 unsigned short int DataHandler::getNumberOfLandmarks() {
 	if (0 == TOTAL_LANDMARKS) {
 		throw std::runtime_error("The total number of landmarks have not been set.");
@@ -1094,7 +1177,15 @@ unsigned short int DataHandler::getNumberOfLandmarks() {
 	return TOTAL_LANDMARKS;
 }
 
+/**
+ * @brief Getter for the DataHandler::BARCODES field.
+ * @return the number of landmarks set by the user or the dataset.
+ * @note the field is initialised to zero, therefore if it is not set, a std::runtime_error will be throw.
+ */
 unsigned short int DataHandler::getNumberOfBarcodes() {
+	if (0 == TOTAL_BARCODES) {
+		throw std::runtime_error("The total number of barcodes have not been set.");
+	} 
 	return TOTAL_BARCODES;
 }
 
