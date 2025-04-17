@@ -7,10 +7,11 @@
 #ifndef INCLUDE_INCLUDE_ROBOT_H_
 #define INCLUDE_INCLUDE_ROBOT_H_
 
-#include <vector>
-#include <stdexcept>
-#include <string>
-
+#include <vector>	// std::vector
+#include <stdexcept>	// std::runtime_error
+#include <string>	// std::string
+#include <iostream>	// std::cout
+#include <numeric>	// std::accumulate
 /**
  * @class Robot
  * @brief Houses all data and functionality related to a given robot in a multi-robot localisation environment
@@ -84,7 +85,7 @@ public:
 	};
 
 	/**
-	 * @brief struct containing vectors related to the robot data files.
+	 * @brief Vectors related to the robot data. 
 	 */
 	struct {
 		std::vector<State> states;		///< All groundtruth values extracted for the given robot.
@@ -95,8 +96,26 @@ public:
 	groundtruth,	///< The groundtruth
 	error;		///< The difference between the ground truth and the synced data
 
+
+	/**
+	 * @brief Error statistics used by filters for inference.
+	 * @details It is often assumed that all errors are caussed by white Gaussian distributed noise, which forms the foundation for the devolopment of Bayesian filtering. For this reason, the robots noise statistics are calculated.
+	 */
+	struct {
+		double mean = 0.0;		///< The sample mean of the error. 
+		double variance = 0.0;///< The sample standard deviation of the error. 
+	} range_error,		///< Error associated with the range measurements.
+	bearing_error,		///< Error associated with the bearing measurements.
+	forward_velocity_error,	///< Error associated with the forward velocity input.
+	angular_velocity_error;	///< Error associated with the angular velocity input.
+
 	void calculateOdometryError();
 	void calculateMeasurementError();
+
+	void setErrorSampleMean();
+	void setErrorSampleVariance();
+
+
 };
 
 #endif  // INCLUDE_INCLUDE_ROBOT_H_
