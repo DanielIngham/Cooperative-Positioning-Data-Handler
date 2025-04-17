@@ -88,7 +88,6 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 
 	/* Calculate odometry and measurement errors. */
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		robots_[i].calculateOdometryError();
 		robots_[i].calculateMeasurementError();
 	}
 }
@@ -398,7 +397,6 @@ bool DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
 	return true;
 }
 
-
 /**
  * @brief Syncs the time steps for the extracted data according to the specified sampling period.
  * @param[in] sample_period the desired sample period for resampling the data to sync the timesteps between the vehicles.
@@ -574,7 +572,6 @@ void DataHandler::calculateGroundtruthOdometry() {
 				robots_[id].groundtruth.states[k].time, 
 				std::sqrt(x_difference*x_difference + y_difference*y_difference) / this->sampling_period_ ,
 				std::atan2(std::sin(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation), std::cos(robots_[id].groundtruth.states[k+1].orientation - robots_[id].groundtruth.states[k].orientation)) / this->sampling_period_ 
-
 			));
 		}
 		/* NOTE: Since the last groundtruth odometry value can not be calculated, it is set equal to the synced measured value */
@@ -585,7 +582,6 @@ void DataHandler::calculateGroundtruthOdometry() {
 		));
 	}
 }
-
 
 /**
  * @brief Calculates the ground truth measurements for a given robot.
@@ -659,7 +655,7 @@ void DataHandler::calculateGroundtruthMeasurement() {
 /**
  * @brief Calculates the relative distance of robots from an ego robot and saves the data. 
  * @details The relative distance between robots and the ego robot is calculated using the groundtruth state values extracted from the dataset for each robot.
- * @note this is only for robot 1 at this stage.
+ * @note This is only for robot 1 at this stage.
  */
 void DataHandler::relativeRobotDistance() {
 	std::ofstream robot_file;
@@ -686,7 +682,7 @@ void DataHandler::relativeRobotDistance() {
 /**
  * @brief Calculates the relative distance of the landmarks from an ego robot and saves the data.
  * @details The relative distance between the landmarks and the ego robot is calculated using the landmarks and groundtruth state values extracted from the dataset for each landmark and the ego robot respectively.
- * @note this is only for robot 1 at this stage.
+ * @note This is only for robot 1 at this stage.
  */
 void DataHandler::relativeLandmarkDistance() {
 	std::ofstream robot_file;
@@ -729,6 +725,7 @@ void DataHandler::saveData(bool& flag) {
 	saveOdometryErrorPDF(flag, bin_size);
 	saveMeasurementErrorPDF(flag, bin_size);
 
+	saveRobotErrorStatistics();
 	relativeLandmarkDistance();
 	relativeRobotDistance();
 }
@@ -1034,12 +1031,17 @@ void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
 	robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
 	/* Save the plot data for the Forward Velocity Error  */
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
-		std::unordered_map<int, double> range_bin_counts;
 
+		double number_of_measurements = 0.0;
+		for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
+			number_of_measurements += robots_[id].error.measurements[k].ranges.size();
+		}
+
+		std::unordered_map<int, double> range_bin_counts;
 		for (auto measurement: robots_[id].error.measurements) {
 			for (auto range :measurement.ranges) {
 				int bin_index = static_cast<int>(std::floor(range / bin_size));
-				range_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
+				range_bin_counts[bin_index] += 1.0/(number_of_measurements * bin_size);
 			}
 		}
 
@@ -1070,6 +1072,11 @@ void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		/* Save the plot data for the Angular Velocity Error  */
 
+		double number_of_measurements = 0.0;
+		for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
+			number_of_measurements += robots_[id].error.measurements[k].ranges.size();
+		}
+
 		std::unordered_map<int, double> bearing_bin_counts;
 
 		for (auto measurement: robots_[id].error.measurements) {
@@ -1092,6 +1099,29 @@ void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
 	robot_file.close();
 }
 
+/**
+ * @brief Saves the sample mean and sample variance of the measured odometry and tracking data for each robot.
+ */
+void DataHandler::saveRobotErrorStatistics() {
+	std::string filename = this->output_directory_ + "/Robot-Error-Statistics.dat";
+	std::ofstream file(filename);
+
+	if (!file.is_open()) {
+		throw std::runtime_error("[ERROR] Unable to create file:  " + filename);
+	}
+
+	/* Write file header. */
+	file << "# Robot ID	Forward Velocity Mean [m]	Forward Velocity Variance [m^2]	Angular Velocity Mean [rad]	Angular Veolcity [rad^2]	Range Mean [m]	Range Variance [m^2]	Bearing Mean [rad]	Bearing Variance [rad^2]\n";
+
+	for (unsigned short int id = 0; id < TOTAL_ROBOTS; id++) {
+		file << id << '\t' << robots_[id].forward_velocity_error.mean << '\t' << robots_[id].forward_velocity_error.variance << '\t' << robots_[id].angular_velocity_error.mean << '\t' << robots_[id].angular_velocity_error.variance << '\t' << robots_[id].range_error.mean << '\t' << robots_[id].range_error.variance << '\t' << robots_[id].bearing_error.mean << '\t' << robots_[id].bearing_error.variance << '\n';
+		
+		/* Two blank line for gnuplot to be able to automatically seperate data from different robots */
+		file << '\n';
+		file << '\n';
+	}
+	
+}
 /**
  * @brief Getter for the array of Barcodes.
  * @return a reference the barcodes integer vector extracted from the barcodes data file: Barcodes.dat.

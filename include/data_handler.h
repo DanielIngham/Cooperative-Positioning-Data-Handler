@@ -95,6 +95,9 @@ private:
 
 	void saveOdometryErrorPDF(bool&, double);
 	void saveMeasurementErrorPDF(bool&, double);
+
+	void saveRobotErrorStatistics();
+
 	void relativeRobotDistance();
 	void relativeLandmarkDistance();
 public:
