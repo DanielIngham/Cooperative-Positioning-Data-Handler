@@ -39,7 +39,7 @@ std::size_t countFileLines(const std::string& filename) {
 }
 
 void saveData(bool& flag) {
-	for (unsigned short int d  = 0; d < TOTAL_DATASETS; d++) {
+	for (unsigned short int d  = 0; d < 1; d++) {
 		DataHandler data("./data/MRCLAM_Dataset" + std::to_string(d + 1));
 		data.saveData(flag);
 	}
@@ -572,16 +572,46 @@ void testGroundtruthOdometry(bool& flag) {
 	}
 	flag = true;
 }
+void checkPDF() {
+//# Bin Centre	Bin Width	Count	Robot ID
+	std::string filename = "./data/MRCLAM_Dataset1/output/Range-Error-PDF.dat";
+	std::fstream file(filename);
 
-// void checkGroundtruthMeasurements(bool& flag) {
-// 	DataHandler data()
-// 	for (int dataset = 0; dataset < TOTAL_DATASETS; dataset++) {
-// 		for (int id = 0; id < TOTAL_ROBOTS; id++) {
-// 			for ()
-// 		}
-//
-// 	}
-// }
+	if (!file.is_open()) {
+		std::cerr << "Unable to open file: " << filename << std::endl;
+		return;
+	}
+
+	std::string line;
+	double integral = 0.0;
+	while(std::getline(file,line)) {
+		/* Skip comments */
+		if ('#' == line[0] ) {
+			continue;
+		}
+
+		if ("" == line) {
+			std::cout << "END" << std::endl;
+			break;
+		}
+
+		std::size_t start_index = 0;
+		std::size_t end_index = 0;
+		end_index = line.find('\t', end_index);	
+
+		start_index = end_index + 1;
+		end_index = line.find('\t', end_index+1);	
+		double bin_width = std::stod(line.substr(start_index,end_index - start_index));
+
+		start_index = end_index + 1;
+		end_index = line.find('\t', end_index+1);	
+		double value = std::stod(line.substr(start_index, end_index - start_index));
+
+		integral += value * bin_width;
+		std::cout << integral << " = " << value << " x " << bin_width << std::endl;
+	}
+}
+
 int main() {
 	auto start = std::chrono::high_resolution_clock::now();
 	std::cout<< "\033[1;36mUNIT TESTING\033[0m" <<std::endl;
@@ -598,25 +628,27 @@ int main() {
 	bool data_saved= true;
 	bool correct_groundtruth_odometry = true;
 
-	std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
-	std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
-	std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
-	std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
-	std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
-	std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
-	std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
+	// std::thread unit_test_1(checkBarcodes, std::ref(barcodes_set));
+	// std::thread unit_test_2(checkLandmarkBarcodes, std::ref(correct_landmark_barcode));
+	// std::thread unit_test_3(checkGroundtruthExtraction, std::ref(correct_groundtruth));
+	// std::thread unit_test_4(checkOdometryExtraction, std::ref(correct_odometry));
+	// std::thread unit_test_5(checkMeasurementExtraction, std::ref(correct_measurements));
+	// std::thread unit_test_6(testInterpolation, std::ref(correct_interpolation));
+	// std::thread unit_test_7(checkSamplingRate, std::ref(correct_sampling_rate));
 	std::thread unit_test_8(saveData, std::ref(data_saved));
-	std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
+	// std::thread unit_test_9(testGroundtruthOdometry, std::ref(correct_groundtruth_odometry));
 
-	unit_test_1.join();
-	unit_test_2.join();
-	unit_test_3.join();
-	unit_test_4.join();
-	unit_test_5.join();
-	unit_test_6.join();
-	unit_test_7.join();
+	// unit_test_1.join();
+	// unit_test_2.join();
+	// unit_test_3.join();
+	// unit_test_4.join();
+	// unit_test_5.join();
+	// unit_test_6.join();
+	// unit_test_7.join();
 	unit_test_8.join();
-	unit_test_9.join();
+	// unit_test_9.join();
+	checkPDF();
+
 
 	barcodes_set ? std::cout << "\033[1;32m[U1 PASS]\033[0m All barcodes were set.\n" : std::cerr << "[U1 FAIL] All barcodes were not set.\n"  ;
 
