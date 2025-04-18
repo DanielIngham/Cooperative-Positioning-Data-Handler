@@ -673,7 +673,7 @@ void DataHandler::relativeRobotDistance() {
 			double x = robots_[0].groundtruth.states[k].x - robots_[id].groundtruth.states[k].x;
 			double y = robots_[0].groundtruth.states[k].y - robots_[id].groundtruth.states[k].y;
 			double range = std::sqrt(x*x + y*y);
-			robot_file << robots_[0].groundtruth.states[k].time << '\t' << id << '\t' << range << '\t' << 1 << '\n';
+			robot_file << robots_[0].groundtruth.states[k].time << '\t' << id + 1 << '\t' << range << '\t' << 1 << '\n';
 		}
 	}
 	robot_file.close();
@@ -824,10 +824,10 @@ void DataHandler::saveMeasurementData(bool& flag) {
 			for (std::size_t s = 0; s < robots_[id].groundtruth.measurements[k].subjects.size(); s++) {
 				int subject_ID = getID(robots_[id].groundtruth.measurements[k].subjects[s]);
 				if (subject_ID < 6) {
-					robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << 'r' << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << id << '\n';
+					robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << 'r' << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << id + 1 << '\n';
 				}
 				else {
-					robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << 'l' << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << id << '\n';
+					robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << 'l' << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << id + 1 << '\n';
 				}
 			}
 		}
@@ -1116,7 +1116,7 @@ void DataHandler::saveRobotErrorStatistics() {
 	file << "# Robot ID	Forward Velocity Mean [m]	Forward Velocity Variance [m^2]	Angular Velocity Mean [rad]	Angular Veolcity [rad^2]	Range Mean [m]	Range Variance [m^2]	Bearing Mean [rad]	Bearing Variance [rad^2]\n";
 
 	for (unsigned short int id = 0; id < TOTAL_ROBOTS; id++) {
-		file << id << '\t' << robots_[id].forward_velocity_error.mean << '\t' << robots_[id].forward_velocity_error.variance << '\t' << robots_[id].angular_velocity_error.mean << '\t' << robots_[id].angular_velocity_error.variance << '\t' << robots_[id].range_error.mean << '\t' << robots_[id].range_error.variance << '\t' << robots_[id].bearing_error.mean << '\t' << robots_[id].bearing_error.variance << '\n';
+		file << id + 1 << '\t' << robots_[id].forward_velocity_error.mean << '\t' << robots_[id].forward_velocity_error.variance << '\t' << robots_[id].angular_velocity_error.mean << '\t' << robots_[id].angular_velocity_error.variance << '\t' << robots_[id].range_error.mean << '\t' << robots_[id].range_error.variance << '\t' << robots_[id].bearing_error.mean << '\t' << robots_[id].bearing_error.variance << '\n';
 		
 		/* Two blank line for gnuplot to be able to automatically seperate data from different robots */
 		file << '\n';
