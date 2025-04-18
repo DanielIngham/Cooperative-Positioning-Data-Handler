@@ -68,7 +68,7 @@ do for [i=1:5] {
 	# Apply non-linear regression
 	a = mu
 	b = sigma
-	fit f(x) data_folder . "/Angular-Velocity-Error-PDF.dat" using 1:3 via a, b 
+	fit f(x) data_folder . "/Angular-Velocity-Error-PDF.dat" index (i-1) using 1:3 via a, b 
 	line = line . sprintf("\t%f\t%f",a,b)
 
 	# Plot the extracted values alongside the fitted Gaussian
