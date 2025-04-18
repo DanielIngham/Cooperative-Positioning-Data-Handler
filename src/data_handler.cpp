@@ -710,7 +710,7 @@ void DataHandler::relativeLandmarkDistance() {
  * @brief Saves all the extracted and processed data in the DataHandler class after data extraction and processing.
  * @param[in] flag indicates whether the saving of all data was succesfull.
  */
-void DataHandler::saveData(bool& flag) {
+void DataHandler::saveExtractedData(bool& flag) {
 
 	output_directory_ = dataset_ + "/output/";
 	std::filesystem::create_directories(output_directory_);
@@ -728,6 +728,8 @@ void DataHandler::saveData(bool& flag) {
 	saveRobotErrorStatistics();
 	relativeLandmarkDistance();
 	relativeRobotDistance();
+
+	plotExtractedData();
 }
 
 /**
@@ -1134,6 +1136,23 @@ std::vector<int>& DataHandler::getBarcodes() {
 	return barcodes_;
 }
 
+/**
+ * @brief Runs the GNUplot scripts to save plots related to the extracted data.
+ *
+ */
+void DataHandler::plotExtractedData() {
+	std::string gnuplotScriptPath = "./scripts/measurement-error-pdf.gp"; // path to your gnuplot script
+	std::string command = "gnuplot " + gnuplotScriptPath;
+
+	int ret = system(command.c_str());
+
+	if (ret == 0) {
+	std::cout << "Plot generated successfully.\n";
+	} else {
+	std::cerr << "Gnuplot failed with code: " << ret << "\n";
+	}
+
+}
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the robot or landmark.
  * @param[in] barcode the barcode value for which the ID needs to be found.

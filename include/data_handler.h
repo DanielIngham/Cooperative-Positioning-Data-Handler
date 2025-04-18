@@ -17,6 +17,7 @@
 #include <cmath>	// std::floor
 #include <unordered_map>// std::unordered_map
 #include <filesystem>	// std::filesystem
+#include <cstdlib>	// system
 
 #include "../include/robot.h"
 #include "../include/landmark.h"
@@ -117,7 +118,9 @@ public:
 	unsigned short int getNumberOfBarcodes();
 
 	int getID(int);
-	void saveData(bool&);
+	void saveExtractedData(bool&);
+
+	void plotExtractedData();
 
 };
 
