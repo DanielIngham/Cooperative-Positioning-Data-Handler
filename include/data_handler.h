@@ -11,7 +11,7 @@
 #include <string>	// std::string
 #include <algorithm>	// std::remove_if and std::find
 #include <iostream>	// std::cout
-#include <stdexcept>	// throw std::runtime_error
+#include <stdexcept>	// std::runtime_error
 #include <sys/stat.h>	// std::stat
 #include <vector>	// std::vector
 #include <cmath>	// std::floor
@@ -37,7 +37,7 @@ private:
 	/**
 	 * @brief Folder location for the output data.
 	 */
-	std::string output_directory_ = "";
+	std::string data_extraction_directory_ = "";
 	
 	/**
 	 * @brief the desired sample period for resampling the data to sync the timesteps between the vehicles.

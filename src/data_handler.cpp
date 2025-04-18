@@ -659,7 +659,7 @@ void DataHandler::calculateGroundtruthMeasurement() {
  */
 void DataHandler::relativeRobotDistance() {
 	std::ofstream robot_file;
-	std::string filename = output_directory_ + "Relative_robot.dat";
+	std::string filename = data_extraction_directory_ + "Relative_robot.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -686,7 +686,7 @@ void DataHandler::relativeRobotDistance() {
  */
 void DataHandler::relativeLandmarkDistance() {
 	std::ofstream robot_file;
-	std::string filename = output_directory_ + "Relative_landmark.dat";
+	std::string filename = data_extraction_directory_ + "Relative_landmark.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -712,8 +712,8 @@ void DataHandler::relativeLandmarkDistance() {
  */
 void DataHandler::saveExtractedData(bool& flag) {
 
-	output_directory_ = dataset_ + "/output/";
-	std::filesystem::create_directories(output_directory_);
+	data_extraction_directory_ = dataset_ + "/data_extraction/";
+	std::filesystem::create_directories(data_extraction_directory_);
 
 	saveStateData(flag);
 	saveOdometryData(flag);
@@ -739,7 +739,7 @@ void DataHandler::saveExtractedData(bool& flag) {
 void DataHandler::saveStateData(bool& flag) {
 
 	std::ofstream robot_file;
-	std::string filename = output_directory_ +  "Groundtruth-State.dat";
+	std::string filename = data_extraction_directory_ +  "Groundtruth-State.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -780,7 +780,7 @@ void DataHandler::saveStateData(bool& flag) {
 void DataHandler::saveMeasurementData(bool& flag) {
 
 	std::ofstream robot_file;
-	std::string filename = output_directory_ + "Measurement.dat";
+	std::string filename = data_extraction_directory_ + "Measurement.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -807,7 +807,7 @@ void DataHandler::saveMeasurementData(bool& flag) {
 	}
 	robot_file.close();
 
-	filename = output_directory_ + "Groundtruth-Measurement.dat";
+	filename = data_extraction_directory_ + "Groundtruth-Measurement.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -847,7 +847,7 @@ void DataHandler::saveMeasurementData(bool& flag) {
 void DataHandler::saveOdometryData(bool& flag) {
 
 	std::ofstream robot_file;
-	std::string filename = output_directory_ + "Odometry.dat";
+	std::string filename = data_extraction_directory_ + "Odometry.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -886,7 +886,7 @@ void DataHandler::saveOdometryData(bool& flag) {
 void DataHandler::saveErrorData(bool& flag) {
 
 	std::ofstream robot_file;
-	std::string filename = output_directory_ + "Odometry-Error.dat";
+	std::string filename = data_extraction_directory_ + "Odometry-Error.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -909,7 +909,7 @@ void DataHandler::saveErrorData(bool& flag) {
 	}
 	robot_file.close();
 
-	filename = output_directory_ + "Measurement-Error.dat";
+	filename = data_extraction_directory_ + "Measurement-Error.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -941,7 +941,7 @@ void DataHandler::saveErrorData(bool& flag) {
  * @note The bin count is actually the area contribution of the odometry error for a given odometry measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. 
  */
 void DataHandler::saveOdometryErrorPDF(bool& flag, double bin_size) {
-	std::string filename = output_directory_ + "Forward-Velocity-Error-PDF.dat";
+	std::string filename = data_extraction_directory_ + "Forward-Velocity-Error-PDF.dat";
 
 	std::ofstream robot_file;
 	robot_file.open(filename);
@@ -978,7 +978,7 @@ void DataHandler::saveOdometryErrorPDF(bool& flag, double bin_size) {
 
 	robot_file.close();
 
-	filename = output_directory_ + "Angular-Velocity-Error-PDF.dat";
+	filename = data_extraction_directory_ + "Angular-Velocity-Error-PDF.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -1019,7 +1019,7 @@ void DataHandler::saveOdometryErrorPDF(bool& flag, double bin_size) {
  * @note The bin count is actually the area contribution of the odometry error for a given odometry measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. 
  */
 void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
-	std::string filename = output_directory_ + "Range-Error-PDF.dat";
+	std::string filename = data_extraction_directory_ + "Range-Error-PDF.dat";
 
 	std::ofstream robot_file;
 	robot_file.open(filename);
@@ -1060,7 +1060,7 @@ void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
 
 	robot_file.close();
 
-	filename = output_directory_ + "Bearing-Error-PDF.dat";
+	filename = data_extraction_directory_ + "Bearing-Error-PDF.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
@@ -1084,7 +1084,7 @@ void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
 		for (auto measurement: robots_[id].error.measurements) {
 			for (auto bearing : measurement.bearings) {
 				int bin_index = static_cast<int>(std::floor(bearing / bin_size));
-				bearing_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
+				bearing_bin_counts[bin_index] += 1.0/(number_of_measurements * bin_size);
 			}
 		}
 
@@ -1105,7 +1105,7 @@ void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
  * @brief Saves the sample mean and sample variance of the measured odometry and tracking data for each robot.
  */
 void DataHandler::saveRobotErrorStatistics() {
-	std::string filename = this->output_directory_ + "/Robot-Error-Statistics.dat";
+	std::string filename = this->data_extraction_directory_ + "/Robot-Error-Statistics.dat";
 	std::ofstream file(filename);
 
 	if (!file.is_open()) {
@@ -1141,16 +1141,66 @@ std::vector<int>& DataHandler::getBarcodes() {
  *
  */
 void DataHandler::plotExtractedData() {
-	std::string gnuplotScriptPath = "./scripts/measurement-error-pdf.gp"; // path to your gnuplot script
-	std::string command = "gnuplot " + gnuplotScriptPath;
+	std::string gnuplotScriptPath = "./scripts/measurement-error-pdf.gp"; 
+	std::string plots_directory = data_extraction_directory_ + "plots/";
+
+	/* Create the plots directory (if it doesn't exist) */
+	if (!std::filesystem::exists(plots_directory)) {
+		if (!std::filesystem::create_directory(plots_directory)) {
+			std::cerr << "Failed to create directory: " + plots_directory + "\n";
+			return;
+		}
+	}
+
+	/* Create the Range Error sub-directory (if it doesn't exist) */
+	std::string range_directory = plots_directory + "Range-Error";
+	if (!std::filesystem::exists(range_directory)) {
+		if (!std::filesystem::create_directory(range_directory)) {
+			std::cerr << "Failed to create directory: " + range_directory + "\n";
+			return;
+		}
+	}
+
+	/* Create the Bearing Error subdirectory (if it doesn't exist) */
+	std::string bearing_directory = plots_directory + "Bearing-Error";
+	if (!std::filesystem::exists(bearing_directory)) {
+		if (!std::filesystem::create_directory(bearing_directory)) {
+			std::cerr << "Failed to create directory: " + bearing_directory + "\n";
+			return;
+		}
+	}
+	
+	/* Create the Forward-Velocity Error subdirectory (if it doesn't exist) */
+	std::string forward_velocity_directory = plots_directory + "Forward-Velocity-Error";
+	if (!std::filesystem::exists(forward_velocity_directory)) {
+		if (!std::filesystem::create_directory(forward_velocity_directory)) {
+			std::cerr << "Failed to create directory: " + forward_velocity_directory + "\n";
+			return;
+		}
+	}
+
+	/* Create the Forward-Velocity Error subdirectory (if it doesn't exist) */
+	std::string angular_velocity_directory = plots_directory + "Angular-Velocity-Error";
+	if (!std::filesystem::exists(angular_velocity_directory)) {
+		if (!std::filesystem::create_directory(angular_velocity_directory)) {
+			std::cerr << "Failed to create directory: " + angular_velocity_directory + "\n";
+			return;
+		}
+	}
+
+	/* Execute gnuplot command */
+	std::string command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ + "'; plots_directory='" + plots_directory + "'\" "+ gnuplotScriptPath;
 
 	int ret = system(command.c_str());
 
+
 	if (ret == 0) {
-	std::cout << "Plot generated successfully.\n";
-	} else {
-	std::cerr << "Gnuplot failed with code: " << ret << "\n";
+		std::cout << "Plot generated successfully.\n";
+	} 
+	else {
+		std::cerr << "Gnuplot failed with code: " << ret << "\n";
 	}
+
 
 }
 /**
