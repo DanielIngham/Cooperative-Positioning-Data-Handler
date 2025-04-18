@@ -39,9 +39,9 @@ std::size_t countFileLines(const std::string& filename) {
 }
 
 void saveData(bool& flag) {
-	for (unsigned short int d  = 0; d < 1; d++) {
+	for (unsigned short int d  = 0; d < TOTAL_DATASETS; d++) {
 		DataHandler data("./data/MRCLAM_Dataset" + std::to_string(d + 1));
-		data.saveData(flag);
+		data.saveExtractedData(flag);
 	}
 }
 
@@ -115,7 +115,7 @@ void checkGroundtruthExtraction(bool& flag) {
 			}
 
 			else if (robots[id].raw.states.size() != counter) {
-				std::cout<< "Robot " << id + 1 << " does not have a size equal to the number of entries in the groundtruth: " << robots[id].raw.states.size() << " ≠ " << counter << std::endl;
+				std::cerr << "Robot " << id + 1 << " does not have a size equal to the number of entries in the groundtruth: " << robots[id].raw.states.size() << " ≠ " << counter << std::endl;
 				flag = false;
 			}
 		}
@@ -150,7 +150,7 @@ void checkOdometryExtraction(bool& flag) {
 				flag = false;
 			}
 			else if (robots[id].raw.odometry.size() != counter) {
-				std::cout<< "Robot " << id + 1 << " does not have a size equal to the number of entries in the odometry file: " << robots[id].raw.odometry.size() << " ≠ " << counter << std::endl;
+				std::cerr << "Robot " << id + 1 << " does not have a size equal to the number of entries in the odometry file: " << robots[id].raw.odometry.size() << " ≠ " << counter << std::endl;
 				flag = false;
 			}
 		}
@@ -197,7 +197,7 @@ void checkMeasurementExtraction(bool& flag) {
 				}
 			}
 			if (measurement_counter != counter) {
-				std::cout<< "Robot " << id + 1 << " does not have a size equal to the number of entries in the measurement file: " << robots[id].raw.measurements.size() << " ≠ " << counter << std::endl;
+				std::cerr << "Robot " << id + 1 << " does not have a size equal to the number of entries in the measurement file: " << robots[id].raw.measurements.size() << " ≠ " << counter << std::endl;
 				flag = false;
 			}
 		}
@@ -275,7 +275,8 @@ void testInterpolation(bool& flag) {
 				return;
 			}
 
-			/* This script handles the orientation interpolation better than the matlab script. Therefore this check was removed. */
+			/* NOTE: This script handles the orientation interpolation better than the matlab script. Therefore this check was removed. */
+			
 			// start_index = end_index + 1;
 			// end_index = line.find(',', start_index);
 			// double orientation = std::stod(line.substr(start_index, end_index - start_index));
@@ -320,7 +321,7 @@ void testInterpolation(bool& flag) {
 			double time = std::stod(line.substr(start_index, end_index));
 
 			if (std::round((robots[id].synced.odometry[i].time - time )* 100.0)/ 100.0  !=  0 ) {
-				std::cout << "Interpolation Time Index Error [Line " << i << "] " << filename << ": " << robots[id].synced.odometry[i].time << " ≠ " << time << std::endl;
+				std::cerr << "Interpolation Time Index Error [Line " << i << "] " << filename << ": " << robots[id].synced.odometry[i].time << " ≠ " << time << std::endl;
 				flag = false;
 				return;
 			}
@@ -416,15 +417,6 @@ void testInterpolation(bool& flag) {
 					std::cerr << "List of subjects does not match\n"; 
 					std::cerr << current_time << std::endl;
 					std::cerr << robots[id].synced.measurements[counter].subjects.size() << " : " << subjects.size() << std::endl;
-					for (std::uint8_t i = 0; i < robots[id].synced.measurements[counter].subjects.size(); i++) {
-						std::cout << robots[id].synced.measurements[counter].subjects[i] << '\t';
-					}
-					std::cout << '\n';
-
-					for (std::uint8_t i = 0; i < subjects.size(); i++) {
-						std::cout << subjects[i] << '\t';
-					}
-					std::cout << "\n\n";
 
 					flag = false;
 					return;
@@ -572,9 +564,11 @@ void testGroundtruthOdometry(bool& flag) {
 	}
 	flag = true;
 }
+/**
+ * @brief Checks if the PDF adds to 1
+ */
 void checkPDF() {
-//# Bin Centre	Bin Width	Count	Robot ID
-	std::string filename = "./data/MRCLAM_Dataset1/output/Range-Error-PDF.dat";
+	std::string filename = "./data/MRCLAM_Dataset1/data_extraction/Bearing-Error-PDF.dat";
 	std::fstream file(filename);
 
 	if (!file.is_open()) {
@@ -608,7 +602,13 @@ void checkPDF() {
 		double value = std::stod(line.substr(start_index, end_index - start_index));
 
 		integral += value * bin_width;
-		std::cout << integral << " = " << value << " x " << bin_width << std::endl;
+	}
+
+	if (integral == 1.0) {
+		std::cout << "PASS" << std::endl;
+	}
+	else {
+		std::cout << "FAIL" << std::endl;
 	}
 }
 
