@@ -78,17 +78,20 @@ private:
 	 */
 	std::vector<Robot> robots_;
 
+	/* Extracting Data from the Dataset */
 	bool readBarcodes(const std::string&);
 	bool readLandmarks(const std::string&);
 	bool readGroundTruth(const std::string&, int);
 	bool readOdometry(const std::string&, int);
 	bool readMeasurements(const std::string&, int);
 
+	/* Processing the Data for Filtering */
 	void syncData(const double&);
 
 	void calculateGroundtruthOdometry();
 	void calculateGroundtruthMeasurement();
 
+	/* Save Dataset Extraction Data */
 	void saveStateData(bool&);
 	void saveOdometryData(bool&);
 	void saveMeasurementData(bool&);
@@ -102,11 +105,14 @@ private:
 	void relativeRobotDistance();
 	void relativeLandmarkDistance();
 public:
+	/* Constructors */
 	DataHandler(); 
 	explicit DataHandler(const std::string&, const double& sampling_period = 0.02);
 
+	/* Setters */
 	void setDataSet(const std::string&, const double& sampling_period = 0.02);
 
+	/* Getters */
 	std::vector<int>& getBarcodes();
 	std::vector<Landmark>& getLandmarks();
 	std::vector<Robot>& getRobots();
@@ -117,9 +123,10 @@ public:
 	unsigned short int getNumberOfLandmarks();
 	unsigned short int getNumberOfBarcodes();
 
-	int getID(int);
-	void saveExtractedData(bool&);
+	int getID(unsigned short int);
 
+	/* Output of Extracted Data */
+	void saveExtractedData(bool&);
 	void plotExtractedData();
 
 };
