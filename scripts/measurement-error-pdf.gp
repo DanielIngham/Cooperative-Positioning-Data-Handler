@@ -23,7 +23,7 @@ gaussian(x) = 1.0 / (sigma * sqrt(2 * pi)) * exp(-(x - mu)**2 / (2 * sigma**2))
 # Create a plot for every robot
 do for [i=1:5] {
 	########################
-	#Forward-Velocity-Error
+	# Forward-Velocity-Error
 	########################
 
 	set title sprintf("Robot %d Forward Velocity Error PDF", i)
