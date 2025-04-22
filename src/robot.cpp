@@ -1,6 +1,7 @@
 #include <../include/robot.h>
 #include <cmath>
 #include <numeric>
+#include <stdexcept>
 
 /**
  * @brief Default constructor.
@@ -9,7 +10,7 @@ Robot::Robot() {
 }
 
 /**
- * @brief Default destructor
+ * @brief Default destructor.
  */
 Robot::~Robot() {
 }
@@ -91,32 +92,48 @@ void Robot::calculateMeasurementError() {
 			}
 		}
 	}
-
-	setErrorSampleMean();
-	setErrorSampleVariance();
 }
 
 /**
- * @brief calculates the sample mean of the error for all the odometry and tracking measurements.
- * @details The sample mean is calculate as 
- * $$ \bar{x} = \frac{\sum_{i\in n} x_i}{n},$$ 
- * where \f$x_i\f$ denotes the $i$-th element in the sample of size \f$n\f$.
+ * @brief calculates the sample mean and sample variance of the error for all the odometry and tracking measurements.
+ * @details The sample mean and sample variance are calculate as 
+ * $$\begin{align} \bar{x} = \frac{\sum_{i\in n} x_i}{n}\\ \sigma^2 = \frac{\sum_{i\in n} (x_i - \bar{x})^2}{n-1} \end{align}$$ 
+ * where \f$x_i\f$ denotes the $i$-th element in the sample of size \f$n\f$. The sample variance formulation uses Bessel correction.
  * @note The calculation on the sample mean relies on the population of the Robot::error vector and therefore, Robot::calculateMeasurementError needs to be called before this function.
  */
-void Robot::setErrorSampleMean() {
+void Robot::calculateSampleErrorStats() {
+	/* Check if the eror measurement vector has been populated. */
+	if (0 == this->error.odometry.size() || 0 == this->error.measurements.size()) {
+		throw std::runtime_error("Sensor Error has not been set: call Robot::calculateMeasurementError() before this funciton.");
+	}
 
+	/* Calculate forward velocity mean error. */
 	double total_forward_velocity_error = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [](double acc, Odometry element) {
 		return acc + element.forward_velocity;
 	});
 	this->forward_velocity_error.mean = total_forward_velocity_error / this->error.odometry.size();
 
+	/* Forward velocity measurement error variance */
+	double total_forward_velocity_deviation = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [&](double acc, Odometry element) {
+		return acc + std::pow(element.forward_velocity - this->forward_velocity_error.mean, 2) ;
+	});
+	this->forward_velocity_error.variance = total_forward_velocity_deviation / (this->error.odometry.size() - 1);
+
+	/* Calculate angular velocity mean error. */
 	double total_angular_velocity_error = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [](double acc, Odometry element) {
 		return acc + element.angular_velocity;
 	});
-
 	this->angular_velocity_error.mean = total_angular_velocity_error / this->error.odometry.size();
 
-	/* NOTE: The calculation of the total number of measurments is used for both the range and bearing mean calculation using the assumption that the number of range and bearings measurements are equal. This should always the case as each range measurment will have a corresponding bearing. */
+	/* Angular velocity measurement error variance */
+	double total_angular_velocity_deviation = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [&](double acc, Odometry element) {
+		return acc + std::pow(element.angular_velocity - this->angular_velocity_error.mean, 2);
+	});
+	this->angular_velocity_error.variance = total_angular_velocity_deviation / (this->error.odometry.size() - 1);
+
+	/* Calculate range measurement mean error. 
+	 * NOTE: The calculation of the total number of measurments is used for both the range and bearing mean calculation using the assumption that the number of range and bearings measurements are equal. This should always the case as each range measurment will have a corresponding bearing. 
+	 */
 	double total_measurements = 0.0;
 	double total_range_error = std::accumulate(this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, Measurement element) {
 		total_measurements +=  element.ranges.size();
@@ -125,43 +142,22 @@ void Robot::setErrorSampleMean() {
 
 	this->range_error.mean = total_range_error / total_measurements;
 
-	double total_bearing_error = std::accumulate(this->error.measurements.begin(), this->error.measurements.end(), 0.0, [](double acc, Measurement element) {
-		return acc + std::accumulate(element.bearings.begin(), element.bearings.end(), 0.0);
-	});
-
-	this->bearing_error.mean = total_bearing_error / total_measurements;
-}
-
-/**
- * @brief Calculates the sample variance of the error for all the odometry and tracking measurements.
- * @details The variance is calculated as 
- * $$\sigma^2 = \frac{\sum_{i\in n} (x_i - \bar{x})^2}{n-1}, $$ 
- * where \f$x_i\f$ denotes the $i$-th element in the sample of size \f$n\f$. This function using the Bessel correction formulation for the calculation of the sample mean.
- * @note the sample variance calculation is reliant on the sample mean. Therefore, Robot::setErrorSampleMean needs to be called first before calling this function.
- */
-void Robot::setErrorSampleVariance() {
-
-	double total_forward_velocity_deviation = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [&](double acc, Odometry element) {
-		return acc + std::pow(element.forward_velocity - this->forward_velocity_error.mean, 2) ;
-	});
-	this->forward_velocity_error.variance = total_forward_velocity_deviation / (this->error.odometry.size() - 1);
-
-	double total_angular_velocity_deviation = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [&](double acc, Odometry element) {
-		return acc + std::pow(element.angular_velocity - this->angular_velocity_error.mean, 2);
-	});
-	this->angular_velocity_error.variance = total_angular_velocity_deviation / (this->error.odometry.size() - 1);
-	
-	double total_measurements = 0.0;
+	/* Range measurement error variance */
 	double total_range_deviation = std::accumulate(this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, Measurement element) {
-		total_measurements += element.ranges.size();
 		return acc + std::pow(std::accumulate(element.ranges.begin(), element.ranges.end(), 0.0) - this->range_error.mean, 2);
 	});
 	this->range_error.variance = total_range_deviation / (total_measurements - 1);
 
+
+	/* Calculate bearing measurement mean erorr. */
+	double total_bearing_error = std::accumulate(this->error.measurements.begin(), this->error.measurements.end(), 0.0, [](double acc, Measurement element) {
+		return acc + std::accumulate(element.bearings.begin(), element.bearings.end(), 0.0);
+	});
+	this->bearing_error.mean = total_bearing_error / total_measurements;
+
+	/* Bearing measurement error variance */
 	double total_bearing_deviation = std::accumulate(this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, Measurement element) {
 		return acc + std::pow(std::accumulate(element.bearings.begin(), element.bearings.end(), 0.0) - this->bearing_error.mean, 2);
 	}); 
-
 	this->bearing_error.variance = total_bearing_deviation / (total_measurements - 1);
-
 }

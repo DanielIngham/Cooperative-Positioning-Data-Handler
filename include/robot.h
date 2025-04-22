@@ -109,11 +109,9 @@ public:
 	forward_velocity_error,	///< Error associated with the forward velocity input.
 	angular_velocity_error;	///< Error associated with the angular velocity input.
 
-	void calculateOdometryError();
 	void calculateMeasurementError();
 
-	void setErrorSampleMean();
-	void setErrorSampleVariance();
+	void calculateSampleErrorStats();
 
 
 };
