@@ -29,6 +29,6 @@ do for [i=1:5] {
 	set output sprintf(plots_folder . "/Bearing/Robot-%d-Bearing-Error.pdf" , i)
 
 	plot \
-		data_folder . "/Measurement-Error.dat" index (i-1) using 1:4 with linespoints notitle
+		data_folder . "/Measurement-Error.dat" index (i-1) using 1:4 with points pointsize 0.1 notitle
 	unset multiplot
 }
