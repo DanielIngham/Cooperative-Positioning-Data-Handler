@@ -1,4 +1,4 @@
-#include <../include/robot.h>
+#include "../include/robot.h"
 #include <cmath>
 #include <numeric>
 #include <stdexcept>
@@ -47,14 +47,17 @@ void Robot::calculateMeasurementError() {
 
 	/* Calculate odometry error for each measurement. */
 	for (std::size_t k = 0; k < this->groundtruth.odometry.size() - 1; k++) {
-		/* Ignore stationary odometry values before the system starts and after it ends. These readings cause a disproportionate amount of zero error readings. */
-		// if (this->synced.odometry[k].angular_velocity != 0 && this->synced.odometry[k].forward_velocity != 0) {
-			this->error.odometry.push_back( Odometry(
-				this->groundtruth.odometry[k].time,
-				this->groundtruth.odometry[k].forward_velocity - this->synced.odometry[k].forward_velocity,
-				this->groundtruth.odometry[k].angular_velocity - this->synced.odometry[k].angular_velocity
-			));
-		// }
+		double orientation = this->groundtruth.odometry[k].angular_velocity - this->synced.odometry[k].angular_velocity;
+
+		/* Normalise the error values between -pi and pi radians (-180 and 180 degrees respectively). */
+		while (orientation >= M_PI) orientation -= 2.0 * M_PI;
+		while (orientation < -M_PI) orientation += 2.0 * M_PI;
+
+		this->error.odometry.push_back( Odometry(
+			this->groundtruth.odometry[k].time,
+			this->groundtruth.odometry[k].forward_velocity - this->synced.odometry[k].forward_velocity,
+			orientation
+		));
 	}
 
 
