@@ -1,43 +1,65 @@
+# Set plot to save to pdf output
+set terminal pdfcairo enhanced font 'Helvetica,12'
+
+data_folder = dataset_directory
+plots_folder = plots_directory
+
 # The plots are defined as: 
 ## .csv the matlab synced and interpolated output.
 ## 's'  the c++ synced and interpolated output. This should be identical to the Matlab output.
 ## 'r'  the raw data extracted from the dataset.
 
 # Plot settings
-set multiplot layout 3,1 title "Robot 1 Measurement"
 set xlabel "time [s]"
 set grid
 set key inside
 
-# Set the x range. This was choosen specifically to showcase some interpolation issues.
-set xrange[600:680]
-
 # Set up datafile seperator as both ',' (for csv files) and '	' (for .dat files).
 set datafile sep ",	"
 
-# Robot Measurement plot
-set title "Other Robots Barcodes"
-set ylabel "Subjects"
-plot \
-	"../data/MRCLAM_Dataset1/output/Measurement.dat" index 0 using (stringcolumn(5) eq 'r' ? $1: 1/0):(stringcolumn(5) eq 'r' ? $2 : 1/0) with points pointsize 1.4 linecolor rgb "red" pointtype 7 title "Raw",\
-	"" index 0 using (stringcolumn(5) eq 's' ? $1: 1/0):(stringcolumn(5) eq 's' ? $2 : 1/0) with points pointsize 1.4 title "Interpolated", \
-	"../test/Matlab_output/Robot1_Measurement.csv" using 1:2 with points pointsize 1.4 title "Matlab Interpolated", \
+# Create a plot for every robot
+do for [i=1:5] {
+	#########################
+	# Forward Velocity  Error
+	#########################
+	set output sprintf(plots_folder . "/Forward-Velocity/Robot-%d-Foward-Velocity.pdf" , i)
+	set title sprintf("Robot %d Forward Velocity", i)
+	set ylabel "Forward velocity [m/s]"
+	plot \
+		data_folder . "/Odometry.dat" index (i-1) using (stringcolumn(4) eq "g" ? $1 : 1/0):(stringcolumn(4) eq "g" ? $2 : 1/0) with points pointsize 0.1 title "Groundtruth",\
+		"" index (i-1) using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $2 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
+		"" index (i-1) using (stringcolumn(4) eq "s" ? $1 : 1/0):(stringcolumn(4) eq "s" ? $2 : 1/0) with points pointsize 0.1 title "Interpolated"
 
-set title "Other Robots Ranges"
-set ylabel "Ranges"
+	#########################
+	# Angular Velocity  Error
+	#########################
+	set output sprintf(plots_folder . "/Angular-Velocity/Robot-%d-Angular-Velocity.pdf" , i)
+	set title sprintf("Robot %d Angular Velocity", i)
+	set ylabel "Angular velocity [rad/s]"
+	plot \
+		data_folder . "/Odometry.dat" index (i-1) using (stringcolumn(4) eq "g" ? $1 : 1/0):(stringcolumn(4) eq "g" ? $3 : 1/0) with points pointsize 0.1 title "Groundtruth",\
+		"" index (i-1) using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $3 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
+		"" index (i-1) using (stringcolumn(4) eq "s" ? $1 : 1/0):(stringcolumn(4) eq "s" ? $3 : 1/0) with points pointsize 0.1 title "Interpolated"
 
-plot \
-	"../data/MRCLAM_Dataset1/output/Measurement.dat" index 0 using (stringcolumn(5) eq 'r' ? $1: 1/0):(stringcolumn(5) eq 'r' ? $3 : 1/0) with points pointsize 1.4 linecolor rgb "red" pointtype 7 title "Raw",\
-	"" index 0 using (stringcolumn(5) eq 's' ? $1: 1/0):(stringcolumn(5) eq 's' ? $3 : 1/0) with points pointsize 1.4 title "Interpolated", \
-	"../test/Matlab_output/Robot1_Measurement.csv" using 1:3 with points pointsize 1.4 title "Matlab Interpolated"
+	#########################
+	# Range Measurement
+	#########################
+	set output sprintf(plots_folder . "/Range/Robot-%d-Range.pdf" , i)
+	set title sprintf("Robot %d Range Measurements", i)
+	set ylabel "Range [m]"
+	plot \
+		data_folder . "/Measurement.dat" index (i-1) using (stringcolumn(5) eq "g" ? $1 : 1/0):(stringcolumn(5) eq "g" ? $3 : 1/0) with points pointsize 0.1 title "Groundtruth",\
+		"" index (i-1) using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $3 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
+		"" index (i-1) using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $3 : 1/0) with points pointsize 0.1 title "Interpolated"
 
-set title "Other Robots Bearings"
-set ylabel "Bearings"
-plot \
-	"../data/MRCLAM_Dataset1/output/Measurement.dat" index 0 using (stringcolumn(5) eq 'r' ? $1: 1/0):(stringcolumn(5) eq 'r' ? $4 : 1/0) with points pointsize 1.4 linecolor rgb "red" pointtype 7 title "Raw",\
-	"" index 0 using (stringcolumn(5) eq 's' ? $1: 1/0):(stringcolumn(5) eq 's' ? $4 : 1/0) with points pointsize 1.4 title "Interpolated", \
-	"../test/Matlab_output/Robot1_Measurement.csv" using 1:4 with points pointsize 1.4 title "Matlab Interpolated"
-
-unset multiplot
-pause -1
-
+	#########################
+	# Bearing Measurement
+	#########################
+	set output sprintf(plots_folder . "/Bearing/Robot-%d-Bearing.pdf" , i)
+	set title sprintf("Robot %d Bearing Measurements", i)
+	set ylabel "Bearing [rad]"
+	plot \
+		data_folder . "/Measurement.dat" index (i-1) using (stringcolumn(5) eq "g" ? $1 : 1/0):(stringcolumn(5) eq "g" ? $4 : 1/0) with points pointsize 0.1 title "Groundtruth",\
+		"" index (i-1) using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $4 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
+		"" index (i-1) using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $4 : 1/0) with points pointsize 0.1 title "Interpolated"
+}
