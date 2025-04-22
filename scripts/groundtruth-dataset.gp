@@ -1,41 +1,44 @@
+# Set plot to save to pdf output
+set terminal pdfcairo enhanced font 'Helvetica,12'
+
 # The plots are defined as: 
 ## .csv the matlab synced and interpolated output.
 ## 's'  the c++ synced and interpolated output. This should be identical to the Matlab output.
 ## 'r'  the raw data extracted from the dataset.
 
+data_folder = dataset_directory
+plots_folder = plots_directory
+
 # Plot settings
-set multiplot layout 3,1 title "Ground truth"
 set xlabel "time [s]"
 set grid
 set key inside
 
 # Set the x range. This was choosen specifically to showcase some interpolation issues.
-#set xrange[1271.5:1272.2]
-set xrange[22:28]
 # Set up datafile seperator as both ',' (for csv files) and '	' (for .dat files).
 set datafile sep ",	"
 
 #### Ground truth plot
-set title "Robot x Groundtruth Trajectory"
-set ylabel "x Position [m]"
-plot \
-	"../data/MRCLAM_Dataset1/output/Groundtruth-State.dat" index 0 using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $2 : 1/0) with points pointsize 1.4 linecolor rgb "red" pointtype 7 title "Raw",\
-	"" index 0 using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $2 : 1/0) with points pointsize 1.4 linecolor rgb "purple" title "Interpolated", \
-	"../test/Matlab_output/Robot1_Groundtruth.csv" using 1:2 with points pointsize 1.4 linecolor rgb "blue" title "Matlab Interpolated"
+do for [i=1:5] {
+	# Set the output file 
+	set output sprintf(plots_folder . "/State/Robot-%d-State.pdf" , i)
+	set multiplot layout 3,1 title sprintf("Robot %d Groundtruth Trajectory", i)
 
-set title "Robot y trajectory"
-set ylabel "y Position [m]"
-plot \
-	"../data/MRCLAM_Dataset1/output/Groundtruth-State.dat" index 0 using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $3 : 1/0) with points pointsize 1.4 linecolor rgb "red" pointtype 7 title "Raw",\
-	"" index 0 using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $3 : 1/0) with points pointsize 1.4 linecolor rgb "purple" title "Iterpolated", \
-	"../test/Matlab_output/Robot1_Groundtruth.csv" using 1:3 with points pointsize 1.4 linecolor rgb "blue" title "Matlab Interpolated"
+	set ylabel "x-position [m]"
+	plot \
+		data_folder . "/Groundtruth-State.dat" index (i-1) using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $2 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
+		"" index (i-1) using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $2 : 1/0) with points pointsize 0.1 linecolor rgb "purple" title "Interpolated"
 
-set title "Robot Orientation"
-set ylabel "Orientation [rad]"
-plot \
-	"../data/MRCLAM_Dataset1/output/Groundtruth-State.dat" index 0 using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $4 : 1/0) with points pointsize 1.4 linecolor rgb "red" pointtype 7 title "Raw",\
-	"" index 0 using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $4 : 1/0) with points pointsize 1.4 linecolor rgb "purple" title "Interpolated", \
-	"../test/Matlab_output/Robot1_Groundtruth.csv"  using 1:4 with points pointsize 1.4 linecolor rgb "blue" title "Matlab Interpolated"
+	set ylabel "y-position [m]"
+	plot \
+		data_folder . "/Groundtruth-State.dat" index (i-1) using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $3 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw", \
+		"" index (i-1) using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $3 : 1/0) with points pointsize 0.1 linecolor rgb "purple" title "Interpolated"
 
-unset multiplot
-pause -1 
+	set ylabel "orientation [rad]"
+	plot \
+		data_folder . "/Groundtruth-State.dat" index (i-1) using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $4 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw", \
+		"" index (i-1) using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $4 : 1/0) with points pointsize 0.1 linecolor rgb "purple" title "Interpolated"
+
+	unset multiplot
+	unset output
+}
