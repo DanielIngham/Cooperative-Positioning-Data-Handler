@@ -7,7 +7,6 @@
  */
 
 #include "../include/data_handler.h"
-#include <stdexcept>
 
 /**
  * @brief Default constructor.
@@ -618,13 +617,13 @@ void DataHandler::calculateGroundtruthMeasurement() {
 				double x_difference;
 				double y_difference;
 
-				/* All robots have ID's [1,5] */
+				/* All robots have ID's [1,5]. */
 				if (subject_ID < 6) {
 					subject_ID--;
 					x_difference = robots_[subject_ID].groundtruth.states[t].x - robots_[id].groundtruth.states[t].x;
 					y_difference = robots_[subject_ID].groundtruth.states[t].y - robots_[id].groundtruth.states[t].y; 
 				}
-				/* All landmarks have ID's [6,20] */
+				/* All landmarks have ID's [6,20]. */
 				else {
 					subject_ID -= 6;
 					x_difference = landmarks_[subject_ID].x - robots_[id].groundtruth.states[t].x;
@@ -793,21 +792,41 @@ void DataHandler::saveMeasurementData(bool& flag) {
 		flag = false;
 		return;
 	}
-	robot_file << "# Time [s]	Subjects	Ranges [m]	Bearings [m]	Raw/Synced/Groundtruth	Robot ID\n";
+	robot_file << "# Time [s]	Subjects	Ranges [m]	Bearings [m]	Raw/Synced/Groundtruth	Robot ID	Landmark(l)/Robot(r)\n";
 	/* Save the values of the raw and synced measurment values of a given robot into the same file with the last row indicating 'g' for raw  and 'i' for synced.*/
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 
 		/* NOTE: when the "raw" measurement data structure is populated, it only adds one element to the members for each time stamp. After interpolation, these values are combined if they have the same time stamp.*/
 		for (std::size_t k = 0; k < robots_[id].raw.measurements.size(); k++) {
-			robot_file << robots_[id].raw.measurements[k].time << '\t' << robots_[id].raw.measurements[k].subjects[0] << '\t' << robots_[id].raw.measurements[k].ranges[0] << '\t' <<  robots_[id].raw.measurements[k].bearings[0] << '\t' << 'r' << '\t' << id + 1 << '\n';
+			/* NOTE: that time stamp grouping is not performed for raw measurements, therefore each subject vector has only one element. */
+			int subject_ID = getID(robots_[id].raw.measurements[k].subjects[0]);
+			char measurement_type;
+			/* Robots from the UTIAS dataset have ID's from [1,5]. */
+			if (subject_ID < 6) {
+				measurement_type = 'r';
+			}
+			/* Landmarks from the UTIAS dataset have ID's from [5,20]. */
+			else {
+				measurement_type = 'l';
+			}
+			robot_file << robots_[id].raw.measurements[k].time << '\t' << robots_[id].raw.measurements[k].subjects[0] << '\t' << robots_[id].raw.measurements[k].ranges[0] << '\t' <<  robots_[id].raw.measurements[k].bearings[0] << '\t' << 'r' << '\t' << id + 1 << '\t' << measurement_type << '\n';
 		}
 
 		/* Save both the synced and the calculated groundtruth */
 		for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
-			for (std::size_t s = 0; s < robots_[id].synced.measurements[s].subjects.size(); s++) {
-				robot_file << robots_[id].synced.measurements[s].time << '\t' << robots_[id].synced.measurements[s].subjects[s] << '\t' << robots_[id].synced.measurements[s].ranges[s] << '\t' << robots_[id].synced.measurements[s].bearings[s] << '\t' << 's' << '\t' << id + 1 << '\n';
+			for (std::size_t s = 0; s < robots_[id].synced.measurements[k].subjects.size(); s++) {
+				int subject_ID = getID(robots_[id].groundtruth.measurements[k].subjects[s]);
+				char measurement_type;
+				if (subject_ID < 6) {
+					measurement_type = 'r';
+				}
+				/* Landmarks from the UTIAS dataset have ID's from [5,20]. */
+				else {
+					measurement_type = 'l';
+				}
+				robot_file << robots_[id].synced.measurements[k].time << '\t' << robots_[id].synced.measurements[k].subjects[s] << '\t' << robots_[id].synced.measurements[k].ranges[s] << '\t' << robots_[id].synced.measurements[k].bearings[s] << '\t' << 's' << '\t' << id + 1 << '\t' << measurement_type << '\n';
 
-				robot_file << robots_[id].groundtruth.measurements[s].time << '\t' << robots_[id].groundtruth.measurements[s].subjects[s] << '\t' << robots_[id].groundtruth.measurements[s].ranges[s] << '\t' << robots_[id].groundtruth.measurements[s].bearings[s] << '\t' << 'g' << '\t' << id + 1 << '\n';
+				robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << 'g' << '\t' << id + 1 << '\t' << measurement_type << '\n';
 			}
 		}
 
@@ -816,37 +835,6 @@ void DataHandler::saveMeasurementData(bool& flag) {
 		robot_file << '\n';
 	}
 	robot_file.close();
-
-	filename = data_extraction_directory_ + "Groundtruth-Measurement.dat";
-	robot_file.open(filename);
-
-	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR] Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
-	}
-
-	/* Write the header. */
-	robot_file << "# Time [s]	Subject	Landmark (l) / Robot (r)	Range [m]	Bearing [rad]	Robot ID\n";
-
-	for (int id = 0; id < TOTAL_ROBOTS; id++) {
-		for (std::size_t k = 0; k < robots_[id].groundtruth.measurements.size(); k++ ) {
-			for (std::size_t s = 0; s < robots_[id].groundtruth.measurements[k].subjects.size(); s++) {
-				int subject_ID = getID(robots_[id].groundtruth.measurements[k].subjects[s]);
-				if (subject_ID < 6) {
-					robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << 'r' << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << id + 1 << '\n';
-				}
-				else {
-					robot_file << robots_[id].groundtruth.measurements[k].time << '\t' << robots_[id].groundtruth.measurements[k].subjects[s] << '\t' << 'l' << '\t' << robots_[id].groundtruth.measurements[k].ranges[s] << '\t' << robots_[id].groundtruth.measurements[k].bearings[s] << '\t' << id + 1 << '\n';
-				}
-			}
-		}
-
-		robot_file << '\n';
-		robot_file << '\n';
-	}
-	robot_file.close();
-	
 }
 
 /**
@@ -871,16 +859,6 @@ void DataHandler::saveOdometryData(bool& flag) {
 	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Raw (r)/Synced(s)/Groundtruth(g)	Robot ID\n";
 
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
-		std::cout << "ROBOT " << id  + 1 << std::endl;
-		std::cout << "RAW Odometry Size: " << robots_[id].raw.odometry.size() << std::endl;
-		std::cout << "SYNCED Odometry Size: " << robots_[id].synced.odometry.size() << std::endl;
-		std::cout << "GT Odometry Size: " << robots_[id].groundtruth.odometry.size() << std::endl;
-
-
-		std::cout << "RAW Odometry Time: " << robots_[id].raw.odometry.back().time << std::endl;
-		std::cout << "SYNCED Odometry Time: " << robots_[id].synced.odometry.back().time << std::endl;
-		std::cout << "GT Odometry Time: " << robots_[id].groundtruth.odometry.back().time << std::endl;
-
 		std::size_t largest_vector_size = std::max({robots_[id].raw.odometry.size(), robots_[id].synced.odometry.size()});
 
 		for (std::size_t k = 0; k < largest_vector_size; k++) {
@@ -1164,7 +1142,6 @@ std::vector<int>& DataHandler::getBarcodes() {
  *
  */
 void DataHandler::plotExtractedData() {
-	std::string gnuplotScriptPath = "./scripts/measurement-error-pdf.gp"; 
 	std::string plots_directory = data_extraction_directory_ + "plots/";
 
 	/* Create the plots directory (if it doesn't exist) */
@@ -1221,6 +1198,7 @@ void DataHandler::plotExtractedData() {
 	}
 
 	/* Execute gnuplot command */
+	std::string gnuplotScriptPath = "./scripts/measurement-error-pdf.gp"; 
 	std::string command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ + "'; plots_directory='" + plots_directory + "'\" "+ gnuplotScriptPath;
 	int ret = system(command.c_str());
 
@@ -1228,7 +1206,7 @@ void DataHandler::plotExtractedData() {
 	command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ + "'; plots_directory='" + plots_directory + "'\" "+ gnuplotScriptPath;
 	ret += system(command.c_str());
 
-	gnuplotScriptPath = "./scripts/odometry-dataset.gp"; 
+	gnuplotScriptPath = "./scripts/measurement-dataset.gp"; 
 	command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ + "'; plots_directory='" + plots_directory + "'\" "+ gnuplotScriptPath;
 	ret += system(command.c_str());
 
