@@ -88,7 +88,10 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 
 	/* Calculate odometry and measurement errors. */
 	for (int i = 0; i < TOTAL_ROBOTS; i++) {
+		/* Calculate the Measurement Error. */
 		robots_[i].calculateMeasurementError();
+		/* Calculate the Error Statistics. */
+		robots_[i].calculateSampleErrorStats();
 	}
 }
 
@@ -463,10 +466,10 @@ void DataHandler::syncData(const double& sample_period) {
 					robots_[id].raw.states.front().y, 
 					robots_[id].raw.states.front().orientation
 				)); 
-				continue;
+				// continue;
 			}
 
-			/* If the element is the larst item in the raw values, copy the raw values (no interpolation). This is assuming that the robot remains stationary after the ground truth recording ended. */
+			/* If the element is the last item in the raw values, copy the raw values (no interpolation). This is assuming that the robot remains stationary after the ground truth recording ended. */
 			else if (groundtruth_iterator == robots_[id].raw.states.end()) {
 				robots_[id].groundtruth.states.push_back( Robot::State(
 					t, 
@@ -474,32 +477,34 @@ void DataHandler::syncData(const double& sample_period) {
 					robots_[id].raw.states.back().y, 
 					robots_[id].raw.states.back().orientation
 				));
-				continue;
+				// continue;
+			}
+			else {
+				/* Interpolate the Groundtruth values */
+				double interpolation_factor = (t -  (groundtruth_iterator-1)->time) / (groundtruth_iterator->time - (groundtruth_iterator -1)->time);
+
+				double next_orientation = groundtruth_iterator->orientation;
+				if (next_orientation - (groundtruth_iterator - 1)->orientation > 5) {
+					next_orientation -= 2.0 * M_PI;
+				}
+				else if (next_orientation - (groundtruth_iterator - 1)->orientation < -5) {
+					next_orientation += 2.0 * M_PI;
+				}
+
+				next_orientation = interpolation_factor * (next_orientation - (groundtruth_iterator - 1)->orientation) + (groundtruth_iterator - 1)->orientation;
+				
+				/* Normalise the orientation between PI and -PI (180 and -180 degrees respectively) */
+				while (next_orientation >= M_PI) next_orientation -= 2.0 * M_PI;
+				while (next_orientation < -M_PI) next_orientation += 2.0 * M_PI;
+
+				robots_[id].groundtruth.states.push_back( Robot::State(
+					t,
+					interpolation_factor * (groundtruth_iterator->x - (groundtruth_iterator - 1)->x) + (groundtruth_iterator - 1)->x,
+					interpolation_factor * (groundtruth_iterator->y - (groundtruth_iterator - 1)->y) + (groundtruth_iterator - 1)->y,
+					next_orientation
+				));
 			}
 
-			/* Interpolate the Groundtruth values */
-			double interpolation_factor = (t -  (groundtruth_iterator-1)->time) / (groundtruth_iterator->time - (groundtruth_iterator -1)->time);
-
-			double next_orientation = groundtruth_iterator->orientation;
-			if (next_orientation - (groundtruth_iterator - 1)->orientation > 5) {
-				next_orientation -= 2.0 * M_PI;
-			}
-			else if (next_orientation - (groundtruth_iterator - 1)->orientation < -5) {
-				next_orientation += 2.0 * M_PI;
-			}
-
-			next_orientation = interpolation_factor * (next_orientation - (groundtruth_iterator - 1)->orientation) + (groundtruth_iterator - 1)->orientation;
-			
-			/* Normalise the orientation between PI and -PI (180 and -180 degrees respectively) */
-			while (next_orientation >= M_PI) next_orientation -= 2.0 * M_PI;
-			while (next_orientation < -M_PI) next_orientation += 2.0 * M_PI;
-
-			robots_[id].groundtruth.states.push_back( Robot::State(
-				t,
-				interpolation_factor * (groundtruth_iterator->x - (groundtruth_iterator - 1)->x) + (groundtruth_iterator - 1)->x,
-				interpolation_factor * (groundtruth_iterator->y - (groundtruth_iterator - 1)->y) + (groundtruth_iterator - 1)->y,
-				next_orientation
-			));
 
 			/* The same process as above is repeated for the odometry, except assume the robot is stationary prior to ground truth readings */
 			odometry_iterator = std::find_if(odometry_iterator, robots_[id].raw.odometry.end(), [t](const Robot::Odometry& element) {
@@ -512,7 +517,7 @@ void DataHandler::syncData(const double& sample_period) {
 			}
 
 			/* Calculating Odometry Interpolation */
-			interpolation_factor = (t -  (odometry_iterator-1)->time) / (odometry_iterator->time - (odometry_iterator -1)->time); 
+			double interpolation_factor = (t -  (odometry_iterator-1)->time) / (odometry_iterator->time - (odometry_iterator -1)->time); 
 
 			robots_[id].synced.odometry.push_back( Robot::Odometry(
 				t,
@@ -726,8 +731,8 @@ void DataHandler::saveExtractedData(bool& flag) {
 	saveMeasurementErrorPDF(flag, bin_size);
 
 	saveRobotErrorStatistics();
-	relativeLandmarkDistance();
-	relativeRobotDistance();
+	// relativeLandmarkDistance();
+	// relativeRobotDistance();
 
 	plotExtractedData();
 }
@@ -788,7 +793,7 @@ void DataHandler::saveMeasurementData(bool& flag) {
 		flag = false;
 		return;
 	}
-	robot_file << "# Time [s]	Subjects	Ranges [m]	Bearings [m]	Robot ID\n";
+	robot_file << "# Time [s]	Subjects	Ranges [m]	Bearings [m]	Raw/Synced/Groundtruth	Robot ID\n";
 	/* Save the values of the raw and synced measurment values of a given robot into the same file with the last row indicating 'g' for raw  and 'i' for synced.*/
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 
@@ -796,11 +801,16 @@ void DataHandler::saveMeasurementData(bool& flag) {
 		for (std::size_t k = 0; k < robots_[id].raw.measurements.size(); k++) {
 			robot_file << robots_[id].raw.measurements[k].time << '\t' << robots_[id].raw.measurements[k].subjects[0] << '\t' << robots_[id].raw.measurements[k].ranges[0] << '\t' <<  robots_[id].raw.measurements[k].bearings[0] << '\t' << 'r' << '\t' << id + 1 << '\n';
 		}
+
+		/* Save both the synced and the calculated groundtruth */
 		for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
 			for (std::size_t s = 0; s < robots_[id].synced.measurements[s].subjects.size(); s++) {
 				robot_file << robots_[id].synced.measurements[s].time << '\t' << robots_[id].synced.measurements[s].subjects[s] << '\t' << robots_[id].synced.measurements[s].ranges[s] << '\t' << robots_[id].synced.measurements[s].bearings[s] << '\t' << 's' << '\t' << id + 1 << '\n';
+
+				robot_file << robots_[id].groundtruth.measurements[s].time << '\t' << robots_[id].groundtruth.measurements[s].subjects[s] << '\t' << robots_[id].groundtruth.measurements[s].ranges[s] << '\t' << robots_[id].groundtruth.measurements[s].bearings[s] << '\t' << 'g' << '\t' << id + 1 << '\n';
 			}
 		}
+
 		/* Add two empty lines after robot entires for gnuplot */
 		robot_file << '\n';
 		robot_file << '\n';
@@ -856,10 +866,21 @@ void DataHandler::saveOdometryData(bool& flag) {
 		return;
 	}
 
+
 	/* Write the header file. */
-	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Raw (r) / Synced (s)	Robot ID\n";
+	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Raw (r)/Synced(s)/Groundtruth(g)	Robot ID\n";
 
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
+		std::cout << "ROBOT " << id  + 1 << std::endl;
+		std::cout << "RAW Odometry Size: " << robots_[id].raw.odometry.size() << std::endl;
+		std::cout << "SYNCED Odometry Size: " << robots_[id].synced.odometry.size() << std::endl;
+		std::cout << "GT Odometry Size: " << robots_[id].groundtruth.odometry.size() << std::endl;
+
+
+		std::cout << "RAW Odometry Time: " << robots_[id].raw.odometry.back().time << std::endl;
+		std::cout << "SYNCED Odometry Time: " << robots_[id].synced.odometry.back().time << std::endl;
+		std::cout << "GT Odometry Time: " << robots_[id].groundtruth.odometry.back().time << std::endl;
+
 		std::size_t largest_vector_size = std::max({robots_[id].raw.odometry.size(), robots_[id].synced.odometry.size()});
 
 		for (std::size_t k = 0; k < largest_vector_size; k++) {
@@ -869,6 +890,8 @@ void DataHandler::saveOdometryData(bool& flag) {
 			
 			if (k < robots_[id].synced.odometry.size()){
 				robot_file << robots_[id].synced.odometry[k].time << '\t' << robots_[id].synced.odometry[k].forward_velocity << '\t' << robots_[id].synced.odometry[k].angular_velocity << '\t' << 's' << '\t' << id + 1 << '\n';
+
+				robot_file << robots_[id].groundtruth.odometry[k].time << '\t' << robots_[id].groundtruth.odometry[k].forward_velocity << '\t' << robots_[id].groundtruth.odometry[k].angular_velocity << '\t' << 'g' << '\t' << id + 1 << '\n';
 			}
 		}
 		/* Add two empty lines after robot entires for gnuplot */
@@ -1153,7 +1176,7 @@ void DataHandler::plotExtractedData() {
 	}
 
 	/* Create the Range Error sub-directory (if it doesn't exist) */
-	std::string range_directory = plots_directory + "Range-Error";
+	std::string range_directory = plots_directory + "Range";
 	if (!std::filesystem::exists(range_directory)) {
 		if (!std::filesystem::create_directory(range_directory)) {
 			std::cerr << "Failed to create directory: " + range_directory + "\n";
@@ -1162,7 +1185,7 @@ void DataHandler::plotExtractedData() {
 	}
 
 	/* Create the Bearing Error subdirectory (if it doesn't exist) */
-	std::string bearing_directory = plots_directory + "Bearing-Error";
+	std::string bearing_directory = plots_directory + "Bearing";
 	if (!std::filesystem::exists(bearing_directory)) {
 		if (!std::filesystem::create_directory(bearing_directory)) {
 			std::cerr << "Failed to create directory: " + bearing_directory + "\n";
@@ -1171,7 +1194,7 @@ void DataHandler::plotExtractedData() {
 	}
 	
 	/* Create the Forward-Velocity Error subdirectory (if it doesn't exist) */
-	std::string forward_velocity_directory = plots_directory + "Forward-Velocity-Error";
+	std::string forward_velocity_directory = plots_directory + "Forward-Velocity";
 	if (!std::filesystem::exists(forward_velocity_directory)) {
 		if (!std::filesystem::create_directory(forward_velocity_directory)) {
 			std::cerr << "Failed to create directory: " + forward_velocity_directory + "\n";
@@ -1180,7 +1203,7 @@ void DataHandler::plotExtractedData() {
 	}
 
 	/* Create the Forward-Velocity Error subdirectory (if it doesn't exist) */
-	std::string angular_velocity_directory = plots_directory + "Angular-Velocity-Error";
+	std::string angular_velocity_directory = plots_directory + "Angular-Velocity";
 	if (!std::filesystem::exists(angular_velocity_directory)) {
 		if (!std::filesystem::create_directory(angular_velocity_directory)) {
 			std::cerr << "Failed to create directory: " + angular_velocity_directory + "\n";
@@ -1188,16 +1211,32 @@ void DataHandler::plotExtractedData() {
 		}
 	}
 
+	/* Create the Forward-Velocity Error subdirectory (if it doesn't exist) */
+	std::string state_directory = plots_directory + "State";
+	if (!std::filesystem::exists(state_directory)) {
+		if (!std::filesystem::create_directory(state_directory)) {
+			std::cerr << "Failed to create directory: " + state_directory + "\n";
+			return;
+		}
+	}
+
 	/* Execute gnuplot command */
 	std::string command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ + "'; plots_directory='" + plots_directory + "'\" "+ gnuplotScriptPath;
-
 	int ret = system(command.c_str());
 
+	gnuplotScriptPath = "./scripts/measurement-error.gp"; 
+	command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ + "'; plots_directory='" + plots_directory + "'\" "+ gnuplotScriptPath;
+	ret += system(command.c_str());
 
-	if (ret == 0) {
-		std::cout << "Plot generated successfully.\n";
-	} 
-	else {
+	gnuplotScriptPath = "./scripts/odometry-dataset.gp"; 
+	command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ + "'; plots_directory='" + plots_directory + "'\" "+ gnuplotScriptPath;
+	ret += system(command.c_str());
+
+	gnuplotScriptPath = "./scripts/groundtruth-dataset.gp"; 
+	command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ + "'; plots_directory='" + plots_directory + "'\" "+ gnuplotScriptPath;
+	ret += system(command.c_str());
+
+	if (ret != 0) {
 		std::cerr << "Gnuplot failed with code: " << ret << "\n";
 	}
 
@@ -1210,7 +1249,7 @@ void DataHandler::plotExtractedData() {
  * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and index 3 in the array DataHandler::robots_.
  * @note if the dataset has not been set, the function will throw a std::runtime_error.
  */
-int DataHandler::getID(int barcode) {
+int DataHandler::getID(unsigned short int barcode) {
 	for (int i = 0; i < TOTAL_BARCODES; i++) {
 		if (barcodes_[i] == barcode) {
 			return (i + 1);
