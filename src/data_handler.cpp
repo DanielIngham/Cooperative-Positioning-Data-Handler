@@ -8,6 +8,7 @@
 
 #include "../include/data_handler.h"
 #include <stdexcept>
+#include <string>
 
 /**
  * @brief Default constructor.
@@ -715,6 +716,7 @@ void DataHandler::saveExtractedData() {
 		saveMeasurementErrorPDF(bin_size);
 
 		saveRobotErrorStatistics();
+		
 		// relativeLandmarkDistance();
 		// relativeRobotDistance();
 		
@@ -1120,8 +1122,7 @@ void DataHandler::plotExtractedData() {
 	/* Create the plots directory (if it doesn't exist) */
 	if (!std::filesystem::exists(plots_directory)) {
 		if (!std::filesystem::create_directory(plots_directory)) {
-			std::cerr << "Failed to create directory: " + plots_directory + "\n";
-			return;
+			throw std::runtime_error("Failed to create directory: " + plots_directory);
 		}
 	}
 
@@ -1129,8 +1130,7 @@ void DataHandler::plotExtractedData() {
 	std::string range_directory = plots_directory + "Range";
 	if (!std::filesystem::exists(range_directory)) {
 		if (!std::filesystem::create_directory(range_directory)) {
-			std::cerr << "Failed to create directory: " + range_directory + "\n";
-			return;
+			throw std::runtime_error("Failed to create directory: " + range_directory);
 		}
 	}
 
@@ -1138,8 +1138,7 @@ void DataHandler::plotExtractedData() {
 	std::string bearing_directory = plots_directory + "Bearing";
 	if (!std::filesystem::exists(bearing_directory)) {
 		if (!std::filesystem::create_directory(bearing_directory)) {
-			std::cerr << "Failed to create directory: " + bearing_directory + "\n";
-			return;
+			throw std::runtime_error("Failed to create directory: " + bearing_directory);
 		}
 	}
 	
@@ -1147,8 +1146,7 @@ void DataHandler::plotExtractedData() {
 	std::string forward_velocity_directory = plots_directory + "Forward-Velocity";
 	if (!std::filesystem::exists(forward_velocity_directory)) {
 		if (!std::filesystem::create_directory(forward_velocity_directory)) {
-			std::cerr << "Failed to create directory: " + forward_velocity_directory + "\n";
-			return;
+			throw std::runtime_error("Failed to create directory: " + forward_velocity_directory);
 		}
 	}
 
@@ -1156,8 +1154,7 @@ void DataHandler::plotExtractedData() {
 	std::string angular_velocity_directory = plots_directory + "Angular-Velocity";
 	if (!std::filesystem::exists(angular_velocity_directory)) {
 		if (!std::filesystem::create_directory(angular_velocity_directory)) {
-			std::cerr << "Failed to create directory: " + angular_velocity_directory + "\n";
-			return;
+			throw std::runtime_error("Failed to create directory: " + angular_velocity_directory);
 		}
 	}
 
@@ -1165,8 +1162,7 @@ void DataHandler::plotExtractedData() {
 	std::string state_directory = plots_directory + "State";
 	if (!std::filesystem::exists(state_directory)) {
 		if (!std::filesystem::create_directory(state_directory)) {
-			std::cerr << "Failed to create directory: " + state_directory + "\n";
-			return;
+			throw ("Failed to create directory: " + state_directory);
 		}
 	}
 
@@ -1188,10 +1184,8 @@ void DataHandler::plotExtractedData() {
 	ret += system(command.c_str());
 
 	if (ret != 0) {
-		std::cerr << "Gnuplot failed with code: " << ret << "\n";
+		throw std::runtime_error("Gnuplot failed with code: " + std::to_string(ret));
 	}
-
-
 }
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the robot or landmark.
