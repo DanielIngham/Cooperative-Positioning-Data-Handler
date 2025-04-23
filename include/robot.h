@@ -12,6 +12,9 @@
 #include <string>	// std::string
 #include <iostream>	// std::cout
 #include <numeric>	// std::accumulate
+#include <cmath>	// std::atan2
+#include <numeric>	// std::accumulate
+
 /**
  * @class Robot
  * @brief Houses all data and functionality related to a given robot in a multi-robot localisation environment

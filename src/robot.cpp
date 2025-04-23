@@ -1,3 +1,10 @@
+/**
+ * @file robot.cpp
+ * @brief Class implementation file responsible for the robot datastructor.
+ * @details Houses the functionality for calculating the eror values and error statistics for a given robot.
+ * @author Daniel Ingham
+ * @date 2025-04-23
+ */
 #include "../include/robot.h"
 #include <cmath>
 #include <numeric>
@@ -17,6 +24,7 @@ Robot::~Robot() {
 
 /**
  * @brief Calculates the absolute error between the groundtruth measurements input odometry and measurement values.
+ * @note If the function encounters an error, a std::runtime_error is thrown.
  */
 void Robot::calculateMeasurementError() {
 
