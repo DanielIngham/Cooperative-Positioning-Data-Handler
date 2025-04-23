@@ -79,11 +79,11 @@ private:
 	std::vector<Robot> robots_;
 
 	/* Extracting Data from the Dataset */
-	bool readBarcodes(const std::string&);
-	bool readLandmarks(const std::string&);
-	bool readGroundTruth(const std::string&, int);
-	bool readOdometry(const std::string&, int);
-	bool readMeasurements(const std::string&, int);
+	void readBarcodes(const std::string&);
+	void readLandmarks(const std::string&);
+	void readGroundTruth(const std::string&, int);
+	void readOdometry(const std::string&, int);
+	void readMeasurements(const std::string&, int);
 
 	/* Processing the Data for Filtering */
 	void syncData(const double&);

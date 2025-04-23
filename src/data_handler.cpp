@@ -7,6 +7,7 @@
  */
 
 #include "../include/data_handler.h"
+#include <stdexcept>
 
 /**
  * @brief Default constructor.
@@ -55,25 +56,24 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 	this->landmarks_.resize(TOTAL_LANDMARKS); 
 	this->robots_.resize(TOTAL_ROBOTS);
 
-	/* Perform data extraction in the directory */
-	bool barcodes_correct = readBarcodes(dataset);
-	bool landmarks_correct = readLandmarks(dataset);
-	bool groundtruth_correct = true;
-	bool odometry_correct = true;
-	bool measurement_correct = true;
+	try {
+		/* Perform data extraction in the directory */
+		readBarcodes(dataset);
+		readLandmarks(dataset);
 
-	/* Populate the values for each robot from the dataset */
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		groundtruth_correct &= readGroundTruth(dataset, i);
-		odometry_correct &= readOdometry(dataset, i);
-		measurement_correct &= readMeasurements(dataset, i);
-	}
+		/* Populate the values for each robot from the dataset */
+		for (int id = 0; id < TOTAL_ROBOTS; id++) {
+			readGroundTruth(dataset, id);
+			readOdometry(dataset, id);
+			readMeasurements(dataset, id);
+		}
 
-	/* Checks that the setting of all data attributes have been succesful */
-	bool successful_extraction = barcodes_correct & landmarks_correct & groundtruth_correct & odometry_correct & measurement_correct;
-
-	if (!successful_extraction) {
-		throw std::runtime_error("Unable to extract data from dataset");
+		std::cout << "\033[1;32m Data Extraction Complete:\033[0m \033[3m" << dataset << "\033[0m"<< std::endl; 
+	} 
+	catch (std::runtime_error& error) {
+		std::cerr << "Unable to extract data from " << dataset << ": " << error.what();
+		/* Re-throw the same error. */
+		throw;
 	}
 
 	/* Perform Time Stamp Synchronisation. This performs the linear interpolations of the values — ensuring all values have the same time steps  */
@@ -85,33 +85,35 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 	/* Calculate the measurement values that would correspond to the ground truth range and bearing values. */
 	calculateGroundtruthMeasurement();
 
-	/* Calculate odometry and measurement errors. */
-	for (int i = 0; i < TOTAL_ROBOTS; i++) {
-		/* Calculate the Measurement Error. */
-		robots_[i].calculateMeasurementError();
-		/* Calculate the Error Statistics. */
-		robots_[i].calculateSampleErrorStats();
+	try {
+		/* Calculate odometry and measurement errors. */
+		for (int i = 0; i < TOTAL_ROBOTS; i++) {
+			robots_[i].calculateMeasurementError();
+			robots_[i].calculateSampleErrorStats();
+		}
+	} 
+	catch (std::runtime_error& error) {
+		std::cerr << "Unable to calculate error statistics: " << error.what() << std::endl;
+		throw;
 	}
 }
 
 /**
  * @brief Extracts data from the barcodes data file: Barcodes.dat.
  * @param[in] directory path to the dataset folder.
- * @return a flag indicating whether the barcodes were succesfully extracted from the dataset.
+ * @note If the data could not be extracted from the specified dataset, a std::runtime_error is thrown.
  */
-bool DataHandler::readBarcodes(const std::string& dataset) {
+void DataHandler::readBarcodes(const std::string& dataset) {
 	/* Check that the dataset was specified */
 	if ("" == this->dataset_) {
-		std::cerr << "Please specify a dataset\n";
-		return false;
+		throw std::runtime_error("Dataset not specified. Please specify a dataset at construction of the DataHandler class instance or using DataHandler::setDataSet.");
 	}
 
 	std::string filename = dataset + "/Barcodes.dat";
 	std::ifstream file(filename);
 
 	if (!file.is_open()) {
-		std::cerr << "[ERROR] Unable to open barcodes file:"<< filename << std::endl;
-		return false;
+		throw std::runtime_error("Unable to open barcodes file: " + filename );
 	}
 
 	/* Iterate through file line by line.*/
@@ -128,12 +130,11 @@ bool DataHandler::readBarcodes(const std::string& dataset) {
 		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 		
 		if (i >= TOTAL_BARCODES) {
-			std::cerr << "[ERROR] The number of barcodes read exceeds total number of barcodes specified." << std::endl;
-			return false;
+			throw std::runtime_error("The number of barcodes read exceeds total number of barcodes specified.");
 		}
 
 		if (barcodes_.size() == 0) {
-			std::cerr << "\033[1;32m[ERROR]\033[0m The total number of barcodes was not specified." << std::endl;
+			throw std::runtime_error("The total number of barcodes was not specified.");
 		}
 
 		/* Extract barcodes into barcodes array */
@@ -141,23 +142,20 @@ bool DataHandler::readBarcodes(const std::string& dataset) {
 	}
 
 	file.close();
-
-	return true;
 }
 /**
  * @brief Extracts data from the landmarks data file: Landmark_Groundtruth.dat.
  * @param[in] dataset path to the dataset folder.
- * @return a flag indicating whether the landmarks were succesfully extracted from the dataset.
  * @note DataHandler::readBarcodes needs to be called before this function since this function relies on the barcodes extracted.
+ * @note If the data could not be extracted from the specified dataset, a std::runtime_error is thrown.
  */
-bool DataHandler::readLandmarks(const std::string& dataset) {
+void DataHandler::readLandmarks(const std::string& dataset) {
 
 	std::string filename = dataset + "/Landmark_Groundtruth.dat";
 	std::ifstream file(filename);
 
 	if (!file.is_open()) {
-		std::cerr << "[ERROR] Unable to open Landmarks file:" << filename << std::endl;
-		return false;
+		throw std::runtime_error("Unable to open Landmarks file: " + filename);
 	}
 	/* Iterate through file line by line.*/
 	int i = 0; 
@@ -173,8 +171,7 @@ bool DataHandler::readLandmarks(const std::string& dataset) {
 		line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 		
 		if (i >= TOTAL_LANDMARKS) { 
-			std::cerr << "[ERROR] total read landmarks exceeds TOTAL_LANDMARKS\n";
-			return false;
+			throw std::runtime_error("Total number of read landmarks exceeds TOTAL_LANDMARKS variable.\n");
 		}
 
 		/* Set the landmark's ID */
@@ -184,8 +181,7 @@ bool DataHandler::readLandmarks(const std::string& dataset) {
 
 		/* Ensure that the barcodes have been extracted and set */
 		if (barcodes_[landmarks_[i].id - 1] == 0) { 
-			std::cerr << "[ERROR] Barcodes not correctly set" << std::endl;
-			return false;
+			throw std::runtime_error("An error occured with barcodes extraction, barcodes were not correctly set.");
 		}
 
 		/* Set landmark's barcode */
@@ -213,8 +209,6 @@ bool DataHandler::readLandmarks(const std::string& dataset) {
 	}
 
 	file.close();
-
-	return true;
 }
 
 /**
@@ -224,7 +218,7 @@ bool DataHandler::readLandmarks(const std::string& dataset) {
  * @return a flag indicating whether the groundtruth was succesfully extracted from the dataset.
  * @details The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the Robot::raw states member for a given robot in DataHandler::robots_.
  */
-bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
+void DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the ground truth vector. */
 	robots_[robot_id].raw.states.clear();
 
@@ -234,8 +228,7 @@ bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
 
 	/* Check if the file could be opened */
 	if (!file.is_open()) {
-		std::cerr << "[ERROR] Unable to open Groundtruth file:" << filename << std::endl;
-		return false;
+		throw std::runtime_error("Unable to open groundtruth data file: " + filename) ;
 	}
 
 	/* Loop through each line in the file. */
@@ -275,7 +268,6 @@ bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
 	}
 
 	file.close();
-	return true;
 }
 
 /**
@@ -285,7 +277,7 @@ bool DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
  * @return a flag indicating whether the robot odometry was succesfully extracted from the dataset.
  * @details The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the Robot::raw odometry member for a given robot in DataHandler::robots_.
  */
-bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
+void DataHandler::readOdometry(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the odometry vector. */
 	robots_[robot_id].raw.odometry.clear();
 
@@ -295,8 +287,7 @@ bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
 
 	/* Check if the file could be opened */
 	if (!file.is_open()) {
-		std::cerr << "[ERROR] Unable to open Odometry file:" << filename << std::endl;
-		return false;
+		throw std::runtime_error("Unable to open odometry data file: " + filename);
 	}
 
 	/* Loop through each line in the file. */
@@ -330,7 +321,6 @@ bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
 	}
 
 	file.close();
-	return true;
 }
 
 /**
@@ -341,7 +331,7 @@ bool DataHandler::readOdometry(const std::string& dataset, int robot_id) {
  * @note The data values are tab seperated '\t'.
  * @note Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the DataHandler::syncData function.
  */
-bool DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
+void DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
 	/* Clear all previous elements in the measurement vector. */
 	robots_[robot_id].raw.measurements.clear();
 	robots_[robot_id].synced.measurements.clear();
@@ -352,8 +342,7 @@ bool DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
 
 	/* Check if the file could be opened */
 	if (!file.is_open()) {
-		std::cerr << "[ERROR] Unable to open Measurement file:" << filename << std::endl;
-		return false;
+		throw std::runtime_error("Unable to open measurement data file: " + filename);
 	}
 
 	/* Loop through each line in the file. */
@@ -396,7 +385,6 @@ bool DataHandler::readMeasurements(const std::string& dataset, int robot_id) {
 	}
 	
 	file.close();
-	return true;
 }
 
 /**
@@ -715,25 +703,32 @@ void DataHandler::relativeLandmarkDistance() {
  * @param[in] flag indicates whether the saving of all data was succesfull.
  */
 void DataHandler::saveExtractedData(bool& flag) {
-
 	data_extraction_directory_ = dataset_ + "/data_extraction/";
 	std::filesystem::create_directories(data_extraction_directory_);
 
-	saveStateData(flag);
-	saveOdometryData(flag);
-	saveMeasurementData(flag);
-
-	saveErrorData(flag);
-
 	double bin_size = 0.001;
-	saveOdometryErrorPDF(flag, bin_size);
-	saveMeasurementErrorPDF(flag, bin_size);
 
-	saveRobotErrorStatistics();
-	// relativeLandmarkDistance();
-	// relativeRobotDistance();
 
-	plotExtractedData();
+	try {
+		saveStateData(flag);
+		saveOdometryData(flag);
+		saveMeasurementData(flag);
+
+		saveErrorData(flag);
+
+		saveOdometryErrorPDF(flag, bin_size);
+		saveMeasurementErrorPDF(flag, bin_size);
+
+		saveRobotErrorStatistics();
+		// relativeLandmarkDistance();
+		// relativeRobotDistance();
+		
+		std::cout << "\033[1;32mSaving Extraction " << std::endl;
+	} 
+	catch(std::runtime_error& error) {
+		std::cerr << "Unable to save extracted data: " << error.what() << std::endl;
+		throw;
+	}
 }
 
 /**
