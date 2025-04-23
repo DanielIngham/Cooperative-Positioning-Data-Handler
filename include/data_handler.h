@@ -92,13 +92,13 @@ private:
 	void calculateGroundtruthMeasurement();
 
 	/* Save Dataset Extraction Data */
-	void saveStateData(bool&);
-	void saveOdometryData(bool&);
-	void saveMeasurementData(bool&);
-	void saveErrorData(bool&);
+	void saveStateData();
+	void saveOdometryData();
+	void saveMeasurementData();
+	void saveErrorData();
 
-	void saveOdometryErrorPDF(bool&, double);
-	void saveMeasurementErrorPDF(bool&, double);
+	void saveOdometryErrorPDF(double);
+	void saveMeasurementErrorPDF(double);
 
 	void saveRobotErrorStatistics();
 
@@ -126,7 +126,7 @@ public:
 	int getID(unsigned short int);
 
 	/* Output of Extracted Data */
-	void saveExtractedData(bool&);
+	void saveExtractedData();
 	void plotExtractedData();
 
 };

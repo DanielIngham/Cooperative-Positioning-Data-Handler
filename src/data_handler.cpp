@@ -68,7 +68,7 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 			readMeasurements(dataset, id);
 		}
 
-		std::cout << "\033[1;32m Data Extraction Complete:\033[0m \033[3m" << dataset << "\033[0m"<< std::endl; 
+		std::cout << "\033[1;32mData Extraction Complete:\033[0m \033[3m" << dataset << "\033[0m"<< std::endl; 
 	} 
 	catch (std::runtime_error& error) {
 		std::cerr << "Unable to extract data from " << dataset << ": " << error.what();
@@ -215,7 +215,6 @@ void DataHandler::readLandmarks(const std::string& dataset) {
  * @brief Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
- * @return a flag indicating whether the groundtruth was succesfully extracted from the dataset.
  * @details The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the Robot::raw states member for a given robot in DataHandler::robots_.
  */
 void DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
@@ -274,7 +273,6 @@ void DataHandler::readGroundTruth(const std::string& dataset, int robot_id) {
  * @brief Extracts data from the groundtruth data file: Robotx_Odometry.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
- * @return a flag indicating whether the robot odometry was succesfully extracted from the dataset.
  * @details The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the Robot::raw odometry member for a given robot in DataHandler::robots_.
  */
 void DataHandler::readOdometry(const std::string& dataset, int robot_id) {
@@ -327,7 +325,6 @@ void DataHandler::readOdometry(const std::string& dataset, int robot_id) {
  * @brief Extracts data from the groundtruth data file: Robotx_Measurement.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement will be assigned to.
- * @return a flag indicating whether the robot's measurements was succesfully extracted from the dataset.
  * @note The data values are tab seperated '\t'.
  * @note Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the DataHandler::syncData function.
  */
@@ -700,30 +697,28 @@ void DataHandler::relativeLandmarkDistance() {
 
 /**
  * @brief Saves all the extracted and processed data in the DataHandler class after data extraction and processing.
- * @param[in] flag indicates whether the saving of all data was succesfull.
  */
-void DataHandler::saveExtractedData(bool& flag) {
+void DataHandler::saveExtractedData() {
 	data_extraction_directory_ = dataset_ + "/data_extraction/";
 	std::filesystem::create_directories(data_extraction_directory_);
 
 	double bin_size = 0.001;
 
-
 	try {
-		saveStateData(flag);
-		saveOdometryData(flag);
-		saveMeasurementData(flag);
+		saveStateData();
+		saveOdometryData();
+		saveMeasurementData();
 
-		saveErrorData(flag);
+		saveErrorData();
 
-		saveOdometryErrorPDF(flag, bin_size);
-		saveMeasurementErrorPDF(flag, bin_size);
+		saveOdometryErrorPDF(bin_size);
+		saveMeasurementErrorPDF(bin_size);
 
 		saveRobotErrorStatistics();
 		// relativeLandmarkDistance();
 		// relativeRobotDistance();
 		
-		std::cout << "\033[1;32mSaving Extraction " << std::endl;
+		std::cout << "\033[1;32mSaving Extraction Data Complete:\033[0m " << data_extraction_directory_ << std::endl;
 	} 
 	catch(std::runtime_error& error) {
 		std::cerr << "Unable to save extracted data: " << error.what() << std::endl;
@@ -733,21 +728,20 @@ void DataHandler::saveExtractedData(bool& flag) {
 
 /**
  * @brief Writes the synced (performed by DataHandler::syncData) and raw groundtruth robot state data extracted from the dataset after, which includes its x-coordinate, y-coordinate and heading.
- * @param[in] flag indicates whether saving the groundtruth state data was succesfull.
  */
-void DataHandler::saveStateData(bool& flag) {
+void DataHandler::saveStateData() {
 
 	std::ofstream robot_file;
 	std::string filename = data_extraction_directory_ +  "Groundtruth-State.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("Unable to create file: " + filename);
 	}
 
+	/* Write the file header (# proceeds values for gnuplot to recognise it as a comment) */
 	robot_file << "# Time [s]	x [m]	y [m]	orientation [rad]	Raw (r) / Synced (s)	Robot ID\n";
+
 	/* Loop through the data structures for each robot */
 	for (int id = 0; id < TOTAL_ROBOTS; id++ ) {
 		/* Determine which dataset is larger and set that as the loop iterations */
@@ -768,26 +762,25 @@ void DataHandler::saveStateData(bool& flag) {
 		robot_file << '\n';
 	}
 	robot_file.close();
-
 }
 
 /**
  * @brief Saves the extracted measurement and calculated groundtruth measurement data from the DataHandler class into .dat files to be plotted by gnuplot.
  * @details Saves both the measurement data (as extracted from the dataset) and the calculated groundtruth measurement values (calculated by DataHandler::calculateGroundtruthMeasurement) into Measurement.dat and Groundtruth-Measurement.dat respectively. 
- * @param[in] flag indicates whether the saving of measurement data was succesfull.
  */
-void DataHandler::saveMeasurementData(bool& flag) {
+void DataHandler::saveMeasurementData() {
 
 	std::ofstream robot_file;
 	std::string filename = data_extraction_directory_ + "Measurement.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("[ERROR]: Could not create file: " + filename);
 	}
+
+	/* Write the file header (# proceeds values for gnuplot to recognise it as a comment) */
 	robot_file << "# Time [s]	Subjects	Ranges [m]	Bearings [m]	Raw/Synced/Groundtruth	Robot ID	Landmark(l)/Robot(r)\n";
+
 	/* Save the values of the raw and synced measurment values of a given robot into the same file with the last row indicating 'g' for raw  and 'i' for synced.*/
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 
@@ -835,22 +828,18 @@ void DataHandler::saveMeasurementData(bool& flag) {
 /**
  * @brief Saves the measured odometry data from the DataHandler class into a .dat file to be plotted by gnuplot.
  * @details Saves the odometry data (as extracted from the dataset) into Odometry.dat. 
- * @param[in] flag indicates whether saving the odometry data was succesfull.
  */
-void DataHandler::saveOdometryData(bool& flag) {
+void DataHandler::saveOdometryData() {
 
 	std::ofstream robot_file;
 	std::string filename = data_extraction_directory_ + "Odometry.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("Unable to create file: " + filename);
 	}
 
-
-	/* Write the header file. */
+	/* Write the file header (# proceeds values for gnuplot to recognise it as a comment) */
 	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Raw (r)/Synced(s)/Groundtruth(g)	Robot ID\n";
 
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
@@ -867,6 +856,7 @@ void DataHandler::saveOdometryData(bool& flag) {
 				robot_file << robots_[id].groundtruth.odometry[k].time << '\t' << robots_[id].groundtruth.odometry[k].forward_velocity << '\t' << robots_[id].groundtruth.odometry[k].angular_velocity << '\t' << 'g' << '\t' << id + 1 << '\n';
 			}
 		}
+
 		/* Add two empty lines after robot entires for gnuplot */
 		robot_file << '\n';
 		robot_file << '\n';
@@ -877,21 +867,18 @@ void DataHandler::saveOdometryData(bool& flag) {
 /**
  * @brief Saves calculated error between the measured data (as extracted form the dataset) and the calculated groundtruth values.
  * @details The error between the measured odometry and the calculated groundtruth odometry produced by Robot::calculateOdometryError and the error between the measured measurements and the groundtruth measurements produced bye Robot::calculateMeasurementError is saved into their respective .dat files.
- * @param[in] flag indicates whether saving the odometry and measurement error data was succesfull.
  */
-void DataHandler::saveErrorData(bool& flag) {
+void DataHandler::saveErrorData() {
 
 	std::ofstream robot_file;
 	std::string filename = data_extraction_directory_ + "Odometry-Error.dat";
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("Could not create file: " + filename);
 	}
 
-	/* Write file header. */
+	/* Write the file header (# proceeds values for gnuplot to recognise it as a comment) */
 	robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity [rad/s]	Robot ID\n";
 
 	/* Save the error values of the odometry.*/
@@ -909,12 +896,12 @@ void DataHandler::saveErrorData(bool& flag) {
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("Unable to create file: " + filename);
 	}
 
+	/* Write the file header (# proceeds values for gnuplot to recognise it as a comment) */
 	robot_file << "# Time [s]	Subject	Range [m]	Bearing[rad]	Robot ID\n";
+
 	/* Save the error values of the odometry.*/
 	for (int id = 0; id < TOTAL_ROBOTS ; id ++) {
 
@@ -936,19 +923,17 @@ void DataHandler::saveErrorData(bool& flag) {
  * @param[in] bin_size the size of the bins (denoting the range of values) that odometry measurement values gets grouped into. 
  * @note The bin count is actually the area contribution of the odometry error for a given odometry measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. 
  */
-void DataHandler::saveOdometryErrorPDF(bool& flag, double bin_size) {
+void DataHandler::saveOdometryErrorPDF(double bin_size) {
 	std::string filename = data_extraction_directory_ + "Forward-Velocity-Error-PDF.dat";
 
 	std::ofstream robot_file;
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("Could not create file: " + filename);
 	}
 
-	/* Write the header. */
+	/* Write the file header (# proceeds values for gnuplot to recognise it as a comment) */
 	robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
 	
 	/* Save the plot data for the Forward Velocity Error  */
@@ -978,9 +963,7 @@ void DataHandler::saveOdometryErrorPDF(bool& flag, double bin_size) {
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("Could not create file: " + filename);
 	}
 
 	robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
@@ -1010,20 +993,17 @@ void DataHandler::saveOdometryErrorPDF(bool& flag, double bin_size) {
 
 /**
  * @brief Performs binning on the measurement error for the determination of a discretized Probability Density Function (PDF).
- * @param[in] flag indicates whether saving the measurment error PDF was succesfull.
  * @param[in] bin_size the size of the bins (denoting the range of values) that measurement values gets grouped into. 
  * @note The bin count is actually the area contribution of the odometry error for a given odometry measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. 
  */
-void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
+void DataHandler::saveMeasurementErrorPDF(double bin_size) {
 	std::string filename = data_extraction_directory_ + "Range-Error-PDF.dat";
 
 	std::ofstream robot_file;
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("Could not create file: " + filename);
 	}
 
 	robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
@@ -1060,9 +1040,7 @@ void DataHandler::saveMeasurementErrorPDF(bool& flag, double bin_size) {
 	robot_file.open(filename);
 
 	if (!robot_file.is_open()) {
-		std::cerr << "[ERROR]: Could not create file: " << filename << std::endl;
-		flag = false;
-		return;
+		throw std::runtime_error("Could not create file: " + filename);
 	}
 
 	robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
