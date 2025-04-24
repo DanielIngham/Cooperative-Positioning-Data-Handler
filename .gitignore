@@ -2,4 +2,5 @@ lib
 test/build
 test/data
 core
-data/*/output
+data/*/data_extraction
+
