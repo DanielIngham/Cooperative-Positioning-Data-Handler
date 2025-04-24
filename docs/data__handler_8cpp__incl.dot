@@ -28,11 +28,18 @@ digraph "/home/dan/Code/UTIAS-Multi-Robot/Data-Handler/src/data_handler.cpp"
   Node2 -> Node12 [id="edge11_Node000002_Node000012",color="steelblue1",style="solid",tooltip=" "];
   Node12 [id="Node000012",label="filesystem",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node2 -> Node13 [id="edge12_Node000002_Node000013",color="steelblue1",style="solid",tooltip=" "];
-  Node13 [id="Node000013",label="../include/robot.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$robot_8h.html",tooltip="Header file of the Robot class."];
-  Node13 -> Node9 [id="edge13_Node000013_Node000009",color="steelblue1",style="solid",tooltip=" "];
-  Node13 -> Node7 [id="edge14_Node000013_Node000007",color="steelblue1",style="solid",tooltip=" "];
-  Node13 -> Node4 [id="edge15_Node000013_Node000004",color="steelblue1",style="solid",tooltip=" "];
-  Node2 -> Node14 [id="edge16_Node000002_Node000014",color="steelblue1",style="solid",tooltip=" "];
-  Node14 [id="Node000014",label="../include/landmark.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$landmark_8h.html",tooltip="Header file of the Landmark struct."];
-  Node1 -> Node7 [id="edge17_Node000001_Node000007",color="steelblue1",style="solid",tooltip=" "];
+  Node13 [id="Node000013",label="cstdlib",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node2 -> Node14 [id="edge13_Node000002_Node000014",color="steelblue1",style="solid",tooltip=" "];
+  Node14 [id="Node000014",label="chrono",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node2 -> Node15 [id="edge14_Node000002_Node000015",color="steelblue1",style="solid",tooltip=" "];
+  Node15 [id="Node000015",label="../include/robot.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$robot_8h.html",tooltip="Header file of the Robot class."];
+  Node15 -> Node9 [id="edge15_Node000015_Node000009",color="steelblue1",style="solid",tooltip=" "];
+  Node15 -> Node7 [id="edge16_Node000015_Node000007",color="steelblue1",style="solid",tooltip=" "];
+  Node15 -> Node4 [id="edge17_Node000015_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node15 -> Node6 [id="edge18_Node000015_Node000006",color="steelblue1",style="solid",tooltip=" "];
+  Node15 -> Node16 [id="edge19_Node000015_Node000016",color="steelblue1",style="solid",tooltip=" "];
+  Node16 [id="Node000016",label="numeric",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node15 -> Node10 [id="edge20_Node000015_Node000010",color="steelblue1",style="solid",tooltip=" "];
+  Node2 -> Node17 [id="edge21_Node000002_Node000017",color="steelblue1",style="solid",tooltip=" "];
+  Node17 [id="Node000017",label="../include/landmark.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$landmark_8h.html",tooltip="Header file of the Landmark struct."];
 }

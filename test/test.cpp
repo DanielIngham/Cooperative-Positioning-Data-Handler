@@ -517,8 +517,10 @@ void saveData() {
 
 	for (unsigned short int d = 0; d < TOTAL_DATASETS; d++) {
 		DataHandler data("./data/MRCLAM_Dataset" + std::to_string(d + 1));
-		data.saveExtractedData(flag);
+		data.saveExtractedData();
+		// data.plotExtractedData();
 	}
+
 	flag ? std::cout << "\033[1;32m[U08 PASS]\033[0m Data succesfully saved.\n" : std::cerr << "\033[1;31m[U9 FAIL]\033[0m An error occured saving the data.\n";
 }
 
@@ -662,7 +664,7 @@ int main() {
 	// std::thread unit_test_7(checkSamplingRate);
 	std::thread unit_test_8(saveData);
 	// std::thread unit_test_9(testGroundtruthOdometry);
-	std::thread unit_test_10(checkSyncedSize);
+	// std::thread unit_test_10(checkSyncedSize);
 	
 	// unit_test_1.join();
 	// unit_test_2.join();
@@ -673,7 +675,7 @@ int main() {
 	// unit_test_7.join();
 	unit_test_8.join();
 	// unit_test_9.join();
-	unit_test_10.join();
+	// unit_test_10.join();
 	// checkPDF();
 
 	auto end = std::chrono::high_resolution_clock::now();

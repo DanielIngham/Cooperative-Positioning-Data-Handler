@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['x_0',['x',['../structLandmark.html#a0649276901971922c6bcc30a4c97d63a',1,'Landmark::x'],['../structRobot_1_1State.html#adddbb16607c3b3526365efe439745df2',1,'Robot::State::x']]],
-  ['x_5fstd_5fdev_1',['x_std_dev',['../structLandmark.html#aeba14b448a249d3ea28af0b7097497f7',1,'Landmark']]]
+  ['variance_0',['variance',['../classRobot.html#a694a2a8e56af45932ffc5afb45e56613',1,'Robot']]]
 ];

@@ -122,30 +122,33 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae491399396321214011ca5c86d0d5e6e" id="r_ae491399396321214011ca5c86d0d5e6e"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ae491399396321214011ca5c86d0d5e6e">getNumberOfBarcodes</a> ()</td></tr>
 <tr class="memdesc:ae491399396321214011ca5c86d0d5e6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for the DataHandler::BARCODES field.  <br /></td></tr>
 <tr class="separator:ae491399396321214011ca5c86d0d5e6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae37e377187143c400c6fe3bf82aa81fa" id="r_ae37e377187143c400c6fe3bf82aa81fa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ae37e377187143c400c6fe3bf82aa81fa">getID</a> (int)</td></tr>
-<tr class="memdesc:ae37e377187143c400c6fe3bf82aa81fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches trough the list of barcodes to find the index ID of the robot or landmark.  <br /></td></tr>
-<tr class="separator:ae37e377187143c400c6fe3bf82aa81fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac00a9306bdd2a09410cad7fc4a2203f7" id="r_ac00a9306bdd2a09410cad7fc4a2203f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ac00a9306bdd2a09410cad7fc4a2203f7">saveData</a> (bool &amp;)</td></tr>
-<tr class="memdesc:ac00a9306bdd2a09410cad7fc4a2203f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves all the extracted and processed data in the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class after data extraction and processing.  <br /></td></tr>
-<tr class="separator:ac00a9306bdd2a09410cad7fc4a2203f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6123767a322a5fd166709bd4916b7816" id="r_a6123767a322a5fd166709bd4916b7816"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a6123767a322a5fd166709bd4916b7816">getID</a> (unsigned short int)</td></tr>
+<tr class="memdesc:a6123767a322a5fd166709bd4916b7816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches trough the list of barcodes to find the index ID of the robot or landmark.  <br /></td></tr>
+<tr class="separator:a6123767a322a5fd166709bd4916b7816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1c2354ee32b3c0e96c649506300ec2f" id="r_ac1c2354ee32b3c0e96c649506300ec2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ac1c2354ee32b3c0e96c649506300ec2f">saveExtractedData</a> ()</td></tr>
+<tr class="memdesc:ac1c2354ee32b3c0e96c649506300ec2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves all the extracted and processed data in the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class after data extraction and processing.  <br /></td></tr>
+<tr class="separator:ac1c2354ee32b3c0e96c649506300ec2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf41806a88efa291f4cf0b2ac58908a" id="r_accf41806a88efa291f4cf0b2ac58908a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#accf41806a88efa291f4cf0b2ac58908a">plotExtractedData</a> ()</td></tr>
+<tr class="memdesc:accf41806a88efa291f4cf0b2ac58908a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the GNUplot scripts to save plots related to the extracted data.  <br /></td></tr>
+<tr class="separator:accf41806a88efa291f4cf0b2ac58908a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:abe872b9acd46177aec82b248dacb3fb0" id="r_abe872b9acd46177aec82b248dacb3fb0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#abe872b9acd46177aec82b248dacb3fb0">readBarcodes</a> (const std::string &amp;)</td></tr>
-<tr class="memdesc:abe872b9acd46177aec82b248dacb3fb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the barcodes data file: Barcodes.dat.  <br /></td></tr>
-<tr class="separator:abe872b9acd46177aec82b248dacb3fb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2894967171b3cb9a85a635d828ac6b5d" id="r_a2894967171b3cb9a85a635d828ac6b5d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a2894967171b3cb9a85a635d828ac6b5d">readLandmarks</a> (const std::string &amp;)</td></tr>
-<tr class="memdesc:a2894967171b3cb9a85a635d828ac6b5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the landmarks data file: Landmark_Groundtruth.dat.  <br /></td></tr>
-<tr class="separator:a2894967171b3cb9a85a635d828ac6b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0da2c887ca2d4715d03722d58fe00119" id="r_a0da2c887ca2d4715d03722d58fe00119"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a0da2c887ca2d4715d03722d58fe00119">readGroundTruth</a> (const std::string &amp;, int)</td></tr>
-<tr class="memdesc:a0da2c887ca2d4715d03722d58fe00119"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.  <br /></td></tr>
-<tr class="separator:a0da2c887ca2d4715d03722d58fe00119"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a505750357f67244d7f7d8b24cd728358" id="r_a505750357f67244d7f7d8b24cd728358"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a505750357f67244d7f7d8b24cd728358">readOdometry</a> (const std::string &amp;, int)</td></tr>
-<tr class="memdesc:a505750357f67244d7f7d8b24cd728358"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the groundtruth data file: Robotx_Odometry.dat.  <br /></td></tr>
-<tr class="separator:a505750357f67244d7f7d8b24cd728358"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cf04417a963eeca9ee3a9e3b621f3ec" id="r_a5cf04417a963eeca9ee3a9e3b621f3ec"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a5cf04417a963eeca9ee3a9e3b621f3ec">readMeasurements</a> (const std::string &amp;, int)</td></tr>
-<tr class="memdesc:a5cf04417a963eeca9ee3a9e3b621f3ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the groundtruth data file: Robotx_Measurement.dat.  <br /></td></tr>
-<tr class="separator:a5cf04417a963eeca9ee3a9e3b621f3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa14208d969d119de417608388169ed58" id="r_aa14208d969d119de417608388169ed58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#aa14208d969d119de417608388169ed58">readBarcodes</a> (const std::string &amp;)</td></tr>
+<tr class="memdesc:aa14208d969d119de417608388169ed58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the barcodes data file: Barcodes.dat.  <br /></td></tr>
+<tr class="separator:aa14208d969d119de417608388169ed58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaffb621609a97ecd82da0820c897cad" id="r_adaffb621609a97ecd82da0820c897cad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#adaffb621609a97ecd82da0820c897cad">readLandmarks</a> (const std::string &amp;)</td></tr>
+<tr class="memdesc:adaffb621609a97ecd82da0820c897cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the landmarks data file: Landmark_Groundtruth.dat.  <br /></td></tr>
+<tr class="separator:adaffb621609a97ecd82da0820c897cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a053359b5ac1ae982c471228ceb60adae" id="r_a053359b5ac1ae982c471228ceb60adae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a053359b5ac1ae982c471228ceb60adae">readGroundTruth</a> (const std::string &amp;, int)</td></tr>
+<tr class="memdesc:a053359b5ac1ae982c471228ceb60adae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.  <br /></td></tr>
+<tr class="separator:a053359b5ac1ae982c471228ceb60adae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af02dfeca8e73dccc3d0288d358edb9fc" id="r_af02dfeca8e73dccc3d0288d358edb9fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#af02dfeca8e73dccc3d0288d358edb9fc">readOdometry</a> (const std::string &amp;, int)</td></tr>
+<tr class="memdesc:af02dfeca8e73dccc3d0288d358edb9fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the groundtruth data file: Robotx_Odometry.dat.  <br /></td></tr>
+<tr class="separator:af02dfeca8e73dccc3d0288d358edb9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fa0e569a5642ca0ea5b1ce84d89b11c" id="r_a7fa0e569a5642ca0ea5b1ce84d89b11c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a7fa0e569a5642ca0ea5b1ce84d89b11c">readMeasurements</a> (const std::string &amp;, int)</td></tr>
+<tr class="memdesc:a7fa0e569a5642ca0ea5b1ce84d89b11c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts data from the groundtruth data file: Robotx_Measurement.dat.  <br /></td></tr>
+<tr class="separator:a7fa0e569a5642ca0ea5b1ce84d89b11c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe8ebc3776653a1a55a3caa9ef0c1f7f" id="r_abe8ebc3776653a1a55a3caa9ef0c1f7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f">syncData</a> (const double &amp;)</td></tr>
 <tr class="memdesc:abe8ebc3776653a1a55a3caa9ef0c1f7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Syncs the time steps for the extracted data according to the specified sampling period.  <br /></td></tr>
 <tr class="separator:abe8ebc3776653a1a55a3caa9ef0c1f7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,24 +158,27 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a1d3466847c92c0252729186cf54735ef" id="r_a1d3466847c92c0252729186cf54735ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a1d3466847c92c0252729186cf54735ef">calculateGroundtruthMeasurement</a> ()</td></tr>
 <tr class="memdesc:a1d3466847c92c0252729186cf54735ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the ground truth measurements for a given robot.  <br /></td></tr>
 <tr class="separator:a1d3466847c92c0252729186cf54735ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a482008ec45d2af860141430f06f2562f" id="r_a482008ec45d2af860141430f06f2562f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a482008ec45d2af860141430f06f2562f">saveStateData</a> (bool &amp;)</td></tr>
-<tr class="memdesc:a482008ec45d2af860141430f06f2562f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the synced (performed by <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a>) and raw groundtruth robot state data extracted from the dataset after, which includes its x-coordinate, y-coordinate and heading.  <br /></td></tr>
-<tr class="separator:a482008ec45d2af860141430f06f2562f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46e41590bad51155973228885affe741" id="r_a46e41590bad51155973228885affe741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a46e41590bad51155973228885affe741">saveOdometryData</a> (bool &amp;)</td></tr>
-<tr class="memdesc:a46e41590bad51155973228885affe741"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the measured odometry data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into a .dat file to be plotted by gnuplot.  <br /></td></tr>
-<tr class="separator:a46e41590bad51155973228885affe741"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0a2e15b54286c000e784fbe5749d0c7" id="r_ad0a2e15b54286c000e784fbe5749d0c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ad0a2e15b54286c000e784fbe5749d0c7">saveMeasurementData</a> (bool &amp;)</td></tr>
-<tr class="memdesc:ad0a2e15b54286c000e784fbe5749d0c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the extracted measurement and calculated groundtruth measurement data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into .dat files to be plotted by gnuplot.  <br /></td></tr>
-<tr class="separator:ad0a2e15b54286c000e784fbe5749d0c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc2b584881e85912ca1a432bf86bc34d" id="r_acc2b584881e85912ca1a432bf86bc34d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#acc2b584881e85912ca1a432bf86bc34d">saveErrorData</a> (bool &amp;)</td></tr>
-<tr class="memdesc:acc2b584881e85912ca1a432bf86bc34d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves calculated error between the measured data (as extracted form the dataset) and the calculated groundtruth values.  <br /></td></tr>
-<tr class="separator:acc2b584881e85912ca1a432bf86bc34d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33a47075c7f312c02263708e5d9695f3" id="r_a33a47075c7f312c02263708e5d9695f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a33a47075c7f312c02263708e5d9695f3">saveOdometryErrorPDF</a> (bool &amp;, double)</td></tr>
-<tr class="memdesc:a33a47075c7f312c02263708e5d9695f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF).  <br /></td></tr>
-<tr class="separator:a33a47075c7f312c02263708e5d9695f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8081109e71d978ccfb09596b9b20b8d" id="r_af8081109e71d978ccfb09596b9b20b8d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#af8081109e71d978ccfb09596b9b20b8d">saveMeasurementErrorPDF</a> (bool &amp;, double)</td></tr>
-<tr class="memdesc:af8081109e71d978ccfb09596b9b20b8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the measurement error for the determination of a discretized Probability Density Function (PDF).  <br /></td></tr>
-<tr class="separator:af8081109e71d978ccfb09596b9b20b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcf0108de94cdd9b986c06c2d9bf1d1b" id="r_adcf0108de94cdd9b986c06c2d9bf1d1b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#adcf0108de94cdd9b986c06c2d9bf1d1b">saveStateData</a> ()</td></tr>
+<tr class="memdesc:adcf0108de94cdd9b986c06c2d9bf1d1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the synced (performed by <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a>) and raw groundtruth robot state data extracted from the dataset after, which includes its x-coordinate, y-coordinate and heading.  <br /></td></tr>
+<tr class="separator:adcf0108de94cdd9b986c06c2d9bf1d1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02ddc17bbff7ae0a54bd2be2932d8574" id="r_a02ddc17bbff7ae0a54bd2be2932d8574"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a02ddc17bbff7ae0a54bd2be2932d8574">saveOdometryData</a> ()</td></tr>
+<tr class="memdesc:a02ddc17bbff7ae0a54bd2be2932d8574"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the measured odometry data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into a .dat file to be plotted by gnuplot.  <br /></td></tr>
+<tr class="separator:a02ddc17bbff7ae0a54bd2be2932d8574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae017941f3f166dc85c4dcb1c54588c17" id="r_ae017941f3f166dc85c4dcb1c54588c17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ae017941f3f166dc85c4dcb1c54588c17">saveMeasurementData</a> ()</td></tr>
+<tr class="memdesc:ae017941f3f166dc85c4dcb1c54588c17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the extracted measurement and calculated groundtruth measurement data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into .dat files to be plotted by gnuplot.  <br /></td></tr>
+<tr class="separator:ae017941f3f166dc85c4dcb1c54588c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74b3af53854d30f7a058fff74426c0c3" id="r_a74b3af53854d30f7a058fff74426c0c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a74b3af53854d30f7a058fff74426c0c3">saveErrorData</a> ()</td></tr>
+<tr class="memdesc:a74b3af53854d30f7a058fff74426c0c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves calculated error between the measured data (as extracted form the dataset) and the calculated groundtruth values.  <br /></td></tr>
+<tr class="separator:a74b3af53854d30f7a058fff74426c0c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e72fad87a3ac47dec2956c1118b2941" id="r_a7e72fad87a3ac47dec2956c1118b2941"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a7e72fad87a3ac47dec2956c1118b2941">saveOdometryErrorPDF</a> (double)</td></tr>
+<tr class="memdesc:a7e72fad87a3ac47dec2956c1118b2941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF).  <br /></td></tr>
+<tr class="separator:a7e72fad87a3ac47dec2956c1118b2941"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5da3bb3fb0bf8791c50103f743c36e8f" id="r_a5da3bb3fb0bf8791c50103f743c36e8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a5da3bb3fb0bf8791c50103f743c36e8f">saveMeasurementErrorPDF</a> (double)</td></tr>
+<tr class="memdesc:a5da3bb3fb0bf8791c50103f743c36e8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the measurement error for the determination of a discretized Probability Density Function (PDF).  <br /></td></tr>
+<tr class="separator:a5da3bb3fb0bf8791c50103f743c36e8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44a6564ad7dce49b4eeb5a8f1a5d8f08" id="r_a44a6564ad7dce49b4eeb5a8f1a5d8f08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a44a6564ad7dce49b4eeb5a8f1a5d8f08">saveRobotErrorStatistics</a> ()</td></tr>
+<tr class="memdesc:a44a6564ad7dce49b4eeb5a8f1a5d8f08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the sample mean and sample variance of the measured odometry and tracking data for each robot.  <br /></td></tr>
+<tr class="separator:a44a6564ad7dce49b4eeb5a8f1a5d8f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aceeae17f8c300f0c82f55de7567bb583" id="r_aceeae17f8c300f0c82f55de7567bb583"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#aceeae17f8c300f0c82f55de7567bb583">relativeRobotDistance</a> ()</td></tr>
 <tr class="memdesc:aceeae17f8c300f0c82f55de7567bb583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the relative distance of robots from an ego robot and saves the data.  <br /></td></tr>
 <tr class="separator:aceeae17f8c300f0c82f55de7567bb583"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -185,9 +191,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:aed9b3567fa755a3111aeaecf841aa924" id="r_aed9b3567fa755a3111aeaecf841aa924"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#aed9b3567fa755a3111aeaecf841aa924">dataset_</a> = &quot;&quot;</td></tr>
 <tr class="memdesc:aed9b3567fa755a3111aeaecf841aa924"><td class="mdescLeft">&#160;</td><td class="mdescRight">Folder location for the dataset.  <br /></td></tr>
 <tr class="separator:aed9b3567fa755a3111aeaecf841aa924"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10da302af9e09e16272ca5ca1085ae57" id="r_a10da302af9e09e16272ca5ca1085ae57"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a10da302af9e09e16272ca5ca1085ae57">output_directory_</a> = &quot;&quot;</td></tr>
-<tr class="memdesc:a10da302af9e09e16272ca5ca1085ae57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Folder location for the output data.  <br /></td></tr>
-<tr class="separator:a10da302af9e09e16272ca5ca1085ae57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e0978f08d26d8dfb30453b62c9e3bfc" id="r_a6e0978f08d26d8dfb30453b62c9e3bfc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a6e0978f08d26d8dfb30453b62c9e3bfc">data_extraction_directory_</a> = &quot;&quot;</td></tr>
+<tr class="memdesc:a6e0978f08d26d8dfb30453b62c9e3bfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Folder location for the output data.  <br /></td></tr>
+<tr class="separator:a6e0978f08d26d8dfb30453b62c9e3bfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab78d2ee79468cdc819f039cc850ce0d5" id="r_ab78d2ee79468cdc819f039cc850ce0d5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#ab78d2ee79468cdc819f039cc850ce0d5">sampling_period_</a> = 0.2</td></tr>
 <tr class="memdesc:ab78d2ee79468cdc819f039cc850ce0d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">the desired sample period for resampling the data to sync the timesteps between the vehicles.  <br /></td></tr>
 <tr class="separator:ab78d2ee79468cdc819f039cc850ce0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -357,8 +363,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae37e377187143c400c6fe3bf82aa81fa" name="ae37e377187143c400c6fe3bf82aa81fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae37e377187143c400c6fe3bf82aa81fa">&#9670;&#160;</a></span>getID()</h2>
+<a id="a6123767a322a5fd166709bd4916b7816" name="a6123767a322a5fd166709bd4916b7816"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6123767a322a5fd166709bd4916b7816">&#9670;&#160;</a></span>getID()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -366,7 +372,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">int DataHandler::getID </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">unsigned short int&#160;</td>
           <td class="paramname"><em>barcode</em></td><td>)</td>
           <td></td>
         </tr>
@@ -512,8 +518,27 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
 
 </div>
 </div>
-<a id="abe872b9acd46177aec82b248dacb3fb0" name="abe872b9acd46177aec82b248dacb3fb0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe872b9acd46177aec82b248dacb3fb0">&#9670;&#160;</a></span>readBarcodes()</h2>
+<a id="accf41806a88efa291f4cf0b2ac58908a" name="accf41806a88efa291f4cf0b2ac58908a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf41806a88efa291f4cf0b2ac58908a">&#9670;&#160;</a></span>plotExtractedData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::plotExtractedData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs the GNUplot scripts to save plots related to the extracted data. </p>
+
+</div>
+</div>
+<a id="aa14208d969d119de417608388169ed58" name="aa14208d969d119de417608388169ed58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa14208d969d119de417608388169ed58">&#9670;&#160;</a></span>readBarcodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -522,7 +547,7 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool DataHandler::readBarcodes </td>
+          <td class="memname">void DataHandler::readBarcodes </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>dataset</em></td><td>)</td>
@@ -543,12 +568,12 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the barcodes were succesfully extracted from the dataset. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>If the data could not be extracted from the specified dataset, a std::runtime_error is thrown. </dd></dl>
 
 </div>
 </div>
-<a id="a0da2c887ca2d4715d03722d58fe00119" name="a0da2c887ca2d4715d03722d58fe00119"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0da2c887ca2d4715d03722d58fe00119">&#9670;&#160;</a></span>readGroundTruth()</h2>
+<a id="a053359b5ac1ae982c471228ceb60adae" name="a053359b5ac1ae982c471228ceb60adae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a053359b5ac1ae982c471228ceb60adae">&#9670;&#160;</a></span>readGroundTruth()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -557,7 +582,7 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool DataHandler::readGroundTruth </td>
+          <td class="memname">void DataHandler::readGroundTruth </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>dataset</em>, </td>
@@ -585,17 +610,16 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot for which the extracted measurement will be assigned to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot for which the extracted measurement will be assigned to.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the groundtruth was succesfully extracted from the dataset.</dd></dl>
-<p>The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the <a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588" title="struct containing vectors related to the robot data files.">Robot::raw</a> states member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
+<p>The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the <a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588" title="Vectors related to the robot data.">Robot::raw</a> states member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
 
 </div>
 </div>
-<a id="a2894967171b3cb9a85a635d828ac6b5d" name="a2894967171b3cb9a85a635d828ac6b5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2894967171b3cb9a85a635d828ac6b5d">&#9670;&#160;</a></span>readLandmarks()</h2>
+<a id="adaffb621609a97ecd82da0820c897cad" name="adaffb621609a97ecd82da0820c897cad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adaffb621609a97ecd82da0820c897cad">&#9670;&#160;</a></span>readLandmarks()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -604,7 +628,7 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool DataHandler::readLandmarks </td>
+          <td class="memname">void DataHandler::readLandmarks </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>dataset</em></td><td>)</td>
@@ -625,13 +649,14 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the landmarks were succesfully extracted from the dataset. </dd></dl>
-<dl class="section note"><dt>Note</dt><dd><a class="el" href="classDataHandler.html#abe872b9acd46177aec82b248dacb3fb0" title="Extracts data from the barcodes data file: Barcodes.dat.">DataHandler::readBarcodes</a> needs to be called before this function since this function relies on the barcodes extracted. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd><a class="el" href="classDataHandler.html#aa14208d969d119de417608388169ed58" title="Extracts data from the barcodes data file: Barcodes.dat.">DataHandler::readBarcodes</a> needs to be called before this function since this function relies on the barcodes extracted. </dd>
+<dd>
+If the data could not be extracted from the specified dataset, a std::runtime_error is thrown. </dd></dl>
 
 </div>
 </div>
-<a id="a5cf04417a963eeca9ee3a9e3b621f3ec" name="a5cf04417a963eeca9ee3a9e3b621f3ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5cf04417a963eeca9ee3a9e3b621f3ec">&#9670;&#160;</a></span>readMeasurements()</h2>
+<a id="a7fa0e569a5642ca0ea5b1ce84d89b11c" name="a7fa0e569a5642ca0ea5b1ce84d89b11c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fa0e569a5642ca0ea5b1ce84d89b11c">&#9670;&#160;</a></span>readMeasurements()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -640,7 +665,7 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool DataHandler::readMeasurements </td>
+          <td class="memname">void DataHandler::readMeasurements </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>dataset</em>, </td>
@@ -672,15 +697,14 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the robot's measurements was succesfully extracted from the dataset. </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The data values are tab seperated '\t'. </dd>
 <dd>
 Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a> function. </dd></dl>
 
 </div>
 </div>
-<a id="a505750357f67244d7f7d8b24cd728358" name="a505750357f67244d7f7d8b24cd728358"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a505750357f67244d7f7d8b24cd728358">&#9670;&#160;</a></span>readOdometry()</h2>
+<a id="af02dfeca8e73dccc3d0288d358edb9fc" name="af02dfeca8e73dccc3d0288d358edb9fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af02dfeca8e73dccc3d0288d358edb9fc">&#9670;&#160;</a></span>readOdometry()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -689,7 +713,7 @@ Grouping of measurements with the same time stamps does not occur during the rea
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool DataHandler::readOdometry </td>
+          <td class="memname">void DataHandler::readOdometry </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>dataset</em>, </td>
@@ -717,12 +741,11 @@ Grouping of measurements with the same time stamps does not occur during the rea
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>path to the dataset folder. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot for which the extracted measurement will be assigned to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">robot_id</td><td>the ID of the robot for which the extracted measurement will be assigned to.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>a flag indicating whether the robot odometry was succesfully extracted from the dataset.</dd></dl>
-<p>The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the <a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588" title="struct containing vectors related to the robot data files.">Robot::raw</a> odometry member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
+<p>The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the <a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588" title="Vectors related to the robot data.">Robot::raw</a> odometry member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
 
 </div>
 </div>
@@ -750,7 +773,7 @@ Grouping of measurements with the same time stamps does not occur during the rea
 </div><div class="memdoc">
 
 <p>Calculates the relative distance of the landmarks from an ego robot and saves the data. </p>
-<p>The relative distance between the landmarks and the ego robot is calculated using the landmarks and groundtruth state values extracted from the dataset for each landmark and the ego robot respectively. </p><dl class="section note"><dt>Note</dt><dd>this is only for robot 1 at this stage. </dd></dl>
+<p>The relative distance between the landmarks and the ego robot is calculated using the landmarks and groundtruth state values extracted from the dataset for each landmark and the ego robot respectively. </p><dl class="section note"><dt>Note</dt><dd>This is only for robot 1 at this stage. </dd></dl>
 
 </div>
 </div>
@@ -778,38 +801,12 @@ Grouping of measurements with the same time stamps does not occur during the rea
 </div><div class="memdoc">
 
 <p>Calculates the relative distance of robots from an ego robot and saves the data. </p>
-<p>The relative distance between robots and the ego robot is calculated using the groundtruth state values extracted from the dataset for each robot. </p><dl class="section note"><dt>Note</dt><dd>this is only for robot 1 at this stage. </dd></dl>
+<p>The relative distance between robots and the ego robot is calculated using the groundtruth state values extracted from the dataset for each robot. </p><dl class="section note"><dt>Note</dt><dd>This is only for robot 1 at this stage. </dd></dl>
 
 </div>
 </div>
-<a id="ac00a9306bdd2a09410cad7fc4a2203f7" name="ac00a9306bdd2a09410cad7fc4a2203f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac00a9306bdd2a09410cad7fc4a2203f7">&#9670;&#160;</a></span>saveData()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void DataHandler::saveData </td>
-          <td>(</td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>flag</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Saves all the extracted and processed data in the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class after data extraction and processing. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether the saving of all data was succesfull. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="acc2b584881e85912ca1a432bf86bc34d" name="acc2b584881e85912ca1a432bf86bc34d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc2b584881e85912ca1a432bf86bc34d">&#9670;&#160;</a></span>saveErrorData()</h2>
+<a id="a74b3af53854d30f7a058fff74426c0c3" name="a74b3af53854d30f7a058fff74426c0c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74b3af53854d30f7a058fff74426c0c3">&#9670;&#160;</a></span>saveErrorData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -820,8 +817,7 @@ Grouping of measurements with the same time stamps does not occur during the rea
         <tr>
           <td class="memname">void DataHandler::saveErrorData </td>
           <td>(</td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -833,17 +829,31 @@ Grouping of measurements with the same time stamps does not occur during the rea
 </div><div class="memdoc">
 
 <p>Saves calculated error between the measured data (as extracted form the dataset) and the calculated groundtruth values. </p>
-<p>The error between the measured odometry and the calculated groundtruth odometry produced by <a class="el" href="classRobot.html#a8d9b81c0a6d74fb930de1f097e5d6be4" title="Calculates the absolute error between the groundtruth odometry values and the values measured.">Robot::calculateOdometryError</a> and the error between the measured measurements and the groundtruth measurements produced bye <a class="el" href="classRobot.html#a4a5c0633e46aa43edca4bd835fd9dcfd">Robot::calculateMeasurementError</a> is saved into their respective .dat files. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the odometry and measurement error data was succesfull. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>The error between the measured odometry and the calculated groundtruth odometry produced by Robot::calculateOdometryError and the error between the measured measurements and the groundtruth measurements produced bye <a class="el" href="classRobot.html#a4a5c0633e46aa43edca4bd835fd9dcfd" title="Calculates the absolute error between the groundtruth measurements input odometry and measurement val...">Robot::calculateMeasurementError</a> is saved into their respective .dat files. </p>
 
 </div>
 </div>
-<a id="ad0a2e15b54286c000e784fbe5749d0c7" name="ad0a2e15b54286c000e784fbe5749d0c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0a2e15b54286c000e784fbe5749d0c7">&#9670;&#160;</a></span>saveMeasurementData()</h2>
+<a id="ac1c2354ee32b3c0e96c649506300ec2f" name="ac1c2354ee32b3c0e96c649506300ec2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1c2354ee32b3c0e96c649506300ec2f">&#9670;&#160;</a></span>saveExtractedData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveExtractedData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Saves all the extracted and processed data in the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class after data extraction and processing. </p>
+
+</div>
+</div>
+<a id="ae017941f3f166dc85c4dcb1c54588c17" name="ae017941f3f166dc85c4dcb1c54588c17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae017941f3f166dc85c4dcb1c54588c17">&#9670;&#160;</a></span>saveMeasurementData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -854,8 +864,7 @@ Grouping of measurements with the same time stamps does not occur during the rea
         <tr>
           <td class="memname">void DataHandler::saveMeasurementData </td>
           <td>(</td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -867,17 +876,12 @@ Grouping of measurements with the same time stamps does not occur during the rea
 </div><div class="memdoc">
 
 <p>Saves the extracted measurement and calculated groundtruth measurement data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into .dat files to be plotted by gnuplot. </p>
-<p>Saves both the measurement data (as extracted from the dataset) and the calculated groundtruth measurement values (calculated by <a class="el" href="classDataHandler.html#a1d3466847c92c0252729186cf54735ef" title="Calculates the ground truth measurements for a given robot.">DataHandler::calculateGroundtruthMeasurement</a>) into Measurement.dat and Groundtruth-Measurement.dat respectively. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether the saving of measurement data was succesfull. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Saves both the measurement data (as extracted from the dataset) and the calculated groundtruth measurement values (calculated by <a class="el" href="classDataHandler.html#a1d3466847c92c0252729186cf54735ef" title="Calculates the ground truth measurements for a given robot.">DataHandler::calculateGroundtruthMeasurement</a>) into Measurement.dat and Groundtruth-Measurement.dat respectively. </p>
 
 </div>
 </div>
-<a id="af8081109e71d978ccfb09596b9b20b8d" name="af8081109e71d978ccfb09596b9b20b8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8081109e71d978ccfb09596b9b20b8d">&#9670;&#160;</a></span>saveMeasurementErrorPDF()</h2>
+<a id="a5da3bb3fb0bf8791c50103f743c36e8f" name="a5da3bb3fb0bf8791c50103f743c36e8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5da3bb3fb0bf8791c50103f743c36e8f">&#9670;&#160;</a></span>saveMeasurementErrorPDF()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -888,19 +892,9 @@ Grouping of measurements with the same time stamps does not occur during the rea
         <tr>
           <td class="memname">void DataHandler::saveMeasurementErrorPDF </td>
           <td>(</td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>flag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>bin_size</em>&#160;</td>
-        </tr>
-        <tr>
+          <td class="paramname"><em>bin_size</em></td><td>)</td>
           <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -913,7 +907,6 @@ Grouping of measurements with the same time stamps does not occur during the rea
 <p>Performs binning on the measurement error for the determination of a discretized Probability Density Function (PDF). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the measurment error PDF was succesfull. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bin_size</td><td>the size of the bins (denoting the range of values) that measurement values gets grouped into. </td></tr>
   </table>
   </dd>
@@ -922,8 +915,8 @@ Grouping of measurements with the same time stamps does not occur during the rea
 
 </div>
 </div>
-<a id="a46e41590bad51155973228885affe741" name="a46e41590bad51155973228885affe741"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a46e41590bad51155973228885affe741">&#9670;&#160;</a></span>saveOdometryData()</h2>
+<a id="a02ddc17bbff7ae0a54bd2be2932d8574" name="a02ddc17bbff7ae0a54bd2be2932d8574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02ddc17bbff7ae0a54bd2be2932d8574">&#9670;&#160;</a></span>saveOdometryData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -934,8 +927,7 @@ Grouping of measurements with the same time stamps does not occur during the rea
         <tr>
           <td class="memname">void DataHandler::saveOdometryData </td>
           <td>(</td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -947,17 +939,12 @@ Grouping of measurements with the same time stamps does not occur during the rea
 </div><div class="memdoc">
 
 <p>Saves the measured odometry data from the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class into a .dat file to be plotted by gnuplot. </p>
-<p>Saves the odometry data (as extracted from the dataset) into Odometry.dat. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the odometry data was succesfull. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Saves the odometry data (as extracted from the dataset) into Odometry.dat. </p>
 
 </div>
 </div>
-<a id="a33a47075c7f312c02263708e5d9695f3" name="a33a47075c7f312c02263708e5d9695f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a33a47075c7f312c02263708e5d9695f3">&#9670;&#160;</a></span>saveOdometryErrorPDF()</h2>
+<a id="a7e72fad87a3ac47dec2956c1118b2941" name="a7e72fad87a3ac47dec2956c1118b2941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e72fad87a3ac47dec2956c1118b2941">&#9670;&#160;</a></span>saveOdometryErrorPDF()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -968,19 +955,9 @@ Grouping of measurements with the same time stamps does not occur during the rea
         <tr>
           <td class="memname">void DataHandler::saveOdometryErrorPDF </td>
           <td>(</td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>flag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>bin_size</em>&#160;</td>
-        </tr>
-        <tr>
+          <td class="paramname"><em>bin_size</em></td><td>)</td>
           <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -1002,8 +979,35 @@ Grouping of measurements with the same time stamps does not occur during the rea
 
 </div>
 </div>
-<a id="a482008ec45d2af860141430f06f2562f" name="a482008ec45d2af860141430f06f2562f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a482008ec45d2af860141430f06f2562f">&#9670;&#160;</a></span>saveStateData()</h2>
+<a id="a44a6564ad7dce49b4eeb5a8f1a5d8f08" name="a44a6564ad7dce49b4eeb5a8f1a5d8f08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44a6564ad7dce49b4eeb5a8f1a5d8f08">&#9670;&#160;</a></span>saveRobotErrorStatistics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DataHandler::saveRobotErrorStatistics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Saves the sample mean and sample variance of the measured odometry and tracking data for each robot. </p>
+
+</div>
+</div>
+<a id="adcf0108de94cdd9b986c06c2d9bf1d1b" name="adcf0108de94cdd9b986c06c2d9bf1d1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcf0108de94cdd9b986c06c2d9bf1d1b">&#9670;&#160;</a></span>saveStateData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1014,8 +1018,7 @@ Grouping of measurements with the same time stamps does not occur during the rea
         <tr>
           <td class="memname">void DataHandler::saveStateData </td>
           <td>(</td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -1027,12 +1030,6 @@ Grouping of measurements with the same time stamps does not occur during the rea
 </div><div class="memdoc">
 
 <p>Writes the synced (performed by <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a>) and raw groundtruth robot state data extracted from the dataset after, which includes its x-coordinate, y-coordinate and heading. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the groundtruth state data was succesfull. </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
@@ -1072,7 +1069,7 @@ Grouping of measurements with the same time stamps does not occur during the rea
 </dl>
 <dl class="section note"><dt>Note</dt><dd>All datasets in the UTIAS Multi-robot Localisation and mapping dataset have the same number of landmarks and robots. Therefore, if the dataset directory is provided, it is assumed that the number of landmarks and robots will be 5 and 15 respectively. The number of barcodes is the summation and these two values. </dd>
 <dd>
-The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: <a class="el" href="classDataHandler.html#abe872b9acd46177aec82b248dacb3fb0" title="Extracts data from the barcodes data file: Barcodes.dat.">DataHandler::readBarcodes</a>, <a class="el" href="classDataHandler.html#a2894967171b3cb9a85a635d828ac6b5d" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataHandler::readLandmarks</a>, <a class="el" href="classDataHandler.html#a0da2c887ca2d4715d03722d58fe00119" title="Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.">DataHandler::readGroundTruth</a>, <a class="el" href="classDataHandler.html#a505750357f67244d7f7d8b24cd728358" title="Extracts data from the groundtruth data file: Robotx_Odometry.dat.">DataHandler::readOdometry</a>, and <a class="el" href="classDataHandler.html#a5cf04417a963eeca9ee3a9e3b621f3ec" title="Extracts data from the groundtruth data file: Robotx_Measurement.dat.">DataHandler::readMeasurements</a>. Additionally, the <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a> function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps. </dd></dl>
+The function only checks the existence of the given datset folder. The data extraction is performed by calling the functions: <a class="el" href="classDataHandler.html#aa14208d969d119de417608388169ed58" title="Extracts data from the barcodes data file: Barcodes.dat.">DataHandler::readBarcodes</a>, <a class="el" href="classDataHandler.html#adaffb621609a97ecd82da0820c897cad" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataHandler::readLandmarks</a>, <a class="el" href="classDataHandler.html#a053359b5ac1ae982c471228ceb60adae" title="Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.">DataHandler::readGroundTruth</a>, <a class="el" href="classDataHandler.html#af02dfeca8e73dccc3d0288d358edb9fc" title="Extracts data from the groundtruth data file: Robotx_Odometry.dat.">DataHandler::readOdometry</a>, and <a class="el" href="classDataHandler.html#a7fa0e569a5642ca0ea5b1ce84d89b11c" title="Extracts data from the groundtruth data file: Robotx_Measurement.dat.">DataHandler::readMeasurements</a>. Additionally, the <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a> function is called to resample to data points through linear interpolation to ensure all robots have the same time stamps. </dd></dl>
 
 </div>
 </div>
@@ -1134,7 +1131,31 @@ The function only checks the existence of the given datset folder. The data extr
 
 <p>List of all barcodes corresponding to the robots and landmarks. </p>
 <dl class="section note"><dt>Note</dt><dd>The index of the element in the array corresponds to its ID minus one.</dd></dl>
-<p>The list of barcodes corresponding to both the robots and the landmarks exctracted from the 'Barcodes.dat' file. The UTIAS dataset contains 20 barcodes: 5 robots and 15 landmarks. All barcodes are initialised to 0. Since none of the barcodes have a value of 0, this will be used as a check by <a class="el" href="classDataHandler.html#a2894967171b3cb9a85a635d828ac6b5d" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataHandler::readLandmarks</a> to see if all the barcodes were correctly set. </p>
+<p>The list of barcodes corresponding to both the robots and the landmarks exctracted from the 'Barcodes.dat' file. The UTIAS dataset contains 20 barcodes: 5 robots and 15 landmarks. All barcodes are initialised to 0. Since none of the barcodes have a value of 0, this will be used as a check by <a class="el" href="classDataHandler.html#adaffb621609a97ecd82da0820c897cad" title="Extracts data from the landmarks data file: Landmark_Groundtruth.dat.">DataHandler::readLandmarks</a> to see if all the barcodes were correctly set. </p>
+
+</div>
+</div>
+<a id="a6e0978f08d26d8dfb30453b62c9e3bfc" name="a6e0978f08d26d8dfb30453b62c9e3bfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e0978f08d26d8dfb30453b62c9e3bfc">&#9670;&#160;</a></span>data_extraction_directory_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string DataHandler::data_extraction_directory_ = &quot;&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Folder location for the output data. </p>
 
 </div>
 </div>
@@ -1183,30 +1204,6 @@ The function only checks the existence of the given datset folder. The data extr
 </div><div class="memdoc">
 
 <p>All landmarks containing all the data extracted form "Landmarks.dat". </p>
-
-</div>
-</div>
-<a id="a10da302af9e09e16272ca5ca1085ae57" name="a10da302af9e09e16272ca5ca1085ae57"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a10da302af9e09e16272ca5ca1085ae57">&#9670;&#160;</a></span>output_directory_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string DataHandler::output_directory_ = &quot;&quot;</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Folder location for the output data. </p>
 
 </div>
 </div>
