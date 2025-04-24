@@ -58,6 +58,11 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 	this->landmarks_.resize(TOTAL_LANDMARKS); 
 	this->robots_.resize(TOTAL_ROBOTS);
 
+	/* Set the robot ID */
+	for (unsigned short int id = 0; id < TOTAL_ROBOTS; id++) {
+		robots_[id].id = id + 1;
+	}
+
 	try {
 		/* Perform data extraction in the directory */
 		readBarcodes(dataset);
@@ -432,12 +437,17 @@ void DataHandler::syncData(const double& sample_period) {
 	}
 	
 	maximum_time -= minimum_time;
+	unsigned long int time_steps = std::floor(maximum_time/sample_period) + 1;
 
 	/* Linear Interpolation. This section performs linear interpolation on the ground truth and odometry values to ensure that all robots have syncronised time steps. */
 	for (int id = 0; id < TOTAL_ROBOTS; id++) {
 		/* Clear all previously interpolated values */
 		robots_[id].groundtruth.states.clear();
+		robots_[id].groundtruth.states.reserve(time_steps);
+
 		robots_[id].synced.odometry.clear();
+		robots_[id].synced.odometry.reserve(time_steps);
+
 		robots_[id].synced.measurements.clear();
 
 		auto groundtruth_iterator = robots_[id].raw.states.begin();
