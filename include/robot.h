@@ -7,20 +7,19 @@
 #ifndef INCLUDE_INCLUDE_ROBOT_H_
 #define INCLUDE_INCLUDE_ROBOT_H_
 
-#include <vector>	// std::vector
-#include <stdexcept>	// std::runtime_error
-#include <string>	// std::string
+#include <algorithm>	// std::sort
+#include <cmath>	// std::atan2
 #include <iostream>	// std::cout
 #include <numeric>	// std::accumulate
-#include <cmath>	// std::atan2
-#include <numeric>	// std::accumulate
+#include <stdexcept>	// std::runtime_error
+#include <string>	// std::string
+#include <vector>	// std::vector
 
 /**
  * @class Robot
  * @brief Houses all data and functionality related to a given robot in a multi-robot localisation environment
  */
 class Robot {
-private:
 public:
 	Robot();
 	Robot(Robot &&) = default;
@@ -104,9 +103,15 @@ public:
 	 * @brief Error statistics used by filters for inference.
 	 * @details It is often assumed that all errors are caussed by white Gaussian distributed noise, which forms the foundation for the devolopment of Bayesian filtering. For this reason, the robots noise statistics are calculated.
 	 */
-	struct {
-		double mean = 0.0;		///< The sample mean of the error. 
-		double variance = 0.0;///< The sample standard deviation of the error. 
+	struct ErrorStatistics {
+		double mean = 0.0;	///< The sample mean of the error. 
+		double variance = 0.0;	///< The sample standard deviation of the error. 
+
+		double median = 0.0;	///< The sample median of the error.
+		double q1 = 0.0;	///< The first quartile.
+		double q3 = 0.0;	///< The third quartile.
+		double iqr = 0.0;	///< Inter Quartile Range.
+
 	} range_error,		///< Error associated with the range measurements.
 	bearing_error,		///< Error associated with the bearing measurements.
 	forward_velocity_error,	///< Error associated with the forward velocity input.
@@ -116,6 +121,12 @@ public:
 
 	void calculateSampleErrorStats();
 
+	void removeOutliers();
+
+private:
+	unsigned long int calculateMedian(const unsigned long int,const unsigned long int);
+	void calculateQuartiles(const std::vector<double>&, ErrorStatistics&);
+	void setQuartiles();
 
 };
 
