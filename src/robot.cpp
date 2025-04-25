@@ -104,7 +104,7 @@ void Robot::calculateMeasurementError() {
 		}
 	}
 
-	// removeOutliers();
+	removeOutliers();
 }
 
 /**
@@ -208,29 +208,33 @@ void Robot::calculateQuartiles(const std::vector<double> &sorted_vector, Robot::
 
 	/* Calculate the first and third quartiles. */
 	if (0 == sorted_vector.size() % 2) {
-		error_statistics.q1 = sorted_vector[calculateMedian(0, index)];
-		error_statistics.q3 =
-		sorted_vector[calculateMedian(index + 1, sorted_vector.size() - 1)];
+		error_statistics.q1 = sorted_vector.at(calculateMedian(0, index));
+		error_statistics.q3 = sorted_vector.at(calculateMedian(index + 1, sorted_vector.size() - 1));
 	} 
 	else {
-		error_statistics.q1 = sorted_vector[calculateMedian(0, index - 1)];
-		error_statistics.q3 =
-		sorted_vector[calculateMedian(index + 1, sorted_vector.size())];
+		error_statistics.q1 = sorted_vector.at(calculateMedian(0, index - 1));
+		error_statistics.q3 = sorted_vector.at(calculateMedian(index + 1, sorted_vector.size()));
 	}
 	/* Calculate the Inter-quartile range using quartile 1 and 3. */
 	error_statistics.iqr = error_statistics.q3 - error_statistics.q1;
 }
+
 /**
- * @brief Sets the quartiles for the forward and angular velcoties as well as
- * the range and bearing.
+ * @brief Sets the quartiles for the forward and angular velcoties as well as the range and bearing.
  */
 void Robot::setQuartiles() {
 	/* Extract the data into seperate vectors to be sorted. */
-	std::vector<double> forward_velocity(this->error.odometry.size());
-	std::vector<double> angular_velocity(this->error.odometry.size());
+	std::vector<double> forward_velocity;
+	forward_velocity.reserve(this->error.odometry.size());
 
-	std::vector<double> range_errors(this->raw.measurements.size());
-	std::vector<double> bearing_errors(this->raw.measurements.size());
+	std::vector<double> angular_velocity;
+	angular_velocity.reserve(this->error.odometry.size());
+
+	std::vector<double> range_errors;
+	range_errors.reserve(this->raw.measurements.size());
+
+	std::vector<double> bearing_errors;
+	bearing_errors.reserve(this->raw.measurements.size());
 
 	for (auto odometry : this->error.odometry) {
 		forward_velocity.push_back(odometry.forward_velocity);
@@ -253,8 +257,7 @@ void Robot::setQuartiles() {
 	std::sort(range_errors.begin(), range_errors.end());
 	std::sort(bearing_errors.begin(), bearing_errors.end());
 
-	/* Set the median, first quartile, third quartile, and inter-quartile range.
-	*/
+	/* Set the median, first quartile, third quartile, and inter-quartile range. */
 	calculateQuartiles(forward_velocity, this->forward_velocity_error);
 	calculateQuartiles(angular_velocity, this->angular_velocity_error);
 	calculateQuartiles(range_errors, this->range_error);
@@ -266,13 +269,14 @@ void Robot::removeOutliers() {
 
 	/* The Odometry Data does noth have significant outliers present for datasets 1-8 */
 	/* Remove Measurement Outliers */
+	std::cout << "Robot " << this->id << std::endl;
 	for (auto error_measurement_iterator = this->error.measurements.begin(); error_measurement_iterator != this->error.measurements.end();) {
 
-		double range_lower_bound = this->range_error.q1 - 1500 * this->range_error.iqr;
-		double range_upper_bound = this->range_error.q3 + 1500 * this->range_error.iqr;
+		double range_lower_bound = this->range_error.q1 - 10 * this->range_error.iqr;
+		double range_upper_bound = this->range_error.q3 + 10 * this->range_error.iqr;
 
-		double bearing_lower_bound = this->bearing_error.q1 - 1500 * this->bearing_error.iqr;
-		double bearing_upper_bound = this->bearing_error.q3 + 1500 * this->bearing_error.iqr;
+		double bearing_lower_bound = this->bearing_error.q1 - 20 * this->bearing_error.iqr;
+		double bearing_upper_bound = this->bearing_error.q3 + 20 * this->bearing_error.iqr;
 
 		auto subjects_iterator = error_measurement_iterator->subjects.begin();
 		auto ranges_iterator = error_measurement_iterator->ranges.begin();
@@ -281,14 +285,8 @@ void Robot::removeOutliers() {
 		for (; subjects_iterator != error_measurement_iterator->subjects.end();) {
 
 
-			// if (*ranges_iterator < range_lower_bound || *ranges_iterator > range_upper_bound ||
-			  // *bearings_iterator < bearing_lower_bound || *bearings_iterator > bearing_upper_bound) {
-			if (*ranges_iterator > 2 || *bearings_iterator > 1.5) {
-
-				if (*ranges_iterator < range_lower_bound || *ranges_iterator > range_upper_bound ) 
-					std::cout << this->id << " " << "Removed Range: " << *ranges_iterator << std::endl;
-				if (*bearings_iterator < bearing_lower_bound || *bearings_iterator > bearing_upper_bound)
-					std::cout << this->id << " " << "Removed Bearing: " << *bearings_iterator << std::endl;
+			if (*ranges_iterator < range_lower_bound || *ranges_iterator > range_upper_bound ||
+			  *bearings_iterator < bearing_lower_bound || *bearings_iterator > bearing_upper_bound) {
 
 				subjects_iterator = error_measurement_iterator->subjects.erase(subjects_iterator);
 				ranges_iterator = error_measurement_iterator->ranges.erase(ranges_iterator);
