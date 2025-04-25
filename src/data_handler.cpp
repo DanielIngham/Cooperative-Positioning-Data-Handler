@@ -7,6 +7,7 @@
  */
 
 #include "../include/data_handler.h"
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -1207,6 +1208,9 @@ std::vector<int>& DataHandler::getBarcodes() {
  *
  */
 void DataHandler::plotExtractedData() {
+	/* Start the Timer */
+	auto start = std::chrono::high_resolution_clock::now();
+
 	std::string plots_directory = data_extraction_directory_ + "plots/";
 
 	/* TODO: Check if the data extraction directory exists */
@@ -1280,6 +1284,11 @@ void DataHandler::plotExtractedData() {
 	if (ret != 0) {
 		throw std::runtime_error("Gnuplot failed with code: " + std::to_string(ret));
 	}
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+	std::cout << "\033[1;32mData Plotting Complete:\033[0m \033[3m" << plots_directory << "\033[0m [" << duration.count() << " ms]" << std::endl; 
 }
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the robot or landmark.
