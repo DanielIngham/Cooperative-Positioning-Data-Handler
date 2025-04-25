@@ -41,4 +41,14 @@ do for [i=1:5] {
 
 	unset multiplot
 	unset output
+	
+
+	####################
+	# Plotting xy coordinates 
+	# alongside landmarks
+	####################
+	set output sprintf(plots_folder . "/State/Robot-%d-Position.pdf" , i)
+	plot \
+		data_folder . "/Groundtruth-State.dat" index (i-1) using (stringcolumn(5) eq "s" ? $2 : 1/0):(stringcolumn(5) eq "s" ? $3 : 1/0) with linespoints pointsize 0.1 title "Robot Coordinate",\
+		data_folder . "/landmarks.dat" using 3:4 with points pointsize 1.0 pointtype 6 title "Landmarks"
 }
