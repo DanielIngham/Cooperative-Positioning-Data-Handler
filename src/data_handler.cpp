@@ -7,6 +7,9 @@
  */
 
 #include "../include/data_handler.h"
+#include <filesystem>
+#include <fstream>
+#include <stdexcept>
 
 /**
  * @brief Default constructor.
@@ -737,6 +740,8 @@ void DataHandler::saveExtractedData() {
 		saveMeasurementErrorPDF(bin_size);
 
 		saveRobotErrorStatistics();
+
+		saveLandmarks();
 		
 		// relativeLandmarkDistance();
 		// relativeRobotDistance();
@@ -1148,7 +1153,7 @@ void DataHandler::saveRobotErrorStatistics() {
 		std::ofstream file(filename);
 
 		if (!file.is_open()) {
-			throw std::runtime_error("[ERROR] Unable to create file:  " + filename);
+			throw std::runtime_error(" Unable to create file:  " + filename);
 		}
 
 		/* Write file header. */
@@ -1165,6 +1170,26 @@ void DataHandler::saveRobotErrorStatistics() {
 		file.close();
 	}
 }
+
+void DataHandler::saveLandmarks() {
+	std::string filename = data_extraction_directory_ + "/landmarks.dat";
+
+	if (!std::filesystem::exists(filename)) {
+		std::ofstream file(filename);
+
+		if (!file.is_open()) {
+			throw std::runtime_error("Unable to create file: " + filename);
+		}
+
+		file << "# ID	Barcode	x-coordinate [m]	y-coordinate [m]	x std-dev [m]	y std-dev [m]\n";
+		for (unsigned short int id = 0; id < TOTAL_LANDMARKS; id++) {
+			file << landmarks_[id].id << '\t' << landmarks_[id].barcode << '\t' << landmarks_[id].x << '\t' << landmarks_[id].y << '\t' << landmarks_[id].x_std_dev << '\t' << landmarks_[id].y_std_dev << '\n';
+		}
+
+		file.close();
+	}
+}
+
 /**
  * @brief Getter for the array of Barcodes.
  * @return a reference the barcodes integer vector extracted from the barcodes data file: Barcodes.dat.

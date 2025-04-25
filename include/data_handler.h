@@ -29,6 +29,31 @@
  * @details The class extracts the textfile dataset form UTIAS multi-robot localisation and mapping dataset into three members: DataHandler::barcodes_, DataHandler::landmarks_, and DataHandler::robots_. 
  */
 class DataHandler {
+public:
+	/* Constructors */
+	DataHandler(); 
+	explicit DataHandler(const std::string&, const double& sampling_period = 0.02);
+
+	/* Setters */
+	void setDataSet(const std::string&, const double& sampling_period = 0.02);
+
+	/* Getters */
+	std::vector<int>& getBarcodes();
+	std::vector<Landmark>& getLandmarks();
+	std::vector<Robot>& getRobots();
+
+	double getSamplePeriod();
+
+	unsigned short int getNumberOfRobots();
+	unsigned short int getNumberOfLandmarks();
+	unsigned short int getNumberOfBarcodes();
+
+	int getID(unsigned short int);
+
+	/* Output of Extracted Data */
+	void saveExtractedData();
+	void plotExtractedData();
+
 private:
 	/**
 	 * @brief Folder location for the dataset.
@@ -102,34 +127,10 @@ private:
 	void saveMeasurementErrorPDF(double);
 
 	void saveRobotErrorStatistics();
+	void saveLandmarks();
 
 	void relativeRobotDistance();
 	void relativeLandmarkDistance();
-public:
-	/* Constructors */
-	DataHandler(); 
-	explicit DataHandler(const std::string&, const double& sampling_period = 0.02);
-
-	/* Setters */
-	void setDataSet(const std::string&, const double& sampling_period = 0.02);
-
-	/* Getters */
-	std::vector<int>& getBarcodes();
-	std::vector<Landmark>& getLandmarks();
-	std::vector<Robot>& getRobots();
-
-	double getSamplePeriod();
-
-	unsigned short int getNumberOfRobots();
-	unsigned short int getNumberOfLandmarks();
-	unsigned short int getNumberOfBarcodes();
-
-	int getID(unsigned short int);
-
-	/* Output of Extracted Data */
-	void saveExtractedData();
-	void plotExtractedData();
-
 };
 
 #endif  // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_
