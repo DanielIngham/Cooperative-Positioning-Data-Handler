@@ -269,7 +269,6 @@ void Robot::removeOutliers() {
 
 	/* The Odometry Data does noth have significant outliers present for datasets 1-8 */
 	/* Remove Measurement Outliers */
-	std::cout << "Robot " << this->id << std::endl;
 	for (auto error_measurement_iterator = this->error.measurements.begin(); error_measurement_iterator != this->error.measurements.end();) {
 
 		double range_lower_bound = this->range_error.q1 - 10 * this->range_error.iqr;
