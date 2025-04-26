@@ -43,8 +43,19 @@ void Simulator::setSimulation(const unsigned long int data_points, double sample
 	this->landmarks_ = &landmarks;
 	this->barcodes_ = &barcodes;
 
+	assignVectorMemory();
 	setBarcodes();
 	setLandmarks();
+	setRobots();
+}
+/**
+ * @brief Assigns the memory sizes for the vectors to be populated by the simulator.
+ */
+void Simulator::assignVectorMemory() {
+	for (unsigned short id = 0; id < this->total_robots; id++) {
+		(*robots_)[id].groundtruth.states.reserve(this->data_points_);
+		(*robots_)[id].synced.odometry.reserve(this->data_points_);
+	}
 }
 
 /**
@@ -75,24 +86,22 @@ void Simulator::setLandmarks() {
 		/* Set the variance for each landmark */ 
 		(*landmarks_)[i].x_std_dev = deviation(generator);
 		(*landmarks_)[i].y_std_dev = deviation(generator);
-
-		std::cout << "Landmark " << (*landmarks_)[i].id<< ": " << (*landmarks_)[i].x_std_dev << ", " << (*landmarks_)[i].y_std_dev << std::endl;
 	}
 
 	/* Generate random x, y, angle and radius functions */
-	std::uniform_real_distribution<double> disc_x(0, this->limits_.width);
-	std::uniform_real_distribution<double> disc_y(0, this->limits_.height);
+	std::uniform_real_distribution<double> position_x(0, this->limits_.width);
+	std::uniform_real_distribution<double> position_y(0, this->limits_.height);
 	
 	/* Set the first landmark with a random x,y coordinate pair. */
-	(*landmarks_)[0].x = disc_x(generator);
-	(*landmarks_)[0].y = disc_y(generator);
+	(*landmarks_)[0].x = position_x(generator);
+	(*landmarks_)[0].y = position_y(generator);
 
-	for (unsigned short int i = 1; i < this->total_landmarks; i++) {
+	for (unsigned short i = 1; i < this->total_landmarks; i++) {
 		/* Generate a random coordinate for the landmark*/
-		(*landmarks_)[i].x = disc_x(generator);
-		(*landmarks_)[i].y = disc_y(generator);
+		(*landmarks_)[i].x = position_x(generator);
+		(*landmarks_)[i].y = position_y(generator);
 
-		for (unsigned short int j = 0; i < j; i++) {
+		for (unsigned short j = 0; i < j; j++) {
 
 			/* Check that the new point is far enough away from other points randomly choosen. */
 			double x_difference = (*landmarks_)[i].x - (*landmarks_)[j].x;
@@ -108,3 +117,110 @@ void Simulator::setLandmarks() {
 	}
 }
 
+void Simulator::setRobots() {
+	/* Random Setup and seeding. */
+	std::random_device rd;
+	std::mt19937 generator(rd());
+
+	/* Set all the robot ID's and variance robots */
+	std::uniform_real_distribution<double> forward_velocity_error(this->variance.forward_velocity[MIN], this->variance.forward_velocity[MAX]);
+	std::uniform_real_distribution<double> angular_velocity_error(this->variance.angular_velocity[MIN], this->variance.angular_velocity[MAX]);
+
+	std::uniform_real_distribution<double> range_error(this->variance.range[MIN], this->variance.range[MAX]);
+	std::uniform_real_distribution<double> bearing_error(this->variance.bearing[MIN], this->variance.bearing[MAX]);
+
+	for (unsigned short id = 0; id < this->total_robots; id++) {
+		(*robots_)[id].id = id + 1;
+
+		(*robots_)[id].forward_velocity_error.variance = forward_velocity_error(generator);
+		(*robots_)[id].angular_velocity_error.variance = angular_velocity_error(generator);
+
+		(*robots_)[id].range_error.variance = range_error(generator);
+		(*robots_)[id].bearing_error.variance = bearing_error(generator);
+
+		std::cout << "Robot " << (*robots_)[id].id << ": F=" << (*robots_)[id].forward_velocity_error.variance << ", A=" << (*robots_)[id].angular_velocity_error.variance << ", R=" << (*robots_)[id].range_error.variance << ", B=" <<(*robots_)[id].bearing_error.variance << std::endl;
+	}
+
+	/* Set up random function for x and y position to fall within 1 metre of the simulation limits. */
+	std::uniform_real_distribution<double> position_x(1, this->limits_.width - 1);
+	std::uniform_real_distribution<double> position_y(1, this->limits_.height -1);
+	std::uniform_real_distribution<double> orienation(-M_PI, M_PI);
+
+	/* Set the initial value for the robot 1 state. */
+	bool unique;
+	do {
+		unique = true;
+
+		(*robots_)[0].groundtruth.states.insert((*robots_)[0].groundtruth.states.begin(), Robot::State(
+			0,
+			position_x(generator),
+			position_y(generator),
+			orienation(generator)
+		));
+
+		for (auto landmark :  (*landmarks_)) {
+			/* Check that the new point is far enough away from other points randomly choosen. */
+			double x_difference = landmark.x - (*robots_)[0].groundtruth.states.front().x;
+			double y_difference = landmark.y - (*robots_)[0].groundtruth.states.front().y;
+			double distance = std::sqrt(x_difference*x_difference + y_difference*y_difference);
+
+			/* If the point generated is too close to other points, restart the process. */
+			if (distance < 2.0) {
+				unique = false;
+				break;
+			}
+		}
+	}
+	while (!unique);
+
+	/* Set the initial values up for the remaining robots. */
+	for (unsigned short id = 1; id < this->total_robots; id++) {
+
+		unique = true;
+		(*robots_)[id].groundtruth.states.insert((*robots_)[id].groundtruth.states.begin(), Robot::State(
+			0,
+			position_x(generator),
+			position_y(generator),
+			orienation(generator)
+		));
+
+		/* Check that the position is far enough away from other robots */
+		for (unsigned short j = 0; j < id; j++) {
+
+			/* Check that the new point is far enough away from other points randomly choosen. */
+			double x_difference = (*robots_)[id].groundtruth.states.front().x - (*robots_)[j].groundtruth.states.front().x ;
+			double y_difference = (*robots_)[id].groundtruth.states.front().y - (*robots_)[j].groundtruth.states.front().y ;
+			double distance = std::sqrt(x_difference*x_difference + y_difference*y_difference);
+
+			/* If the point generated is too close to other points, restart the process. */
+			if (distance < 1.0) {
+				id--;
+				unique = false;
+				break;
+			}
+		}
+
+		/* If the robot position is too close to other robots, there is no need to check the other landmarks since the position will need to be updated anyway. */
+		if (false == unique) {
+			continue;
+		}
+
+		for (auto landmark :  (*landmarks_)) {
+			/* Check that the new point is far enough away from other points randomly choosen. */
+			double x_difference = landmark.x - (*robots_)[id].groundtruth.states.front().x;
+			double y_difference = landmark.y - (*robots_)[id].groundtruth.states.front().y;
+			double distance = std::sqrt(x_difference*x_difference + y_difference*y_difference);
+
+			/* If the point generated is too close to other points, restart the process. */
+			if (distance < 2.0) {
+				id--;
+				break;
+			}
+		}
+	}
+
+	std::cout << "+++++ ROBOT POSITIONS+++++" << std::endl;
+	for (auto robot : (*robots_)) {
+		std::cout << "Robot " <<  robot.id << ": x=" << robot.groundtruth.states.front().x << ", y=" << robot.groundtruth.states.front().y << std::endl; 
+	}
+}

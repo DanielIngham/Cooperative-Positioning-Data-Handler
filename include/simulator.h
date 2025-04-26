@@ -95,11 +95,13 @@ private:
 		double range[2] = {0.0162, 0.45};
 		double bearing[2] = {0.00062, 0.00596};
 
-		double landmarks[2] = {0.00004964, 0.00041465};
+		double landmarks[2] = {0.00004964, 0.00041465};	///< Standard Deviation of the landmarks (not the variance).
 	} variance;
 
+	void assignVectorMemory();
 	void setBarcodes();
 	void setLandmarks();
+	void setRobots();
 };
 
 
