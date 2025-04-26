@@ -7,9 +7,13 @@
  */
 
 #include "../include/simulator.h"
-#include <cmath>
-#include <random>
 
+
+/**
+ * @brief Default constructor.
+ */
+Simulator::Simulator() {
+}
 /*
  * @brief Default destructor.
  */
@@ -17,103 +21,90 @@ Simulator::~Simulator() {
 }
 
 /**
- * @brief constructor which populates the data for the robots and landmarks.
+ * @brief Constructor which populates the data for the robots and landmarks.
  */
-Simulator::Simulator(const unsigned long int data_points, double sample_period, std::vector<Robot>& robots, std::vector<Landmark>& landmarks): data_points_(data_points), sample_period_(sample_period), robots_(robots), landmarks_(landmarks) {
-	
+Simulator::Simulator(const unsigned long int data_points, double sample_period, std::vector<Robot>& robots, std::vector<Landmark>& landmarks,  std::vector<unsigned short int>& barcodes): data_points_(data_points) ,sample_period_(sample_period), robots_(&robots), landmarks_(&landmarks), barcodes_(&barcodes) {
+
+	setSimulation(data_points_, sample_period_, robots, landmarks, barcodes);
 }
 
-double Simulator::distance(const Point& a, const Point& b) {
-	float x_difference = a.x - b.x;
-	float y_difference = a.y - b.y;
-	return std::sqrt(x_difference * x_difference + y_difference * y_difference);
+/**
+ * @brief Populates the robots and landmarks with simulated values.
+ */
+void Simulator::setSimulation(const unsigned long int data_points, double sample_period, std::vector<Robot>& robots, std::vector<Landmark>& landmarks, std::vector<unsigned short int>& barcodes) {
+	this->data_points_ = data_points;
+	this->sample_period_ = sample_period;
+
+	this->total_landmarks = landmarks.size();
+	this->total_robots = robots.size();
+	this->total_barcodes = this->total_landmarks + this->total_robots;
+
+	this->robots_ = &robots;
+	this->landmarks_ = &landmarks;
+	this->barcodes_ = &barcodes;
+
+	setBarcodes();
+	setLandmarks();
 }
+
+/**
+ * @brief Sets the barcodes for each of the robots and landmarks. 
+ * @note The barcodes set in the simulator are the same as the ID. The only reason the barcodes are set at all is for compatability with the original UTIAS multirobot localisation and mapping dataset. 
+ */
+void Simulator::setBarcodes() {
+	for (unsigned short int id = 0; id < total_barcodes; id++) {
+		(*barcodes_)[id] = id + 1;
+	}
+}
+
 /**
  * @brief Sets the x and y coordinate of the landmarks provided.
- * @details Uses the Bridson algorithm to uniformly assign coordinates to landmarks in the simulation area.
  */
 void Simulator::setLandmarks() {
-	const unsigned short int k = 30U;
-
-	/* Steup Grid */
-	double r = 1.0f;
-	double cell_size = r / std::sqrt(2);
-	unsigned int grid_width = std::ceil(this->limits_.width / cell_size);
-	unsigned int grid_height = std::ceil(this->limits_.height / cell_size);
-
-	/* Initialise Data Structors */
-	std::vector<Point> grid(grid_width * grid_height, {-1, 1});
-	std::vector<Point> process_list;
-	std::vector<Point> samples;
 
 	/* Random Setup and seeding. */
 	std::random_device rd;
 	std::mt19937 generator(rd());
+	
+	std::uniform_real_distribution<double> deviation(this->variance.landmarks[MIN], this->variance.landmarks[MAX]);
+	
+	for (unsigned short int i = 0; i < this->total_landmarks; i++) {
+		
+		/* Set the ID for each Landmark */
+		(*landmarks_)[i].id = this->total_robots + (i + 1);
+		/* Set the variance for each landmark */ 
+		(*landmarks_)[i].x_std_dev = deviation(generator);
+		(*landmarks_)[i].y_std_dev = deviation(generator);
+
+		std::cout << "Landmark " << (*landmarks_)[i].id<< ": " << (*landmarks_)[i].x_std_dev << ", " << (*landmarks_)[i].y_std_dev << std::endl;
+	}
 
 	/* Generate random x, y, angle and radius functions */
 	std::uniform_real_distribution<double> disc_x(0, this->limits_.width);
 	std::uniform_real_distribution<double> disc_y(0, this->limits_.height);
-	std::uniform_real_distribution<double> disc_angle(0, 2 * M_PI);
-	std::uniform_real_distribution<double> disc_radius(r, 2*r);
+	
+	/* Set the first landmark with a random x,y coordinate pair. */
+	(*landmarks_)[0].x = disc_x(generator);
+	(*landmarks_)[0].y = disc_y(generator);
 
-	/* Initial Point */
-	Point first = {disc_x(generator), disc_y(generator)};
-	process_list.push_back(first);
-	samples.push_back(first);
-	grid[(int)(first.y / cell_size) * grid_width + (int)(first.x / cell_size)] = first;
+	for (unsigned short int i = 1; i < this->total_landmarks; i++) {
+		/* Generate a random coordinate for the landmark*/
+		(*landmarks_)[i].x = disc_x(generator);
+		(*landmarks_)[i].y = disc_y(generator);
 
-	/* Keep expanding until no more valid points can be added. */
-	while(!process_list.empty()) {
-		/* Choose a random point from the processList to try and place points around it. */
-		int index = std::uniform_int_distribution<>(0, process_list.size() - 1)(generator);
-		Point p = process_list[index];
+		for (unsigned short int j = 0; i < j; i++) {
 
-		bool found = false;
+			/* Check that the new point is far enough away from other points randomly choosen. */
+			double x_difference = (*landmarks_)[i].x - (*landmarks_)[j].x;
+			double y_difference = (*landmarks_)[i].y - (*landmarks_)[j].y;
+			double distance = std::sqrt(x_difference*x_difference + y_difference*y_difference);
 
-		/* Try to add new points around the choosen point. */
-		for (unsigned int i = 0; i < k; ++i) {
-			float angle = disc_angle(generator);
-			float radius = disc_radius(generator);
-
-			Point newP = {
-				p.x + radius * std::cos(angle),
-				p.y + radius * std::sin(angle)
-			};
-
-			/* Skip if the new point falls outside the limits of the simulation. */
-			if (newP.x < 0 || newP.y < 0 || newP.x >= this->limits_.width || newP.y >= this->limits_.height) 
-				continue;
-			
-
-			int gx = newP.x / cell_size;
-			int gy = newP.y / cell_size;
-			bool tooClose = false;
-
-			for (int dx = -2;  dx <= 2; ++dx) {
-				for (int dy = -2; dy <= 2; ++dy) {
-					int nx = gx + dx;
-					int ny = gy + dy;
-
-					if (nx < 0 || ny < 0 || nx >= grid_width || ny >= grid_height) 
-						continue;
-					
-					Point neighbour = grid[ny * grid_width + nx];
-
-					if (neighbour.x != -1 && distance(newP, neighbour) < r) {
-						tooClose = true;
-						break;
-					}
-				}
-
-				if (tooClose) 
-					break;
-				
-			}
-			
-			if (!tooClose) {
-				process_list.push_back(newP);
-				samples.push_back(newP);
+			/* If the point generated is too close to other points, restart the process. */
+			if (distance < 2.0) {
+				i--;
+				break;
 			}
 		}
 	}
 }
+
