@@ -515,7 +515,7 @@ void checkSamplingRate() {
 void saveData() {
 	bool flag = true;
 
-	for (unsigned short int d = 0; d < TOTAL_DATASETS; d++) {
+	for (unsigned short int d = 2; d < 3; d++) {
 		DataHandler data("./data/MRCLAM_Dataset" + std::to_string(d + 1));
 		data.saveExtractedData();
 		// data.plotExtractedData();
@@ -650,6 +650,14 @@ void checkSyncedSize() {
 	flag ? std::cout << "\033[1;32m [U10 PASS]\033[0m All Robots have the same sized synced vectors." << std::endl : std::cerr << "\031[1;33m [U10 FAIL]\033[0m All Robots do not have the same sized synced vectors." << std::endl;
 }
 
+void checkSimulation() {
+	// bool flag = true;
+
+	DataHandler data;
+
+	data.setSimulation(200, 0.02, 5U, 15U);
+}
+
 int main() {
 	auto start = std::chrono::high_resolution_clock::now();
 	std::cout<< "\033[1;36mUNIT TESTING\033[0m" <<std::endl;
@@ -662,7 +670,7 @@ int main() {
 	// std::thread unit_test_5(checkMeasurementExtraction);
 	// std::thread unit_test_6(testInterpolation);
 	// std::thread unit_test_7(checkSamplingRate);
-	std::thread unit_test_8(saveData);
+	// std::thread unit_test_8(saveData);
 	// std::thread unit_test_9(testGroundtruthOdometry);
 	// std::thread unit_test_10(checkSyncedSize);
 	
@@ -673,10 +681,11 @@ int main() {
 	// unit_test_5.join();
 	// unit_test_6.join();
 	// unit_test_7.join();
-	unit_test_8.join();
+	// unit_test_8.join();
 	// unit_test_9.join();
 	// unit_test_10.join();
 	// checkPDF();
+	checkSimulation();
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(end-start);
