@@ -7,21 +7,22 @@
 #ifndef INCLUDE_INCLUDE_DATA_HANDLER_H_
 #define INCLUDE_INCLUDE_DATA_HANDLER_H_
 
-#include <fstream>	// std::ifstream
-#include <string>	// std::string
 #include <algorithm>	// std::remove_if and std::find
+#include <chrono>	// std::chrono
+#include <cmath>	// std::floor
+#include <cstdlib>	// system
+#include <filesystem>	// std::filesystem
+#include <fstream>	// std::ifstream
 #include <iostream>	// std::cout
+#include <string>	// std::string
 #include <stdexcept>	// std::runtime_error
 #include <sys/stat.h>	// std::stat
-#include <vector>	// std::vector
-#include <cmath>	// std::floor
 #include <unordered_map>// std::unordered_map
-#include <filesystem>	// std::filesystem
-#include <cstdlib>	// system
-#include <chrono>	// std::chrono
+#include <vector>	// std::vector
 
-#include "../include/robot.h"
-#include "../include/landmark.h"
+#include "landmark.h"
+#include "robot.h"
+#include "simulator.h"
 
 /**
  * @class DataHandler
@@ -33,14 +34,16 @@ public:
 	/* Constructors */
 	DataHandler(); 
 	explicit DataHandler(const std::string&, const double& sampling_period = 0.02);
+	DataHandler(const unsigned long int, double , const unsigned short, const unsigned short);
 
 	/* Setters */
 	void setDataSet(const std::string&, const double& sampling_period = 0.02);
+	void setSimulation(unsigned long int, double, const unsigned short , const unsigned short);
 
 	/* Getters */
-	std::vector<int>& getBarcodes();
 	std::vector<Landmark>& getLandmarks();
 	std::vector<Robot>& getRobots();
+	std::vector<unsigned short int>& getBarcodes();
 
 	double getSamplePeriod();
 
@@ -70,28 +73,23 @@ private:
 	 */
 	double sampling_period_ = 0.2;
 
-	/**
-	 * @brief the total number of barcodes in the dataset. 
-	 * @note the value of this variable is the summation of the DataHandler::TOTAL_LANDMARKS and DataHandler::TOTAL_ROBOTS.
-	 */
-	unsigned short int TOTAL_BARCODES = 0;
 
 	/**
 	 * @brief The total number of landmarks in the dataset.
 	 */
-	unsigned short int TOTAL_LANDMARKS = 0;
+	unsigned short int total_landmarks = 0;
 
 	/**
 	 * @brief The total number of robots in the dataset.
 	 */
-	unsigned short int TOTAL_ROBOTS = 0;
+	unsigned short int total_robots = 0;
 
 	/**
-	 * @brief  List of all barcodes corresponding to the robots and landmarks. 
-	 * @note The index of the element in the array corresponds to its ID minus one.
-	 * @details The list of barcodes corresponding to both the robots and the landmarks exctracted from the 'Barcodes.dat' file. The UTIAS dataset contains 20 barcodes: 5 robots and 15 landmarks. All barcodes are initialised to 0. Since none of the barcodes have a value of 0, this will be used as a check by DataHandler::readLandmarks to see if all the barcodes were correctly set.
+	 * @brief the total number of barcodes in the dataset. 
+	 * @note the value of this variable is the summation of the DataHandler::TOTAL_LANDMARKS and DataHandler::TOTAL_ROBOTS.
 	 */
-	std::vector<int> barcodes_; 
+	unsigned short int total_barcodes = 0;
+
 	
 	/**
 	 * @brief All landmarks containing all the data extracted form "Landmarks.dat". 
@@ -103,6 +101,18 @@ private:
 	 * This class contains all information pertaining to the robots. The 'Robotx_Odometry.dat', 'Robotx_Measurement.dat' and 'Robotx_Groundtruth.dat' are used to populate the class. Additionally, the groundtruth values that are not provided by the dataset are calculated using DataHandler::calculateGroundtruthOdometry and DataHandler::calculateGroundtruthMeasurement.
 	 */
 	std::vector<Robot> robots_;
+
+	/**
+	 * @brief  List of all barcodes corresponding to the robots and landmarks. 
+	 * @note The index of the element in the array corresponds to its ID minus one.
+	 * @details The list of barcodes corresponding to both the robots and the landmarks exctracted from the 'Barcodes.dat' file. The UTIAS dataset contains 20 barcodes: 5 robots and 15 landmarks. All barcodes are initialised to 0. Since none of the barcodes have a value of 0, this will be used as a check by DataHandler::readLandmarks to see if all the barcodes were correctly set.
+	 */
+	std::vector<unsigned short int> barcodes_; 
+
+	/** 
+	 * @brief Simulator class responsible for creating odometry, and measurement data for the robots, and assigning positions to the landmarks.
+	 */
+	Simulator simulator;
 
 	/* Extracting Data from the Dataset */
 	void readBarcodes(const std::string&);
