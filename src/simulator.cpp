@@ -55,6 +55,10 @@ void Simulator::assignVectorMemory() {
 	for (unsigned short id = 0; id < this->total_robots; id++) {
 		(*robots_)[id].groundtruth.states.reserve(this->data_points_);
 		(*robots_)[id].synced.odometry.reserve(this->data_points_);
+
+		/* Set the first element to the origin. This will be overwritten with random values in Simulator::setRobots(). */
+		(*robots_)[id].groundtruth.states.push_back( Robot::State(0,0,0,0));
+		(*robots_)[id].synced.odometry.push_back(Robot::Odometry(0,0,0));
 	}
 }
 
@@ -151,12 +155,11 @@ void Simulator::setRobots() {
 	do {
 		unique = true;
 
-		(*robots_)[0].groundtruth.states.insert((*robots_)[0].groundtruth.states.begin(), Robot::State(
-			0,
-			position_x(generator),
-			position_y(generator),
-			orienation(generator)
-		));
+		/* Overwrite the origin values set in Robot::assignVectorMemory. */
+		(*robots_)[0].groundtruth.states.at(0).time = 0;
+		(*robots_)[0].groundtruth.states.at(0).x = position_x(generator);
+		(*robots_)[0].groundtruth.states.at(0).y = position_y(generator),
+		(*robots_)[0].groundtruth.states.at(0).orientation = orienation(generator);
 
 		for (auto landmark :  (*landmarks_)) {
 			/* Check that the new point is far enough away from other points randomly choosen. */
@@ -176,13 +179,12 @@ void Simulator::setRobots() {
 	/* Set the initial values up for the remaining robots. */
 	for (unsigned short id = 1; id < this->total_robots; id++) {
 
+		/* Overwrite the origin values set in Robot::assignVectorMemory. */
 		unique = true;
-		(*robots_)[id].groundtruth.states.insert((*robots_)[id].groundtruth.states.begin(), Robot::State(
-			0,
-			position_x(generator),
-			position_y(generator),
-			orienation(generator)
-		));
+		(*robots_)[id].groundtruth.states.at(0).time = 0;
+		(*robots_)[id].groundtruth.states.at(0).x = position_x(generator);
+		(*robots_)[id].groundtruth.states.at(0).y = position_y(generator);
+		(*robots_)[id].groundtruth.states.at(0).orientation = orienation(generator);
 
 		/* Check that the position is far enough away from other robots */
 		for (unsigned short j = 0; j < id; j++) {
