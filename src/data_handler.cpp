@@ -24,6 +24,23 @@ DataHandler::DataHandler(const unsigned long int data_points, double sample_peri
 
 	this->total_barcodes = this->total_robots + this->total_landmarks;
 
+	this->dataset_ = "./data";
+
+	try {
+		auto now = std::chrono::system_clock::now();
+		std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+		std::tm now_tm = *std::localtime(&now_c);
+		std::ostringstream oss;
+
+		oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
+	
+		this->data_extraction_directory_ = dataset_ + "/simulation/" + oss.str() + "/";
+	}
+	catch (std::runtime_error& error) {
+		std::cout << "Unable to set dataset: "<< error.what() << std::endl;
+	}
+
 	setSimulation(data_points, sample_period, number_of_robots, number_of_landmarks);
 
 }
@@ -70,15 +87,12 @@ void DataHandler::setDataSet(const std::string& dataset, const double& sample_pe
 	auto start = std::chrono::high_resolution_clock::now();
 
 	/* Check if the data set directory exists */
-	struct stat sb;
-	const char* directory = dataset.c_str();
-
-	if (stat(directory, &sb) == 0) {
-		this->dataset_ = dataset;
-	}
-	else {
+	if (!std::filesystem::exists(dataset)) {
 		throw std::runtime_error("Dataset file path does not exist: " + dataset); 
 	}
+
+	this->dataset_ = dataset;
+	this->data_extraction_directory_ = dataset_ + "/data_extraction/";
 
 	/* Set the sample period for this dataset. */
 	this->sampling_period_ = sample_period;
@@ -755,12 +769,15 @@ void DataHandler::relativeLandmarkDistance() {
 void DataHandler::saveExtractedData() {
 	auto start = std::chrono::high_resolution_clock::now();
 
-	data_extraction_directory_ = dataset_ + "/data_extraction/";
-	std::filesystem::create_directories(data_extraction_directory_);
 
-	double bin_size = 0.001;
+	if (!std::filesystem::exists(data_extraction_directory_)) {
+		std::filesystem::create_directories(data_extraction_directory_);
+	}
+
 
 	try {
+		double bin_size = 0.001;
+
 		saveStateData();
 		saveOdometryData();
 		saveMeasurementData();
@@ -1009,6 +1026,7 @@ void DataHandler::saveOdometryErrorPDF(double bin_size) {
 
 	/* Forward Velocity */
 	std::string filename = data_extraction_directory_ + "Forward-Velocity-Error-PDF.dat";
+
 	if (!std::filesystem::exists(filename)) {
 		robot_file.open(filename);
 
@@ -1023,7 +1041,7 @@ void DataHandler::saveOdometryErrorPDF(double bin_size) {
 		for (int id = 0; id < total_robots; id++) {
 			std::unordered_map<int, double> forward_velocity_bin_counts;
 
-			for (auto odometry: robots_[id].error.odometry) {
+			for (const auto& odometry: robots_[id].error.odometry) {
 				int bin_index = static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
 				/* NOTE: The bin count is actually the area contribution of the odometry error for the given measurement. This means that the output is a discretized pdf, where the sum of the area of all the bins should equal 1. This is done for better visualisation when fitting a Gaussian curve to the data. */
 				forward_velocity_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
@@ -1060,7 +1078,7 @@ void DataHandler::saveOdometryErrorPDF(double bin_size) {
 
 			std::unordered_map<int, double> angular_velocity_bin_counts;
 
-			for (auto odometry: robots_[id].error.odometry) {
+			for (const auto& odometry: robots_[id].error.odometry) {
 				int bin_index = static_cast<int>(std::floor(odometry.angular_velocity / bin_size));
 				angular_velocity_bin_counts[bin_index] += 1.0/(robots_[id].error.odometry.size() * bin_size);
 			}
@@ -1108,7 +1126,7 @@ void DataHandler::saveMeasurementErrorPDF(double bin_size) {
 			}
 
 			std::unordered_map<int, double> range_bin_counts;
-			for (auto measurement: robots_[id].error.measurements) {
+			for (const auto& measurement: robots_[id].error.measurements) {
 				for (auto range :measurement.ranges) {
 					int bin_index = static_cast<int>(std::floor(range / bin_size));
 					range_bin_counts[bin_index] += 1.0/(number_of_measurements * bin_size);
@@ -1146,13 +1164,14 @@ void DataHandler::saveMeasurementErrorPDF(double bin_size) {
 			/* Save the plot data for the Angular Velocity Error  */
 
 			double number_of_measurements = 0.0;
+
 			for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
 				number_of_measurements += robots_[id].error.measurements[k].ranges.size();
 			}
 
 			std::unordered_map<int, double> bearing_bin_counts;
 
-			for (auto measurement: robots_[id].error.measurements) {
+			for (const auto& measurement: robots_[id].error.measurements) {
 				for (auto bearing : measurement.bearings) {
 					int bin_index = static_cast<int>(std::floor(bearing / bin_size));
 					bearing_bin_counts[bin_index] += 1.0/(number_of_measurements * bin_size);
