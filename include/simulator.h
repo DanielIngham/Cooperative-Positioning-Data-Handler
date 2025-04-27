@@ -101,7 +101,8 @@ private:
 	void assignVectorMemory();
 	void setBarcodes();
 	void setLandmarks();
-	void setRobots();
+	void setRobotStates();
+	void setRobotOdometry();
 };
 
 

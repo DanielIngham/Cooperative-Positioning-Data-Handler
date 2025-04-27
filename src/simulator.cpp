@@ -46,7 +46,7 @@ void Simulator::setSimulation(const unsigned long int data_points, double sample
 	assignVectorMemory();
 	setBarcodes();
 	setLandmarks();
-	setRobots();
+	setRobotStates();
 }
 /**
  * @brief Assigns the memory sizes for the vectors to be populated by the simulator.
@@ -121,7 +121,7 @@ void Simulator::setLandmarks() {
 	}
 }
 
-void Simulator::setRobots() {
+void Simulator::setRobotStates() {
 	/* Random Setup and seeding. */
 	std::random_device rd;
 	std::mt19937 generator(rd());
@@ -141,8 +141,6 @@ void Simulator::setRobots() {
 
 		(*robots_)[id].range_error.variance = range_error(generator);
 		(*robots_)[id].bearing_error.variance = bearing_error(generator);
-
-		std::cout << "Robot " << (*robots_)[id].id << ": F=" << (*robots_)[id].forward_velocity_error.variance << ", A=" << (*robots_)[id].angular_velocity_error.variance << ", R=" << (*robots_)[id].range_error.variance << ", B=" <<(*robots_)[id].bearing_error.variance << std::endl;
 	}
 
 	/* Set up random function for x and y position to fall within 1 metre of the simulation limits. */
@@ -161,7 +159,7 @@ void Simulator::setRobots() {
 		(*robots_)[0].groundtruth.states.at(0).y = position_y(generator),
 		(*robots_)[0].groundtruth.states.at(0).orientation = orienation(generator);
 
-		for (auto landmark :  (*landmarks_)) {
+		for (const auto& landmark :  (*landmarks_)) {
 			/* Check that the new point is far enough away from other points randomly choosen. */
 			double x_difference = landmark.x - (*robots_)[0].groundtruth.states.front().x;
 			double y_difference = landmark.y - (*robots_)[0].groundtruth.states.front().y;
@@ -207,7 +205,7 @@ void Simulator::setRobots() {
 			continue;
 		}
 
-		for (auto landmark :  (*landmarks_)) {
+		for (const auto& landmark :  (*landmarks_)) {
 			/* Check that the new point is far enough away from other points randomly choosen. */
 			double x_difference = landmark.x - (*robots_)[id].groundtruth.states.front().x;
 			double y_difference = landmark.y - (*robots_)[id].groundtruth.states.front().y;
@@ -220,9 +218,13 @@ void Simulator::setRobots() {
 			}
 		}
 	}
-
-	std::cout << "+++++ ROBOT POSITIONS+++++" << std::endl;
-	for (auto robot : (*robots_)) {
-		std::cout << "Robot " <<  robot.id << ": x=" << robot.groundtruth.states.front().x << ", y=" << robot.groundtruth.states.front().y << std::endl; 
-	}
 }
+// void Simulator::setRobotOdometry() {
+//
+// 		std::random_device rd;
+// 	for (unsigned short id = 0; id < total_robots; id++) {
+//
+// 		for (unsigned long k = 0; k < data_points_ - 1; k++) {
+// 		}
+// 	}
+// }
