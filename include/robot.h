@@ -10,6 +10,7 @@
 #include <algorithm>	// std::sort
 #include <cmath>	// std::atan2
 #include <iostream>	// std::cout
+#include <iterator>	// std::iterator
 #include <numeric>	// std::accumulate
 #include <stdexcept>	// std::runtime_error
 #include <string>	// std::string
@@ -75,7 +76,7 @@ public:
 		std::vector<double> ranges;	///< The measured ranges to the subjects [m]
 		std::vector<double> bearings;	///< The bearings from the subjects [rad]
 
-		Measurement(double time_,  std::vector<int> subjects_, std::vector<double> ranges_, std::vector<double> bearings_): time(time_), subjects(subjects_), ranges(ranges_), bearings(bearings_) {};
+		Measurement(double time_,  const std::vector<int>& subjects_, const std::vector<double>& ranges_, const std::vector<double>& bearings_): time(time_), subjects(subjects_), ranges(ranges_), bearings(bearings_) {};
 		/** 
 		 * @brief Constructor for convenient population of DataExtractor::robots_.raw.measurements .
 		 */

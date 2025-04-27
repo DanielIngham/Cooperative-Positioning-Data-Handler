@@ -11,7 +11,7 @@
 /**
  * @brief Default constructor.
  */
-Robot::Robot() {}
+Robot::Robot(): id(0), barcode(0) {}
 
 /**
  * @brief Default destructor.
@@ -123,28 +123,28 @@ void Robot::calculateSampleErrorStats() {
 
 	/* Calculate forward velocity mean error. */
 	double total_forward_velocity_error =
-	std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [](double acc, Odometry element) {
+	std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [](double acc, const Odometry& element) {
 			return acc + element.forward_velocity;
 	});
 
 	this->forward_velocity_error.mean = total_forward_velocity_error / this->error.odometry.size();
 
 	/* Forward velocity measurement error variance */
-	double total_forward_velocity_deviation = std::accumulate( this->error.odometry.begin(), this->error.odometry.end(), 0.0, [&](double acc, Odometry element) {
+	double total_forward_velocity_deviation = std::accumulate( this->error.odometry.begin(), this->error.odometry.end(), 0.0, [&](double acc, const Odometry& element) {
 		return acc + std::pow(element.forward_velocity - this->forward_velocity_error.mean, 2);
 	});
 
 	this->forward_velocity_error.variance = total_forward_velocity_deviation / (this->error.odometry.size() - 1);
 
 	/* Calculate angular velocity mean error. */
-	double total_angular_velocity_error = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [](double acc, Odometry element) {
+	double total_angular_velocity_error = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [](double acc, const Odometry& element) {
 			return acc + element.angular_velocity;
 	});
 
 	this->angular_velocity_error.mean = total_angular_velocity_error / this->error.odometry.size();
 
 	/* Angular velocity measurement error variance */
-	double total_angular_velocity_deviation = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [&](double acc, Odometry element) {
+	double total_angular_velocity_deviation = std::accumulate(this->error.odometry.begin(), this->error.odometry.end(), 0.0, [&](double acc, const Odometry& element) {
 		return acc + std::pow(element.angular_velocity - this->angular_velocity_error.mean, 2);
 	});
 
@@ -153,7 +153,7 @@ void Robot::calculateSampleErrorStats() {
 	/* Calculate range measurement mean error.
 	* NOTE: The calculation of the total number of measurments is used for both the range and bearing mean calculation using the assumption that the number of range and bearings measurements are equal. This should always the case as each range measurment will have a corresponding bearing. */
 	double total_measurements = 0.0;
-	double total_range_error = std::accumulate( this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, Measurement element) {
+	double total_range_error = std::accumulate( this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, const Measurement& element) {
 		total_measurements += element.ranges.size();
 		return acc + std::accumulate(element.ranges.begin(), element.ranges.end(), 0.0);
 	});
@@ -161,20 +161,20 @@ void Robot::calculateSampleErrorStats() {
 	this->range_error.mean = total_range_error / total_measurements;
 
 	/* Range measurement error variance */
-	double total_range_deviation = std::accumulate( this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, Measurement element) {
+	double total_range_deviation = std::accumulate( this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, const Measurement& element) {
 		return acc + std::pow(std::accumulate(element.ranges.begin(), element.ranges.end(), 0.0) - this->range_error.mean, 2);
 	});
 	this->range_error.variance = total_range_deviation / (total_measurements - 1);
 
 	/* Calculate bearing measurement mean erorr. */
-	double total_bearing_error = std::accumulate( this->error.measurements.begin(), this->error.measurements.end(), 0.0, [](double acc, Measurement element) {
+	double total_bearing_error = std::accumulate( this->error.measurements.begin(), this->error.measurements.end(), 0.0, [](double acc, const Measurement& element) {
 		return acc + std::accumulate(element.bearings.begin(), element.bearings.end(), 0.0);
 	});
 	this->bearing_error.mean = total_bearing_error / total_measurements;
 
 	/* Bearing measurement error variance */
 	double total_bearing_deviation = std::accumulate(
-	this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, Measurement element) {
+	this->error.measurements.begin(), this->error.measurements.end(), 0.0, [&](double acc, const Measurement& element) {
 		return acc + std::pow(std::accumulate(element.bearings.begin(), element.bearings.end(), 0.0) - this->bearing_error.mean, 2);
 	});
 	this->bearing_error.variance = total_bearing_deviation / (total_measurements - 1);
@@ -201,7 +201,7 @@ unsigned long int Robot::calculateMedian(const unsigned long int lower, const un
  * @return The error statitics which include the median, first quartile, third
  * quartile, and inter-quartile range of the sorted input vector.
  */
-void Robot::calculateQuartiles(const std::vector<double> &sorted_vector, Robot::ErrorStatistics &error_statistics) {
+void Robot::calculateQuartiles(const std::vector<double>& sorted_vector, Robot::ErrorStatistics& error_statistics) {
 	unsigned long int index = calculateMedian(0, sorted_vector.size() - 1);
 
 	error_statistics.median = sorted_vector[index];
@@ -236,18 +236,17 @@ void Robot::setQuartiles() {
 	std::vector<double> bearing_errors;
 	bearing_errors.reserve(this->raw.measurements.size());
 
-	for (auto odometry : this->error.odometry) {
-		forward_velocity.push_back(odometry.forward_velocity);
-		angular_velocity.push_back(odometry.angular_velocity);
-	}
+	std::transform(this->error.odometry.begin(), this->error.odometry.end(), std::back_inserter(forward_velocity), [] (const Robot::Odometry& odometry) {
+		return odometry.forward_velocity;
+	});
 
-	for (auto measurement_errors : this->error.measurements) {
-		for (auto ranges : measurement_errors.ranges) {
-			range_errors.push_back(ranges);
-		}
-		for (auto bearings : measurement_errors.bearings) {
-			bearing_errors.push_back(bearings);
-		}
+	std::transform(this->error.odometry.begin(), this->error.odometry.end(), std::back_inserter(angular_velocity), [] (const Robot::Odometry& odometry) {
+		return odometry.angular_velocity;
+	});
+
+	for (const auto& measurement_errors : this->error.measurements) {
+		std::copy(measurement_errors.ranges.begin(), measurement_errors.ranges.end(), std::back_inserter(range_errors));
+		std::copy(measurement_errors.bearings.begin(), measurement_errors.bearings.end(), std::back_inserter(bearing_errors));
 	}
 
 	/* Sort the vectors in ascending order. */
