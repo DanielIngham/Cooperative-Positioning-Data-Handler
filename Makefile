@@ -29,7 +29,7 @@ TEST_OBJECTS :=  $(patsubst $(TEST_DIR)/%.cpp, $(TEST_BUILD)/%.o,$(TEST_SOURCES)
 CPPCHECK := cppcheck
 
 
-.PHONEY: all clean test cppcheck
+.PHONEY: all clean test run cppcheck
 
 # Linking
 $(TARGET): $(OBJECTS)
@@ -58,6 +58,8 @@ $(TEST_BUILD)/%.o: $(TEST_DIR)/%.cpp
 	$(CXX) -g -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
 
 test: $(TEST_TARGET)
+
+run: $(TEST_TARGET)
 	$(TEST_TARGET)
 
 # Static C++ Code Analyser
