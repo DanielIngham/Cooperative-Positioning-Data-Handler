@@ -1,14 +1,12 @@
 var searchData=
 [
-  ['saveerrordata_0',['saveErrorData',['../classDataHandler.html#a74b3af53854d30f7a058fff74426c0c3',1,'DataHandler']]],
-  ['saveextracteddata_1',['saveExtractedData',['../classDataHandler.html#ac1c2354ee32b3c0e96c649506300ec2f',1,'DataHandler']]],
-  ['savemeasurementdata_2',['saveMeasurementData',['../classDataHandler.html#ae017941f3f166dc85c4dcb1c54588c17',1,'DataHandler']]],
-  ['savemeasurementerrorpdf_3',['saveMeasurementErrorPDF',['../classDataHandler.html#a5da3bb3fb0bf8791c50103f743c36e8f',1,'DataHandler']]],
-  ['saveodometrydata_4',['saveOdometryData',['../classDataHandler.html#a02ddc17bbff7ae0a54bd2be2932d8574',1,'DataHandler']]],
-  ['saveodometryerrorpdf_5',['saveOdometryErrorPDF',['../classDataHandler.html#a7e72fad87a3ac47dec2956c1118b2941',1,'DataHandler']]],
-  ['saveroboterrorstatistics_6',['saveRobotErrorStatistics',['../classDataHandler.html#a44a6564ad7dce49b4eeb5a8f1a5d8f08',1,'DataHandler']]],
-  ['savestatedata_7',['saveStateData',['../classDataHandler.html#adcf0108de94cdd9b986c06c2d9bf1d1b',1,'DataHandler']]],
-  ['setdataset_8',['setDataSet',['../classDataHandler.html#a418461e98948dd4a37ed5b3af24e6e6e',1,'DataHandler']]],
-  ['state_9',['state',['../structRobot_1_1State.html#a0e79a34a49a9a3c40117089008e4cf1f',1,'Robot::State::State()'],['../structRobot_1_1State.html#a30d70945b7f3b1f2fe905d91c9a56ebe',1,'Robot::State::State(double time_, double x_, double y_, double orientation_)']]],
-  ['syncdata_10',['syncData',['../classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f',1,'DataHandler']]]
+  ['readbarcodes_0',['readBarcodes',['../classDataHandler.html#aa14208d969d119de417608388169ed58',1,'DataHandler']]],
+  ['readgroundtruth_1',['readGroundTruth',['../classDataHandler.html#a053359b5ac1ae982c471228ceb60adae',1,'DataHandler']]],
+  ['readlandmarks_2',['readLandmarks',['../classDataHandler.html#adaffb621609a97ecd82da0820c897cad',1,'DataHandler']]],
+  ['readmeasurements_3',['readMeasurements',['../classDataHandler.html#a7fa0e569a5642ca0ea5b1ce84d89b11c',1,'DataHandler']]],
+  ['readodometry_4',['readOdometry',['../classDataHandler.html#af02dfeca8e73dccc3d0288d358edb9fc',1,'DataHandler']]],
+  ['relativelandmarkdistance_5',['relativeLandmarkDistance',['../classDataHandler.html#acc8d74867aa39b8095a52bac985065c9',1,'DataHandler']]],
+  ['relativerobotdistance_6',['relativeRobotDistance',['../classDataHandler.html#aceeae17f8c300f0c82f55de7567bb583',1,'DataHandler']]],
+  ['removeoutliers_7',['removeOutliers',['../classRobot.html#a6dc831e2b692655ee088831a46aba3ac',1,'Robot']]],
+  ['robot_8',['robot',['../classRobot.html#a4fc7c70ae20623f05e06f2ecb388b6c4',1,'Robot::Robot()'],['../classRobot.html#a47aec46e3bb5782500d1d268f0d8c406',1,'Robot::Robot(Robot &amp;&amp;)=default'],['../classRobot.html#a4fd835c7c44337d31d9fd09921d29908',1,'Robot::Robot(const Robot &amp;)=default']]]
 ];

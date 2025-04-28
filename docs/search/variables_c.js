@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['time_0',['time',['../structRobot_1_1State.html#ab4bfad38bab0e9e9aa9ff1bdf7c6d6c2',1,'Robot::State::time'],['../structRobot_1_1Odometry.html#a2098f2455d91d0a27b52d92988c0b425',1,'Robot::Odometry::time'],['../structRobot_1_1Measurement.html#a988ff00f57d449f3967be41e0b712d3d',1,'Robot::Measurement::time']]],
-  ['total_5fbarcodes_1',['TOTAL_BARCODES',['../classDataHandler.html#a63454dbdea926e6ab813e8022d667f34',1,'DataHandler']]],
-  ['total_5flandmarks_2',['TOTAL_LANDMARKS',['../classDataHandler.html#af6eb4347c65db66358412db1f325eda4',1,'DataHandler']]],
-  ['total_5frobots_3',['TOTAL_ROBOTS',['../classDataHandler.html#a1f6ec1bf1a5a47b8515d1e21538ff9d0',1,'DataHandler']]]
+  ['range_0',['range',['../classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb',1,'Simulator']]],
+  ['range_5ferror_1',['range_error',['../classRobot.html#a33ed5b6958976ee636414c2ef8d151a0',1,'Robot']]],
+  ['ranges_2',['ranges',['../structRobot_1_1Measurement.html#aa071e829eca62fa89473fcc66a532101',1,'Robot::Measurement']]],
+  ['raw_3',['raw',['../classRobot.html#ae4e6f60558900a0655078461b3cb0588',1,'Robot']]],
+  ['robots_5f_4',['robots_',['../classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff',1,'DataHandler::robots_'],['../classSimulator.html#a6504b73695a99ac0af2f2e164e10ae70',1,'Simulator::robots_']]]
 ];

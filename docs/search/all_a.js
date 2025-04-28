@@ -1,6 +1,10 @@
 var searchData=
 [
-  ['odometry_0',['odometry',['../structRobot_1_1Odometry.html',1,'Robot::Odometry'],['../structRobot_1_1Odometry.html#a1bd644ea5a1ca77cfbe2e1c59634bba0',1,'Robot::Odometry::Odometry()'],['../structRobot_1_1Odometry.html#a6ea564e7b0f2d7883653885d3642763a',1,'Robot::Odometry::Odometry(double time_, double forward_velocity_, double angular_velocity_)'],['../classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9',1,'Robot::odometry']]],
-  ['operator_3d_1',['operator=',['../classRobot.html#a9f1f8a770069d2d34a474964fd6d68a0',1,'Robot::operator=(Robot &amp;&amp;)=default'],['../classRobot.html#a484922887dab6c49742b746436450a70',1,'Robot::operator=(const Robot &amp;)=default']]],
-  ['orientation_2',['orientation',['../structRobot_1_1State.html#a55687f0bf99f69b2c45979ab39549713',1,'Robot::State']]]
+  ['max_0',['MAX',['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34baab3fdd67b327def24cd68d041c426596',1,'Simulator']]],
+  ['mean_1',['mean',['../structRobot_1_1ErrorStatistics.html#ad2dbeae999277b6348581e41a85a41d6',1,'Robot::ErrorStatistics']]],
+  ['measurement_2',['measurement',['../structRobot_1_1Measurement.html',1,'Robot::Measurement'],['../structRobot_1_1Measurement.html#a392d91c96f94d16c5e4783d0e8f49184',1,'Robot::Measurement::Measurement(double time_, const std::vector&lt; int &gt; &amp;subjects_, const std::vector&lt; double &gt; &amp;ranges_, const std::vector&lt; double &gt; &amp;bearings_)'],['../structRobot_1_1Measurement.html#a1951a91801aea5b9e01e6f21097edf65',1,'Robot::Measurement::Measurement(double time_, int subject_, double range_, double bearing_)']]],
+  ['measurements_3',['measurements',['../classRobot.html#a6dc77da5a06da8c3109aeb10780f3212',1,'Robot']]],
+  ['median_4',['median',['../structRobot_1_1ErrorStatistics.html#a756192357bfe497d3ec610961575fc29',1,'Robot::ErrorStatistics']]],
+  ['min_5',['MIN',['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34ba35c44b547e01fb11878d1ce75ebbb0fa',1,'Simulator']]],
+  ['multi_20robot_20data_20extractor_6',['C++ UTIAS Multi-Robot Data Extractor',['../index.html',1,'']]]
 ];

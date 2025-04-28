@@ -10,5 +10,10 @@ digraph "/home/dan/Code/UTIAS-Multi-Robot/Data-Handler/include/robot.h"
   Node2 -> Node3 [id="edge2_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node3 [id="Node000003",label="/home/dan/Code/UTIAS\l-Multi-Robot/Data-Handler\l/src/data_handler.cpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$data__handler_8cpp.html",tooltip=" "];
   Node1 -> Node4 [id="edge3_Node000001_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node4 [id="Node000004",label="/home/dan/Code/UTIAS\l-Multi-Robot/Data-Handler\l/src/robot.cpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$robot_8cpp.html",tooltip="Class implementation file responsible for the robot datastructor."];
+  Node4 [id="Node000004",label="/home/dan/Code/UTIAS\l-Multi-Robot/Data-Handler\l/include/simulator.h",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$simulator_8h.html",tooltip="Header file of the Simulator class,."];
+  Node4 -> Node2 [id="edge4_Node000004_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 -> Node5 [id="edge5_Node000004_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="/home/dan/Code/UTIAS\l-Multi-Robot/Data-Handler\l/src/simulator.cpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$simulator_8cpp.html",tooltip="Class implementation file responsible for simulating the data for multi-robot localisation and mappin..."];
+  Node1 -> Node6 [id="edge6_Node000001_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="/home/dan/Code/UTIAS\l-Multi-Robot/Data-Handler\l/src/robot.cpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$robot_8cpp.html",tooltip="Class implementation file responsible for the robot datastructor."];
 }

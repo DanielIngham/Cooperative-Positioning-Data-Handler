@@ -95,8 +95,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a96d1b9842bced6e23b998704908590b3" id="r_a96d1b9842bced6e23b998704908590b3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobot_1_1Measurement.html#a96d1b9842bced6e23b998704908590b3">Measurement</a> (double time_, std::vector&lt; int &gt; subjects_, std::vector&lt; double &gt; ranges_, std::vector&lt; double &gt; bearings_)</td></tr>
-<tr class="separator:a96d1b9842bced6e23b998704908590b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a392d91c96f94d16c5e4783d0e8f49184" id="r_a392d91c96f94d16c5e4783d0e8f49184"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobot_1_1Measurement.html#a392d91c96f94d16c5e4783d0e8f49184">Measurement</a> (double time_, const std::vector&lt; int &gt; &amp;subjects_, const std::vector&lt; double &gt; &amp;ranges_, const std::vector&lt; double &gt; &amp;bearings_)</td></tr>
+<tr class="separator:a392d91c96f94d16c5e4783d0e8f49184"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1951a91801aea5b9e01e6f21097edf65" id="r_a1951a91801aea5b9e01e6f21097edf65"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobot_1_1Measurement.html#a1951a91801aea5b9e01e6f21097edf65">Measurement</a> (double time_, int subject_, double range_, double bearing_)</td></tr>
 <tr class="memdesc:a1951a91801aea5b9e01e6f21097edf65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for convenient population of DataExtractor::robots_.raw.measurements .  <br /></td></tr>
 <tr class="separator:a1951a91801aea5b9e01e6f21097edf65"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -120,8 +120,8 @@ Public Attributes</h2></td></tr>
 <div class="textblock"><p>Data attributes of the relative distance measurement taken at a single timestep in Robotx_Measurements. </p>
 <dl class="section note"><dt>Note</dt><dd>This structure combines multiple measurements with the same time stamp. There it is assumed that the vectors: subjects, ranges, and bearings are in the same order. </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a96d1b9842bced6e23b998704908590b3" name="a96d1b9842bced6e23b998704908590b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96d1b9842bced6e23b998704908590b3">&#9670;&#160;</a></span>Measurement() <span class="overload">[1/2]</span></h2>
+<a id="a392d91c96f94d16c5e4783d0e8f49184" name="a392d91c96f94d16c5e4783d0e8f49184"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a392d91c96f94d16c5e4783d0e8f49184">&#9670;&#160;</a></span>Measurement() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -138,19 +138,19 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; int &gt;&#160;</td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
           <td class="paramname"><em>subjects_</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
           <td class="paramname"><em>ranges_</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; double &gt;&#160;</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
           <td class="paramname"><em>bearings_</em>&#160;</td>
         </tr>
         <tr>
