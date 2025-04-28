@@ -53,7 +53,7 @@ void Simulator::setSimulation(const unsigned long int data_points,
   assignVectorMemory();
   setBarcodes();
   setLandmarks();
-  setRobotStates();
+  setRobotsInitalState();
 }
 
 /**
@@ -85,7 +85,7 @@ void Simulator::setBarcodes() {
 }
 
 /**
- * @brief Sets the x and y coordinate of the landmarks provided.
+ * @brief Sets the x and y coordinate for the number of landmarks provided.
  */
 void Simulator::setLandmarks() {
 
@@ -96,7 +96,8 @@ void Simulator::setLandmarks() {
   std::uniform_real_distribution<double> deviation(
       this->variance.landmarks[MIN], this->variance.landmarks[MAX]);
 
-  for (unsigned short int i = 0; i < this->total_landmarks; i++) {
+  /* Loop through each landmark and set the id and standard deviation */
+  for (unsigned short i = 0; i < this->total_landmarks; i++) {
 
     /* Set the ID for each Landmark */
     (*landmarks_)[i].id = this->total_robots + (i + 1);
@@ -113,6 +114,8 @@ void Simulator::setLandmarks() {
   (*landmarks_)[0].x = position_x(generator);
   (*landmarks_)[0].y = position_y(generator);
 
+  /* Loop through each landmark and assign a x,y coordinate that is at least 2m
+   * apart from all other landmarks. */
   for (unsigned short i = 1; i < this->total_landmarks; i++) {
     /* Generate a random coordinate for the landmark*/
     (*landmarks_)[i].x = position_x(generator);
@@ -137,7 +140,11 @@ void Simulator::setLandmarks() {
   }
 }
 
-void Simulator::setRobotStates() {
+/**
+ * @brief Sets the intial unique x,y coordinate and orienation for the number of
+ * robots provided.
+ */
+void Simulator::setRobotsInitalState() {
   /* Random Setup and seeding. */
   std::random_device rd;
   std::mt19937 generator(rd());
@@ -262,6 +269,10 @@ void Simulator::setRobotStates() {
   }
 }
 
+/**
+ * @brief Sets the odometry values (forward and angular velocity) for the number
+ * of robots provided.
+ */
 void Simulator::setRobotOdometry() {
 
   std::random_device rd;
