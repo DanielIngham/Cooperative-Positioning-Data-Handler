@@ -28,25 +28,25 @@ void Robot::calculateMeasurementError() {
 
   /* Check if the groundtruth has been set. */
   if (this->groundtruth.odometry.size() == 0) {
-    throw std::runtime_error("Groundtruth state values for robot " +
+    throw std::runtime_error("Groundtruth odometry values for robot " +
                              std::to_string(this->id) + " have not been set.");
   }
 
   /* Check if the synced data has been set. */
   if (this->synced.odometry.size() == 0) {
-    throw std::runtime_error("Synced values for robot " +
+    throw std::runtime_error("Synced odometry values for robot " +
                              std::to_string(this->id) + " have not been set.");
   }
 
   /* Check if the groundtruth has been set. */
   if (this->groundtruth.measurements.size() == 0) {
-    throw std::runtime_error("Groundtruth state values for robot " +
+    throw std::runtime_error("Groundtruth measurement values for robot " +
                              std::to_string(this->id) + " have not been set.");
   }
 
   /* Check if the synced data has been set. */
   if (this->synced.measurements.size() == 0) {
-    throw std::runtime_error("Synced values for robot " +
+    throw std::runtime_error("Synced measurement values for robot " +
                              std::to_string(this->id) + " have not been set.");
   }
 
