@@ -88,6 +88,7 @@ void Robot::calculateMeasurementError() {
   for (std::size_t k = 0; k < this->groundtruth.measurements.size(); k++) {
 
     /* Loop through the subjects */
+    bool first_item = true;
     for (std::size_t s = 0;
          s < this->groundtruth.measurements[k].subjects.size(); s++) {
 
@@ -98,6 +99,15 @@ void Robot::calculateMeasurementError() {
         throw std::runtime_error("The groundtruth subject barcode did not "
                                  "match the syned subject barcode.");
       }
+
+      /* Ignore invalid measurements. These invalid measurements are explicitly
+       * set by DataHandler::calculateGroundtruthMeasurement when an invalid
+       * subject barcode is detected. */
+      if (this->groundtruth.measurements[k].ranges[s] == -1.0 &&
+          this->groundtruth.measurements[k].bearings[s] == 2 * M_PI) {
+        continue;
+      }
+
       /* Update the error statistics. */
       this->range_error.mean += (this->groundtruth.measurements[k].ranges[s] -
                                  this->synced.measurements[k].ranges[s]);
@@ -107,7 +117,8 @@ void Robot::calculateMeasurementError() {
 
       /* If the measurement is the first for the time stamp, push back a new
        * instance of the measurment error. */
-      if (s == 0) {
+      if (first_item) {
+        first_item = false;
         this->error.measurements.push_back(
             Measurement(this->groundtruth.measurements[k].time,
                         this->groundtruth.measurements[k].subjects[s],
