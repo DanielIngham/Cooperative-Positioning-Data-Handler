@@ -499,13 +499,6 @@ void DataHandler::readMeasurements(const std::string &dataset, int robot_id) {
     end_index = line.find('\t', ++end_index);
     int subject = std::stoi(line.substr(start_index, end_index));
 
-    /* If the subjects barcode extracted does not correspond to any of the
-     * barcodes extracted, then don't add the measurement. NOTE: As far as I
-     * know, this occurs twice for robot 3 in dataset 1. It references barcode
-     * 43, which does not exists. */
-    if (-1 == getID(subject)) {
-      continue;
-    }
     /* - Range [m] */
     start_index = end_index;
     end_index = line.find('\t', ++end_index);
@@ -817,53 +810,64 @@ void DataHandler::calculateGroundtruthMeasurement() {
         /* Get the subjects ID from its barcode. */
         int subject_ID = getID(robots_[id].synced.measurements[k].subjects[s]);
 
-        double x_difference;
-        double y_difference;
+        /* If the subjects barcode extracted does not correspond to any of the
+         * barcodes extracted, then don't add the measurement. Then the ground
+         * truth range and bearing measurments are set to zero. This is used by
+         * the error calculator to determine if the measurement has a
+         * corresponding groundtruth or not.*/
+        double range = 0.0;
+        double bearing = 0.0;
 
-        /* All robots have ID's [1,5]. */
-        if (subject_ID < 6) {
-          subject_ID--;
-          x_difference = robots_[subject_ID].groundtruth.states[t].x -
-                         robots_[id].groundtruth.states[t].x;
-          y_difference = robots_[subject_ID].groundtruth.states[t].y -
-                         robots_[id].groundtruth.states[t].y;
+        if (-1 != subject_ID) {
+
+          double x_difference;
+          double y_difference;
+
+          /* All robots have ID's [1,5]. */
+          if (subject_ID < 6) {
+            subject_ID--;
+            x_difference = robots_[subject_ID].groundtruth.states[t].x -
+                           robots_[id].groundtruth.states[t].x;
+            y_difference = robots_[subject_ID].groundtruth.states[t].y -
+                           robots_[id].groundtruth.states[t].y;
+          }
+          /* All landmarks have ID's [6,20]. */
+          else {
+            subject_ID -= 6;
+            x_difference =
+                landmarks_[subject_ID].x - robots_[id].groundtruth.states[t].x;
+            y_difference =
+                landmarks_[subject_ID].y - robots_[id].groundtruth.states[t].y;
+          }
+
+          /* Calculate Bearing */
+          bearing = std::atan2(y_difference, x_difference) -
+                    robots_[id].groundtruth.states[t].orientation;
+          /* Normalise bearing between -180 and 180 (-pi and pi respectively)*/
+          while (bearing >= M_PI)
+            bearing -= 2.0 * M_PI;
+          while (bearing < -M_PI)
+            bearing += 2.0 * M_PI;
+
+          /* Calculate Range */
+          range = std::sqrt(x_difference * x_difference +
+                            y_difference * y_difference);
         }
-        /* All landmarks have ID's [6,20]. */
-        else {
-          subject_ID -= 6;
-          x_difference =
-              landmarks_[subject_ID].x - robots_[id].groundtruth.states[t].x;
-          y_difference =
-              landmarks_[subject_ID].y - robots_[id].groundtruth.states[t].y;
-        }
 
-        double orientation = std::atan2(y_difference, x_difference) -
-                             robots_[id].groundtruth.states[t].orientation;
-        while (orientation >= M_PI)
-          orientation -= 2.0 * M_PI;
-        while (orientation < -M_PI)
-          orientation += 2.0 * M_PI;
-
-        /*  */
+        /* Create a new instance of the Measurement struct on the first */
         if (0 == s) {
-          /* Create a new instance of the Measurement struct on the first */
-          robots_[id].groundtruth.measurements.push_back(
-              Robot::Measurement(robots_[id].synced.measurements[k].time,
-                                 robots_[id].synced.measurements[k].subjects[s],
-                                 std::sqrt(x_difference * x_difference +
-                                           y_difference * y_difference),
-                                 orientation));
+          robots_[id].groundtruth.measurements.push_back(Robot::Measurement(
+              robots_[id].synced.measurements[k].time,
+              robots_[id].synced.measurements[k].subjects[s], range, bearing));
 
           /* Move the iterator to the newly created instance*/
           iterator = robots_[id].groundtruth.measurements.end() - 1;
-          continue;
+        } else {
+          iterator->subjects.push_back(
+              robots_[id].synced.measurements[k].subjects[s]);
+          iterator->ranges.push_back(range);
+          iterator->bearings.push_back(bearing);
         }
-
-        iterator->subjects.push_back(
-            robots_[id].synced.measurements[k].subjects[s]);
-        iterator->ranges.push_back(std::sqrt(x_difference * x_difference +
-                                             y_difference * y_difference));
-        iterator->bearings.push_back(orientation);
       }
     }
   }
