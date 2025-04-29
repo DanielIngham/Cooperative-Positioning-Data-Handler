@@ -24,8 +24,6 @@ public:
   Simulator();
   Simulator(const unsigned long int, double, std::vector<Robot> &,
             std::vector<Landmark> &, std::vector<unsigned short int> &);
-  Simulator(Simulator &&) = default;
-  Simulator(const Simulator &) = default;
   ~Simulator();
 
   /* Setters */
@@ -34,6 +32,8 @@ public:
                      std::vector<unsigned short int> &);
 
 private:
+  /* Random Setup and seeding. */
+  std::mt19937 generator;
   /**
    * @ brief The total number of samples for each robot in the simulation.
    */
@@ -105,16 +105,16 @@ private:
     double range[2] = {0.0162, 0.45};
     double bearing[2] = {0.00062, 0.00596};
 
-    double landmarks[2] = {0.00004964,
-                           0.00041465}; ///< Standard Deviation of the landmarks
-                                        ///< (not the variance).
+    double landmarks[2] = {0.00004964 * 0.00004964, 0.00041465 * 0.00041465};
   } variance;
 
   void assignVectorMemory();
   void setBarcodes();
-  void setLandmarks();
+  void setLandmarkPositions();
+  void setErrorStatistics();
   void setRobotsInitalState();
   void setRobotOdometry();
+  void addGaussianNoise();
 };
 
 #endif // INCLUDE_INCLUDE_SIMULATOR_H_
