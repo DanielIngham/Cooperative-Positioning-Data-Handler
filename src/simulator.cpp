@@ -311,14 +311,14 @@ void Simulator::setRobotOdometryAndState() {
   /* Set up random number generation functions.
    * The walk length denotes the number of samples for which an input is
    * applied. */
-  std::uniform_int_distribution<unsigned short> walk_length(20U, 50U);
+  std::uniform_int_distribution<unsigned short> walk_length(20U, 200U);
   std::uniform_real_distribution<double> forward_velocity(
-      0.0, limits_.forward_velocity);
+      0.08, limits_.forward_velocity);
   std::uniform_real_distribution<double> angular_velocity(
       -limits_.angular_velocity, limits_.angular_velocity);
 
   std::uniform_real_distribution<double> forward_change(-0.05, 0.05);
-  std::uniform_real_distribution<double> angular_change(-0.1, 0.1);
+  std::uniform_real_distribution<double> angular_change(-0.01, 0.01);
 
   /* Loop through each robot and assign them odometry inputs. */
   for (unsigned short id = 0; id < total_robots; id++) {
@@ -331,8 +331,7 @@ void Simulator::setRobotOdometryAndState() {
     }
     /* Populate the robot's inital input. */
     (*robots_)[id].groundtruth.odometry.push_back(
-        Robot::Odometry(0, forward_velocity(this->generator),
-                        angular_velocity(this->generator)));
+        Robot::Odometry(0.0, forward_velocity(this->generator), 0.0));
 
     /* Calculate the resulting state from this those intpus */
     double x_position =
@@ -359,17 +358,20 @@ void Simulator::setRobotOdometryAndState() {
     unsigned short random_walk_duration = walk_length(this->generator);
 
     /* Generate random odometry inputs for every datapoint. */
+    double angular_input = 0.0;
     for (unsigned long k = 1; k < this->data_points_; k++) {
-      double angular_adjustment = 0.0;
       double forward_adjustment = 0.0;
 
-      /* If the robot is within of the boundaries, the robot should be guided
-       * back towards the centre of the simulation area. */
+      /* If the robot is about to leave the simulation boundaries, the robot
+       * should be guided back towards the centre of the simulation area. */
       if ((*robots_)[id].groundtruth.states.at(k).x < 1 ||
-          (*robots_)[id].groundtruth.states.at(k).x > limits_.width - 1 ||
+          (*robots_)[id].groundtruth.states.at(k).x > (limits_.width - 1) ||
           (*robots_)[id].groundtruth.states.at(k).y < 1 ||
-          (*robots_)[id].groundtruth.states.at(k).y > limits_.height - 1) {
+          (*robots_)[id].groundtruth.states.at(k).y > (limits_.height - 1)) {
 
+        // std::cout << "Robot " << id + 1 << ": "
+        //           << (*robots_)[id].groundtruth.states.at(k).x << ", "
+        //           << (*robots_)[id].groundtruth.states.at(k).y << std::endl;
         /* Calculate the distance from the centre points and get the angle
          * adjustment. */
         double x_difference =
@@ -386,23 +388,20 @@ void Simulator::setRobotOdometryAndState() {
         while (bearing_for_centre <= -M_PI)
           bearing_for_centre += 2.0 * M_PI;
 
-        /* If the the bearinging from the centre point is less than
-         * approximately 10 degrees positive or negative, there is no need to
-         * make further adjustments.  */
-        if (std::abs(bearing_for_centre) > 0.2) {
-          /* Gradually correct the orientation through adjustments to the
-           * angular velocity. */
-          /* NOTE: the an adjustement to forward velocity is not made. */
-          if (bearing_for_centre > 0.0) {
-            angular_adjustment = 0.02;
-          } else {
-            angular_adjustment = 0.02;
-          }
-        }
+        /* If the the bearing from the centre point is less than approximately
+         * 10 degrees positive or negative, there is no need to make further
+         * adjustments. */
+        /* Gradually correct the orientation through adjustments to the
+         * angular velocity. */
+        /* NOTE: the an adjustement to forward velocity is not made. */
+        angular_input =
+            bearing_for_centre / (M_PI / this->limits_.angular_velocity);
       } else if ((k % random_walk_duration) == 0) {
         /* Assign a new velocity adjustment */
         forward_adjustment = forward_change(this->generator);
-        angular_adjustment = angular_change(this->generator);
+        angular_input =
+            (*robots_)[id].groundtruth.odometry.at(k - 1).angular_velocity +
+            angular_change(this->generator);
 
         /* Assign a new random walk length at random  */
         random_walk_duration = walk_length(this->generator);
@@ -412,9 +411,7 @@ void Simulator::setRobotOdometryAndState() {
       double new_forward_velocity =
           (*robots_)[id].groundtruth.odometry.at(k - 1).forward_velocity +
           forward_adjustment;
-      double new_angular_velocity =
-          (*robots_)[id].groundtruth.odometry.at(k - 1).angular_velocity +
-          angular_adjustment;
+      double new_angular_velocity = angular_input;
 
       /* NOTE: it is assumed that the robots cannot reverse. */
       if (new_forward_velocity > limits_.forward_velocity)
@@ -455,12 +452,15 @@ void Simulator::setRobotOdometryAndState() {
           this->sample_period_ *
               (*robots_)[id].groundtruth.odometry.at(k).angular_velocity;
 
+      /* Normalise orienation between -180 and 180. */
+      while (orienation >= M_PI)
+        orienation -= 2.0 * M_PI;
+      while (orienation < -M_PI)
+        orienation += 2.0 * M_PI;
+
       (*robots_)[id].groundtruth.states.push_back(Robot::State(
           this->sample_period_ * k, x_position, y_position, orienation));
     }
-    std::cout << "Robot " << id + 1 << ": "
-              << (*robots_)[id].groundtruth.odometry.size() << " : "
-              << (*robots_)[id].groundtruth.states.size() << std::endl;
   }
 }
 
@@ -472,7 +472,8 @@ void Simulator::setRobotMeasurement() {
   /* The measurement sensor is slower than the odometry sensor, so the is used
    * to determine when a measurment should be taken. */
   unsigned short measurement_to_odometry_ratio = 5;
-  double max_range = 2.0;
+  double max_range = 4.0;
+
   for (unsigned long k = 0; k < this->data_points_; k++) {
 
     if ((k % measurement_to_odometry_ratio) != 0) {
@@ -490,9 +491,9 @@ void Simulator::setRobotMeasurement() {
           continue;
         }
         double x_difference = (*robots_)[id].groundtruth.states[k].x -
-                              (*robots_)[id].groundtruth.states[k].x;
+                              (*robots_)[subject_id].groundtruth.states[k].x;
         double y_difference = (*robots_)[id].groundtruth.states[k].y -
-                              (*robots_)[id].groundtruth.states[k].y;
+                              (*robots_)[subject_id].groundtruth.states[k].y;
         double range = std::sqrt(x_difference * x_difference +
                                  y_difference * y_difference);
 
