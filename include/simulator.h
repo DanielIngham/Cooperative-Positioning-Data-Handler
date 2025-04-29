@@ -104,7 +104,7 @@ private:
     double forward_velocity[2] = {0.0007, 0.0016};
     double angular_velocity[2] = {0.0183, 0.0399};
 
-    double range[2] = {0.0162, 0.45};
+    double range[2] = {0.0162, 0.045};
     double bearing[2] = {0.00062, 0.00596};
 
     double landmarks[2] = {0.00004964 * 0.00004964, 0.00041465 * 0.00041465};
