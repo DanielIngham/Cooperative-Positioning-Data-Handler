@@ -815,8 +815,8 @@ void DataHandler::calculateGroundtruthMeasurement() {
          * truth range and bearing measurments are set to zero. This is used by
          * the error calculator to determine if the measurement has a
          * corresponding groundtruth or not.*/
-        double range = 0.0;
-        double bearing = 0.0;
+        double range = -1.0;         // Invalid range
+        double bearing = 2.0 * M_PI; // Invalid Bearing
 
         if (-1 != subject_ID) {
 
