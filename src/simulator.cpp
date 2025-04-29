@@ -58,6 +58,7 @@ void Simulator::setSimulation(const unsigned long int data_points,
   setLandmarkPositions();
   setRobotsInitalState();
   setRobotOdometry();
+  addGaussianNoise();
 }
 
 /**
