@@ -512,10 +512,11 @@ void testInterpolation() {
         }
 
         if (robots[id].synced.measurements[counter].subjects != subjects) {
-          std::cerr << "Robot " << id << "'s List of subjects does not match\n";
-          std::cerr << current_time << std::endl;
-          std::cerr << robots[id].synced.measurements[counter].subjects.size()
-                    << " : " << subjects.size() << std::endl;
+          std::cerr << "Robot " << id << "'s List of subjects does not match: "
+                    << "t: " << current_time << " - "
+                    << " (E) "
+                    << robots[id].synced.measurements[counter].subjects.size()
+                    << " : (F) " << subjects.size() << std::endl;
 
           flag = false;
         }
@@ -865,28 +866,28 @@ int main() {
   std::cout << "\033[3mNumber of treads supported:\033[0m "
             << std::thread::hardware_concurrency() << std::endl;
 
-  // std::thread unit_test_1(checkBarcodes);
-  // std::thread unit_test_2(checkLandmarkBarcodes);
-  // std::thread unit_test_3(checkGroundtruthExtraction);
-  // std::thread unit_test_4(checkOdometryExtraction);
-  // std::thread unit_test_5(checkMeasurementExtraction);
-  // std::thread unit_test_6(testInterpolation);
-  // std::thread unit_test_7(checkSamplingRate);
-  // std::thread unit_test_8(saveData);
-  // std::thread unit_test_9(testGroundtruthOdometry);
-  // std::thread unit_test_10(checkSyncedSize);
+  std::thread unit_test_1(checkBarcodes);
+  std::thread unit_test_2(checkLandmarkBarcodes);
+  std::thread unit_test_3(checkGroundtruthExtraction);
+  std::thread unit_test_4(checkOdometryExtraction);
+  std::thread unit_test_5(checkMeasurementExtraction);
+  std::thread unit_test_6(testInterpolation);
+  std::thread unit_test_7(checkSamplingRate);
+  std::thread unit_test_8(saveData);
+  std::thread unit_test_9(testGroundtruthOdometry);
+  std::thread unit_test_10(checkSyncedSize);
 
-  // unit_test_1.join();
-  // unit_test_2.join();
-  // unit_test_3.join();
-  // unit_test_4.join();
-  // unit_test_5.join();
-  // unit_test_6.join();
-  // unit_test_7.join();
-  // unit_test_8.join();
-  // unit_test_9.join();
-  // unit_test_10.join();
-  // checkPDF();
+  unit_test_1.join();
+  unit_test_2.join();
+  unit_test_3.join();
+  unit_test_4.join();
+  unit_test_5.join();
+  unit_test_6.join();
+  unit_test_7.join();
+  unit_test_8.join();
+  unit_test_9.join();
+  unit_test_10.join();
+  checkPDF();
   checkSimulation();
 
   auto end = std::chrono::high_resolution_clock::now();
