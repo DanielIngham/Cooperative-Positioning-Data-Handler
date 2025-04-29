@@ -7,6 +7,7 @@
  * @date 2025-04-23
  */
 #include "../include/robot.h"
+#include <stdexcept>
 
 /**
  * @brief Default constructor.
@@ -82,7 +83,7 @@ void Robot::calculateMeasurementError() {
 
   this->error.measurements.reserve(this->groundtruth.measurements.size());
 
-  /* Calculate measurement error for each measurement. */
+  /* Calculate Range and Bearing error for each measurement. */
   auto iterator = this->error.measurements.begin();
   for (std::size_t k = 0; k < this->groundtruth.measurements.size(); k++) {
 
@@ -90,6 +91,13 @@ void Robot::calculateMeasurementError() {
     for (std::size_t s = 0;
          s < this->groundtruth.measurements[k].subjects.size(); s++) {
 
+      /* Check that the subjects match between the groundtruth and the synced
+       * measurements.*/
+      if (this->groundtruth.measurements[k].subjects[s] !=
+          this->synced.measurements[k].subjects[s]) {
+        throw std::runtime_error("The groundtruth subject barcode did not "
+                                 "match the syned subject barcode.");
+      }
       /* Update the error statistics. */
       this->range_error.mean += (this->groundtruth.measurements[k].ranges[s] -
                                  this->synced.measurements[k].ranges[s]);
@@ -108,11 +116,9 @@ void Robot::calculateMeasurementError() {
                         this->groundtruth.measurements[k].bearings[s] -
                             this->synced.measurements[k].bearings[s]));
         iterator = this->error.measurements.end() - 1;
-      }
-
-      /* Otherwise append the measurement values to the existing measurments for
-         the current time stamp. */
-      else {
+      } else {
+        /* Otherwise append the measurement values to the existing measurments
+           for the current time stamp. */
         iterator->subjects.push_back(
             this->groundtruth.measurements[k].subjects[s]);
         iterator->ranges.push_back(this->groundtruth.measurements[k].ranges[s] -
