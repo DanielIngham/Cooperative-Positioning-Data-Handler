@@ -64,6 +64,21 @@ public:
   void saveExtractedData();
   void plotExtractedData();
 
+  /* Save Dataset Extraction Data */
+  void saveStateData();
+  void saveOdometryData();
+  void saveMeasurementData();
+  void saveErrorData();
+
+  void saveOdometryErrorPDF(double);
+  void saveMeasurementErrorPDF(double);
+
+  void saveRobotErrorStatistics();
+  void saveLandmarks();
+
+  void relativeRobotDistance();
+  void relativeLandmarkDistance();
+
 private:
   /**
    * @brief Folder location for the dataset.
