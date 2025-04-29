@@ -152,9 +152,12 @@ void Simulator::setErrorStatistics() {
  */
 void Simulator::setLandmarkPositions() {
 
-  /* Generate random x, y, angle and radius functions */
-  std::uniform_real_distribution<double> position_x(0, this->limits_.width);
-  std::uniform_real_distribution<double> position_y(0, this->limits_.height);
+  /* Generate random x, y positions within the simulation region and some
+   * buffer: 0.5 metres.*/
+  std::uniform_real_distribution<double> position_x(0.5,
+                                                    this->limits_.width - 0.5);
+  std::uniform_real_distribution<double> position_y(0.5,
+                                                    this->limits_.height - 0.5);
 
   /* Set the first landmark with a random x,y coordinate pair. */
   (*landmarks_)[0].x = position_x(this->generator);
@@ -167,7 +170,7 @@ void Simulator::setLandmarkPositions() {
     (*landmarks_)[i].x = position_x(this->generator);
     (*landmarks_)[i].y = position_y(this->generator);
 
-    for (unsigned short j = 0; i < j; j++) {
+    for (unsigned short j = 0; j < i; j++) {
 
       /* Check that the new point is far enough away from other points randomly
        * choosen. */
@@ -453,7 +456,7 @@ void Simulator::setRobotOdometryAndState() {
               (*robots_)[id].groundtruth.odometry.at(k).angular_velocity;
 
       (*robots_)[id].groundtruth.states.push_back(Robot::State(
-          this->sample_period_, x_position, y_position, orienation));
+          this->sample_period_ * k, x_position, y_position, orienation));
     }
     std::cout << "Robot " << id + 1 << ": "
               << (*robots_)[id].groundtruth.odometry.size() << " : "
