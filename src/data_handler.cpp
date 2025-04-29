@@ -62,6 +62,7 @@ void DataHandler::setSimulation(const unsigned long int data_points,
                                 double sample_period,
                                 const unsigned short number_of_robots,
                                 const unsigned short number_of_landmarks) {
+  auto start = std::chrono::high_resolution_clock::now();
   this->dataset_ = "./data";
 
   try {
@@ -92,6 +93,26 @@ void DataHandler::setSimulation(const unsigned long int data_points,
 
   simulator.setSimulation(data_points, sample_period, robots_, landmarks_,
                           barcodes_);
+  try {
+    /* Calculate odometry and measurement errors. */
+    for (int i = 0; i < total_robots; i++) {
+      robots_[i].calculateMeasurementError();
+      robots_[i].calculateSampleErrorStats();
+    }
+    /* Stop timer after extraction. */
+    auto end = std::chrono::high_resolution_clock::now();
+    /* Calculate duration. */
+    auto duration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+    std::cout << "\033[1;32mSimulation Complete:\033[0m \033[3m"
+              << this->data_extraction_directory_ << "\033[0m ["
+              << duration.count() << " ms]" << std::endl;
+  } catch (std::runtime_error &error) {
+    std::cerr << "Unable to calculate error statistics: " << error.what()
+              << std::endl;
+    throw;
+  }
 }
 
 /**
