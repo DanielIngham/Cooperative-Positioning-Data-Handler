@@ -986,51 +986,48 @@ void DataHandler::saveStateData() {
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Groundtruth-State.dat";
 
-  if (!std::filesystem::exists(filename)) {
-    robot_file.open(filename);
+  robot_file.open(filename);
 
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("Unable to create file: " + filename);
-    }
-
-    /* Write the file header (# proceeds values for gnuplot to recognise it as a
-     * comment) */
-    robot_file << "# Time [s]	x [m]	y [m]	orientation [rad]	Raw "
-                  "(r) / Synced (s)	Robot ID\n";
-
-    /* Loop through the data structures for each robot */
-    for (int id = 0; id < total_robots; id++) {
-      /* Determine which dataset is larger and set that as the loop iterations
-       */
-      std::size_t largest_vector_size =
-          std::max({robots_[id].raw.states.size(),
-                    robots_[id].groundtruth.states.size()});
-      for (std::size_t k = 0; k < largest_vector_size; k++) {
-        /* Write the raw ground truth file for the current timestep 'r'  */
-        if (k < robots_[id].raw.states.size()) {
-          robot_file << robots_[id].raw.states[k].time << '\t'
-                     << robots_[id].raw.states[k].x << '\t'
-                     << robots_[id].raw.states[k].y << '\t'
-                     << robots_[id].raw.states[k].orientation << '\t' << 'r'
-                     << '\t' << id + 1 << "\n";
-        }
-
-        /* Write the synced ground truth file for the current timestep 'r'  */
-        if (k < robots_[id].groundtruth.states.size()) {
-          robot_file << robots_[id].groundtruth.states[k].time << '\t'
-                     << robots_[id].groundtruth.states[k].x << '\t'
-                     << robots_[id].groundtruth.states[k].y << '\t'
-                     << robots_[id].groundtruth.states[k].orientation << '\t'
-                     << 's' << '\t' << id + 1 << '\n';
-        }
-      }
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
-    }
-
-    robot_file.close();
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("Unable to create file: " + filename);
   }
+
+  /* Write the file header (# proceeds values for gnuplot to recognise it as a
+   * comment) */
+  robot_file << "# Time [s]	x [m]	y [m]	orientation [rad]	Raw "
+                "(r) / Synced (s)	Robot ID\n";
+
+  /* Loop through the data structures for each robot */
+  for (int id = 0; id < total_robots; id++) {
+    /* Determine which dataset is larger and set that as the loop iterations
+     */
+    std::size_t largest_vector_size = std::max(
+        {robots_[id].raw.states.size(), robots_[id].groundtruth.states.size()});
+    for (std::size_t k = 0; k < largest_vector_size; k++) {
+      /* Write the raw ground truth file for the current timestep 'r'  */
+      if (k < robots_[id].raw.states.size()) {
+        robot_file << robots_[id].raw.states[k].time << '\t'
+                   << robots_[id].raw.states[k].x << '\t'
+                   << robots_[id].raw.states[k].y << '\t'
+                   << robots_[id].raw.states[k].orientation << '\t' << 'r'
+                   << '\t' << id + 1 << "\n";
+      }
+
+      /* Write the synced ground truth file for the current timestep 'r'  */
+      if (k < robots_[id].groundtruth.states.size()) {
+        robot_file << robots_[id].groundtruth.states[k].time << '\t'
+                   << robots_[id].groundtruth.states[k].x << '\t'
+                   << robots_[id].groundtruth.states[k].y << '\t'
+                   << robots_[id].groundtruth.states[k].orientation << '\t'
+                   << 's' << '\t' << id + 1 << '\n';
+      }
+    }
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
+  }
+
+  robot_file.close();
 }
 
 /**
@@ -1046,34 +1043,54 @@ void DataHandler::saveMeasurementData() {
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Measurement.dat";
   /* If the file already exists, there is no need to rewrite the data again. */
-  if (!std::filesystem::exists(filename)) {
-    robot_file.open(filename);
+  robot_file.open(filename);
 
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("[ERROR]: Could not create file: " + filename);
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("[ERROR]: Could not create file: " + filename);
+  }
+
+  /* Write the file header (# proceeds values for gnuplot to recognise it as a
+   * comment) */
+  robot_file
+      << "# Time [s]	Subjects	Ranges [m]	Bearings [m]	"
+         "Raw/Synced/Groundtruth	Robot ID	Landmark(l)/Robot(r)\n";
+
+  /* Save the values of the raw and synced measurment values of a given robot
+   * into the same file with the last row indicating 'g' for raw  and 'i' for
+   * synced.*/
+  for (int id = 0; id < total_robots; id++) {
+
+    /* NOTE: when the "raw" measurement data structure is populated, it only
+     * adds one element to the members for each time stamp. After
+     * interpolation, these values are combined if they have the same time
+     * stamp.*/
+    for (std::size_t k = 0; k < robots_[id].raw.measurements.size(); k++) {
+      /* NOTE: that time stamp grouping is not performed for raw measurements,
+       * therefore each subject vector has only one element. */
+      int subject_ID = getID(robots_[id].raw.measurements[k].subjects[0]);
+      char measurement_type;
+      /* Robots from the UTIAS dataset have ID's from [1,5]. */
+      if (subject_ID < 6) {
+        measurement_type = 'r';
+      }
+      /* Landmarks from the UTIAS dataset have ID's from [5,20]. */
+      else {
+        measurement_type = 'l';
+      }
+      robot_file << robots_[id].raw.measurements[k].time << '\t'
+                 << robots_[id].raw.measurements[k].subjects[0] << '\t'
+                 << robots_[id].raw.measurements[k].ranges[0] << '\t'
+                 << robots_[id].raw.measurements[k].bearings[0] << '\t' << 'r'
+                 << '\t' << id + 1 << '\t' << measurement_type << '\n';
     }
 
-    /* Write the file header (# proceeds values for gnuplot to recognise it as a
-     * comment) */
-    robot_file
-        << "# Time [s]	Subjects	Ranges [m]	Bearings [m]	"
-           "Raw/Synced/Groundtruth	Robot ID	Landmark(l)/Robot(r)\n";
-
-    /* Save the values of the raw and synced measurment values of a given robot
-     * into the same file with the last row indicating 'g' for raw  and 'i' for
-     * synced.*/
-    for (int id = 0; id < total_robots; id++) {
-
-      /* NOTE: when the "raw" measurement data structure is populated, it only
-       * adds one element to the members for each time stamp. After
-       * interpolation, these values are combined if they have the same time
-       * stamp.*/
-      for (std::size_t k = 0; k < robots_[id].raw.measurements.size(); k++) {
-        /* NOTE: that time stamp grouping is not performed for raw measurements,
-         * therefore each subject vector has only one element. */
-        int subject_ID = getID(robots_[id].raw.measurements[k].subjects[0]);
+    /* Save both the synced and the calculated groundtruth */
+    for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
+      for (std::size_t s = 0;
+           s < robots_[id].synced.measurements[k].subjects.size(); s++) {
+        int subject_ID =
+            getID(robots_[id].groundtruth.measurements[k].subjects[s]);
         char measurement_type;
-        /* Robots from the UTIAS dataset have ID's from [1,5]. */
         if (subject_ID < 6) {
           measurement_type = 'r';
         }
@@ -1081,51 +1098,27 @@ void DataHandler::saveMeasurementData() {
         else {
           measurement_type = 'l';
         }
-        robot_file << robots_[id].raw.measurements[k].time << '\t'
-                   << robots_[id].raw.measurements[k].subjects[0] << '\t'
-                   << robots_[id].raw.measurements[k].ranges[0] << '\t'
-                   << robots_[id].raw.measurements[k].bearings[0] << '\t' << 'r'
-                   << '\t' << id + 1 << '\t' << measurement_type << '\n';
+        robot_file << robots_[id].synced.measurements[k].time << '\t'
+                   << robots_[id].synced.measurements[k].subjects[s] << '\t'
+                   << robots_[id].synced.measurements[k].ranges[s] << '\t'
+                   << robots_[id].synced.measurements[k].bearings[s] << '\t'
+                   << 's' << '\t' << id + 1 << '\t' << measurement_type << '\n';
+
+        robot_file << robots_[id].groundtruth.measurements[k].time << '\t'
+                   << robots_[id].groundtruth.measurements[k].subjects[s]
+                   << '\t' << robots_[id].groundtruth.measurements[k].ranges[s]
+                   << '\t'
+                   << robots_[id].groundtruth.measurements[k].bearings[s]
+                   << '\t' << 'g' << '\t' << id + 1 << '\t' << measurement_type
+                   << '\n';
       }
-
-      /* Save both the synced and the calculated groundtruth */
-      for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
-        for (std::size_t s = 0;
-             s < robots_[id].synced.measurements[k].subjects.size(); s++) {
-          int subject_ID =
-              getID(robots_[id].groundtruth.measurements[k].subjects[s]);
-          char measurement_type;
-          if (subject_ID < 6) {
-            measurement_type = 'r';
-          }
-          /* Landmarks from the UTIAS dataset have ID's from [5,20]. */
-          else {
-            measurement_type = 'l';
-          }
-          robot_file << robots_[id].synced.measurements[k].time << '\t'
-                     << robots_[id].synced.measurements[k].subjects[s] << '\t'
-                     << robots_[id].synced.measurements[k].ranges[s] << '\t'
-                     << robots_[id].synced.measurements[k].bearings[s] << '\t'
-                     << 's' << '\t' << id + 1 << '\t' << measurement_type
-                     << '\n';
-
-          robot_file << robots_[id].groundtruth.measurements[k].time << '\t'
-                     << robots_[id].groundtruth.measurements[k].subjects[s]
-                     << '\t'
-                     << robots_[id].groundtruth.measurements[k].ranges[s]
-                     << '\t'
-                     << robots_[id].groundtruth.measurements[k].bearings[s]
-                     << '\t' << 'g' << '\t' << id + 1 << '\t'
-                     << measurement_type << '\n';
-        }
-      }
-
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
     }
-    robot_file.close();
+
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
   }
+  robot_file.close();
 }
 
 /**
@@ -1139,54 +1132,51 @@ void DataHandler::saveOdometryData() {
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Odometry.dat";
   /* If the file already exists, there is no need to rewrite the data again. */
-  if (!std::filesystem::exists(filename)) {
 
-    robot_file.open(filename);
+  robot_file.open(filename);
 
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("Unable to create file: " + filename);
-    }
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("Unable to create file: " + filename);
+  }
 
-    /* Write the file header (# proceeds values for gnuplot to recognise it as a
-     * comment) */
-    robot_file
-        << "# Time [s]	Forward Velocity [m/s]	Angular Velocity "
-           "[rad/s]	Raw (r)/Synced(s)/Groundtruth(g)	Robot ID\n";
+  /* Write the file header (# proceeds values for gnuplot to recognise it as a
+   * comment) */
+  robot_file
+      << "# Time [s]	Forward Velocity [m/s]	Angular Velocity "
+         "[rad/s]	Raw (r)/Synced(s)/Groundtruth(g)	Robot ID\n";
 
-    for (int id = 0; id < total_robots; id++) {
-      std::size_t largest_vector_size =
-          std::max({robots_[id].raw.odometry.size(),
-                    robots_[id].synced.odometry.size()});
+  for (int id = 0; id < total_robots; id++) {
+    std::size_t largest_vector_size = std::max(
+        {robots_[id].raw.odometry.size(), robots_[id].synced.odometry.size()});
 
-      for (std::size_t k = 0; k < largest_vector_size; k++) {
-        if (k < robots_[id].raw.odometry.size()) {
-          robot_file << robots_[id].raw.odometry[k].time << '\t'
-                     << robots_[id].raw.odometry[k].forward_velocity << '\t'
-                     << robots_[id].raw.odometry[k].angular_velocity << '\t'
-                     << 'r' << '\t' << id + 1 << '\n';
-        }
-
-        if (k < robots_[id].synced.odometry.size()) {
-          robot_file << robots_[id].synced.odometry[k].time << '\t'
-                     << robots_[id].synced.odometry[k].forward_velocity << '\t'
-                     << robots_[id].synced.odometry[k].angular_velocity << '\t'
-                     << 's' << '\t' << id + 1 << '\n';
-
-          robot_file << robots_[id].groundtruth.odometry[k].time << '\t'
-                     << robots_[id].groundtruth.odometry[k].forward_velocity
-                     << '\t'
-                     << robots_[id].groundtruth.odometry[k].angular_velocity
-                     << '\t' << 'g' << '\t' << id + 1 << '\n';
-        }
+    for (std::size_t k = 0; k < largest_vector_size; k++) {
+      if (k < robots_[id].raw.odometry.size()) {
+        robot_file << robots_[id].raw.odometry[k].time << '\t'
+                   << robots_[id].raw.odometry[k].forward_velocity << '\t'
+                   << robots_[id].raw.odometry[k].angular_velocity << '\t'
+                   << 'r' << '\t' << id + 1 << '\n';
       }
 
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
+      if (k < robots_[id].synced.odometry.size()) {
+        robot_file << robots_[id].synced.odometry[k].time << '\t'
+                   << robots_[id].synced.odometry[k].forward_velocity << '\t'
+                   << robots_[id].synced.odometry[k].angular_velocity << '\t'
+                   << 's' << '\t' << id + 1 << '\n';
+
+        robot_file << robots_[id].groundtruth.odometry[k].time << '\t'
+                   << robots_[id].groundtruth.odometry[k].forward_velocity
+                   << '\t'
+                   << robots_[id].groundtruth.odometry[k].angular_velocity
+                   << '\t' << 'g' << '\t' << id + 1 << '\n';
+      }
     }
 
-    robot_file.close();
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
   }
+
+  robot_file.close();
 }
 
 /**
@@ -1203,67 +1193,63 @@ void DataHandler::saveErrorData() {
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Odometry-Error.dat";
   /* If the file already exists, there is no need to rewrite the data again. */
-  if (!std::filesystem::exists(filename)) {
 
-    robot_file.open(filename);
+  robot_file.open(filename);
 
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("Could not create file: " + filename);
-    }
-
-    /* Write the file header (# proceeds values for gnuplot to recognise it as a
-     * comment) */
-    robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity "
-                  "[rad/s]	Robot ID\n";
-
-    /* Save the error values of the odometry.*/
-    for (int id = 0; id < total_robots; id++) {
-      for (std::size_t k = 0; k < robots_[id].error.odometry.size(); k++) {
-        robot_file << robots_[id].error.odometry[k].time << '\t'
-                   << robots_[id].error.odometry[k].forward_velocity << '\t'
-                   << robots_[id].error.odometry[k].angular_velocity << '\t'
-                   << id + 1 << '\n';
-      }
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
-    }
-    robot_file.close();
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("Could not create file: " + filename);
   }
+
+  /* Write the file header (# proceeds values for gnuplot to recognise it as a
+   * comment) */
+  robot_file << "# Time [s]	Forward Velocity [m/s]	Angular Velocity "
+                "[rad/s]	Robot ID\n";
+
+  /* Save the error values of the odometry.*/
+  for (int id = 0; id < total_robots; id++) {
+    for (std::size_t k = 0; k < robots_[id].error.odometry.size(); k++) {
+      robot_file << robots_[id].error.odometry[k].time << '\t'
+                 << robots_[id].error.odometry[k].forward_velocity << '\t'
+                 << robots_[id].error.odometry[k].angular_velocity << '\t'
+                 << id + 1 << '\n';
+    }
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
+  }
+  robot_file.close();
 
   filename = data_extraction_directory_ + "Measurement-Error.dat";
 
-  if (!std::filesystem::exists(filename)) {
-    robot_file.open(filename);
+  robot_file.open(filename);
 
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("Unable to create file: " + filename);
-    }
-
-    /* Write the file header (# proceeds values for gnuplot to recognise it as a
-     * comment) */
-    robot_file
-        << "# Time [s]	Subject	Range [m]	Bearing[rad]	Robot ID\n";
-
-    /* Save the error values of the odometry.*/
-    for (int id = 0; id < total_robots; id++) {
-
-      for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
-        for (std::size_t s = 0;
-             s < robots_[id].error.measurements[k].subjects.size(); s++) {
-          robot_file << robots_[id].error.measurements[k].time << '\t'
-                     << robots_[id].error.measurements[k].subjects[s] << '\t'
-                     << robots_[id].error.measurements[k].ranges[s] << '\t'
-                     << robots_[id].error.measurements[k].bearings[s] << '\t'
-                     << id + 1 << '\n';
-        }
-      }
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
-    }
-    robot_file.close();
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("Unable to create file: " + filename);
   }
+
+  /* Write the file header (# proceeds values for gnuplot to recognise it as a
+   * comment) */
+  robot_file
+      << "# Time [s]	Subject	Range [m]	Bearing[rad]	Robot ID\n";
+
+  /* Save the error values of the odometry.*/
+  for (int id = 0; id < total_robots; id++) {
+
+    for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
+      for (std::size_t s = 0;
+           s < robots_[id].error.measurements[k].subjects.size(); s++) {
+        robot_file << robots_[id].error.measurements[k].time << '\t'
+                   << robots_[id].error.measurements[k].subjects[s] << '\t'
+                   << robots_[id].error.measurements[k].ranges[s] << '\t'
+                   << robots_[id].error.measurements[k].bearings[s] << '\t'
+                   << id + 1 << '\n';
+      }
+    }
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
+  }
+  robot_file.close();
 }
 
 /**
@@ -1285,85 +1271,81 @@ void DataHandler::saveOdometryErrorPDF(double bin_size) {
   std::string filename =
       data_extraction_directory_ + "Forward-Velocity-Error-PDF.dat";
 
-  if (!std::filesystem::exists(filename)) {
-    robot_file.open(filename);
+  robot_file.open(filename);
 
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("Could not create file: " + filename);
-    }
-
-    /* Write the file header (# proceeds values for gnuplot to recognise it as a
-     * comment) */
-    robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
-
-    /* Save the plot data for the Forward Velocity Error  */
-    for (int id = 0; id < total_robots; id++) {
-      std::unordered_map<int, double> forward_velocity_bin_counts;
-
-      for (const auto &odometry : robots_[id].error.odometry) {
-        int bin_index =
-            static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
-        /* NOTE: The bin count is actually the area contribution of the odometry
-         * error for the given measurement. This means that the output is a
-         * discretized pdf, where the sum of the area of all the bins should
-         * equal 1. This is done for better visualisation when fitting a
-         * Gaussian curve to the data. */
-        forward_velocity_bin_counts[bin_index] +=
-            1.0 / (robots_[id].error.odometry.size() * bin_size);
-      }
-
-      for (const auto &[bin_index, count] : forward_velocity_bin_counts) {
-        double bin_start = bin_index * bin_size;
-        double bin_end = bin_start + bin_size;
-
-        robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                   << count << '\t' << id + 1 << '\n';
-      }
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
-    }
-
-    robot_file.close();
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("Could not create file: " + filename);
   }
+
+  /* Write the file header (# proceeds values for gnuplot to recognise it as a
+   * comment) */
+  robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
+
+  /* Save the plot data for the Forward Velocity Error  */
+  for (int id = 0; id < total_robots; id++) {
+    std::unordered_map<int, double> forward_velocity_bin_counts;
+
+    for (const auto &odometry : robots_[id].error.odometry) {
+      int bin_index =
+          static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
+      /* NOTE: The bin count is actually the area contribution of the odometry
+       * error for the given measurement. This means that the output is a
+       * discretized pdf, where the sum of the area of all the bins should
+       * equal 1. This is done for better visualisation when fitting a
+       * Gaussian curve to the data. */
+      forward_velocity_bin_counts[bin_index] +=
+          1.0 / (robots_[id].error.odometry.size() * bin_size);
+    }
+
+    for (const auto &[bin_index, count] : forward_velocity_bin_counts) {
+      double bin_start = bin_index * bin_size;
+      double bin_end = bin_start + bin_size;
+
+      robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
+                 << count << '\t' << id + 1 << '\n';
+    }
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
+  }
+
+  robot_file.close();
 
   /* Angular velocity */
   filename = data_extraction_directory_ + "Angular-Velocity-Error-PDF.dat";
 
-  if (!std::filesystem::exists(filename)) {
-    robot_file.open(filename);
+  robot_file.open(filename);
 
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("Could not create file: " + filename);
-    }
-
-    robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
-
-    for (int id = 0; id < total_robots; id++) {
-      /* Save the plot data for the Angular Velocity Error  */
-
-      std::unordered_map<int, double> angular_velocity_bin_counts;
-
-      for (const auto &odometry : robots_[id].error.odometry) {
-        int bin_index =
-            static_cast<int>(std::floor(odometry.angular_velocity / bin_size));
-        angular_velocity_bin_counts[bin_index] +=
-            1.0 / (robots_[id].error.odometry.size() * bin_size);
-      }
-
-      for (const auto &[bin_index, count] : angular_velocity_bin_counts) {
-        double bin_start = bin_index * bin_size;
-        double bin_end = bin_start + bin_size;
-
-        robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                   << count << '\t' << id + 1 << '\n';
-      }
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
-    }
-    robot_file.close();
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("Could not create file: " + filename);
   }
+
+  robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
+
+  for (int id = 0; id < total_robots; id++) {
+    /* Save the plot data for the Angular Velocity Error  */
+
+    std::unordered_map<int, double> angular_velocity_bin_counts;
+
+    for (const auto &odometry : robots_[id].error.odometry) {
+      int bin_index =
+          static_cast<int>(std::floor(odometry.angular_velocity / bin_size));
+      angular_velocity_bin_counts[bin_index] +=
+          1.0 / (robots_[id].error.odometry.size() * bin_size);
+    }
+
+    for (const auto &[bin_index, count] : angular_velocity_bin_counts) {
+      double bin_start = bin_index * bin_size;
+      double bin_end = bin_start + bin_size;
+
+      robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
+                 << count << '\t' << id + 1 << '\n';
+    }
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
+  }
+  robot_file.close();
 }
 
 /**
@@ -1383,94 +1365,86 @@ void DataHandler::saveMeasurementErrorPDF(double bin_size) {
   std::string filename =
       this->data_extraction_directory_ + "Range-Error-PDF.dat";
 
-  if (!std::filesystem::exists(filename)) {
+  robot_file.open(filename);
 
-    robot_file.open(filename);
-
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("Could not create file: " + filename);
-    }
-
-    robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
-    /* Save the plot data for the Forward Velocity Error  */
-    for (int id = 0; id < total_robots; id++) {
-
-      double number_of_measurements = 0.0;
-      for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
-        number_of_measurements +=
-            robots_[id].error.measurements[k].ranges.size();
-      }
-
-      std::unordered_map<int, double> range_bin_counts;
-      for (const auto &measurement : robots_[id].error.measurements) {
-        for (auto range : measurement.ranges) {
-          int bin_index = static_cast<int>(std::floor(range / bin_size));
-          range_bin_counts[bin_index] +=
-              1.0 / (number_of_measurements * bin_size);
-        }
-      }
-
-      for (const auto &[bin_index, count] : range_bin_counts) {
-        double bin_start = bin_index * bin_size;
-        double bin_end = bin_start + bin_size;
-
-        robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                   << count << '\t' << id + 1 << '\n';
-      }
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
-    }
-
-    robot_file.close();
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("Could not create file: " + filename);
   }
+
+  robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
+  /* Save the plot data for the Forward Velocity Error  */
+  for (int id = 0; id < total_robots; id++) {
+
+    double number_of_measurements = 0.0;
+    for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
+      number_of_measurements += robots_[id].error.measurements[k].ranges.size();
+    }
+
+    std::unordered_map<int, double> range_bin_counts;
+    for (const auto &measurement : robots_[id].error.measurements) {
+      for (auto range : measurement.ranges) {
+        int bin_index = static_cast<int>(std::floor(range / bin_size));
+        range_bin_counts[bin_index] +=
+            1.0 / (number_of_measurements * bin_size);
+      }
+    }
+
+    for (const auto &[bin_index, count] : range_bin_counts) {
+      double bin_start = bin_index * bin_size;
+      double bin_end = bin_start + bin_size;
+
+      robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
+                 << count << '\t' << id + 1 << '\n';
+    }
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
+  }
+
+  robot_file.close();
 
   /* Bearing */
   filename = data_extraction_directory_ + "Bearing-Error-PDF.dat";
 
-  if (!std::filesystem::exists(filename)) {
+  robot_file.open(filename);
 
-    robot_file.open(filename);
-
-    if (!robot_file.is_open()) {
-      throw std::runtime_error("Could not create file: " + filename);
-    }
-
-    robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
-
-    for (int id = 0; id < total_robots; id++) {
-      /* Save the plot data for the Angular Velocity Error  */
-
-      double number_of_measurements = 0.0;
-
-      for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
-        number_of_measurements +=
-            robots_[id].error.measurements[k].ranges.size();
-      }
-
-      std::unordered_map<int, double> bearing_bin_counts;
-
-      for (const auto &measurement : robots_[id].error.measurements) {
-        for (auto bearing : measurement.bearings) {
-          int bin_index = static_cast<int>(std::floor(bearing / bin_size));
-          bearing_bin_counts[bin_index] +=
-              1.0 / (number_of_measurements * bin_size);
-        }
-      }
-
-      for (const auto &[bin_index, count] : bearing_bin_counts) {
-        double bin_start = bin_index * bin_size;
-        double bin_end = bin_start + bin_size;
-
-        robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                   << count << '\t' << id + 1 << '\n';
-      }
-      /* Add two empty lines after robot entires for gnuplot */
-      robot_file << '\n';
-      robot_file << '\n';
-    }
-    robot_file.close();
+  if (!robot_file.is_open()) {
+    throw std::runtime_error("Could not create file: " + filename);
   }
+
+  robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
+
+  for (int id = 0; id < total_robots; id++) {
+    /* Save the plot data for the Angular Velocity Error  */
+
+    double number_of_measurements = 0.0;
+
+    for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
+      number_of_measurements += robots_[id].error.measurements[k].ranges.size();
+    }
+
+    std::unordered_map<int, double> bearing_bin_counts;
+
+    for (const auto &measurement : robots_[id].error.measurements) {
+      for (auto bearing : measurement.bearings) {
+        int bin_index = static_cast<int>(std::floor(bearing / bin_size));
+        bearing_bin_counts[bin_index] +=
+            1.0 / (number_of_measurements * bin_size);
+      }
+    }
+
+    for (const auto &[bin_index, count] : bearing_bin_counts) {
+      double bin_start = bin_index * bin_size;
+      double bin_end = bin_start + bin_size;
+
+      robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
+                 << count << '\t' << id + 1 << '\n';
+    }
+    /* Add two empty lines after robot entires for gnuplot */
+    robot_file << '\n';
+    robot_file << '\n';
+  }
+  robot_file.close();
 }
 
 /**
@@ -1481,61 +1455,56 @@ void DataHandler::saveRobotErrorStatistics() {
   std::string filename =
       this->data_extraction_directory_ + "/Robot-Error-Statistics.dat";
 
-  if (!std::filesystem::exists(filename)) {
+  std::ofstream file(filename);
 
-    std::ofstream file(filename);
-
-    if (!file.is_open()) {
-      throw std::runtime_error(" Unable to create file:  " + filename);
-    }
-
-    /* Write file header. */
-    file << "# Robot ID	Forward Velocity Mean [m]	Forward Velocity "
-            "Variance [m^2]	Angular Velocity Mean [rad]	Angular "
-            "Veolcity [rad^2]	Range Mean [m]	Range Variance [m^2]	"
-            "Bearing Mean [rad]	Bearing Variance [rad^2]\n";
-
-    for (unsigned short int id = 0; id < total_robots; id++) {
-      file << id + 1 << '\t' << robots_[id].forward_velocity_error.mean << '\t'
-           << robots_[id].forward_velocity_error.variance << '\t'
-           << robots_[id].angular_velocity_error.mean << '\t'
-           << robots_[id].angular_velocity_error.variance << '\t'
-           << robots_[id].range_error.mean << '\t'
-           << robots_[id].range_error.variance << '\t'
-           << robots_[id].bearing_error.mean << '\t'
-           << robots_[id].bearing_error.variance << '\n';
-
-      /* Two blank line for gnuplot to be able to automatically seperate data
-       * from different robots */
-      file << '\n';
-      file << '\n';
-    }
-
-    file.close();
+  if (!file.is_open()) {
+    throw std::runtime_error(" Unable to create file:  " + filename);
   }
+
+  /* Write file header. */
+  file << "# Robot ID	Forward Velocity Mean [m]	Forward Velocity "
+          "Variance [m^2]	Angular Velocity Mean [rad]	Angular "
+          "Veolcity [rad^2]	Range Mean [m]	Range Variance [m^2]	"
+          "Bearing Mean [rad]	Bearing Variance [rad^2]\n";
+
+  for (unsigned short int id = 0; id < total_robots; id++) {
+    file << id + 1 << '\t' << robots_[id].forward_velocity_error.mean << '\t'
+         << robots_[id].forward_velocity_error.variance << '\t'
+         << robots_[id].angular_velocity_error.mean << '\t'
+         << robots_[id].angular_velocity_error.variance << '\t'
+         << robots_[id].range_error.mean << '\t'
+         << robots_[id].range_error.variance << '\t'
+         << robots_[id].bearing_error.mean << '\t'
+         << robots_[id].bearing_error.variance << '\n';
+
+    /* Two blank line for gnuplot to be able to automatically seperate data
+     * from different robots */
+    file << '\n';
+    file << '\n';
+  }
+
+  file.close();
 }
 
 void DataHandler::saveLandmarks() {
   std::string filename = data_extraction_directory_ + "/landmarks.dat";
 
-  if (!std::filesystem::exists(filename)) {
-    std::ofstream file(filename);
+  std::ofstream file(filename);
 
-    if (!file.is_open()) {
-      throw std::runtime_error("Unable to create file: " + filename);
-    }
-
-    file << "# ID	Barcode	x-coordinate [m]	y-coordinate "
-            "[m]	x std-dev [m]	y std-dev [m]\n";
-    for (unsigned short int id = 0; id < total_landmarks; id++) {
-      file << landmarks_[id].id << '\t' << landmarks_[id].barcode << '\t'
-           << landmarks_[id].x << '\t' << landmarks_[id].y << '\t'
-           << landmarks_[id].x_std_dev << '\t' << landmarks_[id].y_std_dev
-           << '\n';
-    }
-
-    file.close();
+  if (!file.is_open()) {
+    throw std::runtime_error("Unable to create file: " + filename);
   }
+
+  file << "# ID	Barcode	x-coordinate [m]	y-coordinate "
+          "[m]	x std-dev [m]	y std-dev [m]\n";
+  for (unsigned short int id = 0; id < total_landmarks; id++) {
+    file << landmarks_[id].id << '\t' << landmarks_[id].barcode << '\t'
+         << landmarks_[id].x << '\t' << landmarks_[id].y << '\t'
+         << landmarks_[id].x_std_dev << '\t' << landmarks_[id].y_std_dev
+         << '\n';
+  }
+
+  file.close();
 }
 
 /**
