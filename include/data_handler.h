@@ -62,7 +62,6 @@ public:
 
   /* Output of Extracted Data */
   void saveExtractedData();
-  void plotExtractedData();
 
   /* Save Dataset Extraction Data */
   void saveStateData();
@@ -78,6 +77,12 @@ public:
 
   void relativeRobotDistance();
   void relativeLandmarkDistance();
+
+  void plotExtractedData();
+  void plotPDFs();
+  void plotError();
+  void plotMeasurements();
+  void plotStates();
 
 private:
   /**
@@ -161,6 +166,9 @@ private:
 
   void calculateGroundtruthOdometry();
   void calculateGroundtruthMeasurement();
+
+  void createStatePlotDirectory();
+  void createMeasurementPlotDirectories();
 };
 
 #endif // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_

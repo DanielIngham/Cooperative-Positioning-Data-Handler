@@ -33,25 +33,6 @@ DataHandler::DataHandler(const unsigned long int data_points,
       landmarks_(total_landmarks), robots_(total_robots),
       barcodes_(total_barcodes) {
 
-  this->total_barcodes = this->total_robots + this->total_landmarks;
-
-  this->dataset_ = "./data";
-
-  try {
-    auto now = std::chrono::system_clock::now();
-    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-
-    std::tm now_tm = *std::localtime(&now_c);
-    std::ostringstream oss;
-
-    oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
-
-    this->data_extraction_directory_ =
-        dataset_ + "/simulation/" + oss.str() + "/";
-  } catch (std::runtime_error &error) {
-    std::cout << "Unable to set dataset: " << error.what() << std::endl;
-  }
-
   setSimulation(data_points, sample_period, number_of_robots,
                 number_of_landmarks);
 }
@@ -81,7 +62,23 @@ void DataHandler::setSimulation(const unsigned long int data_points,
                                 double sample_period,
                                 const unsigned short number_of_robots,
                                 const unsigned short number_of_landmarks) {
-  /* Set the sample period for this dataset. */
+  this->dataset_ = "./data";
+
+  try {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+    std::tm now_tm = *std::localtime(&now_c);
+    std::ostringstream oss;
+
+    oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
+
+    this->data_extraction_directory_ =
+        dataset_ + "/simulation/" + oss.str() + "/";
+  } catch (std::runtime_error &error) {
+    std::cout << "Unable to set dataset: " << error.what() << std::endl;
+  }
+
   this->sampling_period_ = sample_period;
 
   this->total_landmarks = number_of_landmarks;
@@ -1529,16 +1526,13 @@ std::vector<unsigned short int> &DataHandler::getBarcodes() {
 }
 
 /**
- * @brief Runs the GNUplot scripts to save plots related to the extracted data.
- *
+ * @brief Create the directory for the state plots.
  */
-void DataHandler::plotExtractedData() {
-  /* Start the Timer */
-  auto start = std::chrono::high_resolution_clock::now();
+void DataHandler::createStatePlotDirectory() {
 
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
-  /* TODO: Check if the data extraction directory exists */
+  /* Check if the data extraction directory exists */
   if (!std::filesystem::exists(data_extraction_directory_)) {
     saveExtractedData();
   }
@@ -1549,7 +1543,32 @@ void DataHandler::plotExtractedData() {
                                plots_directory);
     }
   }
+  /* Create the directory for the state plots. */
+  std::string state_directory = plots_directory + "State";
+  if (!std::filesystem::exists(state_directory)) {
+    if (!std::filesystem::create_directory(state_directory)) {
+      throw("Failed to create directory: " + state_directory);
+    }
+  }
+}
 
+/**
+ * @brief Checks Create the directories required for the measurement plots.
+ */
+void DataHandler::createMeasurementPlotDirectories() {
+  std::string plots_directory = data_extraction_directory_ + "plots/";
+
+  /* Check if the data extraction directory exists */
+  if (!std::filesystem::exists(data_extraction_directory_)) {
+    saveExtractedData();
+  }
+  /* Create the plots directory (if it doesn't exist) */
+  if (!std::filesystem::exists(plots_directory)) {
+    if (!std::filesystem::create_directory(plots_directory)) {
+      throw std::runtime_error("Failed to create directory: " +
+                               plots_directory);
+    }
+  }
   /* Create the Range Error sub-directory (if it doesn't exist) */
   std::string range_directory = plots_directory + "Range";
   if (!std::filesystem::exists(range_directory)) {
@@ -1585,44 +1604,24 @@ void DataHandler::plotExtractedData() {
                                angular_velocity_directory);
     }
   }
+}
 
-  /* Create the Forward-Velocity Error subdirectory (if it doesn't exist) */
-  std::string state_directory = plots_directory + "State";
-  if (!std::filesystem::exists(state_directory)) {
-    if (!std::filesystem::create_directory(state_directory)) {
-      throw("Failed to create directory: " + state_directory);
-    }
-  }
+/**
+ * @brief Runs the GNUplot scripts to save plots related to the extracted data.
+ */
+void DataHandler::plotExtractedData() {
+  /* Start the Timer */
+  auto start = std::chrono::high_resolution_clock::now();
+  std::string plots_directory = data_extraction_directory_ + "plots/";
 
-  /* Execute gnuplot command */
-  std::string gnuplotScriptPath = "./scripts/measurement-error-pdf.gp";
-  std::string command = "gnuplot -e \"dataset_directory='" +
-                        data_extraction_directory_ + "'; plots_directory='" +
-                        plots_directory + "'\" " + gnuplotScriptPath;
-  int ret = system(command.c_str());
+  /* Create the directories required for all the plots. */
+  createStatePlotDirectory();
+  createMeasurementPlotDirectories();
 
-  gnuplotScriptPath = "./scripts/measurement-error.gp";
-  command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ +
-            "'; plots_directory='" + plots_directory + "'\" " +
-            gnuplotScriptPath;
-  ret += system(command.c_str());
-
-  gnuplotScriptPath = "./scripts/measurement-dataset.gp";
-  command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ +
-            "'; plots_directory='" + plots_directory + "'\" " +
-            gnuplotScriptPath;
-  ret += system(command.c_str());
-
-  gnuplotScriptPath = "./scripts/groundtruth-dataset.gp";
-  command = "gnuplot -e \"dataset_directory='" + data_extraction_directory_ +
-            "'; plots_directory='" + plots_directory + "'\" " +
-            gnuplotScriptPath;
-  ret += system(command.c_str());
-
-  if (ret != 0) {
-    throw std::runtime_error("Gnuplot failed with code: " +
-                             std::to_string(ret));
-  }
+  plotPDFs();
+  plotMeasurements();
+  plotError();
+  plotStates();
 
   auto end = std::chrono::high_resolution_clock::now();
   auto duration =
@@ -1632,6 +1631,92 @@ void DataHandler::plotExtractedData() {
             << plots_directory << "\033[0m [" << duration.count() << " ms]"
             << std::endl;
 }
+
+/**
+ * @brief Plot the error PDF's of the odometry measurements (forward and angular
+ * velocity) along with the range and bearing error PDF.
+ */
+void DataHandler::plotPDFs() {
+  createMeasurementPlotDirectories();
+
+  std::string plots_directory = data_extraction_directory_ + "plots/";
+  /* Execute gnuplot command */
+  std::string gnuplotScriptPath = "./scripts/measurement-error-pdf.gp";
+  std::string command = "gnuplot -e \"dataset_directory='" +
+                        data_extraction_directory_ + "'; plots_directory='" +
+                        plots_directory + "'\" " + gnuplotScriptPath;
+  int ret = system(command.c_str());
+
+  if (ret != 0) {
+    throw std::runtime_error(
+        "Unable to plot measuremet error PDF. Gnuplot failed with code: " +
+        std::to_string(ret));
+  }
+}
+
+/**
+ * @brief Plot the measurment error odometry (forward and angular velocity)
+ * along with the range and bearing error.
+ */
+void DataHandler::plotError() {
+  createMeasurementPlotDirectories();
+  std::string plots_directory = data_extraction_directory_ + "plots/";
+
+  std::string gnuplotScriptPath = "./scripts/measurement-error.gp";
+  std::string command = "gnuplot -e \"dataset_directory='" +
+                        data_extraction_directory_ + "'; plots_directory='" +
+                        plots_directory + "'\" " + gnuplotScriptPath;
+
+  int ret = system(command.c_str());
+
+  if (ret != 0) {
+    throw std::runtime_error(
+        "Unable to plot measurement error. Gnuplot failed with code: " +
+        std::to_string(ret));
+  }
+}
+
+/**
+ * @brief Plot the raw, synced and groundtruth odometry measurements, along with
+ * the raw, synced and groundtruth range and bearing measurements.
+ */
+void DataHandler::plotMeasurements() {
+  createMeasurementPlotDirectories();
+  std::string plots_directory = data_extraction_directory_ + "plots/";
+
+  std::string gnuplotScriptPath = "./scripts/measurement-dataset.gp";
+  std::string command = "gnuplot -e \"dataset_directory='" +
+                        data_extraction_directory_ + "'; plots_directory='" +
+                        plots_directory + "'\" " + gnuplotScriptPath;
+  int ret = system(command.c_str());
+
+  if (ret != 0) {
+    throw std::runtime_error(
+        "Unable to plot measurements. Gnuplot failed with code: " +
+        std::to_string(ret));
+  }
+}
+
+/**
+ * @brief plot the robots states, which includes its x,y and orientation, along
+ * with a x,y position plot.
+ */
+void DataHandler::plotStates() {
+  createStatePlotDirectory();
+
+  std::string plots_directory = data_extraction_directory_ + "plots/";
+  std::string gnuplotScriptPath = "./scripts/groundtruth-dataset.gp";
+  std::string command = "gnuplot -e \"dataset_directory='" +
+                        data_extraction_directory_ + "'; plots_directory='" +
+                        plots_directory + "'\" " + gnuplotScriptPath;
+  int ret = system(command.c_str());
+
+  if (ret != 0) {
+    throw std::runtime_error("Gnuplot failed with code: " +
+                             std::to_string(ret));
+  }
+}
+
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the robot
  * or landmark.
