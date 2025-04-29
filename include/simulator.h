@@ -9,6 +9,8 @@
 
 #include <cmath>
 #include <random>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "landmark.h"
@@ -91,7 +93,10 @@ private:
         0.35f; ///< Maximum angular velocity [rad/s] (2.3 Odometry: page 970)
   } limits_;
 
-  enum Range { MIN, MAX };
+  /**
+   * @brief allows for easier acces of the items in the limits_ struct.
+   */
+  enum Range { MIN = 0, MAX = 1 };
 
   struct {
     double forward_velocity[2] = {0.0007, 0.0016};

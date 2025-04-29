@@ -30,10 +30,16 @@ public:
   Robot &operator=(const Robot &) = default;
   ~Robot();
 
-  int id;      ///< Numerical identifier for the robot.
-  int barcode; ///< Barcode associated with the robot. This is what the other
-               ///< robots will read during there operation to identify each
-               ///< other.
+  /**
+   * @brief Numerical identifier for the robot.
+   */
+  int id;
+
+  /**
+   * @brief  Barcode associated with the robot. This is what the other robots
+   * will read during there operation to identify each other.
+   */
+  int barcode;
 
   /**
    * @brief Data attributes for a single groundtruth reading extracted from
