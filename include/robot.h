@@ -95,12 +95,16 @@ public:
    */
   struct Measurement {
     double time; ///< Time stamp of the measurement [s].
-    std::vector<int>
+    std::vector<unsigned short>
         subjects; ///< The Barcode of the other robots being measured.
     std::vector<double> ranges;   ///< The measured ranges to the subjects [m]
     std::vector<double> bearings; ///< The bearings from the subjects [rad]
 
-    Measurement(double time_, const std::vector<int> &subjects_,
+    Measurement(const Robot::Measurement &measurement)
+        : time(measurement.time), subjects(measurement.subjects),
+          ranges(measurement.ranges), bearings(measurement.bearings) {};
+
+    Measurement(double time_, const std::vector<unsigned short> &subjects_,
                 const std::vector<double> &ranges_,
                 const std::vector<double> &bearings_)
         : time(time_), subjects(subjects_), ranges(ranges_),
@@ -109,7 +113,8 @@ public:
      * @brief Constructor for convenient population of
      * DataExtractor::robots_.raw.measurements .
      */
-    Measurement(double time_, int subject_, double range_, double bearing_)
+    Measurement(double time_, unsigned short subject_, double range_,
+                double bearing_)
         : time(time_) {
       subjects.push_back(subject_);
       ranges.push_back(range_);
