@@ -57,7 +57,7 @@ void Simulator::setSimulation(const unsigned long int data_points,
   setErrorStatistics();
   setLandmarkPositions();
   setRobotsInitalState();
-  setRobotOdometry();
+  setRobotOdometryAndState();
   addGaussianNoise();
 }
 
@@ -281,11 +281,15 @@ void Simulator::setRobotsInitalState() {
 
 /**
  * @brief Sets the odometry values (forward and angular velocity) for the number
- * of robots provided.
+ * of robots provided along with the corresponding states.
+ * @details The setting of the robot odometry and state were coupled to allow
+ * for the odometry values to change depending on the robot state. If the robot
+ * is too close to the edge of the simulation area, the odometry values are
+ * changed to steer to robot back to the centre of the area.
  * @note Simulator::setRobotsInitalState needs to be called before this
  * function. If this is not done, a std::runtime_error will be thrown.
  */
-void Simulator::setRobotOdometry() {
+void Simulator::setRobotOdometryAndState() {
 
   /* Create a centre point. */
   double centre_x = (this->limits_.width) / 2.0,

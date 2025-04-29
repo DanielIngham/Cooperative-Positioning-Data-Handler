@@ -113,7 +113,7 @@ private:
   void setLandmarkPositions();
   void setErrorStatistics();
   void setRobotsInitalState();
-  void setRobotOdometry();
+  void setRobotOdometryAndState();
   void addGaussianNoise();
 };
 
