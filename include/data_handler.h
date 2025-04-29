@@ -161,21 +161,6 @@ private:
 
   void calculateGroundtruthOdometry();
   void calculateGroundtruthMeasurement();
-
-  /* Save Dataset Extraction Data */
-  void saveStateData();
-  void saveOdometryData();
-  void saveMeasurementData();
-  void saveErrorData();
-
-  void saveOdometryErrorPDF(double);
-  void saveMeasurementErrorPDF(double);
-
-  void saveRobotErrorStatistics();
-  void saveLandmarks();
-
-  void relativeRobotDistance();
-  void relativeLandmarkDistance();
 };
 
 #endif // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_
