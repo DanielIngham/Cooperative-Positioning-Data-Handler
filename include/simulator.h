@@ -45,6 +45,8 @@ private:
    */
   double sample_period_ = 0.02;
 
+  double measurement_period_ = sample_period_ * 5;
+
   /**
    * @brief The total number of landmarks in the dataset.
    */
@@ -114,6 +116,7 @@ private:
   void setErrorStatistics();
   void setRobotsInitalState();
   void setRobotOdometryAndState();
+  void setRobotMeasurement();
   void addGaussianNoise();
 };
 

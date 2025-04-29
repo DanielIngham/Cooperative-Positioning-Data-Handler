@@ -58,6 +58,7 @@ void Simulator::setSimulation(const unsigned long int data_points,
   setLandmarkPositions();
   setRobotsInitalState();
   setRobotOdometryAndState();
+  setRobotMeasurement();
   addGaussianNoise();
 }
 
@@ -78,13 +79,22 @@ void Simulator::assignVectorMemory() {
 
 /**
  * @brief Sets the barcodes for each of the robots and landmarks.
- * @note The barcodes set in the simulator are the same as the ID. The only
- * reason the barcodes are set at all is for compatability with the original
- * UTIAS multirobot localisation and mapping dataset.
+ * @details The are first assigned to the robots and then the landmarks.The
+ * barcodes set in the simulator are the same as the ID. The only reason the
+ * barcodes are set at all is for compatability with the original UTIAS
+ * multirobot localisation and mapping dataset.
+ * @note The orginal dataset incorporated a checksum where the robot barcodes
+ * add up to 5 and the landmark barcodes add up to 6 or 9. Since this is a
+ * simulation, this checksum is not nessary and therefore not incorporated.
  */
 void Simulator::setBarcodes() {
   for (unsigned short int id = 0; id < total_barcodes; id++) {
     (*barcodes_)[id] = id + 1;
+    if (id < this->total_robots) {
+      (*robots_)[id].barcode = id + 1;
+    } else {
+      (*landmarks_)[id - this->total_robots].barcode = id + 1;
+    }
   }
 }
 
@@ -452,6 +462,110 @@ void Simulator::setRobotOdometryAndState() {
 }
 
 /**
+ * @brief Calculates the groundtruth range bearing of robots from one another
+ * that fall within a given range.
+ */
+void Simulator::setRobotMeasurement() {
+  /* The measurement sensor is slower than the odometry sensor, so the is used
+   * to determine when a measurment should be taken. */
+  unsigned short measurement_to_odometry_ratio = 5;
+  double max_range = 2.0;
+  for (unsigned long k = 0; k < this->data_points_; k++) {
+
+    if ((k % measurement_to_odometry_ratio) != 0) {
+      continue;
+    }
+
+    for (unsigned short id = 0; id < this->total_robots; id++) {
+      /* Determine the groundtruth range and bearing from other robots. */
+      double first_entry = true;
+
+      for (unsigned short subject_id = 0; subject_id < this->total_robots;
+           subject_id++) {
+        /* The robot cannot take any measurements of itself. */
+        if (id == subject_id) {
+          continue;
+        }
+        double x_difference = (*robots_)[id].groundtruth.states[k].x -
+                              (*robots_)[id].groundtruth.states[k].x;
+        double y_difference = (*robots_)[id].groundtruth.states[k].y -
+                              (*robots_)[id].groundtruth.states[k].y;
+        double range = std::sqrt(x_difference * x_difference +
+                                 y_difference * y_difference);
+
+        /* If the range is larger than the max threshold it should not be added
+         * to the list of measurements. */
+        if (range > max_range) {
+          continue;
+        }
+
+        double bearing = std::atan2(y_difference, x_difference) -
+                         (*robots_)[id].groundtruth.states[k].orientation;
+
+        /* Normalise the bearing between -180 and 180 (-pi and pi) */
+        while (bearing >= M_PI)
+          bearing -= 2.0 * M_PI;
+        while (bearing < -M_PI)
+          bearing += 2.0 * M_PI;
+
+        if (first_entry) {
+          first_entry = false;
+          (*robots_)[id].groundtruth.measurements.push_back(Robot::Measurement(
+              (*robots_)[id].groundtruth.states[k].time,
+              (*robots_)[subject_id].barcode, range, bearing));
+        } else {
+          (*robots_)[id].groundtruth.measurements.back().subjects.push_back(
+              (*robots_)[subject_id].barcode);
+          (*robots_)[id].groundtruth.measurements.back().ranges.push_back(
+              range);
+          (*robots_)[id].groundtruth.measurements.back().bearings.push_back(
+              bearing);
+        }
+      }
+
+      /* Determine the groundtruth range and bearing from landmarks. */
+      for (unsigned short landmark_id = 0; landmark_id < this->total_robots;
+           landmark_id++) {
+        double x_difference = (*robots_)[id].groundtruth.states[k].x -
+                              (*landmarks_)[landmark_id].x;
+        double y_difference = (*robots_)[id].groundtruth.states[k].y -
+                              (*landmarks_)[landmark_id].y;
+        double range = std::sqrt(x_difference * x_difference +
+                                 y_difference * y_difference);
+
+        /* If the range is larger than the max threshold it should not be added
+         * to the list of measurements. */
+        if (range > max_range) {
+          continue;
+        }
+
+        double bearing = std::atan2(y_difference, x_difference) -
+                         (*robots_)[id].groundtruth.states[k].orientation;
+
+        /* Normalise the orientation between -180 and 180 (-pi and pi) */
+        while (bearing >= M_PI)
+          bearing -= 2.0 * M_PI;
+        while (bearing < -M_PI)
+          bearing += 2.0 * M_PI;
+
+        if (first_entry) {
+          first_entry = false;
+          (*robots_)[id].groundtruth.measurements.push_back(Robot::Measurement(
+              (*robots_)[id].groundtruth.states[k].time,
+              (*landmarks_)[landmark_id].barcode, range, bearing));
+        } else {
+          (*robots_)[id].groundtruth.measurements.back().subjects.push_back(
+              (*landmarks_)[landmark_id].barcode);
+          (*robots_)[id].groundtruth.measurements.back().ranges.push_back(
+              range);
+          (*robots_)[id].groundtruth.measurements.back().bearings.push_back(
+              bearing);
+        }
+      }
+    }
+  }
+}
+/**
  * @brief Loop through measurments and adds Gaussian noise.
  */
 void Simulator::addGaussianNoise() {
@@ -474,7 +588,7 @@ void Simulator::addGaussianNoise() {
         0, std::sqrt((*robots_)[id].forward_velocity_error.variance));
 
     std::normal_distribution<double> angular_velocity_noise(
-        0, std::sqrt((*robots_)[id].forward_velocity_error.variance));
+        0, std::sqrt((*robots_)[id].angular_velocity_error.variance));
 
     /* Apply Gaussian noise to odometry. */
     for (const auto &odometry : (*robots_)[id].groundtruth.odometry) {
@@ -482,6 +596,26 @@ void Simulator::addGaussianNoise() {
           odometry.time,
           odometry.forward_velocity + forward_velocity_noise(this->generator),
           odometry.angular_velocity + angular_velocity_noise(this->generator)));
+    }
+    /* Apply Gaussian noise to range and bearing measurements. */
+    std::normal_distribution<double> range_noise(
+        0, std::sqrt((*robots_)[id].range_error.variance));
+
+    std::normal_distribution<double> bearing_noise(
+        0, std::sqrt((*robots_)[id].bearing_error.variance));
+
+    for (const Robot::Measurement &measurement :
+         (*robots_)[id].groundtruth.measurements) {
+      /* Copy the measurement into a tempory */
+      (*robots_)[id].synced.measurements.push_back(measurement);
+
+      for (unsigned short s = 0;
+           s < (*robots_)[id].synced.measurements.back().subjects.size(); s++) {
+        (*robots_)[id].synced.measurements.back().ranges[s] +=
+            range_noise(this->generator);
+        (*robots_)[id].synced.measurements.back().bearings[s] +=
+            bearing_noise(this->generator);
+      }
     }
   }
 }
