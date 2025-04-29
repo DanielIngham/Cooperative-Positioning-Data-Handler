@@ -318,7 +318,7 @@ void Simulator::setRobotOdometryAndState() {
       -limits_.angular_velocity, limits_.angular_velocity);
 
   std::uniform_real_distribution<double> forward_change(-0.05, 0.05);
-  std::uniform_real_distribution<double> angular_change(-0.01, 0.01);
+  std::uniform_real_distribution<double> angular_change(-0.2, 0.2);
 
   /* Loop through each robot and assign them odometry inputs. */
   for (unsigned short id = 0; id < total_robots; id++) {
@@ -399,9 +399,7 @@ void Simulator::setRobotOdometryAndState() {
       } else if ((k % random_walk_duration) == 0) {
         /* Assign a new velocity adjustment */
         forward_adjustment = forward_change(this->generator);
-        angular_input =
-            (*robots_)[id].groundtruth.odometry.at(k - 1).angular_velocity +
-            angular_change(this->generator);
+        angular_input = angular_change(this->generator);
 
         /* Assign a new random walk length at random  */
         random_walk_duration = walk_length(this->generator);
