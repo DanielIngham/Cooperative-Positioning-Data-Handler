@@ -9,6 +9,9 @@
  */
 
 #include "../include/simulator.h"
+#include <random>
+#include <stdexcept>
+#include <string>
 
 /**
  * @brief Default constructor.
@@ -54,6 +57,7 @@ void Simulator::setSimulation(const unsigned long int data_points,
   setBarcodes();
   setLandmarks();
   setRobotsInitalState();
+  setRobotOdometry();
 }
 
 /**
@@ -272,13 +276,169 @@ void Simulator::setRobotsInitalState() {
 /**
  * @brief Sets the odometry values (forward and angular velocity) for the number
  * of robots provided.
+ * @note Simulator::setRobotsInitalState needs to be called before this
+ * function. If this is not done, a std::runtime_error will be thrown.
  */
 void Simulator::setRobotOdometry() {
 
-  std::random_device rd;
-  for (unsigned short id = 0; id < total_robots; id++) {
+  /* Create a centre point. */
+  double centre_x = (this->limits_.width) / 2.0,
+         centre_y = (this->limits_.height) / 2.0;
 
-    for (unsigned long k = 0; k < data_points_ - 1; k++) {
+  /* Set up random number generator. */
+  std::random_device rd;
+  std::mt19937 generator(rd());
+
+  /* Set up random number generation functions.
+   * The walk length denotes the number of samples for which an input is
+   * applied.
+   */
+  std::uniform_int_distribution<unsigned short> walk_length(20U, 50U);
+  std::uniform_real_distribution<double> forward_velocity(
+      0.0, limits_.forward_velocity);
+  std::uniform_real_distribution<double> angular_velocity(
+      -limits_.angular_velocity, limits_.angular_velocity);
+
+  std::uniform_real_distribution<double> forward_change(-0.05, 0.05);
+  std::uniform_real_distribution<double> angular_change(-0.1, 0.1);
+
+  for (unsigned short id = 0; id < total_robots; id++) {
+    if ((*robots_)[id].groundtruth.states.empty()) {
+      throw std::runtime_error(
+          "The initial state of Robot " + std::to_string(id + 1) +
+          " was not set. Call Simulator::setRobotsInitalState before calling "
+          "Simulator::setRobotOdometry");
     }
+    /* Populate the robot's inital input. */
+    (*robots_)[id].groundtruth.odometry.push_back(Robot::Odometry(
+        0, forward_velocity(generator), angular_velocity(generator)));
+
+    /* Calculate the resulting state from this those intpus */
+    double x_position =
+        (*robots_)[id].groundtruth.states.at(0).x +
+        (*robots_)[id].groundtruth.odometry.at(0).forward_velocity *
+            this->sample_period_ *
+            std::cos((*robots_)[id].groundtruth.states.at(0).orientation);
+
+    double y_position =
+        (*robots_)[id].groundtruth.states.at(0).y +
+        (*robots_)[id].groundtruth.odometry.at(0).forward_velocity *
+            this->sample_period_ *
+            std::sin((*robots_)[id].groundtruth.states.at(0).orientation);
+
+    double orienation =
+        (*robots_)[id].groundtruth.states.at(0).orientation +
+        this->sample_period_ *
+            (*robots_)[id].groundtruth.odometry.at(0).angular_velocity;
+
+    (*robots_)[id].groundtruth.states.push_back(
+        Robot::State(this->sample_period_, x_position, y_position, orienation));
+
+    /* Assign a random walk length at random  */
+    unsigned short random_walk_duration = walk_length(generator);
+
+    /* Generate random odometry inputs for every datapoint. */
+    for (unsigned long k = 1; k < this->data_points_; k++) {
+      double angular_adjustment = 0.0;
+      double forward_adjustment = 0.0;
+
+      /* If the robot is within of the boundaries, the robot should be guided
+       * back towards the centre of the simulation area. */
+      if ((*robots_)[id].groundtruth.states.at(k).x < 1 ||
+          (*robots_)[id].groundtruth.states.at(k).x > limits_.width - 1 ||
+          (*robots_)[id].groundtruth.states.at(k).y < 1 ||
+          (*robots_)[id].groundtruth.states.at(k).y > limits_.height - 1) {
+
+        /* Calculate the distance from the centre points and get the angle
+         * adjustment. */
+        double x_difference =
+            centre_x - (*robots_)[id].groundtruth.states.at(k).x;
+        double y_difference =
+            centre_y - (*robots_)[id].groundtruth.states.at(k).y;
+        double bearing_for_centre =
+            std::atan2(y_difference, x_difference) -
+            (*robots_)[id].groundtruth.states.at(k).orientation;
+
+        /* Normalise the orientation */
+        while (bearing_for_centre >= M_PI)
+          bearing_for_centre -= 2.0 * M_PI;
+        while (bearing_for_centre <= -M_PI)
+          bearing_for_centre += 2.0 * M_PI;
+
+        /* If the the bearinging from the centre point is less than
+         * approximately 10 degrees positive or negative, there is no need to
+         * make further adjustments.  */
+        if (std::abs(bearing_for_centre) > 0.2) {
+          /* Gradually correct the orientation through adjustments to the
+           * angular velocity. */
+          /* NOTE: the an adjustement to forward velocity is not made. */
+          if (bearing_for_centre > 0.0) {
+            angular_adjustment = 0.02;
+          } else {
+            angular_adjustment = 0.02;
+          }
+        }
+      } else if ((k % random_walk_duration) == 0) {
+        /* Assign a new velocity adjustment */
+        forward_adjustment = forward_change(generator);
+        angular_adjustment = angular_change(generator);
+
+        /* Assign a new random walk length at random  */
+        random_walk_duration = walk_length(generator);
+      }
+
+      /* Boundary checks on new odometry values. */
+      double new_forward_velocity =
+          (*robots_)[id].groundtruth.odometry.at(k - 1).forward_velocity +
+          forward_adjustment;
+      double new_angular_velocity =
+          (*robots_)[id].groundtruth.odometry.at(k - 1).angular_velocity +
+          angular_adjustment;
+
+      /* NOTE: it is assumed that the robots cannot reverse. */
+      if (new_forward_velocity > limits_.forward_velocity)
+        new_forward_velocity = limits_.forward_velocity;
+      else if (new_forward_velocity < 0.0)
+        new_forward_velocity = 0.0;
+
+      if (new_angular_velocity > limits_.angular_velocity)
+        new_angular_velocity = limits_.angular_velocity;
+      else if (new_angular_velocity < -limits_.angular_velocity)
+        new_angular_velocity = -limits_.angular_velocity;
+
+      /* Populate odometry with new values. */
+      (*robots_)[id].groundtruth.odometry.push_back(
+          Robot::Odometry(this->sample_period_ * k, new_forward_velocity,
+                          new_angular_velocity));
+
+      /* Prevents the groundtruth from having one more value than the odometry.
+       */
+      if ((*robots_)[id].groundtruth.states.size() == this->data_points_) {
+        continue;
+      }
+      /* Calculate the resulting state from this those intpus */
+      x_position =
+          (*robots_)[id].groundtruth.states.at(k).x +
+          (*robots_)[id].groundtruth.odometry.at(k).forward_velocity *
+              this->sample_period_ *
+              std::cos((*robots_)[id].groundtruth.states.at(k).orientation);
+
+      y_position =
+          (*robots_)[id].groundtruth.states.at(k).y +
+          (*robots_)[id].groundtruth.odometry.at(k).forward_velocity *
+              this->sample_period_ *
+              std::sin((*robots_)[id].groundtruth.states.at(k).orientation);
+
+      orienation =
+          (*robots_)[id].groundtruth.states.at(k).orientation +
+          this->sample_period_ *
+              (*robots_)[id].groundtruth.odometry.at(k).angular_velocity;
+
+      (*robots_)[id].groundtruth.states.push_back(Robot::State(
+          this->sample_period_, x_position, y_position, orienation));
+    }
+    std::cout << "Robot " << id + 1 << ": "
+              << (*robots_)[id].groundtruth.odometry.size() << " : "
+              << (*robots_)[id].groundtruth.states.size() << std::endl;
   }
 }
