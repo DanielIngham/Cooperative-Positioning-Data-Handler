@@ -25,7 +25,6 @@ Robot::~Robot() {}
  * @note If the function encounters an error, a std::runtime_error is thrown.
  */
 void Robot::calculateSensorErrror() {
-
   calculateOdometryError();
   calculateMeasurementError();
   removeOutliers();

@@ -14,6 +14,8 @@ set xlabel "time [s]"
 set grid
 set key inside
 
+# set xrange [750:800]
+
 # Set up datafile seperator as both ',' (for csv files) and '	' (for .dat files).
 set datafile sep ",	"
 
@@ -26,9 +28,9 @@ do for [i=1:5] {
 	set title sprintf("Robot %d Forward Velocity", i)
 	set ylabel "Forward velocity [m/s]"
 	plot \
+		data_folder . "/Odometry.dat" index (i-1) using (stringcolumn(4) eq "s" ? $1 : 1/0):(stringcolumn(4) eq "s" ? $2 : 1/0) with points pointsize 0.1 title "Interpolated",\
 		data_folder . "/Odometry.dat" index (i-1) using (stringcolumn(4) eq "g" ? $1 : 1/0):(stringcolumn(4) eq "g" ? $2 : 1/0) with points pointsize 0.1 title "Groundtruth",\
-		"" index (i-1) using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $2 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
-		"" index (i-1) using (stringcolumn(4) eq "s" ? $1 : 1/0):(stringcolumn(4) eq "s" ? $2 : 1/0) with points pointsize 0.1 title "Interpolated"
+		"" index (i-1) using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $2 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw"
 
 	#########################
 	# Angular Velocity  Error
@@ -37,9 +39,9 @@ do for [i=1:5] {
 	set title sprintf("Robot %d Angular Velocity", i)
 	set ylabel "Angular velocity [rad/s]"
 	plot \
+		data_folder . "/Odometry.dat" index (i-1) using (stringcolumn(4) eq "s" ? $1 : 1/0):(stringcolumn(4) eq "s" ? $3 : 1/0) with points pointsize 0.1 title "Interpolated", \
 		data_folder . "/Odometry.dat" index (i-1) using (stringcolumn(4) eq "g" ? $1 : 1/0):(stringcolumn(4) eq "g" ? $3 : 1/0) with points pointsize 0.1 title "Groundtruth",\
-		"" index (i-1) using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $3 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
-		"" index (i-1) using (stringcolumn(4) eq "s" ? $1 : 1/0):(stringcolumn(4) eq "s" ? $3 : 1/0) with points pointsize 0.1 title "Interpolated"
+		"" index (i-1) using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $3 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw"
 
 	#########################
 	# Range Measurement
