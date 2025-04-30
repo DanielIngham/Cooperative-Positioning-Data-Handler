@@ -4,3 +4,4 @@ test/data
 core
 data/*/data_extraction
 simulation
+output
