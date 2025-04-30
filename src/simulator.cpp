@@ -311,9 +311,9 @@ void Simulator::setRobotOdometryAndState() {
   /* Set up random number generation functions.
    * The walk length denotes the number of samples for which an input is
    * applied. */
-  std::uniform_int_distribution<unsigned short> walk_length(20U, 200U);
+  std::uniform_int_distribution<unsigned short> walk_length(20U, 500U);
   std::uniform_real_distribution<double> forward_velocity(
-      0.08, limits_.forward_velocity);
+      limits_.forward_velocity / 2.0, limits_.forward_velocity);
   std::uniform_real_distribution<double> angular_velocity(
       -limits_.angular_velocity, limits_.angular_velocity);
 
@@ -399,7 +399,7 @@ void Simulator::setRobotOdometryAndState() {
       } else if ((k % random_walk_duration) == 0) {
         /* Assign a new velocity adjustment */
         forward_adjustment = forward_change(this->generator);
-        angular_input = angular_change(this->generator);
+        angular_input = angular_velocity(this->generator);
 
         /* Assign a new random walk length at random  */
         random_walk_duration = walk_length(this->generator);
@@ -510,6 +510,12 @@ void Simulator::setRobotMeasurement() {
         while (bearing < -M_PI)
           bearing += 2.0 * M_PI;
 
+        /* According to the UTIAS paper, the robots have a field of view of 60
+         * degrees (-0.52, 0.52 radians). */
+        if (std::abs(bearing) > 0.52) {
+          continue;
+        }
+
         if (first_entry) {
           first_entry = false;
           (*robots_)[id].groundtruth.measurements.push_back(Robot::Measurement(
@@ -549,6 +555,12 @@ void Simulator::setRobotMeasurement() {
           bearing -= 2.0 * M_PI;
         while (bearing < -M_PI)
           bearing += 2.0 * M_PI;
+
+        /* According to the UTIAS paper, the robots have a field of view of 60
+         * degrees (-0.52, 0.52 radians). */
+        if (std::abs(bearing) > 0.52) {
+          continue;
+        }
 
         if (first_entry) {
           first_entry = false;
