@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['range_0',['range',['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34b',1,'Simulator::Range'],['../classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb',1,'Simulator::range']]],
+  ['range_0',['range',['../classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb',1,'Simulator::range'],['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34b',1,'Simulator::Range']]],
   ['range_5ferror_1',['range_error',['../classRobot.html#a33ed5b6958976ee636414c2ef8d151a0',1,'Robot']]],
   ['ranges_2',['ranges',['../structRobot_1_1Measurement.html#aa071e829eca62fa89473fcc66a532101',1,'Robot::Measurement']]],
   ['raw_3',['raw',['../classRobot.html#ae4e6f60558900a0655078461b3cb0588',1,'Robot']]],

@@ -11,12 +11,14 @@ var searchData=
   ['savestatedata_8',['saveStateData',['../classDataHandler.html#adcf0108de94cdd9b986c06c2d9bf1d1b',1,'DataHandler']]],
   ['setbarcodes_9',['setBarcodes',['../classSimulator.html#addcecd71b4ca2b4105c2360d53346342',1,'Simulator']]],
   ['setdataset_10',['setDataSet',['../classDataHandler.html#a418461e98948dd4a37ed5b3af24e6e6e',1,'DataHandler']]],
-  ['setlandmarks_11',['setLandmarks',['../classSimulator.html#ae119c24ab99d5ca3efe6436c010b8c7d',1,'Simulator']]],
-  ['setquartiles_12',['setQuartiles',['../classRobot.html#ad6ccae894258430ac82ffc6b21c1e821',1,'Robot']]],
-  ['setrobotodometry_13',['setRobotOdometry',['../classSimulator.html#ae062e872085efb66129b0f71cb9ad2ee',1,'Simulator']]],
-  ['setrobotsinitalstate_14',['setRobotsInitalState',['../classSimulator.html#a708be46896a6d458210911debbdf9136',1,'Simulator']]],
-  ['setsimulation_15',['setsimulation',['../classDataHandler.html#a737d46c62e8d2ad2a35bb707f000ca9a',1,'DataHandler::setSimulation()'],['../classSimulator.html#a5bdfa23add82ee415098d6bb914812f5',1,'Simulator::setSimulation(const unsigned long int, double, std::vector&lt; Robot &gt; &amp;, std::vector&lt; Landmark &gt; &amp;, std::vector&lt; unsigned short int &gt; &amp;)']]],
-  ['simulator_16',['simulator',['../classSimulator.html#a031573bfcfe2e0f5c9539bcc1c7fc5d9',1,'Simulator::Simulator()'],['../classSimulator.html#ad79ba8390d07e746222487d8fa4f6e33',1,'Simulator::Simulator(const unsigned long int, double, std::vector&lt; Robot &gt; &amp;, std::vector&lt; Landmark &gt; &amp;, std::vector&lt; unsigned short int &gt; &amp;)'],['../classSimulator.html#acc73d8ee4cb2e73ece6c7c312e4af217',1,'Simulator::Simulator(Simulator &amp;&amp;)=default'],['../classSimulator.html#ae19d604f872fe84cd4140aa74d85d8fe',1,'Simulator::Simulator(const Simulator &amp;)=default']]],
-  ['state_17',['state',['../structRobot_1_1State.html#a0e79a34a49a9a3c40117089008e4cf1f',1,'Robot::State::State()'],['../structRobot_1_1State.html#a30d70945b7f3b1f2fe905d91c9a56ebe',1,'Robot::State::State(double time_, double x_, double y_, double orientation_)']]],
-  ['syncdata_18',['syncData',['../classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f',1,'DataHandler']]]
+  ['seterrorstatistics_11',['setErrorStatistics',['../classSimulator.html#ac7000348251c76521e2ccdaff1199518',1,'Simulator']]],
+  ['setlandmarkpositions_12',['setLandmarkPositions',['../classSimulator.html#af1d6c7ca84e8b192414181cd87de2c66',1,'Simulator']]],
+  ['setquartiles_13',['setQuartiles',['../classRobot.html#ad6ccae894258430ac82ffc6b21c1e821',1,'Robot']]],
+  ['setrobotmeasurement_14',['setRobotMeasurement',['../classSimulator.html#aea84799359baf3c4ac09348eeb41bdf8',1,'Simulator']]],
+  ['setrobotodometryandstate_15',['setRobotOdometryAndState',['../classSimulator.html#a57b6272a59208341293a7c5bb4e1e194',1,'Simulator']]],
+  ['setrobotsinitalstate_16',['setRobotsInitalState',['../classSimulator.html#a708be46896a6d458210911debbdf9136',1,'Simulator']]],
+  ['setsimulation_17',['setsimulation',['../classDataHandler.html#a737d46c62e8d2ad2a35bb707f000ca9a',1,'DataHandler::setSimulation()'],['../classSimulator.html#a5bdfa23add82ee415098d6bb914812f5',1,'Simulator::setSimulation(const unsigned long int, double, std::vector&lt; Robot &gt; &amp;, std::vector&lt; Landmark &gt; &amp;, std::vector&lt; unsigned short int &gt; &amp;)']]],
+  ['simulator_18',['simulator',['../classSimulator.html#a031573bfcfe2e0f5c9539bcc1c7fc5d9',1,'Simulator::Simulator()'],['../classSimulator.html#ad79ba8390d07e746222487d8fa4f6e33',1,'Simulator::Simulator(const unsigned long int, double, std::vector&lt; Robot &gt; &amp;, std::vector&lt; Landmark &gt; &amp;, std::vector&lt; unsigned short int &gt; &amp;)']]],
+  ['state_19',['state',['../structRobot_1_1State.html#a0e79a34a49a9a3c40117089008e4cf1f',1,'Robot::State::State()'],['../structRobot_1_1State.html#a30d70945b7f3b1f2fe905d91c9a56ebe',1,'Robot::State::State(double time_, double x_, double y_, double orientation_)']]],
+  ['syncdata_20',['syncData',['../classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f',1,'DataHandler']]]
 ];

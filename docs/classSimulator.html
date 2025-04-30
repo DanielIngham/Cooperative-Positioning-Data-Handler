@@ -96,11 +96,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad79ba8390d07e746222487d8fa4f6e33" id="r_ad79ba8390d07e746222487d8fa4f6e33"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ad79ba8390d07e746222487d8fa4f6e33">Simulator</a> (const unsigned long int, double, std::vector&lt; <a class="el" href="classRobot.html">Robot</a> &gt; &amp;, std::vector&lt; <a class="el" href="structLandmark.html">Landmark</a> &gt; &amp;, std::vector&lt; unsigned short int &gt; &amp;)</td></tr>
 <tr class="memdesc:ad79ba8390d07e746222487d8fa4f6e33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor which populates the data for the robots and landmarks.  <br /></td></tr>
 <tr class="separator:ad79ba8390d07e746222487d8fa4f6e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc73d8ee4cb2e73ece6c7c312e4af217" id="r_acc73d8ee4cb2e73ece6c7c312e4af217"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#acc73d8ee4cb2e73ece6c7c312e4af217">Simulator</a> (<a class="el" href="classSimulator.html">Simulator</a> &amp;&amp;)=default</td></tr>
-<tr class="separator:acc73d8ee4cb2e73ece6c7c312e4af217"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae19d604f872fe84cd4140aa74d85d8fe" id="r_ae19d604f872fe84cd4140aa74d85d8fe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ae19d604f872fe84cd4140aa74d85d8fe">Simulator</a> (const <a class="el" href="classSimulator.html">Simulator</a> &amp;)=default</td></tr>
-<tr class="separator:ae19d604f872fe84cd4140aa74d85d8fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f49aa04f42060a785adf77346b9de9f" id="r_a0f49aa04f42060a785adf77346b9de9f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a0f49aa04f42060a785adf77346b9de9f">~Simulator</a> ()</td></tr>
+<tr class="memdesc:a0f49aa04f42060a785adf77346b9de9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor.  <br /></td></tr>
 <tr class="separator:a0f49aa04f42060a785adf77346b9de9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bdfa23add82ee415098d6bb914812f5" id="r_a5bdfa23add82ee415098d6bb914812f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a5bdfa23add82ee415098d6bb914812f5">setSimulation</a> (const unsigned long int, double, std::vector&lt; <a class="el" href="classRobot.html">Robot</a> &gt; &amp;, std::vector&lt; <a class="el" href="structLandmark.html">Landmark</a> &gt; &amp;, std::vector&lt; unsigned short int &gt; &amp;)</td></tr>
 <tr class="memdesc:a5bdfa23add82ee415098d6bb914812f5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classPopulates.html">Populates</a> the robots and landmarks with simulated values.  <br /></td></tr>
@@ -108,9 +105,10 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-types" name="pri-types"></a>
 Private Types</h2></td></tr>
-<tr class="memitem:a266818ccfcf4d923a0caf0539474e34b" id="r_a266818ccfcf4d923a0caf0539474e34b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34b">Range</a> { <a class="el" href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34ba35c44b547e01fb11878d1ce75ebbb0fa">MIN</a>
-, <a class="el" href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34baab3fdd67b327def24cd68d041c426596">MAX</a>
+<tr class="memitem:a266818ccfcf4d923a0caf0539474e34b" id="r_a266818ccfcf4d923a0caf0539474e34b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34b">Range</a> { <a class="el" href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34ba35c44b547e01fb11878d1ce75ebbb0fa">MIN</a> = 0
+, <a class="el" href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34baab3fdd67b327def24cd68d041c426596">MAX</a> = 1
  }</td></tr>
+<tr class="memdesc:a266818ccfcf4d923a0caf0539474e34b"><td class="mdescLeft">&#160;</td><td class="mdescRight">allows for easier acces of the items in the limits_ struct.  <a href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34b">More...</a><br /></td></tr>
 <tr class="separator:a266818ccfcf4d923a0caf0539474e34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
@@ -121,23 +119,36 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:addcecd71b4ca2b4105c2360d53346342" id="r_addcecd71b4ca2b4105c2360d53346342"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#addcecd71b4ca2b4105c2360d53346342">setBarcodes</a> ()</td></tr>
 <tr class="memdesc:addcecd71b4ca2b4105c2360d53346342"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the barcodes for each of the robots and landmarks.  <br /></td></tr>
 <tr class="separator:addcecd71b4ca2b4105c2360d53346342"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae119c24ab99d5ca3efe6436c010b8c7d" id="r_ae119c24ab99d5ca3efe6436c010b8c7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ae119c24ab99d5ca3efe6436c010b8c7d">setLandmarks</a> ()</td></tr>
-<tr class="memdesc:ae119c24ab99d5ca3efe6436c010b8c7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the x and y coordinate for the number of landmarks provided.  <br /></td></tr>
-<tr class="separator:ae119c24ab99d5ca3efe6436c010b8c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1d6c7ca84e8b192414181cd87de2c66" id="r_af1d6c7ca84e8b192414181cd87de2c66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#af1d6c7ca84e8b192414181cd87de2c66">setLandmarkPositions</a> ()</td></tr>
+<tr class="memdesc:af1d6c7ca84e8b192414181cd87de2c66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the x and y coordinate for the number of landmarks provided.  <br /></td></tr>
+<tr class="separator:af1d6c7ca84e8b192414181cd87de2c66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7000348251c76521e2ccdaff1199518" id="r_ac7000348251c76521e2ccdaff1199518"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ac7000348251c76521e2ccdaff1199518">setErrorStatistics</a> ()</td></tr>
+<tr class="memdesc:ac7000348251c76521e2ccdaff1199518"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the robots error variances and landmarks position error standard deviation.  <br /></td></tr>
+<tr class="separator:ac7000348251c76521e2ccdaff1199518"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a708be46896a6d458210911debbdf9136" id="r_a708be46896a6d458210911debbdf9136"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a708be46896a6d458210911debbdf9136">setRobotsInitalState</a> ()</td></tr>
 <tr class="memdesc:a708be46896a6d458210911debbdf9136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the intial unique x,y coordinate and orienation for the number of robots provided.  <br /></td></tr>
 <tr class="separator:a708be46896a6d458210911debbdf9136"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae062e872085efb66129b0f71cb9ad2ee" id="r_ae062e872085efb66129b0f71cb9ad2ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ae062e872085efb66129b0f71cb9ad2ee">setRobotOdometry</a> ()</td></tr>
-<tr class="memdesc:ae062e872085efb66129b0f71cb9ad2ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the odometry values (forward and angular velocity) for the number of robots provided.  <br /></td></tr>
-<tr class="separator:ae062e872085efb66129b0f71cb9ad2ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b6272a59208341293a7c5bb4e1e194" id="r_a57b6272a59208341293a7c5bb4e1e194"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a57b6272a59208341293a7c5bb4e1e194">setRobotOdometryAndState</a> ()</td></tr>
+<tr class="memdesc:a57b6272a59208341293a7c5bb4e1e194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the odometry values (forward and angular velocity) for the number of robots provided along with the corresponding states.  <br /></td></tr>
+<tr class="separator:a57b6272a59208341293a7c5bb4e1e194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea84799359baf3c4ac09348eeb41bdf8" id="r_aea84799359baf3c4ac09348eeb41bdf8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#aea84799359baf3c4ac09348eeb41bdf8">setRobotMeasurement</a> ()</td></tr>
+<tr class="memdesc:aea84799359baf3c4ac09348eeb41bdf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the groundtruth range bearing of robots from one another that fall within a given range.  <br /></td></tr>
+<tr class="separator:aea84799359baf3c4ac09348eeb41bdf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac128e4fc0ee1d462204c54914db50655" id="r_ac128e4fc0ee1d462204c54914db50655"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ac128e4fc0ee1d462204c54914db50655">addGaussianNoise</a> ()</td></tr>
+<tr class="memdesc:ac128e4fc0ee1d462204c54914db50655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loop through measurments and adds Gaussian noise.  <br /></td></tr>
+<tr class="separator:ac128e4fc0ee1d462204c54914db50655"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
+<tr class="memitem:a98ffc188bde1528710a9e836f9a1c725" id="r_a98ffc188bde1528710a9e836f9a1c725"><td class="memItemLeft" align="right" valign="top">std::mt19937&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a98ffc188bde1528710a9e836f9a1c725">generator</a></td></tr>
+<tr class="separator:a98ffc188bde1528710a9e836f9a1c725"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af297c7b38b7a2cb89afb42edd4ee7a6c" id="r_af297c7b38b7a2cb89afb42edd4ee7a6c"><td class="memItemLeft" align="right" valign="top">unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#af297c7b38b7a2cb89afb42edd4ee7a6c">data_points_</a> = 0</td></tr>
 <tr class="separator:af297c7b38b7a2cb89afb42edd4ee7a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9de375c80acbbf5af28119fad6665752" id="r_a9de375c80acbbf5af28119fad6665752"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a9de375c80acbbf5af28119fad6665752">sample_period_</a> = 0.02</td></tr>
 <tr class="memdesc:a9de375c80acbbf5af28119fad6665752"><td class="mdescLeft">&#160;</td><td class="mdescRight">The period between samples for the simulated groundtruth and odometry readings.  <br /></td></tr>
 <tr class="separator:a9de375c80acbbf5af28119fad6665752"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad777df8a75682e4b9b50544309ea29d4" id="r_ad777df8a75682e4b9b50544309ea29d4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ad777df8a75682e4b9b50544309ea29d4">measurement_period_</a> = <a class="el" href="classSimulator.html#a9de375c80acbbf5af28119fad6665752">sample_period_</a> * 5</td></tr>
+<tr class="separator:ad777df8a75682e4b9b50544309ea29d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26d63f56b3faf2dd307ce961071d5eca" id="r_a26d63f56b3faf2dd307ce961071d5eca"><td class="memItemLeft" align="right" valign="top">unsigned short int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a26d63f56b3faf2dd307ce961071d5eca">total_landmarks</a> = 0</td></tr>
 <tr class="memdesc:a26d63f56b3faf2dd307ce961071d5eca"><td class="mdescLeft">&#160;</td><td class="mdescRight">The total number of landmarks in the dataset.  <br /></td></tr>
 <tr class="separator:a26d63f56b3faf2dd307ce961071d5eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,11 +190,11 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a7295687a3c2f5962193178e6c3f68964"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5a5fa3b413a464a2ba6bd9f479a1a5e" id="r_ae5a5fa3b413a464a2ba6bd9f479a1a5e"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a5ab47047fb9cddae8d047499b75bb9d8">angular_velocity</a> [2] = {0.0183, 0.0399}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="separator:ae5a5fa3b413a464a2ba6bd9f479a1a5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90e7504d3ee3b6b5212d9325a36fae02" id="r_a90e7504d3ee3b6b5212d9325a36fae02"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb">range</a> [2] = {0.0162, 0.45}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memitem:a90e7504d3ee3b6b5212d9325a36fae02" id="r_a90e7504d3ee3b6b5212d9325a36fae02"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb">range</a> [2] = {0.0162, 0.045}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="separator:a90e7504d3ee3b6b5212d9325a36fae02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a178b0db3270a009df230ddd1ee8f025a" id="r_a178b0db3270a009df230ddd1ee8f025a"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a23b29776e6139abd82ed5aeb1debb787">bearing</a> [2] = {0.00062, 0.00596}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="separator:a178b0db3270a009df230ddd1ee8f025a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbb947c78eea2686818b2c2d224cd569" id="r_afbb947c78eea2686818b2c2d224cd569"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#afcf45b5faab374197fd9daacd9812418">landmarks</a> [2]&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memitem:afbb947c78eea2686818b2c2d224cd569" id="r_afbb947c78eea2686818b2c2d224cd569"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#afcf45b5faab374197fd9daacd9812418">landmarks</a> [2] = {0.00004964 * 0.00004964, 0.00041465 * 0.00041465}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="separator:afbb947c78eea2686818b2c2d224cd569"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ada3ebbc92d53190d849efc81796b98" id="r_a0ada3ebbc92d53190d849efc81796b98"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a0ada3ebbc92d53190d849efc81796b98">variance</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="separator:a0ada3ebbc92d53190d849efc81796b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -208,6 +219,8 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>allows for easier acces of the items in the limits_ struct. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a266818ccfcf4d923a0caf0539474e34ba35c44b547e01fb11878d1ce75ebbb0fa" name="a266818ccfcf4d923a0caf0539474e34ba35c44b547e01fb11878d1ce75ebbb0fa"></a>MIN&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a266818ccfcf4d923a0caf0539474e34baab3fdd67b327def24cd68d041c426596" name="a266818ccfcf4d923a0caf0539474e34baab3fdd67b327def24cd68d041c426596"></a>MAX&#160;</td><td class="fielddoc"></td></tr>
@@ -217,7 +230,7 @@ Private Attributes</h2></td></tr>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a031573bfcfe2e0f5c9539bcc1c7fc5d9" name="a031573bfcfe2e0f5c9539bcc1c7fc5d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a031573bfcfe2e0f5c9539bcc1c7fc5d9">&#9670;&#160;</a></span>Simulator() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a031573bfcfe2e0f5c9539bcc1c7fc5d9">&#9670;&#160;</a></span>Simulator() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -236,7 +249,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a id="ad79ba8390d07e746222487d8fa4f6e33" name="ad79ba8390d07e746222487d8fa4f6e33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad79ba8390d07e746222487d8fa4f6e33">&#9670;&#160;</a></span>Simulator() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad79ba8390d07e746222487d8fa4f6e33">&#9670;&#160;</a></span>Simulator() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -283,58 +296,6 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="acc73d8ee4cb2e73ece6c7c312e4af217" name="acc73d8ee4cb2e73ece6c7c312e4af217"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc73d8ee4cb2e73ece6c7c312e4af217">&#9670;&#160;</a></span>Simulator() <span class="overload">[3/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Simulator::Simulator </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classSimulator.html">Simulator</a> &amp;&amp;&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae19d604f872fe84cd4140aa74d85d8fe" name="ae19d604f872fe84cd4140aa74d85d8fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae19d604f872fe84cd4140aa74d85d8fe">&#9670;&#160;</a></span>Simulator() <span class="overload">[4/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Simulator::Simulator </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classSimulator.html">Simulator</a> &amp;&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a0f49aa04f42060a785adf77346b9de9f" name="a0f49aa04f42060a785adf77346b9de9f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0f49aa04f42060a785adf77346b9de9f">&#9670;&#160;</a></span>~Simulator()</h2>
 
@@ -350,9 +311,38 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Default destructor. </p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac128e4fc0ee1d462204c54914db50655" name="ac128e4fc0ee1d462204c54914db50655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac128e4fc0ee1d462204c54914db50655">&#9670;&#160;</a></span>addGaussianNoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Simulator::addGaussianNoise </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Loop through measurments and adds Gaussian noise. </p>
+
+</div>
+</div>
 <a id="aaf79640291035d5c95184c2108b2a6f7" name="aaf79640291035d5c95184c2108b2a6f7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaf79640291035d5c95184c2108b2a6f7">&#9670;&#160;</a></span>assignVectorMemory()</h2>
 
@@ -404,12 +394,12 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the barcodes for each of the robots and landmarks. </p>
-<dl class="section note"><dt>Note</dt><dd>The barcodes set in the simulator are the same as the ID. The only reason the barcodes are set at all is for compatability with the original UTIAS multirobot localisation and mapping dataset. </dd></dl>
+<p>The are first assigned to the robots and then the landmarks.The barcodes set in the simulator are the same as the ID. The only reason the barcodes are set at all is for compatability with the original UTIAS multirobot localisation and mapping dataset. </p><dl class="section note"><dt>Note</dt><dd>The orginal dataset incorporated a checksum where the robot barcodes add up to 5 and the landmark barcodes add up to 6 or 9. Since this is a simulation, this checksum is not nessary and therefore not incorporated. </dd></dl>
 
 </div>
 </div>
-<a id="ae119c24ab99d5ca3efe6436c010b8c7d" name="ae119c24ab99d5ca3efe6436c010b8c7d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae119c24ab99d5ca3efe6436c010b8c7d">&#9670;&#160;</a></span>setLandmarks()</h2>
+<a id="ac7000348251c76521e2ccdaff1199518" name="ac7000348251c76521e2ccdaff1199518"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7000348251c76521e2ccdaff1199518">&#9670;&#160;</a></span>setErrorStatistics()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -418,7 +408,34 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Simulator::setLandmarks </td>
+          <td class="memname">void Simulator::setErrorStatistics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the robots error variances and landmarks position error standard deviation. </p>
+
+</div>
+</div>
+<a id="af1d6c7ca84e8b192414181cd87de2c66" name="af1d6c7ca84e8b192414181cd87de2c66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1d6c7ca84e8b192414181cd87de2c66">&#9670;&#160;</a></span>setLandmarkPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Simulator::setLandmarkPositions </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -435,8 +452,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae062e872085efb66129b0f71cb9ad2ee" name="ae062e872085efb66129b0f71cb9ad2ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae062e872085efb66129b0f71cb9ad2ee">&#9670;&#160;</a></span>setRobotOdometry()</h2>
+<a id="aea84799359baf3c4ac09348eeb41bdf8" name="aea84799359baf3c4ac09348eeb41bdf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea84799359baf3c4ac09348eeb41bdf8">&#9670;&#160;</a></span>setRobotMeasurement()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -445,7 +462,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void Simulator::setRobotOdometry </td>
+          <td class="memname">void Simulator::setRobotMeasurement </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -458,7 +475,35 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Sets the odometry values (forward and angular velocity) for the number of robots provided. </p>
+<p>Calculates the groundtruth range bearing of robots from one another that fall within a given range. </p>
+
+</div>
+</div>
+<a id="a57b6272a59208341293a7c5bb4e1e194" name="a57b6272a59208341293a7c5bb4e1e194"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57b6272a59208341293a7c5bb4e1e194">&#9670;&#160;</a></span>setRobotOdometryAndState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Simulator::setRobotOdometryAndState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the odometry values (forward and angular velocity) for the number of robots provided along with the corresponding states. </p>
+<p>The setting of the robot odometry and state were coupled to allow for the odometry values to change depending on the robot state. If the robot is too close to the edge of the simulation area, the odometry values are changed to steer to robot back to the centre of the area. </p><dl class="section note"><dt>Note</dt><dd><a class="el" href="classSimulator.html#a708be46896a6d458210911debbdf9136" title="Sets the intial unique x,y coordinate and orienation for the number of robots provided.">Simulator::setRobotsInitalState</a> needs to be called before this function. If this is not done, a std::runtime_error will be thrown. </dd></dl>
 
 </div>
 </div>
@@ -635,6 +680,28 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a98ffc188bde1528710a9e836f9a1c725" name="a98ffc188bde1528710a9e836f9a1c725"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98ffc188bde1528710a9e836f9a1c725">&#9670;&#160;</a></span>generator</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mt19937 Simulator::generator</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a0980c080411111c0595ed76794319c48" name="a0980c080411111c0595ed76794319c48"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0980c080411111c0595ed76794319c48">&#9670;&#160;</a></span>height</h2>
 
@@ -660,13 +727,10 @@ Private Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double Simulator::landmarks[2]</td>
+          <td class="memname">double Simulator::landmarks[2] = {0.00004964 * 0.00004964, 0.00041465 * 0.00041465}</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= {0.00004964,</div>
-<div class="line">                           0.00041465}</div>
-</div><!-- fragment --><p>Standard Deviation of the landmarks (not the variance). </p>
 
 </div>
 </div>
@@ -712,6 +776,28 @@ localization and mapping dataset". DOI: 10.1177/0278364911398404 </p>
 
 </div>
 </div>
+<a id="ad777df8a75682e4b9b50544309ea29d4" name="ad777df8a75682e4b9b50544309ea29d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad777df8a75682e4b9b50544309ea29d4">&#9670;&#160;</a></span>measurement_period_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Simulator::measurement_period_ = <a class="el" href="classSimulator.html#a9de375c80acbbf5af28119fad6665752">sample_period_</a> * 5</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ae1db02b54a5ee2575b6ba164292cd9eb" name="ae1db02b54a5ee2575b6ba164292cd9eb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae1db02b54a5ee2575b6ba164292cd9eb">&#9670;&#160;</a></span>range</h2>
 
@@ -719,7 +805,7 @@ localization and mapping dataset". DOI: 10.1177/0278364911398404 </p>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double Simulator::range[2] = {0.0162, 0.45}</td>
+          <td class="memname">double Simulator::range[2] = {0.0162, 0.045}</td>
         </tr>
       </table>
 </div><div class="memdoc">
