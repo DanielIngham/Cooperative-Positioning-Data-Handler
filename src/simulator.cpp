@@ -312,26 +312,32 @@ void Simulator::setRobotOdometryAndState() {
    * The walk length denotes the number of samples for which an input is
    * applied. */
   std::uniform_int_distribution<unsigned short> walk_length(20U, 500U);
-  std::uniform_real_distribution<double> forward_velocity(
+
+  /* Random generator for for the robot's intial forward velocity. */
+  std::uniform_real_distribution<double> initial_forward_velocity(
       limits_.forward_velocity / 2.0, limits_.forward_velocity);
-  std::uniform_real_distribution<double> angular_velocity(
+
+  /* Random generator for the angular velocity innput */
+  std::uniform_real_distribution<double> angular_velocity_input(
       -limits_.angular_velocity, limits_.angular_velocity);
 
-  std::uniform_real_distribution<double> forward_change(-0.05, 0.05);
-  std::uniform_real_distribution<double> angular_change(-0.2, 0.2);
+  /* Random generator for the forward velocity innput */
+  std::uniform_real_distribution<double> forward_velocity_input(-0.05, 0.05);
 
   /* Loop through each robot and assign them odometry inputs. */
   for (unsigned short id = 0; id < total_robots; id++) {
 
+    /* Check if the intial states for every robots has bee set. */
     if ((*robots_)[id].groundtruth.states.empty()) {
       throw std::runtime_error(
           "The initial state of Robot " + std::to_string(id + 1) +
           " was not set. Call Simulator::setRobotsInitalState before calling "
           "Simulator::setRobotOdometry");
     }
+
     /* Populate the robot's inital input. */
     (*robots_)[id].groundtruth.odometry.push_back(
-        Robot::Odometry(0.0, forward_velocity(this->generator), 0.0));
+        Robot::Odometry(0.0, initial_forward_velocity(this->generator), 0.0));
 
     /* Calculate the resulting state from this those intpus */
     double x_position =
@@ -369,9 +375,6 @@ void Simulator::setRobotOdometryAndState() {
           (*robots_)[id].groundtruth.states.at(k).y < 1 ||
           (*robots_)[id].groundtruth.states.at(k).y > (limits_.height - 1)) {
 
-        // std::cout << "Robot " << id + 1 << ": "
-        //           << (*robots_)[id].groundtruth.states.at(k).x << ", "
-        //           << (*robots_)[id].groundtruth.states.at(k).y << std::endl;
         /* Calculate the distance from the centre points and get the angle
          * adjustment. */
         double x_difference =
@@ -396,10 +399,12 @@ void Simulator::setRobotOdometryAndState() {
         /* NOTE: the an adjustement to forward velocity is not made. */
         angular_input =
             bearing_for_centre / (M_PI / this->limits_.angular_velocity);
+
+        /* Inputs are applied for a random number of samples. */
       } else if ((k % random_walk_duration) == 0) {
         /* Assign a new velocity adjustment */
-        forward_adjustment = forward_change(this->generator);
-        angular_input = angular_velocity(this->generator);
+        forward_adjustment = forward_velocity_input(this->generator);
+        angular_input = angular_velocity_input(this->generator);
 
         /* Assign a new random walk length at random  */
         random_walk_duration = walk_length(this->generator);
@@ -409,6 +414,7 @@ void Simulator::setRobotOdometryAndState() {
       double new_forward_velocity =
           (*robots_)[id].groundtruth.odometry.at(k - 1).forward_velocity +
           forward_adjustment;
+
       double new_angular_velocity = angular_input;
 
       /* NOTE: it is assumed that the robots cannot reverse. */
@@ -432,6 +438,7 @@ void Simulator::setRobotOdometryAndState() {
       if ((*robots_)[id].groundtruth.states.size() == this->data_points_) {
         continue;
       }
+
       /* Calculate the resulting state from this those intpus */
       x_position =
           (*robots_)[id].groundtruth.states.at(k).x +
@@ -478,9 +485,11 @@ void Simulator::setRobotMeasurement() {
       continue;
     }
 
+    /* Determine the groundtruth range and bearing from other robots. */
     for (unsigned short id = 0; id < this->total_robots; id++) {
-      /* Determine the groundtruth range and bearing from other robots. */
-      double first_entry = true;
+
+      /* The first element needs to create a new instance of the measurement. */
+      bool first_entry = true;
 
       for (unsigned short subject_id = 0; subject_id < this->total_robots;
            subject_id++) {
@@ -488,8 +497,11 @@ void Simulator::setRobotMeasurement() {
         if (id == subject_id) {
           continue;
         }
+
+        /* Calculate Groundtruth Range */
         double x_difference = (*robots_)[id].groundtruth.states[k].x -
                               (*robots_)[subject_id].groundtruth.states[k].x;
+
         double y_difference = (*robots_)[id].groundtruth.states[k].y -
                               (*robots_)[subject_id].groundtruth.states[k].y;
         double range = std::sqrt(x_difference * x_difference +
@@ -501,6 +513,7 @@ void Simulator::setRobotMeasurement() {
           continue;
         }
 
+        /* Calculate the groundtruth bearings. */
         double bearing = std::atan2(y_difference, x_difference) -
                          (*robots_)[id].groundtruth.states[k].orientation;
 
@@ -510,12 +523,15 @@ void Simulator::setRobotMeasurement() {
         while (bearing < -M_PI)
           bearing += 2.0 * M_PI;
 
-        /* According to the UTIAS paper, the robots have a field of view of 60
-         * degrees (-0.52, 0.52 radians). */
+        /* According to the UTIAS multirobot localisation and mapping paper, the
+         * robots have a field of view of 60 degrees (-0.52, 0.52 radians). Any
+         * bearing larger than that should not be included in the measurements.
+         */
         if (std::abs(bearing) > 0.52) {
           continue;
         }
 
+        /* Populate data structure with the calculated measurement. */
         if (first_entry) {
           first_entry = false;
           (*robots_)[id].groundtruth.measurements.push_back(Robot::Measurement(
@@ -562,6 +578,7 @@ void Simulator::setRobotMeasurement() {
           continue;
         }
 
+        /* Populate data structure with the calculated measurement. */
         if (first_entry) {
           first_entry = false;
           (*robots_)[id].groundtruth.measurements.push_back(Robot::Measurement(
@@ -611,6 +628,7 @@ void Simulator::addGaussianNoise() {
           odometry.forward_velocity + forward_velocity_noise(this->generator),
           odometry.angular_velocity + angular_velocity_noise(this->generator)));
     }
+
     /* Apply Gaussian noise to range and bearing measurements. */
     std::normal_distribution<double> range_noise(
         0, std::sqrt((*robots_)[id].range_error.variance));
@@ -618,15 +636,20 @@ void Simulator::addGaussianNoise() {
     std::normal_distribution<double> bearing_noise(
         0, std::sqrt((*robots_)[id].bearing_error.variance));
 
+    /* For each measurment, add Gaussian noise. */
     for (const Robot::Measurement &measurement :
          (*robots_)[id].groundtruth.measurements) {
+
       /* Copy the measurement into a tempory */
       (*robots_)[id].synced.measurements.push_back(measurement);
 
+      /* Adding Gaussian noise to the measurements of all the subjects. */
       for (unsigned short s = 0;
            s < (*robots_)[id].synced.measurements.back().subjects.size(); s++) {
+
         (*robots_)[id].synced.measurements.back().ranges[s] +=
             range_noise(this->generator);
+
         (*robots_)[id].synced.measurements.back().bearings[s] +=
             bearing_noise(this->generator);
       }
