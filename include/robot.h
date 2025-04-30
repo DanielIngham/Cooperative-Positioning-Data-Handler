@@ -160,7 +160,7 @@ public:
       angular_velocity_error; ///< Error associated with the angular velocity
                               ///< input.
 
-  void calculateMeasurementError();
+  void calculateSensorErrror();
 
   void calculateSampleErrorStats();
 
@@ -171,6 +171,9 @@ private:
                                     const unsigned long int);
   void calculateQuartiles(const std::vector<double> &, ErrorStatistics &);
   void setQuartiles();
+
+  void calculateOdometryError();
+  void calculateMeasurementError();
 };
 
 #endif // INCLUDE_INCLUDE_ROBOT_H_

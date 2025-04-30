@@ -96,8 +96,8 @@ void DataHandler::setSimulation(const unsigned long int data_points,
   try {
     /* Calculate odometry and measurement errors. */
     for (int i = 0; i < total_robots; i++) {
-      robots_[i].calculateMeasurementError();
-      robots_[i].calculateSampleErrorStats();
+      robots_[i].calculateSensorErrror();
+      // robots_[i].calculateSampleErrorStats();
     }
     /* Stop timer after extraction. */
     auto end = std::chrono::high_resolution_clock::now();
@@ -197,7 +197,7 @@ void DataHandler::setDataSet(const std::string &dataset,
   try {
     /* Calculate odometry and measurement errors. */
     for (int i = 0; i < total_robots; i++) {
-      robots_[i].calculateMeasurementError();
+      robots_[i].calculateSensorErrror();
       robots_[i].calculateSampleErrorStats();
     }
     /* Stop timer after extraction. */

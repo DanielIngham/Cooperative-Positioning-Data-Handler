@@ -24,8 +24,18 @@ Robot::~Robot() {}
  * input odometry and measurement values.
  * @note If the function encounters an error, a std::runtime_error is thrown.
  */
-void Robot::calculateMeasurementError() {
+void Robot::calculateSensorErrror() {
 
+  calculateOdometryError();
+  calculateMeasurementError();
+  removeOutliers();
+}
+
+/**
+ * @brief Calculates the difference between the calculated groundtruth and the
+ * measured odometry value.
+ */
+void Robot::calculateOdometryError() {
   /* Check if the groundtruth has been set. */
   if (this->groundtruth.odometry.size() == 0) {
     throw std::runtime_error("Groundtruth odometry values for robot " +
@@ -38,6 +48,39 @@ void Robot::calculateMeasurementError() {
                              std::to_string(this->id) + " have not been set.");
   }
 
+  /* If the odometry error vector is not empty, empty it before calculation. */
+  if (this->error.odometry.size() > 0) {
+    this->error.odometry.clear();
+  }
+
+  this->error.odometry.reserve(this->groundtruth.odometry.size());
+
+  /* Calculate odometry error for each measurement. */
+  for (std::size_t k = 0; k < this->groundtruth.odometry.size() - 1; k++) {
+
+    double forward_velocity = this->groundtruth.odometry[k].forward_velocity -
+                              this->synced.odometry[k].forward_velocity;
+
+    double angular_velocity = this->groundtruth.odometry[k].angular_velocity -
+                              this->synced.odometry[k].angular_velocity;
+    /* Normalise the error values between -pi and pi radians (-180 and 180
+     * degrees respectively). */
+    while (angular_velocity >= M_PI)
+      angular_velocity -= 2.0 * M_PI;
+    while (angular_velocity < -M_PI)
+      angular_velocity += 2.0 * M_PI;
+
+    this->error.odometry.push_back(Odometry(this->groundtruth.odometry[k].time,
+                                            forward_velocity,
+                                            angular_velocity));
+  }
+}
+
+/**
+ * @brief Calculates the difference between the measured range and bearing and
+ * the calculated groundtruth.
+ */
+void Robot::calculateMeasurementError() {
   /* Check if the groundtruth has been set. */
   if (this->groundtruth.measurements.size() == 0) {
     throw std::runtime_error("Groundtruth measurement values for robot " +
@@ -50,37 +93,13 @@ void Robot::calculateMeasurementError() {
                              std::to_string(this->id) + " have not been set.");
   }
 
-  /* If the odometry error vector is not empty, empty it before calculation. */
-  if (this->error.odometry.size() > 0) {
-    this->error.odometry.clear();
-  }
-
-  this->error.odometry.reserve(this->groundtruth.odometry.size());
-  /* Calculate odometry error for each measurement. */
-  for (std::size_t k = 0; k < this->groundtruth.odometry.size() - 1; k++) {
-    double orientation = this->groundtruth.odometry[k].angular_velocity -
-                         this->synced.odometry[k].angular_velocity;
-
-    /* Normalise the error values between -pi and pi radians (-180 and 180
-     * degrees respectively). */
-    while (orientation >= M_PI)
-      orientation -= 2.0 * M_PI;
-    while (orientation < -M_PI)
-      orientation += 2.0 * M_PI;
-
-    this->error.odometry.push_back(
-        Odometry(this->groundtruth.odometry[k].time,
-                 this->groundtruth.odometry[k].forward_velocity -
-                     this->synced.odometry[k].forward_velocity,
-                 orientation));
-  }
-
   /* If the measurement error vector is not empty, empty it before calculation.
    */
   if (this->error.measurements.size() > 0) {
     this->error.measurements.clear();
   }
 
+  /* Reserve memory for faster vector population. */
   this->error.measurements.reserve(this->groundtruth.measurements.size());
 
   /* Calculate Range and Bearing error for each measurement. */
@@ -108,13 +127,6 @@ void Robot::calculateMeasurementError() {
         continue;
       }
 
-      /* Update the error statistics. */
-      this->range_error.mean += (this->groundtruth.measurements[k].ranges[s] -
-                                 this->synced.measurements[k].ranges[s]);
-      this->bearing_error.mean +=
-          (this->groundtruth.measurements[k].bearings[s] -
-           this->synced.measurements[k].bearings[s]);
-
       /* If the measurement is the first for the time stamp, push back a new
        * instance of the measurment error. */
       if (first_item) {
@@ -140,8 +152,6 @@ void Robot::calculateMeasurementError() {
       }
     }
   }
-
-  removeOutliers();
 }
 
 /**
