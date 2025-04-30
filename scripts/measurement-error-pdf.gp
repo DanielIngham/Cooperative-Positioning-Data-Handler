@@ -1,11 +1,10 @@
-# Set plot to save to pdf output
-set terminal pdfcairo enhanced font 'Helvetica,12'
-
-set fit quiet
-set fit logfile '/dev/null'
-
 data_folder = dataset_directory
 plots_folder = plots_directory
+
+# Set plot to save to pdf output
+set term (file_type eq "pdf") ? "pdfcairo" : \
+        (file_type eq "png") ? "pngcairo" : \
+        (file_type eq "svg") ? "svg" : qt
 
 set style fill empty border -1
 set ylabel "Error"
@@ -27,7 +26,7 @@ do for [i=1:5] {
 	########################
 
 	set title sprintf("Robot %d Forward Velocity Error PDF", i)
-	set output sprintf(plots_folder . "/Forward-Velocity/Robot-%d-Foward-Velocity-Error-PDF.pdf" , i)
+	set output sprintf(plots_folder . "/Forward-Velocity/Robot-%d-Foward-Velocity-Error-PDF." . file_type , i)
 
 	# Read Forward Velcoity Error Mean  
 	stats data_folder . "/Robot-Error-Statistics.dat" using ($1==i ? $2 : 1/0) nooutput
@@ -57,7 +56,7 @@ do for [i=1:5] {
 	########################
 
 	set title sprintf("Robot %d Angular Velocity Error PDF", i)
-	set output sprintf(plots_folder . "/Angular-Velocity/Robot-%d-Angular-Velocity-Error-PDF.pdf" , i)
+	set output sprintf(plots_folder . "/Angular-Velocity/Robot-%d-Angular-Velocity-Error-PDF." . file_type , i)
 
 	# Read Forward Velcoity Error Mean  
 	stats data_folder . "/Robot-Error-Statistics.dat" using ($1==i ? $4 : 1/0) nooutput
@@ -86,7 +85,7 @@ do for [i=1:5] {
 	# Range Error
 	########################
 	set title sprintf("Robot %d Range Error PDF", i)
-	set output sprintf(plots_folder . "/Range/Robot-%d-Range-Error-PDF.pdf" , i)
+	set output sprintf(plots_folder . "/Range/Robot-%d-Range-Error-PDF." . file_type , i)
 
 	# Read Forward Velcoity Error Mean  
 	stats data_folder . "/Robot-Error-Statistics.dat" using ($1==i ? $6 : 1/0) nooutput
@@ -116,7 +115,7 @@ do for [i=1:5] {
 	########################
 
 	set title sprintf("Robot %d Bearing Error PDF", i)
-	set output sprintf(plots_folder . "/Bearing/Robot-%d-Bearing-Error-PDF.pdf" , i)
+	set output sprintf(plots_folder . "/Bearing/Robot-%d-Bearing-Error-PDF." . file_type , i)
 
 	# Read Forward Velcoity Error Mean
 	stats data_folder . "/Robot-Error-Statistics.dat" using ($1==i ? $8 : 1/0) nooutput

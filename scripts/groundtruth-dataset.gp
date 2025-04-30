@@ -1,13 +1,10 @@
-# Set plot to save to pdf output
-set terminal pdfcairo enhanced font 'Helvetica,12'
-
-# The plots are defined as: 
-## .csv the matlab synced and interpolated output.
-## 's'  the c++ synced and interpolated output. This should be identical to the Matlab output.
-## 'r'  the raw data extracted from the dataset.
-
 data_folder = dataset_directory
 plots_folder = plots_directory
+
+# Set plot to save to pdf output
+set term (file_type eq "pdf") ? "pdfcairo" : \
+        (file_type eq "png") ? "pngcairo" : \
+        (file_type eq "svg") ? "svg" : qt
 
 # Plot settings
 set xlabel "time [s]"
@@ -20,8 +17,9 @@ set datafile sep ",	"
 
 #### Ground truth plot
 do for [i=1:5] {
+
 	# Set the output file 
-	set output sprintf(plots_folder . "/State/Robot-%d-State.pdf" , i)
+	set output sprintf(plots_folder . "/State/Robot-%d-State." . file_type , i)
 	set multiplot layout 3,1 title sprintf("Robot %d Groundtruth Trajectory", i)
 
 	set ylabel "x-position [m]"
@@ -47,7 +45,7 @@ do for [i=1:5] {
 	# Plotting xy coordinates 
 	# alongside landmarks
 	####################
-	set output sprintf(plots_folder . "/State/Robot-%d-Position.pdf" , i)
+	set output sprintf(plots_folder . "/State/Robot-%d-Position." . file_type, i)
 	plot \
 		data_folder . "/Groundtruth-State.dat" index (i-1) using (stringcolumn(5) eq "s" ? $2 : 1/0):(stringcolumn(5) eq "s" ? $3 : 1/0) with linespoints pointsize 0.1 title "Robot Coordinate",\
 		data_folder . "/landmarks.dat" using 3:4 with points pointsize 1.0 pointtype 6 title "Landmarks"

@@ -38,14 +38,20 @@ public:
   /* Constructors */
   DataHandler();
   explicit DataHandler(const std::string &,
-                       const double &sampling_period = 0.02);
+                       const double &sampling_period = 0.02,
+                       const std::string &output_directory = "output");
+
   DataHandler(const unsigned long int, double, const unsigned short,
-              const unsigned short);
+              const unsigned short,
+              const std::string &output_directory = "output");
 
   /* Setters */
-  void setDataSet(const std::string &, const double &sampling_period = 0.02);
+  void setDataSet(const std::string &, const double &sampling_period = 0.02,
+                  const std::string &output_directory = "output");
+
   void setSimulation(unsigned long int, double, const unsigned short,
-                     const unsigned short);
+                     const unsigned short,
+                     const std::string &output_directory = "output");
 
   /* Getters */
   std::vector<Landmark> &getLandmarks();
@@ -78,17 +84,19 @@ public:
   void relativeRobotDistance();
   void relativeLandmarkDistance();
 
-  void plotExtractedData();
-  void plotPDFs();
-  void plotError();
-  void plotMeasurements();
-  void plotStates();
+  void plotExtractedData(std::string file_type = "png");
+  void plotPDFs(std::string file_type = "png");
+  void plotError(std::string file_type = "png");
+  void plotMeasurements(std::string file_type = "png");
+  void plotStates(std::string file_type = "png");
 
 private:
   /**
    * @brief Folder location for the dataset.
    */
   std::string dataset_ = "";
+
+  std::string output_directory_ = "";
 
   /**
    * @brief Folder location for the output data.

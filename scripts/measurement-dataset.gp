@@ -1,13 +1,10 @@
-# Set plot to save to pdf output
-set terminal pdfcairo enhanced font 'Helvetica,12'
-
 data_folder = dataset_directory
 plots_folder = plots_directory
 
-# The plots are defined as: 
-## .csv the matlab synced and interpolated output.
-## 's'  the c++ synced and interpolated output. This should be identical to the Matlab output.
-## 'r'  the raw data extracted from the dataset.
+# Set plot to save to pdf output
+set term (file_type eq "pdf") ? "pdfcairo" : \
+        (file_type eq "png") ? "pngcairo" : \
+        (file_type eq "svg") ? "svg" : qt
 
 # Plot settings
 set xlabel "time [s]"
@@ -24,7 +21,7 @@ do for [i=1:5] {
 	#########################
 	# Forward Velocity  Error
 	#########################
-	set output sprintf(plots_folder . "/Forward-Velocity/Robot-%d-Foward-Velocity.pdf" , i)
+	set output sprintf(plots_folder . "/Forward-Velocity/Robot-%d-Foward-Velocity." . file_type , i)
 	set title sprintf("Robot %d Forward Velocity", i)
 	set ylabel "Forward velocity [m/s]"
 	plot \
@@ -35,7 +32,7 @@ do for [i=1:5] {
 	#########################
 	# Angular Velocity  Error
 	#########################
-	set output sprintf(plots_folder . "/Angular-Velocity/Robot-%d-Angular-Velocity.pdf" , i)
+	set output sprintf(plots_folder . "/Angular-Velocity/Robot-%d-Angular-Velocity." . file_type , i)
 	set title sprintf("Robot %d Angular Velocity", i)
 	set ylabel "Angular velocity [rad/s]"
 	plot \
@@ -46,7 +43,7 @@ do for [i=1:5] {
 	#########################
 	# Range Measurement
 	#########################
-	set output sprintf(plots_folder . "/Range/Robot-%d-Range.pdf" , i)
+	set output sprintf(plots_folder . "/Range/Robot-%d-Range." . file_type , i)
 	set title sprintf("Robot %d Range Measurements", i)
 	set ylabel "Range [m]"
 	plot \
@@ -57,7 +54,7 @@ do for [i=1:5] {
 	#########################
 	# Bearing Measurement
 	#########################
-	set output sprintf(plots_folder . "/Bearing/Robot-%d-Bearing.pdf" , i)
+	set output sprintf(plots_folder . "/Bearing/Robot-%d-Bearing." . file_type , i)
 	set title sprintf("Robot %d Bearing Measurements", i)
 	set ylabel "Bearing [rad]"
 	plot \

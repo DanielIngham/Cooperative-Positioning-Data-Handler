@@ -28,7 +28,8 @@ DataHandler::DataHandler() {}
 DataHandler::DataHandler(const unsigned long int data_points,
                          double sample_period,
                          const unsigned short number_of_robots,
-                         const unsigned short number_of_landmarks)
+                         const unsigned short number_of_landmarks,
+                         const std::string &output_directory)
     : sampling_period_(sample_period), total_landmarks(number_of_landmarks),
       total_robots(number_of_robots),
       total_barcodes(total_landmarks + total_robots),
@@ -36,8 +37,9 @@ DataHandler::DataHandler(const unsigned long int data_points,
       barcodes_(total_barcodes) {
 
   setSimulation(data_points, sample_period, number_of_robots,
-                number_of_landmarks);
+                number_of_landmarks, output_directory);
 }
+
 /**
  * @brief Constructor that extracts and populates class attributes using the
  * values from the dataset provided.
@@ -47,11 +49,14 @@ DataHandler::DataHandler(const unsigned long int data_points,
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
 DataHandler::DataHandler(const std::string &dataset,
-                         const double &sample_period)
-    : sampling_period_(sample_period), total_landmarks(15), total_robots(5),
+                         const double &sample_period,
+                         const std::string &output_directory)
+    : dataset_(dataset), output_directory_(output_directory),
+      sampling_period_(sample_period), total_landmarks(15), total_robots(5),
       total_barcodes(total_landmarks + total_robots),
       landmarks_(total_landmarks), robots_(total_robots),
       barcodes_(total_barcodes, 0) {
+
   setDataSet(dataset, sample_period);
 }
 
@@ -65,9 +70,12 @@ DataHandler::DataHandler(const std::string &dataset,
 void DataHandler::setSimulation(const unsigned long int data_points,
                                 double sample_period,
                                 const unsigned short number_of_robots,
-                                const unsigned short number_of_landmarks) {
+                                const unsigned short number_of_landmarks,
+                                const std::string &output_directory) {
+
   auto start = std::chrono::high_resolution_clock::now();
-  this->dataset_ = "./data";
+  this->dataset_ = "./";
+  this->output_directory_ = output_directory;
 
   try {
     auto now = std::chrono::system_clock::now();
@@ -79,9 +87,11 @@ void DataHandler::setSimulation(const unsigned long int data_points,
     oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
 
     this->data_extraction_directory_ =
-        dataset_ + "/simulation/" + oss.str() + "/";
+        output_directory_ + "/simulation/" + oss.str() + "/data_extraction/";
+
   } catch (std::runtime_error &error) {
     std::cout << "Unable to set dataset: " << error.what() << std::endl;
+    throw;
   }
 
   this->sampling_period_ = sample_period;
@@ -101,10 +111,11 @@ void DataHandler::setSimulation(const unsigned long int data_points,
     /* Calculate odometry and measurement errors. */
     for (int i = 0; i < total_robots; i++) {
       robots_[i].calculateSensorErrror();
-      // robots_[i].calculateSampleErrorStats();
     }
+
     /* Stop timer after extraction. */
     auto end = std::chrono::high_resolution_clock::now();
+
     /* Calculate duration. */
     auto duration =
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -138,7 +149,8 @@ void DataHandler::setSimulation(const unsigned long int data_points,
  * ensure all robots have the same time stamps.
  */
 void DataHandler::setDataSet(const std::string &dataset,
-                             const double &sample_period) {
+                             const double &sample_period,
+                             const std::string &output_directory) {
   /* Start timer for measurement of extraction period. */
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -148,7 +160,10 @@ void DataHandler::setDataSet(const std::string &dataset,
   }
 
   this->dataset_ = dataset;
-  this->data_extraction_directory_ = dataset_ + "/data_extraction/";
+  this->output_directory_ = output_directory;
+
+  this->data_extraction_directory_ =
+      output_directory + "/" + dataset + "/data_extraction/";
 
   /* Set the sample period for this dataset. */
   this->sampling_period_ = sample_period;
@@ -1634,8 +1649,11 @@ void DataHandler::createMeasurementPlotDirectories() {
 
 /**
  * @brief Runs the GNUplot scripts to save plots related to the extracted data.
+ * @param[in] file_type The file type of the output plot.
+ * @note At this stage only png and pdf file types are implemented. Any other
+ * file type will throw a std::runtime_error.
  */
-void DataHandler::plotExtractedData() {
+void DataHandler::plotExtractedData(std::string file_type) {
   /* Start the Timer */
   auto start = std::chrono::high_resolution_clock::now();
   std::string plots_directory = data_extraction_directory_ + "plots/";
@@ -1644,10 +1662,10 @@ void DataHandler::plotExtractedData() {
   createStatePlotDirectory();
   createMeasurementPlotDirectories();
 
-  plotPDFs();
-  plotMeasurements();
-  plotError();
-  plotStates();
+  plotPDFs(file_type);
+  plotMeasurements(file_type);
+  plotError(file_type);
+  plotStates(file_type);
 
   auto end = std::chrono::high_resolution_clock::now();
   auto duration =
@@ -1661,16 +1679,20 @@ void DataHandler::plotExtractedData() {
 /**
  * @brief Plot the error PDF's of the odometry measurements (forward and angular
  * velocity) along with the range and bearing error PDF.
+ * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotPDFs() {
+void DataHandler::plotPDFs(std::string file_type) {
   createMeasurementPlotDirectories();
 
   std::string plots_directory = data_extraction_directory_ + "plots/";
   /* Execute gnuplot command */
-  std::string gnuplotScriptPath = "./scripts/measurement-error-pdf.gp";
+  std::string gnuplot_script_path = "./scripts/measurement-error-pdf.gp";
+
   std::string command = "gnuplot -e \"dataset_directory='" +
                         data_extraction_directory_ + "'; plots_directory='" +
-                        plots_directory + "'\" " + gnuplotScriptPath;
+                        plots_directory + "'; file_type='" + file_type +
+                        "'\" " + gnuplot_script_path;
+
   int ret = system(command.c_str());
 
   if (ret != 0) {
@@ -1683,15 +1705,17 @@ void DataHandler::plotPDFs() {
 /**
  * @brief Plot the measurment error odometry (forward and angular velocity)
  * along with the range and bearing error.
+ * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotError() {
+void DataHandler::plotError(std::string file_type) {
   createMeasurementPlotDirectories();
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
-  std::string gnuplotScriptPath = "./scripts/measurement-error.gp";
+  std::string gnuplot_script_path = "./scripts/measurement-error.gp";
   std::string command = "gnuplot -e \"dataset_directory='" +
                         data_extraction_directory_ + "'; plots_directory='" +
-                        plots_directory + "'\" " + gnuplotScriptPath;
+                        plots_directory + "'; file_type='" + file_type +
+                        "'\" " + gnuplot_script_path;
 
   int ret = system(command.c_str());
 
@@ -1705,15 +1729,17 @@ void DataHandler::plotError() {
 /**
  * @brief Plot the raw, synced and groundtruth odometry measurements, along with
  * the raw, synced and groundtruth range and bearing measurements.
+ * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotMeasurements() {
+void DataHandler::plotMeasurements(std::string file_type) {
   createMeasurementPlotDirectories();
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
-  std::string gnuplotScriptPath = "./scripts/measurement-dataset.gp";
+  std::string gnuplot_script_path = "./scripts/measurement-dataset.gp";
   std::string command = "gnuplot -e \"dataset_directory='" +
                         data_extraction_directory_ + "'; plots_directory='" +
-                        plots_directory + "'\" " + gnuplotScriptPath;
+                        plots_directory + "'; file_type='" + file_type +
+                        "'\" " + gnuplot_script_path;
   int ret = system(command.c_str());
 
   if (ret != 0) {
@@ -1726,15 +1752,17 @@ void DataHandler::plotMeasurements() {
 /**
  * @brief plot the robots states, which includes its x,y and orientation, along
  * with a x,y position plot.
+ * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotStates() {
+void DataHandler::plotStates(std::string file_type) {
   createStatePlotDirectory();
 
   std::string plots_directory = data_extraction_directory_ + "plots/";
-  std::string gnuplotScriptPath = "./scripts/groundtruth-dataset.gp";
+  std::string gnuplot_script_path = "./scripts/groundtruth-dataset.gp";
   std::string command = "gnuplot -e \"dataset_directory='" +
                         data_extraction_directory_ + "'; plots_directory='" +
-                        plots_directory + "'\" " + gnuplotScriptPath;
+                        plots_directory + "'; file_type='" + file_type +
+                        "'\" " + gnuplot_script_path;
   int ret = system(command.c_str());
 
   if (ret != 0) {
