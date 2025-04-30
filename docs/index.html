@@ -79,11 +79,18 @@ $(function() {
   <div class="headertitle"><div class="title">C++ UTIAS Multi-Robot Data Extractor </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2README"></a>This repository extracts the <a href="http://asrl.utias.utoronto.ca/datasets/mrclam/index.html">UTIAS Multi-Robot Cooperative Localisation and Mapping dataset</a> into c++ class DataExtractor. <br  />
- </p>
+<div class="textblock"><p><a class="anchor" id="md__2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2README"></a>This project provides a c++ class as an interface for using the <a href="http://asrl.utias.utoronto.ca/datasets/mrclam/index.html">UTIAS Multi-Robot Cooperative Localisation and Mapping dataset</a>. The project provides the following functionality:</p><ul>
+<li>Extracts the UTIAS dataset into a c++ class allowing for easy interfacing with the dataset.</li>
+<li>Syncs the timesteps across all measuremets using the same approach as that of the <a href="http://asrl.utias.utoronto.ca/datasets/mrclam/#Tools">MATLAB Script</a> provided with the dataset (linear interpolation).</li>
+<li>Calculates the corresponding sensor groundtruth for the odometry and measuremet sensors, using the provided state groundtruth (2D position and heading).</li>
+<li>Calculates the sensor error statistics used in Bayesian filtering frameworks.</li>
+<li>Provides a interface for <a href="http://gnuplot.info/">gnuplot</a> to allow for visualisation of extracted data and calculated error statistics. </li>
+</ul>
 <h1><a class="anchor" id="autotoc_md1"></a>
 Documentation</h1>
-<p>The documentation for this project is available at: <a href="https://danielingham.github.io/Cooperative-Positioning-Data-Handler/">Data-Extractor-MR Documentation</a> </p>
+<p>For more information, the documentation for this project is available at: <a href="https://danielingham.github.io/Cooperative-Positioning-Data-Handler/">Cooperative Positioning Data Handler github page.</a> </p>
+<h1><a class="anchor" id="autotoc_md2"></a>
+Overview</h1>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->

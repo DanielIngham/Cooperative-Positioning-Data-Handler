@@ -24,6 +24,8 @@ DataHandler::DataHandler() {}
  * @param[in] sample_period The period at which the odometry sensor is sampled.
  * @param[in] number_of_robots The total number of robots to be simulated.
  * @param[in] number_of_landmarks The total number of landmarks to be simulated.
+ * @param[in] output_directory The directory where the extracted data and plots
+ * are saved.
  */
 DataHandler::DataHandler(const unsigned long int data_points,
                          double sample_period,
@@ -46,6 +48,8 @@ DataHandler::DataHandler(const unsigned long int data_points,
  * @param[in] dataset directory path to the dataset folder.
  * @param[in] sample_period the desired sample period for resampling the data to
  * sync the timesteps between the vehicles.
+ * @param[in] output_directory The directory where the extracted data and plots
+ * are saved.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
 DataHandler::DataHandler(const std::string &dataset,
@@ -66,6 +70,8 @@ DataHandler::DataHandler(const std::string &dataset,
  * @param[in] sample_period The period at which the odometry sensor is sampled.
  * @param[in] number_of_robots The total number of robots to be simulated.
  * @param[in] number_of_landmarks The total number of landmarks to be simulated.
+ * @param[in] output_directory The directory where the extracted data and plots
+ * are saved.
  */
 void DataHandler::setSimulation(const unsigned long int data_points,
                                 double sample_period,
@@ -134,6 +140,8 @@ void DataHandler::setSimulation(const unsigned long int data_points,
  * @brief Extracts data from the all files in the specified dataset folder.
  * @param[in] dataset dataset path to the dataset folder.
  * @param[in] sample_period the desired sample period for resampling the data to
+ * @param[in] output_directory The directory where the extracted data and plots
+ * are saved.
  * sync the timesteps between the vehicles.
  * @note All datasets in the UTIAS Multi-robot Localisation and mapping dataset
  * have the same number of landmarks and robots. Therefore, if the dataset
