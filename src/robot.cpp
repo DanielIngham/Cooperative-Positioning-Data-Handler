@@ -157,10 +157,10 @@ void Robot::calculateMeasurementError() {
  * @brief calculates the sample mean and sample variance of the error for all
  * the odometry and tracking measurements.
  * @details The sample mean and sample variance are calculate as
- * $$\begin{align} \bar{x} = \frac{\sum_{i\in n} x_i}{n}\\ \sigma^2 =
- * \frac{\sum_{i\in n} (x_i - \bar{x})^2}{n-1} \end{align}$$ where \f$x_i\f$
- * denotes the $i$-th element in the sample of size \f$n\f$. The sample variance
- * formulation uses Bessel correction.
+ * \f[\begin{align} \bar{x} &= \frac{\sum_{i\in n} x_i}{n}\\ \sigma^2 &=
+ * \frac{\sum_{i\in n} (x_i - \bar{x})^2}{n-1},\end{align}\f] where \f$x_i\f$
+ * denotes the \f$i\f$-th element in the sample of size \f$n\f$. The sample
+ * variance formulation uses Bessel correction.
  * @note The calculation on the sample mean relies on the population of the
  * Robot::error vector and therefore, Robot::calculateMeasurementError needs to
  * be called before this function.
@@ -285,12 +285,13 @@ unsigned long int Robot::calculateMedian(const unsigned long int lower,
  * @brief Calculates the median, first quartile, third quartile, and
  * inter-quartile range for a given sorted vector.
  * @param[in] sorted_vector A vector sorted in ascending order.
- * @param[out] The structure of error statistics for a given sensor.
- * @return The error statitics which include the median, first quartile, third
- * quartile, and inter-quartile range of the sorted input vector.
+ * @param[out] error_statistics The struct of error statistics for a given
+ * sensor, containing: the median, first quartile, third quartile, and
+ * inter-quartile range of the sorted input vector.
  */
 void Robot::calculateQuartiles(const std::vector<double> &sorted_vector,
                                Robot::ErrorStatistics &error_statistics) {
+
   unsigned long int index = calculateMedian(0, sorted_vector.size() - 1);
 
   error_statistics.median = sorted_vector[index];

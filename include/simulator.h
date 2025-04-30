@@ -17,7 +17,8 @@
 #include "robot.h"
 
 /**
- * @class Populates Robot and Landmark vectors with simulated values.
+ * @class Simulator
+ * @brief Populates Robot and Landmark vectors with simulated values.
  */
 class Simulator {
 public:

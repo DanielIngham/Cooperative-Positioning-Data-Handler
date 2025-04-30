@@ -58,7 +58,9 @@ public:
     double y;           ///< Robot Groundtruth y-coordinate [m].
     double orientation; ///< Robot Groundtruth orientation [rad].
 
+    /** @brief Default constructor */
     State();
+
     /**
      * @brief Constructor for convenient population of
      * DataExtractor::robots_.raw.ground_truth .
@@ -100,18 +102,25 @@ public:
     std::vector<double> ranges;   ///< The measured ranges to the subjects [m]
     std::vector<double> bearings; ///< The bearings from the subjects [rad]
 
+    /**
+     * @brief Constructor that allows for the copying of measurement structures.
+     */
     Measurement(const Robot::Measurement &measurement)
         : time(measurement.time), subjects(measurement.subjects),
           ranges(measurement.ranges), bearings(measurement.bearings) {};
 
+    /**
+     * @brief Constructor that allows for the copying of measurement structure
+     * elements.
+     */
     Measurement(double time_, const std::vector<unsigned short> &subjects_,
                 const std::vector<double> &ranges_,
                 const std::vector<double> &bearings_)
         : time(time_), subjects(subjects_), ranges(ranges_),
           bearings(bearings_) {};
     /**
-     * @brief Constructor for convenient population of
-     * DataExtractor::robots_.raw.measurements .
+     * @brief Constructor for convenient population of raw measurments that have
+     * only one subject.
      */
     Measurement(double time_, unsigned short subject_, double range_,
                 double bearing_)
@@ -125,17 +134,22 @@ public:
   /**
    * @brief Vectors related to the robot data.
    */
-  struct {
+  struct RobotData {
     std::vector<State>
         states; ///< All groundtruth values extracted for the given robot.
     std::vector<Odometry>
         odometry; ///< All odometry inputs extracted for the given robot.
     std::vector<Measurement>
         measurements; ///< All measurements taken by the given robot.
-  } raw,              ///< The raw data extracted from the dataset's .dat files.
-      synced, ///< The odometry and measurement values with synced timesteps.
-      groundtruth, ///< The groundtruth
-      error; ///< The difference between the ground truth and the synced data
+  };
+  /** @brief The raw data extracted from the dataset's .dat files. */
+  RobotData raw;
+  /** @brief The odometry and measurement values with synced timesteps. */
+  RobotData synced;
+  /** The groundtruth */
+  RobotData groundtruth;
+  /** @brief The difference between the ground truth and the synced data */
+  RobotData error;
 
   /**
    * @brief Error statistics used by filters for inference.
@@ -152,13 +166,16 @@ public:
     double q1 = 0.0;     ///< The first quartile.
     double q3 = 0.0;     ///< The third quartile.
     double iqr = 0.0;    ///< Inter Quartile Range.
+  };
 
-  } range_error,     ///< Error associated with the range measurements.
-      bearing_error, ///< Error associated with the bearing measurements.
-      forward_velocity_error, ///< Error associated with the forward velocity
-                              ///< input.
-      angular_velocity_error; ///< Error associated with the angular velocity
-                              ///< input.
+  /** @brief  Error associated with the range measurements. */
+  ErrorStatistics range_error;
+  /** @brief Error associated with the bearing measurements. */
+  ErrorStatistics bearing_error;
+  /** @brief Error associated with the forward velocity input. */
+  ErrorStatistics forward_velocity_error;
+  /** @brief Error associated with the angular velocity input. */
+  ErrorStatistics angular_velocity_error;
 
   void calculateSensorErrror();
 

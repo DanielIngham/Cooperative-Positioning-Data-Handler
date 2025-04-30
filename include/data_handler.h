@@ -1,5 +1,5 @@
 /**
- * @file data_extractor.h
+ * @file data_handler.h
  * @brief Header file of the DataHandler class,
  * @author Daniel Ingham
  * @date 2025-04-04

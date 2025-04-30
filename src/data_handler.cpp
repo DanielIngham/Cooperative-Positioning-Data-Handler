@@ -2,7 +2,7 @@
  * The class extracts the data from the groundtruth states, measured range and
  * bearings, and odometry. These values are used to populate three main data
  * structs: Barcodes, Landmarks, and Robots.
- * @file data_extractor.cpp
+ * @file data_handler.cpp
  * @brief Class implementation file responsible for exracting the ground-truth,
  * odometry and measurement data from the UTIAS multi-robot localisation
  * dataset.
@@ -20,6 +20,8 @@ DataHandler::DataHandler() {}
 /**
  * @brief Constructor that sets the simuation values for the multi-robot
  * localisation and mapping.
+ * @param[in] data_points The number of timestep to be simulated.
+ * @param[in] sample_period The period at which the odometry sensor is sampled.
  * @param[in] number_of_robots The total number of robots to be simulated.
  * @param[in] number_of_landmarks The total number of landmarks to be simulated.
  */
@@ -55,6 +57,8 @@ DataHandler::DataHandler(const std::string &dataset,
 
 /**
  * @brief Creates simulation values for the robots and landmarks.
+ * @param[in] data_points The number of timestep to be simulated.
+ * @param[in] sample_period The period at which the odometry sensor is sampled.
  * @param[in] number_of_robots The total number of robots to be simulated.
  * @param[in] number_of_landmarks The total number of landmarks to be simulated.
  */
@@ -217,7 +221,7 @@ void DataHandler::setDataSet(const std::string &dataset,
 
 /**
  * @brief Extracts data from the barcodes data file: Barcodes.dat.
- * @param[in] directory path to the dataset folder.
+ * @param[in] dataset directory path to the dataset folder.
  * @note If the data could not be extracted from the specified dataset, a
  * std::runtime_error is thrown.
  */
@@ -474,7 +478,7 @@ void DataHandler::readOdometry(const std::string &dataset, int robot_id) {
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement
  * will be assigned to.
- * @note The data values are tab seperated '\t'.
+ * @note The data values are tab seperated.
  * @note Grouping of measurements with the same time stamps does not occur
  * during the reading. Therfore, the each member vector of measurements
  * (subjects, ranges and bearings) are filled with only one value. The grouping
@@ -743,10 +747,11 @@ void DataHandler::syncData(const double &sample_period) {
  * @details The following expression is utilsed to calculate the groundtruth
  * odomotery values using the groundtruth states values extracted from the
  * dataset:
- * $$\begin{bmatrix} \omega_k & v_k \end{bmatrix}^\top = \begin{bmatrix}
+ * \f[\begin{bmatrix} \omega_k \\ v_k \end{bmatrix} = \begin{bmatrix}
  * \text{arctan2}(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} -
- * \theta_{k})) / \Delta t & \sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2}
- * \end{bmatrix}^\top, $$ where \f$k\f$ denotes the current time step;
+ * \theta_{k})) / \Delta t \\ \sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2}
+ * \end{bmatrix}, \f]
+ * where \f$k\f$ denotes the current time step;
  * \f$\theta\f$ denotes the robot's orientation; \f$ y\f$ denotes the robot's
  * y-coordinate; \f$\Delta t\f$ is the user defined sample period; \f$\omega\f$
  * and \f$v\f$ denotes the angular velocity and forward velocity of the robot
@@ -789,10 +794,11 @@ void DataHandler::calculateGroundtruthOdometry() {
  * @details The following expression is utilised to calculate the groundtruth
  * measurement values using the groundtruth robot state values extracted from
  * the dataset:
- * $$\begin{bmatrix} r_{ij}^{(k)} & \phi_{ij}{(k)} \end{bmatrix}^\top =
- * \begin{bmatrix} \sqrt{\left(x_i^{(k)} - x_j^{(k)}\right)^2  + \left(y_i^{(k)}
- * - y_j^{(j)}\right)^2} & \text{atan2}\left(y_j^{(k)} - y_i^{(k)}, x_j^{(k)} -
- * x_i^{(k)}\right) - \theta_i^{(k)}\end{bmatrix}^\top, $$ where \f$i\f$ denotes
+ * \f[\begin{bmatrix} r_{ij}^{(k)} \\ \phi_{ij}{(k)} \end{bmatrix} =
+ * \begin{bmatrix} \sqrt{(x_i^{(k)} - x_j^{(k)})^2  + (y_i^{(k)}
+ * - y_j^{(k)})^2} \\ \text{atan2}(y_j^{(k)} - y_i^{(k)}, x_j^{(k)} -
+ * x_i^{(k)}) - \theta_i^{(k)}\end{bmatrix}, \f]
+ * where \f$i\f$ denotes
  * the ego robot; \f$j\f$ denotes the measured robot; \f$k\f$ denotes the
  * current time step; \f$\theta\f$ denotes the robot's orientation; and \f$ y\f$
  * denotes the robot's y-coordinate.
@@ -1277,7 +1283,6 @@ void DataHandler::saveErrorData() {
 /**
  * @brief Performs binning on the odometry error for the determination of a
  * discretized Probability Density Function (PDF).
- * @param[in] flag indicates whether saving the odometry error PDF was
  * succesfull.
  * @param[in] bin_size the size of the bins (denoting the range of values) that
  * odometry measurement values gets grouped into.
