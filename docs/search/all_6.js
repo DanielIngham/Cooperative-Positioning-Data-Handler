@@ -9,5 +9,5 @@ var searchData=
   ['getnumberofrobots_6',['getNumberOfRobots',['../classDataHandler.html#ab894ac8650fdaf7d7510254909e04f0c',1,'DataHandler']]],
   ['getrobots_7',['getRobots',['../classDataHandler.html#a9627420edb689af9c1463e4815693da4',1,'DataHandler']]],
   ['getsampleperiod_8',['getSamplePeriod',['../classDataHandler.html#afb04d371c2be3284199e81d4188700d0',1,'DataHandler']]],
-  ['groundtruth_9',['groundtruth',['../classRobot.html#a9546c10a6786f0f0c8870bfea9693517',1,'Robot']]]
+  ['groundtruth_9',['groundtruth',['../classRobot.html#a850f65d94288db275897cb52335edca1',1,'Robot']]]
 ];

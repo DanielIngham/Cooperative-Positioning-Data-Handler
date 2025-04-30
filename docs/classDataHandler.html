@@ -93,6 +93,11 @@ $(function() {
 Collaboration diagram for DataHandler:</div>
 <div class="dyncontent">
 <div class="center"><img src="classDataHandler__coll__graph.png" border="0" usemap="#aDataHandler_coll__map" alt="Collaboration graph"/></div>
+<map name="aDataHandler_coll__map" id="aDataHandler_coll__map">
+<area shape="rect" title="Extracts the data from the UTIAS Multi&#45;robot Localisaion and Mapping Dataset." alt="" coords="5,93,109,119"/>
+<area shape="rect" href="classSimulator.html" title="Populates Robot and Landmark vectors with simulated values." alt="" coords="15,5,100,31"/>
+<area shape="poly" title=" " alt="" coords="60,45,60,93,55,93,55,45"/>
+</map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -152,7 +157,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a74b3af53854d30f7a058fff74426c0c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves calculated error between the measured data (as extracted form the dataset) and the calculated groundtruth values.  <br /></td></tr>
 <tr class="separator:a74b3af53854d30f7a058fff74426c0c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e72fad87a3ac47dec2956c1118b2941" id="r_a7e72fad87a3ac47dec2956c1118b2941"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a7e72fad87a3ac47dec2956c1118b2941">saveOdometryErrorPDF</a> (double)</td></tr>
-<tr class="memdesc:a7e72fad87a3ac47dec2956c1118b2941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF).  <br /></td></tr>
+<tr class="memdesc:a7e72fad87a3ac47dec2956c1118b2941"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF). succesfull.  <br /></td></tr>
 <tr class="separator:a7e72fad87a3ac47dec2956c1118b2941"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5da3bb3fb0bf8791c50103f743c36e8f" id="r_a5da3bb3fb0bf8791c50103f743c36e8f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a5da3bb3fb0bf8791c50103f743c36e8f">saveMeasurementErrorPDF</a> (double)</td></tr>
 <tr class="memdesc:a5da3bb3fb0bf8791c50103f743c36e8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs binning on the measurement error for the determination of a discretized Probability Density Function (PDF).  <br /></td></tr>
@@ -247,7 +252,7 @@ Private Attributes</h2></td></tr>
 <tr class="memdesc:a0f2e16e1fce8cdeff1332d78f5fae281"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all barcodes corresponding to the robots and landmarks.  <br /></td></tr>
 <tr class="separator:a0f2e16e1fce8cdeff1332d78f5fae281"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a035432aa868d477d6e47b6c5fe9fb7ee" id="r_a035432aa868d477d6e47b6c5fe9fb7ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSimulator.html">Simulator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html#a035432aa868d477d6e47b6c5fe9fb7ee">simulator</a></td></tr>
-<tr class="memdesc:a035432aa868d477d6e47b6c5fe9fb7ee"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSimulator.html">Simulator</a> class responsible for creating odometry, and measurement data for the robots, and assigning positions to the landmarks.  <br /></td></tr>
+<tr class="memdesc:a035432aa868d477d6e47b6c5fe9fb7ee"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classSimulator.html" title="Populates Robot and Landmark vectors with simulated values.">Simulator</a> class responsible for creating odometry, and measurement data for the robots, and assigning positions to the landmarks.  <br /></td></tr>
 <tr class="separator:a035432aa868d477d6e47b6c5fe9fb7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -360,6 +365,8 @@ Private Attributes</h2></td></tr>
 <p>Constructor that sets the simuation values for the multi-robot localisation and mapping. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_points</td><td>The number of timestep to be simulated. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td>The period at which the odometry sensor is sampled. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">number_of_robots</td><td>The total number of robots to be simulated. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">number_of_landmarks</td><td>The total number of landmarks to be simulated. </td></tr>
   </table>
@@ -393,9 +400,13 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Calculates the ground truth measurements for a given robot. </p>
-<p>The following expression is utilised to calculate the groundtruth measurement values using the groundtruth robot state values extracted from the dataset: $$\begin{bmatrix} r_{ij}^{(k)} &amp; \phi_{ij}{(k)} \end{bmatrix}^\top = \begin{bmatrix} \sqrt{\left(x_i^{(k)} - x_j^{(k)}\right)^2 + \left(y_i^{(k)}</p><ul>
-<li>y_j^{(j)}\right)^2} &amp; \text{atan2}\left(y_j^{(k)} - y_i^{(k)}, x_j^{(k)} - x_i^{(k)}\right) - \theta_i^{(k)}\end{bmatrix}^\top, $$ where \(i\) denotes the ego robot; \(j\) denotes the measured robot; \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; and \( y\) denotes the robot's y-coordinate. </li>
-</ul>
+<p>The following expression is utilised to calculate the groundtruth measurement values using the groundtruth robot state values extracted from the dataset:  </p><p class="formulaDsp">
+\[\begin{bmatrix} r_{ij}^{(k)} \\ \phi_{ij}{(k)} \end{bmatrix} =
+\begin{bmatrix} \sqrt{(x_i^{(k)} - x_j^{(k)})^2  + (y_i^{(k)}
+- y_j^{(k)})^2} \\ \text{atan2}(y_j^{(k)} - y_i^{(k)}, x_j^{(k)} -
+x_i^{(k)}) - \theta_i^{(k)}\end{bmatrix}, \]
+</p>
+<p> where \(i\) denotes the ego robot; \(j\) denotes the measured robot; \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; and \( y\) denotes the robot's y-coordinate. </p>
 
 </div>
 </div>
@@ -423,7 +434,13 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utilises the extracted robots groundtruth position and heading values to calculate their associated groundtruth odometry values. </p>
-<p>The following expression is utilsed to calculate the groundtruth odomotery values using the groundtruth states values extracted from the dataset: $$\begin{bmatrix} \omega_k &amp; v_k \end{bmatrix}^\top = \begin{bmatrix} \text{arctan2}(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} - \theta_{k})) / \Delta t &amp; \sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2} \end{bmatrix}^\top, $$ where \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; \( y\) denotes the robot's y-coordinate; \(\Delta t\) is the user defined sample period; \(\omega\) and \(v\) denotes the angular velocity and forward velocity of the robot respectively. </p>
+<p>The following expression is utilsed to calculate the groundtruth odomotery values using the groundtruth states values extracted from the dataset:  </p><p class="formulaDsp">
+\[\begin{bmatrix} \omega_k \\ v_k \end{bmatrix} = \begin{bmatrix}
+\text{arctan2}(\sin(\theta_{k+1} - \theta_{k}), \cos(\theta_{k+1} -
+\theta_{k})) / \Delta t \\ \sqrt{(x_{k+1} - x_k)^2 + (y_{k+1} - y_k)^2}
+\end{bmatrix}, \]
+</p>
+<p> where \(k\) denotes the current time step; \(\theta\) denotes the robot's orientation; \( y\) denotes the robot's y-coordinate; \(\Delta t\) is the user defined sample period; \(\omega\) and \(v\) denotes the angular velocity and forward velocity of the robot respectively. </p>
 
 </div>
 </div>
@@ -779,7 +796,7 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
 <p>Extracts data from the barcodes data file: Barcodes.dat. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">directory</td><td>path to the dataset folder. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dataset</td><td>directory path to the dataset folder. </td></tr>
   </table>
   </dd>
 </dl>
@@ -829,7 +846,7 @@ if the dataset has not been set, the function will throw a std::runtime_error. <
   </table>
   </dd>
 </dl>
-<p>The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the <a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588" title="Vectors related to the robot data.">Robot::raw</a> states member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
+<p>The data extracted form the Robotx_Groundtruth.dat contains the timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of the robot x. These are used to populate the <a class="el" href="classRobot.html#a47fe1ae41e8d9ec7e33e73bd83b64b9f" title="The raw data extracted from the dataset&#39;s .dat files.">Robot::raw</a> states member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
 
 </div>
 </div>
@@ -912,7 +929,7 @@ If the data could not be extracted from the specified dataset, a std::runtime_er
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>The data values are tab seperated '\t'. </dd>
+<dl class="section note"><dt>Note</dt><dd>The data values are tab seperated. </dd>
 <dd>
 Grouping of measurements with the same time stamps does not occur during the reading. Therfore, the each member vector of measurements (subjects, ranges and bearings) are filled with only one value. The grouping by time stamp occurs in the <a class="el" href="classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f" title="Syncs the time steps for the extracted data according to the specified sampling period.">DataHandler::syncData</a> function. </dd></dl>
 
@@ -960,7 +977,7 @@ Grouping of measurements with the same time stamps does not occur during the rea
   </table>
   </dd>
 </dl>
-<p>The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the <a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588" title="Vectors related to the robot data.">Robot::raw</a> odometry member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
+<p>The data extracted form the Robotx_Odometry.dat contains the timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the measured odometry input into robot x. These are used to populate the <a class="el" href="classRobot.html#a47fe1ae41e8d9ec7e33e73bd83b64b9f" title="The raw data extracted from the dataset&#39;s .dat files.">Robot::raw</a> odometry member for a given robot in <a class="el" href="classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff" title="std::vector the Robot class. This class contains all information pertaining to the robots....">DataHandler::robots_</a>. </p>
 
 </div>
 </div>
@@ -1143,10 +1160,9 @@ Grouping of measurements with the same time stamps does not occur during the rea
       </table>
 </div><div class="memdoc">
 
-<p>Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF). </p>
+<p>Performs binning on the odometry error for the determination of a discretized Probability Density Function (PDF). succesfull. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>indicates whether saving the odometry error PDF was succesfull. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bin_size</td><td>the size of the bins (denoting the range of values) that odometry measurement values gets grouped into. </td></tr>
   </table>
   </dd>
@@ -1274,6 +1290,8 @@ The function only checks the existence of the given datset folder. The data extr
 <p>Creates simulation values for the robots and landmarks. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_points</td><td>The number of timestep to be simulated. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sample_period</td><td>The period at which the odometry sensor is sampled. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">number_of_robots</td><td>The total number of robots to be simulated. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">number_of_landmarks</td><td>The total number of landmarks to be simulated. </td></tr>
   </table>
@@ -1484,7 +1502,7 @@ The function only checks the existence of the given datset folder. The data extr
 </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classSimulator.html">Simulator</a> class responsible for creating odometry, and measurement data for the robots, and assigning positions to the landmarks. </p>
+<p><a class="el" href="classSimulator.html" title="Populates Robot and Landmark vectors with simulated values.">Simulator</a> class responsible for creating odometry, and measurement data for the robots, and assigning positions to the landmarks. </p>
 
 </div>
 </div>

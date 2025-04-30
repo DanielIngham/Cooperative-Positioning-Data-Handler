@@ -94,6 +94,13 @@ $(function() {
 Collaboration diagram for Robot:</div>
 <div class="dyncontent">
 <div class="center"><img src="classRobot__coll__graph.png" border="0" usemap="#aRobot_coll__map" alt="Collaboration graph"/></div>
+<map name="aRobot_coll__map" id="aRobot_coll__map">
+<area shape="rect" title="Houses all data and functionality related to a given robot in a multi&#45;robot localisation environment." alt="" coords="129,137,189,163"/>
+<area shape="rect" href="structRobot_1_1RobotData.html" title="Vectors related to the robot data." alt="" coords="5,5,143,31"/>
+<area shape="poly" title=" " alt="" coords="91,41,154,136,149,138,87,44"/>
+<area shape="rect" href="structRobot_1_1ErrorStatistics.html" title="Error statistics used by filters for inference." alt="" coords="167,5,325,31"/>
+<area shape="poly" title=" " alt="" coords="246,45,237,80,219,115,204,129,188,139,185,135,201,125,215,112,232,78,240,44"/>
+</map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -106,6 +113,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobot_1_1Odometry.html">Odometry</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data attributes of a single odometry reading extracted from Robotx_Odometry.dat.  <a href="structRobot_1_1Odometry.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vectors related to the robot data.  <a href="structRobot_1_1RobotData.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRobot_1_1State.html">State</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data attributes for a single groundtruth reading extracted from Robotx_Groundtruth.dat.  <a href="structRobot_1_1State.html#details">More...</a><br /></td></tr>
@@ -144,72 +154,29 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a82aaf1195d15ee407287aa1845cb22fe" id="r_a82aaf1195d15ee407287aa1845cb22fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a82aaf1195d15ee407287aa1845cb22fe">barcode</a></td></tr>
 <tr class="memdesc:a82aaf1195d15ee407287aa1845cb22fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Barcode associated with the robot. This is what the other robots will read during there operation to identify each other.  <br /></td></tr>
 <tr class="separator:a82aaf1195d15ee407287aa1845cb22fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4e6f60558900a0655078461b3cb0588" id="r_ae4e6f60558900a0655078461b3cb0588"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cab4b7e59caad35573893a3082c0364" id="r_a8cab4b7e59caad35573893a3082c0364"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1State.html">State</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#a6e25d758800a1d48d078e507419981ef">states</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a8cab4b7e59caad35573893a3082c0364"><td class="mdescLeft">&#160;</td><td class="mdescRight">All groundtruth values extracted for the given robot.  <a href="classRobot.html#a6e25d758800a1d48d078e507419981ef">More...</a><br /></td></tr>
-<tr class="separator:a8cab4b7e59caad35573893a3082c0364"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ce408bc6a419bd31e56c5e655a3ea31" id="r_a4ce408bc6a419bd31e56c5e655a3ea31"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1Odometry.html">Odometry</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9">odometry</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a4ce408bc6a419bd31e56c5e655a3ea31"><td class="mdescLeft">&#160;</td><td class="mdescRight">All odometry inputs extracted for the given robot.  <a href="classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9">More...</a><br /></td></tr>
-<tr class="separator:a4ce408bc6a419bd31e56c5e655a3ea31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11d8e36a885f50e3302654c70fcecae3" id="r_a11d8e36a885f50e3302654c70fcecae3"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1Measurement.html">Measurement</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#a6dc77da5a06da8c3109aeb10780f3212">measurements</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a11d8e36a885f50e3302654c70fcecae3"><td class="mdescLeft">&#160;</td><td class="mdescRight">All measurements taken by the given robot.  <a href="classRobot.html#a6dc77da5a06da8c3109aeb10780f3212">More...</a><br /></td></tr>
-<tr class="separator:a11d8e36a885f50e3302654c70fcecae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4e6f60558900a0655078461b3cb0588" id="r_ae4e6f60558900a0655078461b3cb0588"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#ae4e6f60558900a0655078461b3cb0588">raw</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:ae4e6f60558900a0655078461b3cb0588"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vectors related to the robot data.  <br /></td></tr>
-<tr class="separator:ae4e6f60558900a0655078461b3cb0588"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae996702533d5252f0b84fad1739e42e9" id="r_ae996702533d5252f0b84fad1739e42e9"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cab4b7e59caad35573893a3082c0364" id="r_a8cab4b7e59caad35573893a3082c0364"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1State.html">State</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#a6e25d758800a1d48d078e507419981ef">states</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a8cab4b7e59caad35573893a3082c0364"><td class="mdescLeft">&#160;</td><td class="mdescRight">All groundtruth values extracted for the given robot.  <a href="classRobot.html#a6e25d758800a1d48d078e507419981ef">More...</a><br /></td></tr>
-<tr class="separator:a8cab4b7e59caad35573893a3082c0364"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ce408bc6a419bd31e56c5e655a3ea31" id="r_a4ce408bc6a419bd31e56c5e655a3ea31"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1Odometry.html">Odometry</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9">odometry</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a4ce408bc6a419bd31e56c5e655a3ea31"><td class="mdescLeft">&#160;</td><td class="mdescRight">All odometry inputs extracted for the given robot.  <a href="classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9">More...</a><br /></td></tr>
-<tr class="separator:a4ce408bc6a419bd31e56c5e655a3ea31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11d8e36a885f50e3302654c70fcecae3" id="r_a11d8e36a885f50e3302654c70fcecae3"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1Measurement.html">Measurement</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#a6dc77da5a06da8c3109aeb10780f3212">measurements</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a11d8e36a885f50e3302654c70fcecae3"><td class="mdescLeft">&#160;</td><td class="mdescRight">All measurements taken by the given robot.  <a href="classRobot.html#a6dc77da5a06da8c3109aeb10780f3212">More...</a><br /></td></tr>
-<tr class="separator:a11d8e36a885f50e3302654c70fcecae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae996702533d5252f0b84fad1739e42e9" id="r_ae996702533d5252f0b84fad1739e42e9"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#ae996702533d5252f0b84fad1739e42e9">synced</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:ae996702533d5252f0b84fad1739e42e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The odometry and measurement values with synced timesteps.  <br /></td></tr>
-<tr class="separator:ae996702533d5252f0b84fad1739e42e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9546c10a6786f0f0c8870bfea9693517" id="r_a9546c10a6786f0f0c8870bfea9693517"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cab4b7e59caad35573893a3082c0364" id="r_a8cab4b7e59caad35573893a3082c0364"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1State.html">State</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#a6e25d758800a1d48d078e507419981ef">states</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a8cab4b7e59caad35573893a3082c0364"><td class="mdescLeft">&#160;</td><td class="mdescRight">All groundtruth values extracted for the given robot.  <a href="classRobot.html#a6e25d758800a1d48d078e507419981ef">More...</a><br /></td></tr>
-<tr class="separator:a8cab4b7e59caad35573893a3082c0364"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ce408bc6a419bd31e56c5e655a3ea31" id="r_a4ce408bc6a419bd31e56c5e655a3ea31"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1Odometry.html">Odometry</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9">odometry</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a4ce408bc6a419bd31e56c5e655a3ea31"><td class="mdescLeft">&#160;</td><td class="mdescRight">All odometry inputs extracted for the given robot.  <a href="classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9">More...</a><br /></td></tr>
-<tr class="separator:a4ce408bc6a419bd31e56c5e655a3ea31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11d8e36a885f50e3302654c70fcecae3" id="r_a11d8e36a885f50e3302654c70fcecae3"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1Measurement.html">Measurement</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#a6dc77da5a06da8c3109aeb10780f3212">measurements</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a11d8e36a885f50e3302654c70fcecae3"><td class="mdescLeft">&#160;</td><td class="mdescRight">All measurements taken by the given robot.  <a href="classRobot.html#a6dc77da5a06da8c3109aeb10780f3212">More...</a><br /></td></tr>
-<tr class="separator:a11d8e36a885f50e3302654c70fcecae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9546c10a6786f0f0c8870bfea9693517" id="r_a9546c10a6786f0f0c8870bfea9693517"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a9546c10a6786f0f0c8870bfea9693517">groundtruth</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a9546c10a6786f0f0c8870bfea9693517"><td class="mdescLeft">&#160;</td><td class="mdescRight">The groundtruth.  <br /></td></tr>
-<tr class="separator:a9546c10a6786f0f0c8870bfea9693517"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c289cf1d97d818ef82a41c2091e7789" id="r_a0c289cf1d97d818ef82a41c2091e7789"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cab4b7e59caad35573893a3082c0364" id="r_a8cab4b7e59caad35573893a3082c0364"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1State.html">State</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#a6e25d758800a1d48d078e507419981ef">states</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a8cab4b7e59caad35573893a3082c0364"><td class="mdescLeft">&#160;</td><td class="mdescRight">All groundtruth values extracted for the given robot.  <a href="classRobot.html#a6e25d758800a1d48d078e507419981ef">More...</a><br /></td></tr>
-<tr class="separator:a8cab4b7e59caad35573893a3082c0364"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ce408bc6a419bd31e56c5e655a3ea31" id="r_a4ce408bc6a419bd31e56c5e655a3ea31"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1Odometry.html">Odometry</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9">odometry</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a4ce408bc6a419bd31e56c5e655a3ea31"><td class="mdescLeft">&#160;</td><td class="mdescRight">All odometry inputs extracted for the given robot.  <a href="classRobot.html#af8b1b5b86b8fe5b237253364061cb1a9">More...</a><br /></td></tr>
-<tr class="separator:a4ce408bc6a419bd31e56c5e655a3ea31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11d8e36a885f50e3302654c70fcecae3" id="r_a11d8e36a885f50e3302654c70fcecae3"><td class="memItemLeft" >&#160;&#160;&#160;std::vector&lt; <a class="el" href="structRobot_1_1Measurement.html">Measurement</a> &gt;&#160;&#160;&#160;<a class="el" href="classRobot.html#a6dc77da5a06da8c3109aeb10780f3212">measurements</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a11d8e36a885f50e3302654c70fcecae3"><td class="mdescLeft">&#160;</td><td class="mdescRight">All measurements taken by the given robot.  <a href="classRobot.html#a6dc77da5a06da8c3109aeb10780f3212">More...</a><br /></td></tr>
-<tr class="separator:a11d8e36a885f50e3302654c70fcecae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c289cf1d97d818ef82a41c2091e7789" id="r_a0c289cf1d97d818ef82a41c2091e7789"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a0c289cf1d97d818ef82a41c2091e7789">error</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a0c289cf1d97d818ef82a41c2091e7789"><td class="mdescLeft">&#160;</td><td class="mdescRight">The difference between the ground truth and the synced data.  <br /></td></tr>
-<tr class="separator:a0c289cf1d97d818ef82a41c2091e7789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33ed5b6958976ee636414c2ef8d151a0" id="r_a33ed5b6958976ee636414c2ef8d151a0"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structRobot_1_1ErrorStatistics.html">Robot::ErrorStatistics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a33ed5b6958976ee636414c2ef8d151a0">range_error</a></td></tr>
-<tr class="memdesc:a33ed5b6958976ee636414c2ef8d151a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error associated with the range measurements.  <br /></td></tr>
-<tr class="separator:a33ed5b6958976ee636414c2ef8d151a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e244b485389e57d1e34e0fbb3e25d6a" id="r_a2e244b485389e57d1e34e0fbb3e25d6a"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structRobot_1_1ErrorStatistics.html">Robot::ErrorStatistics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a2e244b485389e57d1e34e0fbb3e25d6a">bearing_error</a></td></tr>
-<tr class="memdesc:a2e244b485389e57d1e34e0fbb3e25d6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error associated with the bearing measurements.  <br /></td></tr>
-<tr class="separator:a2e244b485389e57d1e34e0fbb3e25d6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa68a57a7a0cf9d8a3963f6846aa76d3a" id="r_aa68a57a7a0cf9d8a3963f6846aa76d3a"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structRobot_1_1ErrorStatistics.html">Robot::ErrorStatistics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#aa68a57a7a0cf9d8a3963f6846aa76d3a">forward_velocity_error</a></td></tr>
-<tr class="separator:aa68a57a7a0cf9d8a3963f6846aa76d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07e860f0c00875a185ed8b1ce164d266" id="r_a07e860f0c00875a185ed8b1ce164d266"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structRobot_1_1ErrorStatistics.html">Robot::ErrorStatistics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a07e860f0c00875a185ed8b1ce164d266">angular_velocity_error</a></td></tr>
-<tr class="separator:a07e860f0c00875a185ed8b1ce164d266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47fe1ae41e8d9ec7e33e73bd83b64b9f" id="r_a47fe1ae41e8d9ec7e33e73bd83b64b9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a47fe1ae41e8d9ec7e33e73bd83b64b9f">raw</a></td></tr>
+<tr class="memdesc:a47fe1ae41e8d9ec7e33e73bd83b64b9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The raw data extracted from the dataset's .dat files.  <br /></td></tr>
+<tr class="separator:a47fe1ae41e8d9ec7e33e73bd83b64b9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf6fab556a0df40d178c89a916b865b0" id="r_abf6fab556a0df40d178c89a916b865b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#abf6fab556a0df40d178c89a916b865b0">synced</a></td></tr>
+<tr class="memdesc:abf6fab556a0df40d178c89a916b865b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The odometry and measurement values with synced timesteps.  <br /></td></tr>
+<tr class="separator:abf6fab556a0df40d178c89a916b865b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a850f65d94288db275897cb52335edca1" id="r_a850f65d94288db275897cb52335edca1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a850f65d94288db275897cb52335edca1">groundtruth</a></td></tr>
+<tr class="separator:a850f65d94288db275897cb52335edca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04c61a064c40a32ae6806fcf7196a929" id="r_a04c61a064c40a32ae6806fcf7196a929"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a04c61a064c40a32ae6806fcf7196a929">error</a></td></tr>
+<tr class="memdesc:a04c61a064c40a32ae6806fcf7196a929"><td class="mdescLeft">&#160;</td><td class="mdescRight">The difference between the ground truth and the synced data.  <br /></td></tr>
+<tr class="separator:a04c61a064c40a32ae6806fcf7196a929"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e3294bc6bf1277bdb5fbfb44410f362" id="r_a3e3294bc6bf1277bdb5fbfb44410f362"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRobot_1_1ErrorStatistics.html">ErrorStatistics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a3e3294bc6bf1277bdb5fbfb44410f362">range_error</a></td></tr>
+<tr class="memdesc:a3e3294bc6bf1277bdb5fbfb44410f362"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error associated with the range measurements.  <br /></td></tr>
+<tr class="separator:a3e3294bc6bf1277bdb5fbfb44410f362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef446e2bab525bc0e744c43340bcd9d8" id="r_aef446e2bab525bc0e744c43340bcd9d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRobot_1_1ErrorStatistics.html">ErrorStatistics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#aef446e2bab525bc0e744c43340bcd9d8">bearing_error</a></td></tr>
+<tr class="memdesc:aef446e2bab525bc0e744c43340bcd9d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error associated with the bearing measurements.  <br /></td></tr>
+<tr class="separator:aef446e2bab525bc0e744c43340bcd9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ed88b41d1331a1e1d53a21f72dc44f7" id="r_a7ed88b41d1331a1e1d53a21f72dc44f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRobot_1_1ErrorStatistics.html">ErrorStatistics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a7ed88b41d1331a1e1d53a21f72dc44f7">forward_velocity_error</a></td></tr>
+<tr class="memdesc:a7ed88b41d1331a1e1d53a21f72dc44f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error associated with the forward velocity input.  <br /></td></tr>
+<tr class="separator:a7ed88b41d1331a1e1d53a21f72dc44f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4dba1bf3a4d2fcbabbd715a377d9810" id="r_ab4dba1bf3a4d2fcbabbd715a377d9810"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRobot_1_1ErrorStatistics.html">ErrorStatistics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#ab4dba1bf3a4d2fcbabbd715a377d9810">angular_velocity_error</a></td></tr>
+<tr class="memdesc:ab4dba1bf3a4d2fcbabbd715a377d9810"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error associated with the angular velocity input.  <br /></td></tr>
+<tr class="separator:ab4dba1bf3a4d2fcbabbd715a377d9810"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -461,11 +428,10 @@ Private Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">sorted_vector</td><td>A vector sorted in ascending order. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">The</td><td>structure of error statistics for a given sensor. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">error_statistics</td><td>The struct of error statistics for a given sensor, containing: the median, first quartile, third quartile, and inter-quartile range of the sorted input vector. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The error statitics which include the median, first quartile, third quartile, and inter-quartile range of the sorted input vector. </dd></dl>
 
 </div>
 </div>
@@ -485,7 +451,11 @@ Private Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>calculates the sample mean and sample variance of the error for all the odometry and tracking measurements. </p>
-<p>The sample mean and sample variance are calculate as $$\begin{align} \bar{x} = \frac{\sum_{i\in n} x_i}{n}\ \sigma^2 = \frac{\sum_{i\in n} (x_i - \bar{x})^2}{n-1} \end{align}$$ where \(x_i\) denotes the $i$-th element in the sample of size \(n\). The sample variance formulation uses Bessel correction. </p><dl class="section note"><dt>Note</dt><dd>The calculation on the sample mean relies on the population of the <a class="el" href="classRobot.html#a0c289cf1d97d818ef82a41c2091e7789" title="The difference between the ground truth and the synced data.">Robot::error</a> vector and therefore, <a class="el" href="classRobot.html#a4a5c0633e46aa43edca4bd835fd9dcfd" title="Calculates the difference between the measured range and bearing and the calculated groundtruth.">Robot::calculateMeasurementError</a> needs to be called before this function. </dd></dl>
+<p>The sample mean and sample variance are calculate as  </p><p class="formulaDsp">
+\[\begin{align} \bar{x} &amp;= \frac{\sum_{i\in n} x_i}{n}\\ \sigma^2 &amp;=
+\frac{\sum_{i\in n} (x_i - \bar{x})^2}{n-1},\end{align}\]
+</p>
+<p> where \(x_i\) denotes the \(i\)-th element in the sample of size \(n\). The sample variance formulation uses Bessel correction. </p><dl class="section note"><dt>Note</dt><dd>The calculation on the sample mean relies on the population of the <a class="el" href="classRobot.html#a04c61a064c40a32ae6806fcf7196a929" title="The difference between the ground truth and the synced data.">Robot::error</a> vector and therefore, <a class="el" href="classRobot.html#a4a5c0633e46aa43edca4bd835fd9dcfd" title="Calculates the difference between the measured range and bearing and the calculated groundtruth.">Robot::calculateMeasurementError</a> needs to be called before this function. </dd></dl>
 
 </div>
 </div>
@@ -606,17 +576,18 @@ Private Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a07e860f0c00875a185ed8b1ce164d266" name="a07e860f0c00875a185ed8b1ce164d266"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07e860f0c00875a185ed8b1ce164d266">&#9670;&#160;</a></span>angular_velocity_error</h2>
+<a id="ab4dba1bf3a4d2fcbabbd715a377d9810" name="ab4dba1bf3a4d2fcbabbd715a377d9810"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4dba1bf3a4d2fcbabbd715a377d9810">&#9670;&#160;</a></span>angular_velocity_error</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct <a class="el" href="structRobot_1_1ErrorStatistics.html">Robot::ErrorStatistics</a> Robot::angular_velocity_error</td>
+          <td class="memname"><a class="el" href="structRobot_1_1ErrorStatistics.html">ErrorStatistics</a> Robot::angular_velocity_error</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Error associated with the angular velocity input. </p>
 
 </div>
@@ -637,14 +608,14 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a2e244b485389e57d1e34e0fbb3e25d6a" name="a2e244b485389e57d1e34e0fbb3e25d6a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e244b485389e57d1e34e0fbb3e25d6a">&#9670;&#160;</a></span>bearing_error</h2>
+<a id="aef446e2bab525bc0e744c43340bcd9d8" name="aef446e2bab525bc0e744c43340bcd9d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef446e2bab525bc0e744c43340bcd9d8">&#9670;&#160;</a></span>bearing_error</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct <a class="el" href="structRobot_1_1ErrorStatistics.html">Robot::ErrorStatistics</a> Robot::bearing_error</td>
+          <td class="memname"><a class="el" href="structRobot_1_1ErrorStatistics.html">ErrorStatistics</a> Robot::bearing_error</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -653,14 +624,14 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0c289cf1d97d818ef82a41c2091e7789" name="a0c289cf1d97d818ef82a41c2091e7789"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c289cf1d97d818ef82a41c2091e7789">&#9670;&#160;</a></span>[struct]</h2>
+<a id="a04c61a064c40a32ae6806fcf7196a929" name="a04c61a064c40a32ae6806fcf7196a929"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04c61a064c40a32ae6806fcf7196a929">&#9670;&#160;</a></span>error</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct  { ... }  Robot::error</td>
+          <td class="memname"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a> Robot::error</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -669,34 +640,34 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa68a57a7a0cf9d8a3963f6846aa76d3a" name="aa68a57a7a0cf9d8a3963f6846aa76d3a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa68a57a7a0cf9d8a3963f6846aa76d3a">&#9670;&#160;</a></span>forward_velocity_error</h2>
+<a id="a7ed88b41d1331a1e1d53a21f72dc44f7" name="a7ed88b41d1331a1e1d53a21f72dc44f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ed88b41d1331a1e1d53a21f72dc44f7">&#9670;&#160;</a></span>forward_velocity_error</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct <a class="el" href="structRobot_1_1ErrorStatistics.html">Robot::ErrorStatistics</a> Robot::forward_velocity_error</td>
+          <td class="memname"><a class="el" href="structRobot_1_1ErrorStatistics.html">ErrorStatistics</a> Robot::forward_velocity_error</td>
         </tr>
       </table>
 </div><div class="memdoc">
+
 <p>Error associated with the forward velocity input. </p>
 
 </div>
 </div>
-<a id="a9546c10a6786f0f0c8870bfea9693517" name="a9546c10a6786f0f0c8870bfea9693517"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9546c10a6786f0f0c8870bfea9693517">&#9670;&#160;</a></span>[struct]</h2>
+<a id="a850f65d94288db275897cb52335edca1" name="a850f65d94288db275897cb52335edca1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a850f65d94288db275897cb52335edca1">&#9670;&#160;</a></span>groundtruth</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct  { ... }  Robot::groundtruth</td>
+          <td class="memname"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a> Robot::groundtruth</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>The groundtruth. </p>
+<p>The groundtruth </p>
 
 </div>
 </div>
@@ -716,46 +687,14 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6dc77da5a06da8c3109aeb10780f3212" name="a6dc77da5a06da8c3109aeb10780f3212"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6dc77da5a06da8c3109aeb10780f3212">&#9670;&#160;</a></span>measurements</h2>
+<a id="a3e3294bc6bf1277bdb5fbfb44410f362" name="a3e3294bc6bf1277bdb5fbfb44410f362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e3294bc6bf1277bdb5fbfb44410f362">&#9670;&#160;</a></span>range_error</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="structRobot_1_1Measurement.html">Measurement</a>&gt; Robot::measurements</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>All measurements taken by the given robot. </p>
-
-</div>
-</div>
-<a id="af8b1b5b86b8fe5b237253364061cb1a9" name="af8b1b5b86b8fe5b237253364061cb1a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8b1b5b86b8fe5b237253364061cb1a9">&#9670;&#160;</a></span>odometry</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="structRobot_1_1Odometry.html">Odometry</a>&gt; Robot::odometry</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>All odometry inputs extracted for the given robot. </p>
-
-</div>
-</div>
-<a id="a33ed5b6958976ee636414c2ef8d151a0" name="a33ed5b6958976ee636414c2ef8d151a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a33ed5b6958976ee636414c2ef8d151a0">&#9670;&#160;</a></span>range_error</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="structRobot_1_1ErrorStatistics.html">Robot::ErrorStatistics</a> Robot::range_error</td>
+          <td class="memname"><a class="el" href="structRobot_1_1ErrorStatistics.html">ErrorStatistics</a> Robot::range_error</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -764,47 +703,30 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae4e6f60558900a0655078461b3cb0588" name="ae4e6f60558900a0655078461b3cb0588"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4e6f60558900a0655078461b3cb0588">&#9670;&#160;</a></span>[struct]</h2>
+<a id="a47fe1ae41e8d9ec7e33e73bd83b64b9f" name="a47fe1ae41e8d9ec7e33e73bd83b64b9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47fe1ae41e8d9ec7e33e73bd83b64b9f">&#9670;&#160;</a></span>raw</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct  { ... }  Robot::raw</td>
+          <td class="memname"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a> Robot::raw</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Vectors related to the robot data. </p>
 <p>The raw data extracted from the dataset's .dat files. </p>
 
 </div>
 </div>
-<a id="a6e25d758800a1d48d078e507419981ef" name="a6e25d758800a1d48d078e507419981ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e25d758800a1d48d078e507419981ef">&#9670;&#160;</a></span>states</h2>
+<a id="abf6fab556a0df40d178c89a916b865b0" name="abf6fab556a0df40d178c89a916b865b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf6fab556a0df40d178c89a916b865b0">&#9670;&#160;</a></span>synced</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="structRobot_1_1State.html">State</a>&gt; Robot::states</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>All groundtruth values extracted for the given robot. </p>
-
-</div>
-</div>
-<a id="ae996702533d5252f0b84fad1739e42e9" name="ae996702533d5252f0b84fad1739e42e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae996702533d5252f0b84fad1739e42e9">&#9670;&#160;</a></span>[struct]</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct  { ... }  Robot::synced</td>
+          <td class="memname"><a class="el" href="structRobot_1_1RobotData.html">RobotData</a> Robot::synced</td>
         </tr>
       </table>
 </div><div class="memdoc">

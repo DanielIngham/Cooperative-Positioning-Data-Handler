@@ -24,8 +24,8 @@ var searchData=
   ['simulator_2ecpp_21',['simulator.cpp',['../simulator_8cpp.html',1,'']]],
   ['simulator_2eh_22',['simulator.h',['../simulator_8h.html',1,'']]],
   ['state_23',['state',['../structRobot_1_1State.html',1,'Robot::State'],['../structRobot_1_1State.html#a30d70945b7f3b1f2fe905d91c9a56ebe',1,'Robot::State::State(double time_, double x_, double y_, double orientation_)'],['../structRobot_1_1State.html#a0e79a34a49a9a3c40117089008e4cf1f',1,'Robot::State::State()']]],
-  ['states_24',['states',['../classRobot.html#a6e25d758800a1d48d078e507419981ef',1,'Robot']]],
+  ['states_24',['states',['../structRobot_1_1RobotData.html#a521036974cd6d4a47a49fcdf71befcaf',1,'Robot::RobotData']]],
   ['subjects_25',['subjects',['../structRobot_1_1Measurement.html#a990519251fbb00ce8ec7329eb9e31b05',1,'Robot::Measurement']]],
   ['syncdata_26',['syncData',['../classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f',1,'DataHandler']]],
-  ['synced_27',['synced',['../classRobot.html#ae996702533d5252f0b84fad1739e42e9',1,'Robot']]]
+  ['synced_27',['synced',['../classRobot.html#abf6fab556a0df40d178c89a916b865b0',1,'Robot']]]
 ];

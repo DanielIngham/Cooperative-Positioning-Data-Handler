@@ -86,6 +86,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Populates <a class="el" href="classRobot.html" title="Houses all data and functionality related to a given robot in a multi-robot localisation environment.">Robot</a> and <a class="el" href="structLandmark.html" title="Houses all data related to a given landmark in the UTIAS multi-robot localisation and mapping dataset...">Landmark</a> vectors with simulated values.  
+ <a href="classSimulator.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="simulator_8h_source.html">simulator.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -99,7 +102,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0f49aa04f42060a785adf77346b9de9f" id="r_a0f49aa04f42060a785adf77346b9de9f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a0f49aa04f42060a785adf77346b9de9f">~Simulator</a> ()</td></tr>
 <tr class="separator:a0f49aa04f42060a785adf77346b9de9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bdfa23add82ee415098d6bb914812f5" id="r_a5bdfa23add82ee415098d6bb914812f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a5bdfa23add82ee415098d6bb914812f5">setSimulation</a> (const unsigned long int, double, std::vector&lt; <a class="el" href="classRobot.html">Robot</a> &gt; &amp;, std::vector&lt; <a class="el" href="structLandmark.html">Landmark</a> &gt; &amp;, std::vector&lt; unsigned short int &gt; &amp;)</td></tr>
-<tr class="memdesc:a5bdfa23add82ee415098d6bb914812f5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classPopulates.html">Populates</a> the robots and landmarks with simulated values.  <br /></td></tr>
+<tr class="memdesc:a5bdfa23add82ee415098d6bb914812f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populates the robots and landmarks with simulated values.  <br /></td></tr>
 <tr class="separator:a5bdfa23add82ee415098d6bb914812f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-types" name="pri-types"></a>
@@ -166,39 +169,41 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:ab2c44add5d8d58de947113f8eb854158" id="r_ab2c44add5d8d58de947113f8eb854158"><td class="memItemLeft" align="right" valign="top">std::vector&lt; unsigned short int &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ab2c44add5d8d58de947113f8eb854158">barcodes_</a> = nullptr</td></tr>
 <tr class="memdesc:ab2c44add5d8d58de947113f8eb854158"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the input barcodes vector.  <br /></td></tr>
 <tr class="separator:ab2c44add5d8d58de947113f8eb854158"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a727187688eedec05c9a2dac7a96b7e2e" id="r_a727187688eedec05c9a2dac7a96b7e2e"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memitem:aafb2597a44371b1bb63c3ef17de6d4a1" id="r_aafb2597a44371b1bb63c3ef17de6d4a1"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73e00f0bef72b873252b790939acd4fe" id="r_a73e00f0bef72b873252b790939acd4fe"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#afdbe7ce02900fc83663d8cc536a2bb2c">width</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a73e00f0bef72b873252b790939acd4fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum x-coordinate (2. Data collection: page 970)  <a href="classSimulator.html#afdbe7ce02900fc83663d8cc536a2bb2c">More...</a><br /></td></tr>
-<tr class="separator:a73e00f0bef72b873252b790939acd4fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbcb4e63ddc4c0ab6975dab483b8c68c" id="r_adbcb4e63ddc4c0ab6975dab483b8c68c"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a0980c080411111c0595ed76794319c48">height</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:adbcb4e63ddc4c0ab6975dab483b8c68c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum y-coordinate (2. Data collection: page 970)  <a href="classSimulator.html#a0980c080411111c0595ed76794319c48">More...</a><br /></td></tr>
-<tr class="separator:adbcb4e63ddc4c0ab6975dab483b8c68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fc41f342ff67ce60059316cb81b1b9c" id="r_a7fc41f342ff67ce60059316cb81b1b9c"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a13467d34965fc1489560728a84675b62">forward_velocity</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a7fc41f342ff67ce60059316cb81b1b9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum forward velocity [m/s] (2.3 Odometry: page 970)  <a href="classSimulator.html#a13467d34965fc1489560728a84675b62">More...</a><br /></td></tr>
-<tr class="separator:a7fc41f342ff67ce60059316cb81b1b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51409b0be3d8e2f6e88707f0f4dc2700" id="r_a51409b0be3d8e2f6e88707f0f4dc2700"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a5ab47047fb9cddae8d047499b75bb9d8">angular_velocity</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a51409b0be3d8e2f6e88707f0f4dc2700"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum angular velocity [rad/s] (2.3 Odometry: page 970)  <a href="classSimulator.html#a5ab47047fb9cddae8d047499b75bb9d8">More...</a><br /></td></tr>
-<tr class="separator:a51409b0be3d8e2f6e88707f0f4dc2700"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a727187688eedec05c9a2dac7a96b7e2e" id="r_a727187688eedec05c9a2dac7a96b7e2e"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a727187688eedec05c9a2dac7a96b7e2e">limits_</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="memdesc:a727187688eedec05c9a2dac7a96b7e2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The simulation limits for the robots.  <br /></td></tr>
-<tr class="separator:a727187688eedec05c9a2dac7a96b7e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ada3ebbc92d53190d849efc81796b98" id="r_a0ada3ebbc92d53190d849efc81796b98"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memitem:a4d72e605757d80b701e042a2c9e838b0" id="r_a4d72e605757d80b701e042a2c9e838b0"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#afdbe7ce02900fc83663d8cc536a2bb2c">width</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memdesc:a4d72e605757d80b701e042a2c9e838b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum x-coordinate (2. Data collection: page 970)  <a href="classSimulator.html#afdbe7ce02900fc83663d8cc536a2bb2c">More...</a><br /></td></tr>
+<tr class="separator:a4d72e605757d80b701e042a2c9e838b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88bdb7978ceb4b7d9e6f5d5c4a191b93" id="r_a88bdb7978ceb4b7d9e6f5d5c4a191b93"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a0980c080411111c0595ed76794319c48">height</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memdesc:a88bdb7978ceb4b7d9e6f5d5c4a191b93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum y-coordinate (2. Data collection: page 970)  <a href="classSimulator.html#a0980c080411111c0595ed76794319c48">More...</a><br /></td></tr>
+<tr class="separator:a88bdb7978ceb4b7d9e6f5d5c4a191b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2efcb4e8dfe04df80d5931c9c94d256f" id="r_a2efcb4e8dfe04df80d5931c9c94d256f"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a13467d34965fc1489560728a84675b62">forward_velocity</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memdesc:a2efcb4e8dfe04df80d5931c9c94d256f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum forward velocity [m/s] (2.3 Odometry: page 970)  <a href="classSimulator.html#a13467d34965fc1489560728a84675b62">More...</a><br /></td></tr>
+<tr class="separator:a2efcb4e8dfe04df80d5931c9c94d256f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84b71dc2644cbcc0554bc5da39353404" id="r_a84b71dc2644cbcc0554bc5da39353404"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a5ab47047fb9cddae8d047499b75bb9d8">angular_velocity</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memdesc:a84b71dc2644cbcc0554bc5da39353404"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum angular velocity [rad/s] (2.3 Odometry: page 970)  <a href="classSimulator.html#a5ab47047fb9cddae8d047499b75bb9d8">More...</a><br /></td></tr>
+<tr class="separator:a84b71dc2644cbcc0554bc5da39353404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafb2597a44371b1bb63c3ef17de6d4a1" id="r_aafb2597a44371b1bb63c3ef17de6d4a1"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#aafb2597a44371b1bb63c3ef17de6d4a1">limits_</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memdesc:aafb2597a44371b1bb63c3ef17de6d4a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The simulation limits for the robots.  <br /></td></tr>
+<tr class="separator:aafb2597a44371b1bb63c3ef17de6d4a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8f33f9b11120ebd1d7a28c9abdea940" id="r_ad8f33f9b11120ebd1d7a28c9abdea940"><td class="memItemLeft" >struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7295687a3c2f5962193178e6c3f68964" id="r_a7295687a3c2f5962193178e6c3f68964"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a13467d34965fc1489560728a84675b62">forward_velocity</a> [2] = {0.0007, 0.0016}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:a7295687a3c2f5962193178e6c3f68964"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5a5fa3b413a464a2ba6bd9f479a1a5e" id="r_ae5a5fa3b413a464a2ba6bd9f479a1a5e"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a5ab47047fb9cddae8d047499b75bb9d8">angular_velocity</a> [2] = {0.0183, 0.0399}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:ae5a5fa3b413a464a2ba6bd9f479a1a5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90e7504d3ee3b6b5212d9325a36fae02" id="r_a90e7504d3ee3b6b5212d9325a36fae02"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb">range</a> [2] = {0.0162, 0.045}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:a90e7504d3ee3b6b5212d9325a36fae02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a178b0db3270a009df230ddd1ee8f025a" id="r_a178b0db3270a009df230ddd1ee8f025a"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a23b29776e6139abd82ed5aeb1debb787">bearing</a> [2] = {0.00062, 0.00596}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:a178b0db3270a009df230ddd1ee8f025a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbb947c78eea2686818b2c2d224cd569" id="r_afbb947c78eea2686818b2c2d224cd569"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#afcf45b5faab374197fd9daacd9812418">landmarks</a> [2] = {0.00004964 * 0.00004964, 0.00041465 * 0.00041465}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:afbb947c78eea2686818b2c2d224cd569"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ada3ebbc92d53190d849efc81796b98" id="r_a0ada3ebbc92d53190d849efc81796b98"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#a0ada3ebbc92d53190d849efc81796b98">variance</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:a0ada3ebbc92d53190d849efc81796b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa128e22e7db09f17cdd8df4ab641467f" id="r_aa128e22e7db09f17cdd8df4ab641467f"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a13467d34965fc1489560728a84675b62">forward_velocity</a> [2] = {0.0007, 0.0016}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:aa128e22e7db09f17cdd8df4ab641467f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a267f00eaed6f9b01a13ef0e8ff27f10b" id="r_a267f00eaed6f9b01a13ef0e8ff27f10b"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a5ab47047fb9cddae8d047499b75bb9d8">angular_velocity</a> [2] = {0.0183, 0.0399}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:a267f00eaed6f9b01a13ef0e8ff27f10b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ff80614e885b7a690b466e72fb6d62" id="r_ac6ff80614e885b7a690b466e72fb6d62"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb">range</a> [2] = {0.0162, 0.045}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:ac6ff80614e885b7a690b466e72fb6d62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af55b00483e4ece682368754995e26355" id="r_af55b00483e4ece682368754995e26355"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#a23b29776e6139abd82ed5aeb1debb787">bearing</a> [2] = {0.00062, 0.00596}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:af55b00483e4ece682368754995e26355"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f281d522d115117d9bffaec067b7768" id="r_a0f281d522d115117d9bffaec067b7768"><td class="memItemLeft" >&#160;&#160;&#160;double&#160;&#160;&#160;<a class="el" href="classSimulator.html#afcf45b5faab374197fd9daacd9812418">landmarks</a> [2] = {0.00004964 * 0.00004964, 0.00041465 * 0.00041465}&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:a0f281d522d115117d9bffaec067b7768"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8f33f9b11120ebd1d7a28c9abdea940" id="r_ad8f33f9b11120ebd1d7a28c9abdea940"><td class="memItemLeft" valign="top">}&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSimulator.html#ad8f33f9b11120ebd1d7a28c9abdea940">variance</a>&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:ad8f33f9b11120ebd1d7a28c9abdea940"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Enumeration Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Populates <a class="el" href="classRobot.html" title="Houses all data and functionality related to a given robot in a multi-robot localisation environment.">Robot</a> and <a class="el" href="structLandmark.html" title="Houses all data related to a given landmark in the UTIAS multi-robot localisation and mapping dataset...">Landmark</a> vectors with simulated values. </p>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a266818ccfcf4d923a0caf0539474e34b" name="a266818ccfcf4d923a0caf0539474e34b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a266818ccfcf4d923a0caf0539474e34b">&#9670;&#160;</a></span>Range</h2>
 
@@ -575,7 +580,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p><a class="el" href="classPopulates.html">Populates</a> the robots and landmarks with simulated values. </p>
+<p>Populates the robots and landmarks with simulated values. </p>
 
 </div>
 </div>
@@ -755,8 +760,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a727187688eedec05c9a2dac7a96b7e2e" name="a727187688eedec05c9a2dac7a96b7e2e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a727187688eedec05c9a2dac7a96b7e2e">&#9670;&#160;</a></span>[struct]</h2>
+<a id="aafb2597a44371b1bb63c3ef17de6d4a1" name="aafb2597a44371b1bb63c3ef17de6d4a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafb2597a44371b1bb63c3ef17de6d4a1">&#9670;&#160;</a></span>[struct]</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -930,8 +935,8 @@ localization and mapping dataset". DOI: 10.1177/0278364911398404 </p>
 
 </div>
 </div>
-<a id="a0ada3ebbc92d53190d849efc81796b98" name="a0ada3ebbc92d53190d849efc81796b98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ada3ebbc92d53190d849efc81796b98">&#9670;&#160;</a></span>[struct]</h2>
+<a id="ad8f33f9b11120ebd1d7a28c9abdea940" name="ad8f33f9b11120ebd1d7a28c9abdea940"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8f33f9b11120ebd1d7a28c9abdea940">&#9670;&#160;</a></span>[struct]</h2>
 
 <div class="memitem">
 <div class="memproto">
