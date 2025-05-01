@@ -21,9 +21,9 @@
 #include <unordered_map> // std::unordered_map
 #include <vector>        // std::vector
 
-#include "landmark.h"
-#include "robot.h"
-#include "simulator.h"
+#include "Landmark.h"
+#include "Robot.h"
+#include "Simulator.h"
 
 /**
  * @class DataHandler

@@ -1,6 +1,6 @@
 # Directories
 BUILD_DIR := lib
-INCLUDE_DIR := include
+INCLUDE_DIR := .
 SRC_DIR := src
 
 # Compiler
@@ -9,7 +9,7 @@ CXX := g++
 # Flags
 WFLAGS := -Wall -Wextra -Werror -Wshadow 
 MFLAGS := -ffloat-store -fno-fast-math
-CFLAGS := $(WFLAGS) $(MFLAGS) 
+CFLAGS := $(WFLAGS) $(MFLAGS) -I$(INCLUDE_DIR)
 
 # Files
 LIBRARY := data_handler
@@ -39,7 +39,7 @@ $(TARGET): $(OBJECTS)
 # Compiling 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) -g -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
+	$(CXX) -g  $(CFLAGS) -c $^ -o $@ 
 
 all: $(TARGET)
 
@@ -55,7 +55,7 @@ $(TEST_TARGET): $(TARGET) $(TEST_OBJECTS)
 # Test Compling
 $(TEST_BUILD)/%.o: $(TEST_DIR)/%.cpp 
 	@mkdir -p $(dir $@)
-	$(CXX) -g -I $(INCLUDE_DIR) $(CFLAGS) -c $^ -o $@ 
+	$(CXX) -g $(CFLAGS) -c $^ -o $@ 
 
 test: $(TEST_TARGET)
 

@@ -1,5 +1,6 @@
-#include "data_handler.h" // DataHandler
-#include <algorithm>      // std::find
+#include "DataHandler.h" // DataHandler
+
+#include <algorithm> // std::find
 #include <assert.h>
 #include <chrono> // std::chrono
 #include <cstddef>

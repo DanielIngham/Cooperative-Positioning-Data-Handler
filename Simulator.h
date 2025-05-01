@@ -13,8 +13,8 @@
 #include <string>
 #include <vector>
 
-#include "landmark.h"
-#include "robot.h"
+#include "Landmark.h"
+#include "Robot.h"
 
 /**
  * @class Simulator

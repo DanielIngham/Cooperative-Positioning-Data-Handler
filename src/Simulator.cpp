@@ -8,7 +8,7 @@
  * @date 2025-04-25
  */
 
-#include "simulator.h"
+#include "Simulator.h"
 
 /**
  * @brief Default constructor.

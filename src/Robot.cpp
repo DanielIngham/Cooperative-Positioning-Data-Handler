@@ -6,7 +6,7 @@
  * @author Daniel Ingham
  * @date 2025-04-23
  */
-#include "robot.h"
+#include "Robot.h"
 #include <stdexcept>
 
 /**
