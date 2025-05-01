@@ -8,10 +8,8 @@
  * @date 2025-04-25
  */
 
-#include "../include/simulator.h"
-#include <cmath>
-#include <random>
-#include <stdexcept>
+#include "simulator.h"
+
 /**
  * @brief Default constructor.
  */

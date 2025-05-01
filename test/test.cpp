@@ -1,5 +1,5 @@
-#include "../include/data_handler.h" // DataHandler
-#include <algorithm>                 // std::find
+#include "data_handler.h" // DataHandler
+#include <algorithm>      // std::find
 #include <assert.h>
 #include <chrono> // std::chrono
 #include <cstddef>
@@ -853,8 +853,6 @@ void checkSyncedSize() {
 }
 
 void checkSimulation() {
-  // bool flag = true;
-
   DataHandler data;
 
   data.setSimulation(70000, 0.02, 5U, 15U);
