@@ -35,8 +35,8 @@ DataHandler::DataHandler(const unsigned long int data_points,
     : sampling_period_(sample_period), total_landmarks(number_of_landmarks),
       total_robots(number_of_robots),
       total_barcodes(total_landmarks + total_robots),
-      landmarks_(total_landmarks), robots_(total_robots),
-      barcodes_(total_barcodes) {
+      total_synced_datapoints(data_points), landmarks_(total_landmarks),
+      robots_(total_robots), barcodes_(total_barcodes) {
 
   setSimulation(data_points, sample_period, number_of_robots,
                 number_of_landmarks, output_directory);
@@ -80,9 +80,12 @@ void DataHandler::setSimulation(const unsigned long int data_points,
                                 const std::string &output_directory) {
 
   auto start = std::chrono::high_resolution_clock::now();
+  /* Set class fields */
   this->dataset_ = "./";
   this->output_directory_ = output_directory;
+  this->total_synced_datapoints = data_points;
 
+  /* Creates unique simulation folder using the current system time. */
   try {
     auto now = std::chrono::system_clock::now();
     std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -100,6 +103,7 @@ void DataHandler::setSimulation(const unsigned long int data_points,
     throw;
   }
 
+  /* Set class fields. */
   this->sampling_period_ = sample_period;
 
   this->total_landmarks = number_of_landmarks;
@@ -167,6 +171,7 @@ void DataHandler::setDataSet(const std::string &dataset,
     throw std::runtime_error("Dataset file path does not exist: " + dataset);
   }
 
+  /* Set class fields. */
   this->dataset_ = dataset;
   this->output_directory_ = output_directory;
 
@@ -176,6 +181,7 @@ void DataHandler::setDataSet(const std::string &dataset,
   /* Set the sample period for this dataset. */
   this->sampling_period_ = sample_period;
 
+  /* All datasets contain 15 landmarks and 5 robots. */
   this->total_landmarks = 15U;
   this->total_robots = 5U;
   this->total_barcodes = total_landmarks + total_robots;
@@ -614,7 +620,7 @@ void DataHandler::syncData(const double &sample_period) {
   }
 
   maximum_time -= minimum_time;
-  unsigned long int time_steps = std::floor(maximum_time / sample_period) + 1;
+  total_synced_datapoints = std::floor(maximum_time / sample_period) + 1;
 
   /* Linear Interpolation. This section performs linear interpolation on the
    * ground truth and odometry values to ensure that all robots have syncronised
@@ -622,10 +628,10 @@ void DataHandler::syncData(const double &sample_period) {
   for (int id = 0; id < total_robots; id++) {
     /* Clear all previously interpolated values */
     robots_[id].groundtruth.states.clear();
-    robots_[id].groundtruth.states.reserve(time_steps);
+    robots_[id].groundtruth.states.reserve(total_synced_datapoints);
 
     robots_[id].synced.odometry.clear();
-    robots_[id].synced.odometry.reserve(time_steps);
+    robots_[id].synced.odometry.reserve(total_synced_datapoints);
 
     robots_[id].synced.measurements.clear();
 
@@ -1841,7 +1847,7 @@ std::vector<Robot> &DataHandler::getRobots() {
 double DataHandler::getSamplePeriod() { return sampling_period_; }
 
 /**
- * @brief Getter for the DataHandler::TOTAL_ROBOTS field.
+ * @brief Getter for the DataHandler::total_robots field.
  * @return the number of robots set by the user dataset.
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
@@ -1854,7 +1860,7 @@ unsigned short int DataHandler::getNumberOfRobots() {
 }
 
 /**
- * @brief Getter for the DataHandler::TOTAL_LANDMARKS field.
+ * @brief Getter for the DataHandler::total_landmarks field.
  * @return the number of landmarks set by the user or the dataset.
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
@@ -1868,7 +1874,7 @@ unsigned short int DataHandler::getNumberOfLandmarks() {
 }
 
 /**
- * @brief Getter for the DataHandler::BARCODES field.
+ * @brief Getter for the DataHandler::total_barcodes field.
  * @return the number of landmarks set by the user or the dataset.
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
@@ -1878,4 +1884,11 @@ unsigned short int DataHandler::getNumberOfBarcodes() {
     throw std::runtime_error("The total number of barcodes have not been set.");
   }
   return total_barcodes;
+}
+
+/**
+ * @brief Getter for the DataHandler::getNumberOfSyncedDatapoints field.
+ */
+unsigned long DataHandler::getNumberOfSyncedDatapoints() {
+  return total_synced_datapoints;
 }

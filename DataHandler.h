@@ -60,9 +60,10 @@ public:
 
   double getSamplePeriod();
 
-  unsigned short int getNumberOfRobots();
-  unsigned short int getNumberOfLandmarks();
-  unsigned short int getNumberOfBarcodes();
+  unsigned short getNumberOfRobots();
+  unsigned short getNumberOfLandmarks();
+  unsigned short getNumberOfBarcodes();
+  unsigned long getNumberOfSyncedDatapoints();
 
   int getID(unsigned short int);
 
@@ -112,19 +113,24 @@ private:
   /**
    * @brief The total number of landmarks in the dataset.
    */
-  unsigned short int total_landmarks = 0;
+  unsigned short total_landmarks = 0U;
 
   /**
    * @brief The total number of robots in the dataset.
    */
-  unsigned short int total_robots = 0;
+  unsigned short total_robots = 0U;
 
   /**
    * @brief the total number of barcodes in the dataset.
    * @note the value of this variable is the summation of the
    * DataHandler::TOTAL_LANDMARKS and DataHandler::TOTAL_ROBOTS.
    */
-  unsigned short int total_barcodes = 0;
+  unsigned short total_barcodes = 0U;
+
+  /**
+   * @brief The number of datapoints after calling Robot::sync_data.
+   */
+  unsigned long total_synced_datapoints = 0U;
 
   /**
    * @brief All landmarks containing all the data extracted form
