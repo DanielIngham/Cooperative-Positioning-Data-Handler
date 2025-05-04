@@ -7,8 +7,11 @@
  * @date 2025-04-23
  */
 #include "Robot.h"
-#include <stdexcept>
-
+#include <algorithm> // std::sort
+#include <iterator>  // std::iterator
+#include <numeric>   // std::accumulate
+#include <stdexcept> // std::runtime_error
+#include <string>    // std::string
 /**
  * @brief Default constructor.
  */

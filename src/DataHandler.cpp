@@ -11,8 +11,16 @@
  */
 
 #include "DataHandler.h"
-#include <cstdlib>
 
+#include <algorithm>     // std::remove_if and std::find
+#include <chrono>        // std::chrono
+#include <cstdlib>       // std::getenv
+#include <filesystem>    // std::filesystem
+#include <fstream>       // std::ifstream
+#include <iostream>      // std::cout
+#include <sstream>       // std::ostringstream
+#include <stdexcept>     // std::runtime_error
+#include <unordered_map> // std::unordered_map
 /**
  * @brief Default constructor.
  */

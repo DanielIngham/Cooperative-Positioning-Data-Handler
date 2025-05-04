@@ -7,14 +7,12 @@
 #ifndef INCLUDE_INCLUDE_SIMULATOR_H_
 #define INCLUDE_INCLUDE_SIMULATOR_H_
 
-#include <cmath>
-#include <random>
-#include <stdexcept>
-#include <string>
-#include <vector>
-
 #include "Landmark.h"
 #include "Robot.h"
+
+#include <cmath>
+#include <random>
+#include <vector>
 
 /**
  * @class Simulator
