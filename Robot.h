@@ -7,14 +7,8 @@
 #ifndef INCLUDE_INCLUDE_ROBOT_H_
 #define INCLUDE_INCLUDE_ROBOT_H_
 
-#include <algorithm> // std::sort
-#include <cmath>     // std::atan2
-#include <iostream>  // std::cout
-#include <iterator>  // std::iterator
-#include <numeric>   // std::accumulate
-#include <stdexcept> // std::runtime_error
-#include <string>    // std::string
-#include <vector>    // std::vector
+#include <cmath>  // std::atan2
+#include <vector> // std::vector
 
 /**
  * @class Robot
@@ -178,10 +172,8 @@ public:
   ErrorStatistics angular_velocity_error;
 
   void calculateSensorErrror();
-
   void calculateSampleErrorStats();
-
-  void removeOutliers();
+  void calculateStateError();
 
 private:
   unsigned long int calculateMedian(const unsigned long int,
@@ -191,6 +183,8 @@ private:
 
   void calculateOdometryError();
   void calculateMeasurementError();
+
+  void removeOutliers();
 };
 
 #endif // INCLUDE_INCLUDE_ROBOT_H_

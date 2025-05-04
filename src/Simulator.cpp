@@ -10,6 +10,8 @@
 
 #include "Simulator.h"
 
+#include <stdexcept>
+
 /**
  * @brief Default constructor.
  */

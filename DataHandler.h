@@ -7,19 +7,10 @@
 #ifndef INCLUDE_INCLUDE_DATA_HANDLER_H_
 #define INCLUDE_INCLUDE_DATA_HANDLER_H_
 
-#include <algorithm>     // std::remove_if and std::find
-#include <chrono>        // std::chrono
-#include <cmath>         // std::floor
-#include <cstdlib>       // system
-#include <filesystem>    // std::filesystem
-#include <format>        // std::format
-#include <fstream>       // std::ifstream
-#include <iostream>      // std::cout
-#include <sstream>       // std::ostringstream
-#include <stdexcept>     // std::runtime_error
-#include <string>        // std::string
-#include <unordered_map> // std::unordered_map
-#include <vector>        // std::vector
+#include <cmath>   // std::floor
+#include <cstdlib> // system
+#include <string>  // std::string
+#include <vector>  // std::vector
 
 #include "Landmark.h"
 #include "Robot.h"
@@ -69,21 +60,7 @@ public:
 
   /* Output of Extracted Data */
   void saveExtractedData();
-
-  /* Save Dataset Extraction Data */
-  void saveStateData();
-  void saveOdometryData();
-  void saveMeasurementData();
-  void saveErrorData();
-
-  void saveOdometryErrorPDF(double);
-  void saveMeasurementErrorPDF(double);
-
-  void saveRobotErrorStatistics();
-  void saveLandmarks();
-
-  void relativeRobotDistance();
-  void relativeLandmarkDistance();
+  void saveStateError();
 
   void plotExtractedData(std::string file_type = "png");
   void plotPDFs(std::string file_type = "png");
@@ -100,9 +77,16 @@ private:
   std::string output_directory_ = "";
 
   /**
-   * @brief Folder location for the output data.
+   * @brief Folder location for the output data correspoding the the data
+   * extraction process.
    */
   std::string data_extraction_directory_ = "";
+
+  /**
+   * @brief Folder location for the output data corresponding to the infernce
+   * peformance.
+   */
+  std::string data_inference_directory = "";
 
   /**
    * @brief the desired sample period for resampling the data to sync the
@@ -183,6 +167,21 @@ private:
 
   void createStatePlotDirectory();
   void createMeasurementPlotDirectories();
+
+  /* Save Dataset Extraction Data */
+  void saveStateData();
+  void saveOdometryData();
+  void saveMeasurementData();
+  void saveErrorData();
+
+  void saveOdometryErrorPDF(double);
+  void saveMeasurementErrorPDF(double);
+
+  void saveRobotErrorStatistics();
+  void saveLandmarks();
+
+  void relativeRobotDistance();
+  void relativeLandmarkDistance();
 };
 
 #endif // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_
