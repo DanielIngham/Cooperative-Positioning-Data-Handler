@@ -367,6 +367,12 @@ void Robot::setQuartiles() {
   calculateQuartiles(bearing_errors, this->bearing_error);
 }
 
+/**
+ * @brief Uses the interquartile range to remove outliers from the measurements.
+ * @details This is done since some measurement errors are due to incorrect data
+ * assocation (associaating the wrong barcode to a robot) and therefore give an
+ * incorrect indication of the noise present in the range and bearing sensor.
+ */
 void Robot::removeOutliers() {
   setQuartiles();
 
@@ -376,6 +382,8 @@ void Robot::removeOutliers() {
   for (auto error_measurement_iterator = this->error.measurements.begin();
        error_measurement_iterator != this->error.measurements.end();) {
 
+    /*  NOTE: The upper and lower bound for the range (10) and bearing (20) were
+     * manually tuned. */
     double range_lower_bound =
         this->range_error.q1 - 10 * this->range_error.iqr;
     double range_upper_bound =
@@ -419,5 +427,27 @@ void Robot::removeOutliers() {
     } else {
       ++error_measurement_iterator;
     }
+  }
+}
+/**
+ * @brief calculates the difference between the groundtruth and the synced
+ * states.
+ * @details The synced states are calculated by some localisation filter and not
+ * the robot or the DataHandler.
+ */
+void Robot::calculateStateError() {
+  /* Check if the synced have been set. */
+  if (this->synced.states.empty()) {
+    std::runtime_error("Synced states have to been set.");
+  }
+
+  /* Calculate the error between the groundtruth and the states. */
+  for (unsigned long k = 0; k < this->synced.states.size(); k++) {
+    this->error.states.push_back(
+        State(this->groundtruth.states[k].time,
+              this->groundtruth.states[k].x - this->synced.states[k].x,
+              this->groundtruth.states[k].y - this->synced.states[k].y,
+              this->groundtruth.states[k].orientation -
+                  this->synced.states[k].orientation));
   }
 }

@@ -105,8 +105,11 @@ void DataHandler::setSimulation(const unsigned long int data_points,
 
     oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
 
-    this->data_extraction_directory_ =
-        output_directory_ + "/simulation/" + oss.str() + "/data_extraction/";
+    std::string unique_directory =
+        output_directory_ + "/simulation/" + oss.str();
+
+    this->data_extraction_directory_ = unique_directory + "/data_extraction/";
+    this->data_inference_directory = unique_directory + "/inference";
 
   } catch (std::runtime_error &error) {
     std::cout << "Unable to set dataset: " << error.what() << std::endl;
@@ -1573,6 +1576,41 @@ void DataHandler::saveLandmarks() {
   }
 
   file.close();
+}
+
+/**
+ * @brief Saves the error and absolute error between estimated state and the
+ * groudtruth state.
+ */
+void DataHandler::saveStateError() {
+  if (!std::filesystem::exists(data_inference_directory)) {
+    std::filesystem::create_directory(data_inference_directory);
+  }
+
+  std::string filename = data_inference_directory + "/state_error.dat";
+
+  std::ofstream file(filename);
+
+  file << "#Time [s]  x Error [m] y error [m] orienation error [rad]  Robot "
+          "ID\n";
+
+  for (unsigned short id = 0; id < total_robots; id++) {
+    /* Populate the error state if it has not yet been done. */
+    if (robots_[id].error.states.empty()) {
+      robots_[id].calculateStateError();
+    }
+
+    for (unsigned long k = 0; k < total_synced_datapoints; k++) {
+      file << robots_[id].error.states[k].time << '\t'
+           << robots_[id].error.states[k].x << '\t'
+           << robots_[id].error.states[k].y << '\t'
+           << robots_[id].error.states[k].orientation << '\t' << robots_[id].id
+           << '\n';
+    }
+
+    file << '\n';
+    file << '\n';
+  }
 }
 
 /**
