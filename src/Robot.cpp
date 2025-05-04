@@ -443,11 +443,20 @@ void Robot::calculateStateError() {
 
   /* Calculate the error between the groundtruth and the states. */
   for (unsigned long k = 0; k < this->synced.states.size(); k++) {
+    double orientation_error = this->groundtruth.states[k].orientation -
+                               this->synced.states[k].orientation;
+
+    /* Normalise the orientation error between -180 and 180. */
+    while (orientation_error >= M_PI)
+      orientation_error -= 2.0 * M_PI;
+
+    while (orientation_error < -M_PI)
+      orientation_error += 2.0 * M_PI;
+
     this->error.states.push_back(
         State(this->groundtruth.states[k].time,
               this->groundtruth.states[k].x - this->synced.states[k].x,
               this->groundtruth.states[k].y - this->synced.states[k].y,
-              this->groundtruth.states[k].orientation -
-                  this->synced.states[k].orientation));
+              orientation_error));
   }
 }

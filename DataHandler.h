@@ -68,6 +68,8 @@ public:
   void plotMeasurements(std::string file_type = "png");
   void plotStates(std::string file_type = "png");
 
+  void plotInferenceError(std::string file_type = "png");
+
 private:
   /**
    * @brief Folder location for the dataset.

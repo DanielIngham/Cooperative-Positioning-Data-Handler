@@ -1839,9 +1839,31 @@ void DataHandler::plotStates(std::string file_type) {
   }
 }
 
+void DataHandler::plotInferenceError(std::string file_type) {
+  std::string plots_directory = data_inference_directory + "/plots/";
+
+  if (!std::filesystem::exists(plots_directory)) {
+    std::filesystem::create_directory(plots_directory);
+  }
+
+  std::string gnuplot_script_path =
+      std::string(LIB_DIR) + "/scripts/state_error.gp";
+
+  std::string command = "gnuplot -e \"dataset_directory='" +
+                        data_inference_directory + "'; plots_directory='" +
+                        plots_directory + "'; file_type='" + file_type +
+                        "'\" " + gnuplot_script_path;
+  int ret = system(command.c_str());
+
+  if (ret != 0) {
+    throw std::runtime_error("Gnuplot failed with code: " +
+                             std::to_string(ret));
+  }
+}
+
 /**
- * @brief Searches trough the list of barcodes to find the index ID of the robot
- * or landmark.
+ * @brief Searches trough the list of barcodes to find the index ID of the
+ * robot or landmark.
  * @param[in] barcode the barcode value for which the ID needs to be found.
  * @return the ID of the robot of landmark. If the ID is not found -1 is
  * returned.
