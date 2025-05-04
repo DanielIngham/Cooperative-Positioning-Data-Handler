@@ -499,11 +499,11 @@ void Simulator::setRobotMeasurement() {
         }
 
         /* Calculate Groundtruth Range */
-        double x_difference = (*robots_)[id].groundtruth.states[k].x -
-                              (*robots_)[subject_id].groundtruth.states[k].x;
+        double x_difference = (*robots_)[subject_id].groundtruth.states[k].x -
+                              (*robots_)[id].groundtruth.states[k].x;
 
-        double y_difference = (*robots_)[id].groundtruth.states[k].y -
-                              (*robots_)[subject_id].groundtruth.states[k].y;
+        double y_difference = (*robots_)[subject_id].groundtruth.states[k].y -
+                              (*robots_)[id].groundtruth.states[k].y;
         double range = std::sqrt(x_difference * x_difference +
                                  y_difference * y_difference);
 
@@ -550,10 +550,10 @@ void Simulator::setRobotMeasurement() {
       /* Determine the groundtruth range and bearing from landmarks. */
       for (unsigned short landmark_id = 0; landmark_id < this->total_robots;
            landmark_id++) {
-        double x_difference = (*robots_)[id].groundtruth.states[k].x -
-                              (*landmarks_)[landmark_id].x;
-        double y_difference = (*robots_)[id].groundtruth.states[k].y -
-                              (*landmarks_)[landmark_id].y;
+        double x_difference = (*landmarks_)[landmark_id].x -
+                              (*robots_)[id].groundtruth.states[k].x;
+        double y_difference = (*landmarks_)[landmark_id].y -
+                              (*robots_)[id].groundtruth.states[k].y;
         double range = std::sqrt(x_difference * x_difference +
                                  y_difference * y_difference);
 
@@ -652,6 +652,12 @@ void Simulator::addGaussianNoise() {
 
         (*robots_)[id].synced.measurements.back().bearings[s] +=
             bearing_noise(this->generator);
+
+        /* Normalise the bearing error. */
+        while ((*robots_)[id].synced.measurements.back().bearings[s] >= M_PI)
+          (*robots_)[id].synced.measurements.back().bearings[s] -= 2.0 * M_PI;
+        while ((*robots_)[id].synced.measurements.back().bearings[s] < -M_PI)
+          (*robots_)[id].synced.measurements.back().bearings[s] += 2.0 * M_PI;
       }
     }
   }
