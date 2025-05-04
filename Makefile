@@ -1,3 +1,6 @@
+PROJECT_DIR = $(CURDIR)
+LIB_DIR = $(CURDIR)
+
 # Directories
 BUILD_DIR := lib
 INCLUDE_DIR := .
@@ -9,7 +12,9 @@ CXX := g++
 # Flags
 WFLAGS := -Wall -Wextra -Werror -Wshadow 
 MFLAGS := -ffloat-store -fno-fast-math
-CFLAGS := $(WFLAGS) $(MFLAGS) -I$(INCLUDE_DIR)
+CFLAGS := $(WFLAGS) $(MFLAGS) 
+CFLAGS += -I$(INCLUDE_DIR)
+CFLAGS += -DLIB_DIR=\"$(LIB_DIR)\"
 
 # Files
 LIBRARY := data_handler
@@ -60,7 +65,7 @@ $(TEST_BUILD)/%.o: $(TEST_DIR)/%.cpp
 test: $(TEST_TARGET)
 
 run: $(TEST_TARGET)
-	$(TEST_TARGET)
+	PROJECT_DIR=$(PROJECT_DIR) $(TEST_TARGET)
 
 # Static C++ Code Analyser
 cppcheck: 

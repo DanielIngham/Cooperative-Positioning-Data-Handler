@@ -11,6 +11,7 @@
  */
 
 #include "DataHandler.h"
+#include <cstdlib>
 
 /**
  * @brief Default constructor.
@@ -82,7 +83,8 @@ void DataHandler::setSimulation(const unsigned long int data_points,
   auto start = std::chrono::high_resolution_clock::now();
   /* Set class fields */
   this->dataset_ = "./";
-  this->output_directory_ = output_directory;
+  this->output_directory_ =
+      std::getenv("PROJECT_DIR") + ('/' + output_directory);
   this->total_synced_datapoints = data_points;
 
   /* Creates unique simulation folder using the current system time. */
@@ -167,13 +169,15 @@ void DataHandler::setDataSet(const std::string &dataset,
   auto start = std::chrono::high_resolution_clock::now();
 
   /* Check if the data set directory exists */
+  this->dataset_ = LIB_DIR + ('/' + dataset);
+
   if (!std::filesystem::exists(dataset)) {
     throw std::runtime_error("Dataset file path does not exist: " + dataset);
   }
 
   /* Set class fields. */
-  this->dataset_ = dataset;
-  this->output_directory_ = output_directory;
+  this->output_directory_ =
+      std::getenv("PROJECT_DIR") + ('/' + output_directory);
 
   this->data_extraction_directory_ =
       output_directory + "/" + dataset + "/data_extraction/";
@@ -1700,7 +1704,8 @@ void DataHandler::plotPDFs(std::string file_type) {
 
   std::string plots_directory = data_extraction_directory_ + "plots/";
   /* Execute gnuplot command */
-  std::string gnuplot_script_path = "./scripts/measurement-error-pdf.gp";
+  std::string gnuplot_script_path =
+      std::string(LIB_DIR) + "/scripts/measurement-error-pdf.gp";
 
   std::string command = "gnuplot -e \"dataset_directory='" +
                         data_extraction_directory_ + "'; plots_directory='" +
@@ -1725,7 +1730,8 @@ void DataHandler::plotError(std::string file_type) {
   createMeasurementPlotDirectories();
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
-  std::string gnuplot_script_path = "./scripts/measurement-error.gp";
+  std::string gnuplot_script_path =
+      std::string(LIB_DIR) + "/scripts/measurement-error.gp";
   std::string command = "gnuplot -e \"dataset_directory='" +
                         data_extraction_directory_ + "'; plots_directory='" +
                         plots_directory + "'; file_type='" + file_type +
@@ -1749,7 +1755,8 @@ void DataHandler::plotMeasurements(std::string file_type) {
   createMeasurementPlotDirectories();
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
-  std::string gnuplot_script_path = "./scripts/measurement-dataset.gp";
+  std::string gnuplot_script_path =
+      std::string(LIB_DIR) + "/scripts/measurement-dataset.gp";
   std::string command = "gnuplot -e \"dataset_directory='" +
                         data_extraction_directory_ + "'; plots_directory='" +
                         plots_directory + "'; file_type='" + file_type +
@@ -1772,7 +1779,8 @@ void DataHandler::plotStates(std::string file_type) {
   createStatePlotDirectory();
 
   std::string plots_directory = data_extraction_directory_ + "plots/";
-  std::string gnuplot_script_path = "./scripts/groundtruth-dataset.gp";
+  std::string gnuplot_script_path =
+      std::string(LIB_DIR) + "/scripts/groundtruth-dataset.gp";
   std::string command = "gnuplot -e \"dataset_directory='" +
                         data_extraction_directory_ + "'; plots_directory='" +
                         plots_directory + "'; file_type='" + file_type +
