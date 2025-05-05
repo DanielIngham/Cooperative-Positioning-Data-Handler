@@ -48,7 +48,7 @@ void checkBarcodes() {
   bool flag = true;
 
   for (unsigned short int d = 1; d <= TOTAL_DATASETS; d++) {
-    const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(d);
+    const std::string dataset = "MRCLAM_Dataset" + std::to_string(d);
     data.setDataSet(dataset);
 
     /* Unit Test 1: check if barcodes were set. */
@@ -80,7 +80,7 @@ void checkLandmarkBarcodes() {
   bool flag = true;
 
   for (unsigned short int i = 1; i <= TOTAL_DATASETS; i++) {
-    const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
+    const std::string dataset = "MRCLAM_Dataset" + std::to_string(i);
     data.setDataSet(dataset);
 
     const auto barcodes = data.getBarcodes();
@@ -112,7 +112,7 @@ void checkGroundtruthExtraction() {
   bool flag = true;
 
   for (unsigned short int d = 1; d <= TOTAL_DATASETS; d++) {
-    const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(d);
+    const std::string dataset = "MRCLAM_Dataset" + std::to_string(d);
 
     data.setDataSet(dataset);
 
@@ -158,7 +158,7 @@ void checkOdometryExtraction() {
   /* Loop through every data */
   for (unsigned short int d = 1; d <= TOTAL_DATASETS; d++) {
 
-    const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(d);
+    const std::string dataset = "MRCLAM_Dataset" + std::to_string(d);
 
     data.setDataSet(dataset);
 
@@ -199,7 +199,7 @@ void checkMeasurementExtraction() {
 
   /* Loop through every data */
   for (unsigned short int i = 1; i <= TOTAL_DATASETS; i++) {
-    const std::string dataset = "./data/MRCLAM_Dataset" + std::to_string(i);
+    const std::string dataset = "MRCLAM_Dataset" + std::to_string(i);
     data.setDataSet(dataset);
 
     const auto robots = data.getRobots();
@@ -253,7 +253,7 @@ void checkMeasurementExtraction() {
  * the matlab script.
  */
 void testInterpolation() {
-  DataHandler data("./data/MRCLAM_Dataset1");
+  DataHandler data("MRCLAM_Dataset1");
   const auto robots = data.getRobots();
   bool flag = true;
 
@@ -569,7 +569,7 @@ void testInterpolation() {
  * to the defined sampling period.
  */
 void checkSamplingRate() {
-  DataHandler data("./data/MRCLAM_Dataset1");
+  DataHandler data("MRCLAM_Dataset1");
 
   auto robots = data.getRobots();
   double sample_period = data.getSamplePeriod();
@@ -671,7 +671,7 @@ void saveData() {
   bool flag = true;
 
   for (unsigned short int d = 0; d < 1; d++) {
-    DataHandler data("./data/MRCLAM_Dataset" + std::to_string(d + 1));
+    DataHandler data("MRCLAM_Dataset" + std::to_string(d + 1));
     data.saveExtractedData();
     data.plotExtractedData();
   }
@@ -690,7 +690,7 @@ void testGroundtruthOdometry() {
   bool flag = true;
 
   for (unsigned short int dataset = 0; dataset < TOTAL_DATASETS; dataset++) {
-    DataHandler data("./data/MRCLAM_Dataset" + std::to_string(dataset + 1));
+    DataHandler data("MRCLAM_Dataset" + std::to_string(dataset + 1));
 
     auto robots = data.getRobots();
 
@@ -808,9 +808,8 @@ void checkSyncedSize() {
 
   bool flag = true;
   for (unsigned short int dataset = 5; dataset < 6; dataset++) {
-    DataHandler data("./data/MRCLAM_Dataset" + std::to_string(dataset + 1));
-    std::cout << "./data/MRCLAM_Dataset" + std::to_string(dataset + 1)
-              << std::endl;
+    DataHandler data("MRCLAM_Dataset" + std::to_string(dataset + 1));
+    std::cout << "MRCLAM_Dataset" + std::to_string(dataset + 1) << std::endl;
     auto robots = data.getRobots();
 
     unsigned long int odometry_size = robots[0].groundtruth.odometry.size();
