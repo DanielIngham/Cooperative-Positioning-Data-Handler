@@ -180,18 +180,36 @@ void DataHandler::setDataSet(const std::string &dataset,
   auto start = std::chrono::high_resolution_clock::now();
 
   /* Check if the data set directory exists */
-  this->dataset_ = LIB_DIR + ('/' + dataset);
+  this->dataset_ = LIB_DIR + ("/data/" + dataset);
 
-  if (!std::filesystem::exists(dataset)) {
-    throw std::runtime_error("Dataset file path does not exist: " + dataset);
+  if (!std::filesystem::exists(dataset_)) {
+    throw std::runtime_error("Dataset file path does not exist: " + dataset_);
   }
 
   /* Set class fields. */
   this->output_directory_ =
       std::getenv("PROJECT_DIR") + ('/' + output_directory);
 
-  this->data_extraction_directory_ =
-      output_directory + "/" + dataset + "/data_extraction/";
+  /* Creates unique simulation folder using the current system time. */
+  try {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+    std::tm now_tm = *std::localtime(&now_c);
+    std::ostringstream oss;
+
+    oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
+
+    std::string unique_directory =
+        output_directory_ + '/' + dataset + '/' + oss.str();
+
+    this->data_extraction_directory_ = unique_directory + "/data_extraction/";
+    this->data_inference_directory = unique_directory + "/inference";
+
+  } catch (std::runtime_error &error) {
+    std::cout << "Unable to set dataset: " << error.what() << std::endl;
+    throw;
+  }
 
   /* Set the sample period for this dataset. */
   this->sampling_period_ = sample_period;
@@ -213,14 +231,14 @@ void DataHandler::setDataSet(const std::string &dataset,
 
   try {
     /* Perform data extraction in the directory */
-    readBarcodes(dataset);
-    readLandmarks(dataset);
+    readBarcodes(dataset_);
+    readLandmarks(dataset_);
 
     /* Populate the values for each robot from the dataset */
     for (int id = 0; id < total_robots; id++) {
-      readGroundTruth(dataset, id);
-      readOdometry(dataset, id);
-      readMeasurements(dataset, id);
+      readGroundTruth(dataset_, id);
+      readOdometry(dataset_, id);
+      readMeasurements(dataset_, id);
     }
 
   } catch (std::runtime_error &error) {
