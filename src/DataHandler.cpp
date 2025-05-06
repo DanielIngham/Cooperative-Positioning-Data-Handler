@@ -12,14 +12,15 @@
 
 #include "DataHandler.h"
 
-#include <algorithm>     // std::remove_if and std::find
-#include <chrono>        // std::chrono
-#include <cstdlib>       // std::getenv
-#include <filesystem>    // std::filesystem
-#include <fstream>       // std::ifstream
-#include <iostream>      // std::cout
-#include <sstream>       // std::ostringstream
-#include <stdexcept>     // std::runtime_error
+#include <algorithm>  // std::remove_if and std::find
+#include <chrono>     // std::chrono
+#include <cstdlib>    // std::getenv
+#include <filesystem> // std::filesystem
+#include <fstream>    // std::ifstream
+#include <iostream>   // std::cout
+#include <sstream>    // std::ostringstream
+#include <stdexcept>  // std::runtime_error
+#include <string>
 #include <unordered_map> // std::unordered_map
 /**
  * @brief Default constructor.
@@ -1616,6 +1617,11 @@ void DataHandler::saveStateError() {
     /* Populate the error state if it has not yet been done. */
     if (robots_[id].error.states.empty()) {
       robots_[id].calculateStateError();
+    }
+    if (total_synced_datapoints > robots_[id].error.states.size()) {
+      throw std::runtime_error("Robot " + std::to_string(id) +
+                               " has less synced datapoints than groundtruth "
+                               "points. Check your filter implementation.");
     }
 
     for (unsigned long k = 0; k < total_synced_datapoints; k++) {
