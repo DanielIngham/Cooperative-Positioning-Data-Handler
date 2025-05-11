@@ -63,15 +63,15 @@ DataHandler::DataHandler(const unsigned long int data_points,
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
 DataHandler::DataHandler(const std::string &dataset,
-                         const double &sample_period,
-                         const std::string &output_directory)
+                         const std::string &output_directory,
+                         const double &sample_period)
     : dataset_(dataset), output_directory_(output_directory),
       sampling_period_(sample_period), total_landmarks(15), total_robots(5),
       total_barcodes(total_landmarks + total_robots),
       landmarks_(total_landmarks), robots_(total_robots),
       barcodes_(total_barcodes, 0) {
 
-  setDataSet(dataset, sample_period);
+  setDataSet(dataset, sample_period, output_directory);
 }
 
 /**
@@ -92,32 +92,12 @@ void DataHandler::setSimulation(const unsigned long int data_points,
   auto start = std::chrono::high_resolution_clock::now();
   /* Set class fields */
   this->dataset_ = "./";
-  this->output_directory_ =
-      std::getenv("PROJECT_DIR") + ('/' + output_directory);
-  this->total_synced_datapoints = data_points;
 
-  /* Creates unique simulation folder using the current system time. */
-  try {
-    auto now = std::chrono::system_clock::now();
-    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-
-    std::tm now_tm = *std::localtime(&now_c);
-    std::ostringstream oss;
-
-    oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
-
-    std::string unique_directory =
-        output_directory_ + "/simulation/" + oss.str();
-
-    this->data_extraction_directory_ = unique_directory + "/data_extraction/";
-    this->data_inference_directory = unique_directory + "/inference";
-
-  } catch (std::runtime_error &error) {
-    std::cout << "Unable to set dataset: " << error.what() << std::endl;
-    throw;
-  }
+  setOutputDirectory(output_directory, "/simulation/");
 
   /* Set class fields. */
+  this->total_synced_datapoints = data_points;
+
   this->sampling_period_ = sample_period;
 
   this->total_landmarks = number_of_landmarks;
@@ -187,30 +167,7 @@ void DataHandler::setDataSet(const std::string &dataset,
     throw std::runtime_error("Dataset file path does not exist: " + dataset_);
   }
 
-  /* Set class fields. */
-  this->output_directory_ =
-      std::getenv("PROJECT_DIR") + ('/' + output_directory);
-
-  /* Creates unique simulation folder using the current system time. */
-  try {
-    auto now = std::chrono::system_clock::now();
-    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-
-    std::tm now_tm = *std::localtime(&now_c);
-    std::ostringstream oss;
-
-    oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
-
-    std::string unique_directory =
-        output_directory_ + '/' + dataset + '/' + oss.str();
-
-    this->data_extraction_directory_ = unique_directory + "/data_extraction/";
-    this->data_inference_directory = unique_directory + "/inference";
-
-  } catch (std::runtime_error &error) {
-    std::cout << "Unable to set dataset: " << error.what() << std::endl;
-    throw;
-  }
+  setOutputDirectory(output_directory, dataset);
 
   /* Set the sample period for this dataset. */
   this->sampling_period_ = sample_period;
@@ -278,6 +235,39 @@ void DataHandler::setDataSet(const std::string &dataset,
   } catch (std::runtime_error &error) {
     std::cerr << "Unable to calculate error statistics: " << error.what()
               << std::endl;
+    throw;
+  }
+}
+
+/**
+ * @brief Sets the output directory for the data plots.
+ * @param[in] output_directory The output directory.
+ * @param[in] folder The name of folder within the output_directory.
+ */
+void DataHandler::setOutputDirectory(const std::string &output_directory,
+                                     const std::string &folder) {
+
+  this->output_directory_ =
+      std::getenv("PROJECT_DIR") + ("/output/" + output_directory);
+
+  /* Creates unique simulation folder using the current system time. */
+  try {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+
+    std::tm now_tm = *std::localtime(&now_c);
+    std::ostringstream oss;
+
+    oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
+
+    std::string unique_directory =
+        output_directory_ + '/' + folder + '/' + oss.str();
+
+    this->data_extraction_directory_ = unique_directory + "/data_extraction/";
+    this->data_inference_directory = unique_directory + "/inference";
+
+  } catch (std::runtime_error &error) {
+    std::cout << "Unable to set dataset: " << error.what() << std::endl;
     throw;
   }
 }
@@ -1603,7 +1593,7 @@ void DataHandler::saveLandmarks() {
  */
 void DataHandler::saveStateError() {
   if (!std::filesystem::exists(data_inference_directory)) {
-    std::filesystem::create_directory(data_inference_directory);
+    std::filesystem::create_directories(data_inference_directory);
   }
 
   std::string filename = data_inference_directory + "/state_error.dat";
