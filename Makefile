@@ -2,9 +2,9 @@ PROJECT_DIR = $(CURDIR)
 LIB_DIR = $(CURDIR)
 
 # Directories
-BUILD_DIR := lib
-INCLUDE_DIR := .
-SRC_DIR := src
+BUILD_DIR := $(LIB_DIR)/lib
+INCLUDE_DIR := $(LIB_DIR)
+SRC_DIR := $(LIB_DIR)/src
 
 # Compiler
 CXX := g++
@@ -23,7 +23,7 @@ SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
 # Unit Test Files
-TEST_DIR := test
+TEST_DIR := $(LIB_DIR)/test
 TEST_BUILD := $(TEST_DIR)/build
 
 TEST_TARGET := $(TEST_BUILD)/test
