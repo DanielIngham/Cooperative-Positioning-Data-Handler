@@ -1,5 +1,5 @@
 /**
- * @file landmark.h
+ * @file Landmark.h
  * @brief Header file of the Landmark struct.
  * @author Daniel Ingham
  * @date 2025-04-16

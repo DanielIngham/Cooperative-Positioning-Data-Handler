@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['range_0',['range',['../classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb',1,'Simulator::range'],['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34b',1,'Simulator::Range']]],
+  ['range_0',['range',['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34b',1,'Simulator::Range'],['../classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb',1,'Simulator::range']]],
   ['range_5ferror_1',['range_error',['../classRobot.html#a3e3294bc6bf1277bdb5fbfb44410f362',1,'Robot']]],
   ['ranges_2',['ranges',['../structRobot_1_1Measurement.html#aa071e829eca62fa89473fcc66a532101',1,'Robot::Measurement']]],
   ['raw_3',['raw',['../classRobot.html#a47fe1ae41e8d9ec7e33e73bd83b64b9f',1,'Robot']]],
@@ -15,8 +15,8 @@ var searchData=
   ['removeoutliers_12',['removeOutliers',['../classRobot.html#a6dc831e2b692655ee088831a46aba3ac',1,'Robot']]],
   ['robot_13',['robot',['../classRobot.html#a4fc7c70ae20623f05e06f2ecb388b6c4',1,'Robot::Robot()'],['../classRobot.html#a47aec46e3bb5782500d1d268f0d8c406',1,'Robot::Robot(Robot &amp;&amp;)=default'],['../classRobot.html#a4fd835c7c44337d31d9fd09921d29908',1,'Robot::Robot(const Robot &amp;)=default'],['../classRobot.html',1,'Robot']]],
   ['robot_20data_20extractor_14',['C++ UTIAS Multi-Robot Data Extractor',['../index.html',1,'']]],
-  ['robot_2ecpp_15',['robot.cpp',['../robot_8cpp.html',1,'']]],
-  ['robot_2eh_16',['robot.h',['../robot_8h.html',1,'']]],
+  ['robot_2ecpp_15',['Robot.cpp',['../Robot_8cpp.html',1,'']]],
+  ['robot_2eh_16',['Robot.h',['../Robot_8h.html',1,'']]],
   ['robotdata_17',['RobotData',['../structRobot_1_1RobotData.html',1,'Robot']]],
   ['robots_5f_18',['robots_',['../classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff',1,'DataHandler::robots_'],['../classSimulator.html#a6504b73695a99ac0af2f2e164e10ae70',1,'Simulator::robots_']]]
 ];

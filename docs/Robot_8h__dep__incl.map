@@ -1,0 +1,14 @@
+<map id="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Filters/lib/DataHandler/Robot.h" name="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Filters/lib/DataHandler/Robot.h">
+<area shape="rect" id="Node000001" title="Header file of the Robot class." alt="" coords="187,5,369,60"/>
+<area shape="rect" id="Node000002" href="$DataHandler_8h.html" title="Header file of the DataHandler class,." alt="" coords="24,211,249,265"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="209,69,185,88,166,110,153,134,145,161,139,211,134,210,140,160,148,132,161,106,181,84,206,65"/>
+<area shape="rect" id="Node000004" href="$Simulator_8h.html" title="Header file of the Simulator class,." alt="" coords="175,108,381,163"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="281,74,281,108,275,108,275,74"/>
+<area shape="rect" id="Node000006" href="$Robot_8cpp.html" title="Class implementation file responsible for the robot datastructor." alt="" coords="405,108,625,163"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="353,63,455,105,452,110,351,68"/>
+<area shape="rect" id="Node000003" href="$DataHandler_8cpp.html" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="5,313,268,368"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="139,279,139,313,134,313,134,279"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="232,173,175,213,172,208,229,168"/>
+<area shape="rect" id="Node000005" href="$Simulator_8cpp.html" title="Class implementation file responsible for simulating the data for multi&#45;robot localisation and mappin..." alt="" coords="273,211,517,265"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="321,170,366,209,363,213,318,174"/>
+</map>

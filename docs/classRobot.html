@@ -89,7 +89,7 @@ $(function() {
 <p>Houses all data and functionality related to a given robot in a multi-robot localisation environment.  
  <a href="classRobot.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="robot_8h_source.html">robot.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="Robot_8h_source.html">Robot.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for Robot:</div>
 <div class="dyncontent">
@@ -143,8 +143,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6a90c17286e966cde7f896dd9a21e1e5" id="r_a6a90c17286e966cde7f896dd9a21e1e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a6a90c17286e966cde7f896dd9a21e1e5">calculateSampleErrorStats</a> ()</td></tr>
 <tr class="memdesc:a6a90c17286e966cde7f896dd9a21e1e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">calculates the sample mean and sample variance of the error for all the odometry and tracking measurements.  <br /></td></tr>
 <tr class="separator:a6a90c17286e966cde7f896dd9a21e1e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6dc831e2b692655ee088831a46aba3ac" id="r_a6dc831e2b692655ee088831a46aba3ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a6dc831e2b692655ee088831a46aba3ac">removeOutliers</a> ()</td></tr>
-<tr class="separator:a6dc831e2b692655ee088831a46aba3ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e9f9cef988d089ca0dc8352668266bb" id="r_a8e9f9cef988d089ca0dc8352668266bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a8e9f9cef988d089ca0dc8352668266bb">calculateStateError</a> ()</td></tr>
+<tr class="memdesc:a8e9f9cef988d089ca0dc8352668266bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">calculates the difference between the groundtruth and the synced states.  <br /></td></tr>
+<tr class="separator:a8e9f9cef988d089ca0dc8352668266bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -195,6 +196,9 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a4a5c0633e46aa43edca4bd835fd9dcfd" id="r_a4a5c0633e46aa43edca4bd835fd9dcfd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a4a5c0633e46aa43edca4bd835fd9dcfd">calculateMeasurementError</a> ()</td></tr>
 <tr class="memdesc:a4a5c0633e46aa43edca4bd835fd9dcfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the difference between the measured range and bearing and the calculated groundtruth.  <br /></td></tr>
 <tr class="separator:a4a5c0633e46aa43edca4bd835fd9dcfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dc831e2b692655ee088831a46aba3ac" id="r_a6dc831e2b692655ee088831a46aba3ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRobot.html#a6dc831e2b692655ee088831a46aba3ac">removeOutliers</a> ()</td></tr>
+<tr class="memdesc:a6dc831e2b692655ee088831a46aba3ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses the interquartile range to remove outliers from the measurements.  <br /></td></tr>
+<tr class="separator:a6dc831e2b692655ee088831a46aba3ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Houses all data and functionality related to a given robot in a multi-robot localisation environment. </p>
@@ -479,6 +483,26 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a8e9f9cef988d089ca0dc8352668266bb" name="a8e9f9cef988d089ca0dc8352668266bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e9f9cef988d089ca0dc8352668266bb">&#9670;&#160;</a></span>calculateStateError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Robot::calculateStateError </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>calculates the difference between the groundtruth and the synced states. </p>
+<p>The synced states are calculated by some localisation filter and not the robot or the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a>. </p>
+
+</div>
+</div>
 <a id="a484922887dab6c49742b746436450a70" name="a484922887dab6c49742b746436450a70"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a484922887dab6c49742b746436450a70">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
@@ -536,6 +560,9 @@ Private Member Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void Robot::removeOutliers </td>
@@ -544,7 +571,15 @@ Private Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Uses the interquartile range to remove outliers from the measurements. </p>
+<p>This is done since some measurement errors are due to incorrect data assocation (associaating the wrong barcode to a robot) and therefore give an incorrect indication of the noise present in the range and bearing sensor. </p>
 
 </div>
 </div>
@@ -736,8 +771,8 @@ Private Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/dan/Code/UTIAS-Multi-Robot/Data-Handler/include/<a class="el" href="robot_8h_source.html">robot.h</a></li>
-<li>/home/dan/Code/UTIAS-Multi-Robot/Data-Handler/src/<a class="el" href="robot_8cpp.html">robot.cpp</a></li>
+<li>/home/dan/Code/UTIAS-Multi-Robot/Filters/lib/DataHandler/<a class="el" href="Robot_8h_source.html">Robot.h</a></li>
+<li>/home/dan/Code/UTIAS-Multi-Robot/Filters/lib/DataHandler/src/<a class="el" href="Robot_8cpp.html">Robot.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

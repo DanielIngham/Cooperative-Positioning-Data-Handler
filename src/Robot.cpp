@@ -1,5 +1,5 @@
 /**
- * @file robot.cpp
+ * @file Robot.cpp
  * @brief Class implementation file responsible for the robot datastructor.
  * @details Houses the functionality for calculating the eror values and error
  * statistics for a given robot.

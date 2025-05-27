@@ -6,6 +6,7 @@ var searchData=
   ['getnumberofbarcodes_3',['getNumberOfBarcodes',['../classDataHandler.html#ae491399396321214011ca5c86d0d5e6e',1,'DataHandler']]],
   ['getnumberoflandmarks_4',['getNumberOfLandmarks',['../classDataHandler.html#a31bb832993e948b6346f2bd30ebbb4cf',1,'DataHandler']]],
   ['getnumberofrobots_5',['getNumberOfRobots',['../classDataHandler.html#ab894ac8650fdaf7d7510254909e04f0c',1,'DataHandler']]],
-  ['getrobots_6',['getRobots',['../classDataHandler.html#a9627420edb689af9c1463e4815693da4',1,'DataHandler']]],
-  ['getsampleperiod_7',['getSamplePeriod',['../classDataHandler.html#afb04d371c2be3284199e81d4188700d0',1,'DataHandler']]]
+  ['getnumberofsynceddatapoints_6',['getNumberOfSyncedDatapoints',['../classDataHandler.html#a8312ebf35f246a522ffe405f9663ee23',1,'DataHandler']]],
+  ['getrobots_7',['getRobots',['../classDataHandler.html#a9627420edb689af9c1463e4815693da4',1,'DataHandler']]],
+  ['getsampleperiod_8',['getSamplePeriod',['../classDataHandler.html#afb04d371c2be3284199e81d4188700d0',1,'DataHandler']]]
 ];

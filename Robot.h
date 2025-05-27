@@ -1,5 +1,5 @@
 /**
- * @file robot.h
+ * @file Robot.h
  * @brief Header file of the Robot class.
  * @author Daniel Ingham
  * @date 2025-04-16

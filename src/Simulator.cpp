@@ -1,7 +1,7 @@
 /**
  * The class simulates data in the same form as the UTIAS mulirobot localsiation
  * and mapping dataset.
- * @file simulator.cpp
+ * @file Simulator.cpp
  * @brief Class implementation file responsible for simulating the data for
  * multi-robot localisation and mapping.
  * @author Daniel Ingham

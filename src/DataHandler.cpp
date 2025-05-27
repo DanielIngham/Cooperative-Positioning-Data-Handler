@@ -2,7 +2,7 @@
  * The class extracts the data from the groundtruth states, measured range and
  * bearings, and odometry. These values are used to populate three main data
  * structs: Barcodes, Landmarks, and Robots.
- * @file data_handler.cpp
+ * @file DataHandler.cpp
  * @brief Class implementation file responsible for exracting the ground-truth,
  * odometry and measurement data from the UTIAS multi-robot localisation
  * dataset.

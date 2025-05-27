@@ -1,5 +1,5 @@
 /**
- * @file simulator.h
+ * @file Simulator.h
  * @brief Header file of the Simulator class,
  * @author Daniel Ingham
  * @date 2025-04-25

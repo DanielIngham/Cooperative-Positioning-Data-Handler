@@ -8,6 +8,7 @@ var searchData=
   ['calculatequartiles_5',['calculateQuartiles',['../classRobot.html#a4d2e9b87c8eca91eafccb71a77e48098',1,'Robot']]],
   ['calculatesampleerrorstats_6',['calculateSampleErrorStats',['../classRobot.html#a6a90c17286e966cde7f896dd9a21e1e5',1,'Robot']]],
   ['calculatesensorerrror_7',['calculateSensorErrror',['../classRobot.html#a9ed20205c505afd5893240122999c0b3',1,'Robot']]],
-  ['createmeasurementplotdirectories_8',['createMeasurementPlotDirectories',['../classDataHandler.html#ad47e95e9632c8ba00b8307e81447ac6b',1,'DataHandler']]],
-  ['createstateplotdirectory_9',['createStatePlotDirectory',['../classDataHandler.html#a0e0cd3a150f2fa8600f1af9d55b53cff',1,'DataHandler']]]
+  ['calculatestateerror_8',['calculateStateError',['../classRobot.html#a8e9f9cef988d089ca0dc8352668266bb',1,'Robot']]],
+  ['createmeasurementplotdirectories_9',['createMeasurementPlotDirectories',['../classDataHandler.html#ad47e95e9632c8ba00b8307e81447ac6b',1,'DataHandler']]],
+  ['createstateplotdirectory_10',['createStatePlotDirectory',['../classDataHandler.html#a0e0cd3a150f2fa8600f1af9d55b53cff',1,'DataHandler']]]
 ];

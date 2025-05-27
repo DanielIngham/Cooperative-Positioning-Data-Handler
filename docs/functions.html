@@ -104,6 +104,7 @@ $(function() {
 <li>calculateQuartiles()&#160;:&#160;<a class="el" href="classRobot.html#a4d2e9b87c8eca91eafccb71a77e48098">Robot</a></li>
 <li>calculateSampleErrorStats()&#160;:&#160;<a class="el" href="classRobot.html#a6a90c17286e966cde7f896dd9a21e1e5">Robot</a></li>
 <li>calculateSensorErrror()&#160;:&#160;<a class="el" href="classRobot.html#a9ed20205c505afd5893240122999c0b3">Robot</a></li>
+<li>calculateStateError()&#160;:&#160;<a class="el" href="classRobot.html#a8e9f9cef988d089ca0dc8352668266bb">Robot</a></li>
 <li>createMeasurementPlotDirectories()&#160;:&#160;<a class="el" href="classDataHandler.html#ad47e95e9632c8ba00b8307e81447ac6b">DataHandler</a></li>
 <li>createStatePlotDirectory()&#160;:&#160;<a class="el" href="classDataHandler.html#a0e0cd3a150f2fa8600f1af9d55b53cff">DataHandler</a></li>
 </ul>
@@ -111,6 +112,7 @@ $(function() {
 
 <h3><a id="index_d" name="index_d"></a>- d -</h3><ul>
 <li>data_extraction_directory_&#160;:&#160;<a class="el" href="classDataHandler.html#a6e0978f08d26d8dfb30453b62c9e3bfc">DataHandler</a></li>
+<li>data_inference_directory&#160;:&#160;<a class="el" href="classDataHandler.html#adba241dff644fd11a493f43652cef616">DataHandler</a></li>
 <li>data_points_&#160;:&#160;<a class="el" href="classSimulator.html#af297c7b38b7a2cb89afb42edd4ee7a6c">Simulator</a></li>
 <li>DataHandler()&#160;:&#160;<a class="el" href="classDataHandler.html#a51d845c1d9bbeef44607ec7592ba3c1d">DataHandler</a></li>
 <li>dataset_&#160;:&#160;<a class="el" href="classDataHandler.html#aed9b3567fa755a3111aeaecf841aa924">DataHandler</a></li>
@@ -136,6 +138,7 @@ $(function() {
 <li>getNumberOfBarcodes()&#160;:&#160;<a class="el" href="classDataHandler.html#ae491399396321214011ca5c86d0d5e6e">DataHandler</a></li>
 <li>getNumberOfLandmarks()&#160;:&#160;<a class="el" href="classDataHandler.html#a31bb832993e948b6346f2bd30ebbb4cf">DataHandler</a></li>
 <li>getNumberOfRobots()&#160;:&#160;<a class="el" href="classDataHandler.html#ab894ac8650fdaf7d7510254909e04f0c">DataHandler</a></li>
+<li>getNumberOfSyncedDatapoints()&#160;:&#160;<a class="el" href="classDataHandler.html#a8312ebf35f246a522ffe405f9663ee23">DataHandler</a></li>
 <li>getRobots()&#160;:&#160;<a class="el" href="classDataHandler.html#a9627420edb689af9c1463e4815693da4">DataHandler</a></li>
 <li>getSamplePeriod()&#160;:&#160;<a class="el" href="classDataHandler.html#afb04d371c2be3284199e81d4188700d0">DataHandler</a></li>
 <li>groundtruth&#160;:&#160;<a class="el" href="classRobot.html#a850f65d94288db275897cb52335edca1">Robot</a></li>
@@ -183,6 +186,7 @@ $(function() {
 <h3><a id="index_p" name="index_p"></a>- p -</h3><ul>
 <li>plotError()&#160;:&#160;<a class="el" href="classDataHandler.html#a2afd75ac9f7103fc28b89ed6e790732d">DataHandler</a></li>
 <li>plotExtractedData()&#160;:&#160;<a class="el" href="classDataHandler.html#a3854c15589109f105a811675e89c83ea">DataHandler</a></li>
+<li>plotInferenceError()&#160;:&#160;<a class="el" href="classDataHandler.html#aad7fd7e2dd0f03140b24e6cba03fa466">DataHandler</a></li>
 <li>plotMeasurements()&#160;:&#160;<a class="el" href="classDataHandler.html#ada7b6ffcfbfd7ad5d75c8c1573d143a6">DataHandler</a></li>
 <li>plotPDFs()&#160;:&#160;<a class="el" href="classDataHandler.html#a8dc7dd64f79385da548cb5d71cdf578d">DataHandler</a></li>
 <li>plotStates()&#160;:&#160;<a class="el" href="classDataHandler.html#a0161ec76895b742cae57a5f54d1df0d7">DataHandler</a></li>
@@ -196,8 +200,8 @@ $(function() {
 
 
 <h3><a id="index_r" name="index_r"></a>- r -</h3><ul>
-<li>Range&#160;:&#160;<a class="el" href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34b">Simulator</a></li>
 <li>range&#160;:&#160;<a class="el" href="classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb">Simulator</a></li>
+<li>Range&#160;:&#160;<a class="el" href="classSimulator.html#a266818ccfcf4d923a0caf0539474e34b">Simulator</a></li>
 <li>range_error&#160;:&#160;<a class="el" href="classRobot.html#a3e3294bc6bf1277bdb5fbfb44410f362">Robot</a></li>
 <li>ranges&#160;:&#160;<a class="el" href="structRobot_1_1Measurement.html#aa071e829eca62fa89473fcc66a532101">Robot::Measurement</a></li>
 <li>raw&#160;:&#160;<a class="el" href="classRobot.html#a47fe1ae41e8d9ec7e33e73bd83b64b9f">Robot</a></li>
@@ -226,15 +230,17 @@ $(function() {
 <li>saveOdometryErrorPDF()&#160;:&#160;<a class="el" href="classDataHandler.html#a7e72fad87a3ac47dec2956c1118b2941">DataHandler</a></li>
 <li>saveRobotErrorStatistics()&#160;:&#160;<a class="el" href="classDataHandler.html#a44a6564ad7dce49b4eeb5a8f1a5d8f08">DataHandler</a></li>
 <li>saveStateData()&#160;:&#160;<a class="el" href="classDataHandler.html#adcf0108de94cdd9b986c06c2d9bf1d1b">DataHandler</a></li>
+<li>saveStateError()&#160;:&#160;<a class="el" href="classDataHandler.html#ae1d1dfbb994523b40b4dde5b83ce4680">DataHandler</a></li>
 <li>setBarcodes()&#160;:&#160;<a class="el" href="classSimulator.html#addcecd71b4ca2b4105c2360d53346342">Simulator</a></li>
-<li>setDataSet()&#160;:&#160;<a class="el" href="classDataHandler.html#a503281f96b6c888eea391231a33105e1">DataHandler</a></li>
+<li>setDataSet()&#160;:&#160;<a class="el" href="classDataHandler.html#a478d0654470aa91ab354a058348e1be1">DataHandler</a></li>
 <li>setErrorStatistics()&#160;:&#160;<a class="el" href="classSimulator.html#ac7000348251c76521e2ccdaff1199518">Simulator</a></li>
 <li>setLandmarkPositions()&#160;:&#160;<a class="el" href="classSimulator.html#af1d6c7ca84e8b192414181cd87de2c66">Simulator</a></li>
+<li>setOutputDirectory()&#160;:&#160;<a class="el" href="classDataHandler.html#af1acccdaa069dd88b9b43842750dcff1">DataHandler</a></li>
 <li>setQuartiles()&#160;:&#160;<a class="el" href="classRobot.html#ad6ccae894258430ac82ffc6b21c1e821">Robot</a></li>
 <li>setRobotMeasurement()&#160;:&#160;<a class="el" href="classSimulator.html#aea84799359baf3c4ac09348eeb41bdf8">Simulator</a></li>
 <li>setRobotOdometryAndState()&#160;:&#160;<a class="el" href="classSimulator.html#a57b6272a59208341293a7c5bb4e1e194">Simulator</a></li>
 <li>setRobotsInitalState()&#160;:&#160;<a class="el" href="classSimulator.html#a708be46896a6d458210911debbdf9136">Simulator</a></li>
-<li>setSimulation()&#160;:&#160;<a class="el" href="classDataHandler.html#ab86c64a4bf85c9db9bb9e6883b901827">DataHandler</a>, <a class="el" href="classSimulator.html#a5bdfa23add82ee415098d6bb914812f5">Simulator</a></li>
+<li>setSimulation()&#160;:&#160;<a class="el" href="classDataHandler.html#a33837004af1e6985c5ba88e080dff7c6">DataHandler</a>, <a class="el" href="classSimulator.html#a5bdfa23add82ee415098d6bb914812f5">Simulator</a></li>
 <li>simulator&#160;:&#160;<a class="el" href="classDataHandler.html#a035432aa868d477d6e47b6c5fe9fb7ee">DataHandler</a></li>
 <li>Simulator()&#160;:&#160;<a class="el" href="classSimulator.html#a031573bfcfe2e0f5c9539bcc1c7fc5d9">Simulator</a></li>
 <li>State()&#160;:&#160;<a class="el" href="structRobot_1_1State.html#a0e79a34a49a9a3c40117089008e4cf1f">Robot::State</a></li>
@@ -247,9 +253,10 @@ $(function() {
 
 <h3><a id="index_t" name="index_t"></a>- t -</h3><ul>
 <li>time&#160;:&#160;<a class="el" href="structRobot_1_1Measurement.html#a988ff00f57d449f3967be41e0b712d3d">Robot::Measurement</a>, <a class="el" href="structRobot_1_1Odometry.html#a2098f2455d91d0a27b52d92988c0b425">Robot::Odometry</a>, <a class="el" href="structRobot_1_1State.html#ab4bfad38bab0e9e9aa9ff1bdf7c6d6c2">Robot::State</a></li>
-<li>total_barcodes&#160;:&#160;<a class="el" href="classDataHandler.html#aefdf5ab9b62b222e04263fbd5869cafc">DataHandler</a>, <a class="el" href="classSimulator.html#a4a901ddda614bb41ed79630602250f99">Simulator</a></li>
-<li>total_landmarks&#160;:&#160;<a class="el" href="classDataHandler.html#ab32217303c47aa6b4de086eed50f13ab">DataHandler</a>, <a class="el" href="classSimulator.html#a26d63f56b3faf2dd307ce961071d5eca">Simulator</a></li>
-<li>total_robots&#160;:&#160;<a class="el" href="classDataHandler.html#a0638e0583ad4205f05315ee270274cc7">DataHandler</a>, <a class="el" href="classSimulator.html#a7436b6319a48f47294fb2c6dd2ce65ef">Simulator</a></li>
+<li>total_barcodes&#160;:&#160;<a class="el" href="classDataHandler.html#a0c85affa403287845affbc3b47353ff8">DataHandler</a>, <a class="el" href="classSimulator.html#a4a901ddda614bb41ed79630602250f99">Simulator</a></li>
+<li>total_landmarks&#160;:&#160;<a class="el" href="classDataHandler.html#ac7991791df7ee265b266779e2adf118f">DataHandler</a>, <a class="el" href="classSimulator.html#a26d63f56b3faf2dd307ce961071d5eca">Simulator</a></li>
+<li>total_robots&#160;:&#160;<a class="el" href="classDataHandler.html#a96cd598ed3439b5bb62e63abb8676e04">DataHandler</a>, <a class="el" href="classSimulator.html#a7436b6319a48f47294fb2c6dd2ce65ef">Simulator</a></li>
+<li>total_synced_datapoints&#160;:&#160;<a class="el" href="classDataHandler.html#ab34ba7066cb066ffcbb376f32e3d02be">DataHandler</a></li>
 </ul>
 
 
