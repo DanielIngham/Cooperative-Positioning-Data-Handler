@@ -36,8 +36,8 @@ public:
               const unsigned short, const std::string &output_directory = "");
 
   /* Setters */
-  void setDataSet(const std::string &, const double &sampling_period = 0.02,
-                  const std::string &output_directory = "");
+  void setDataSet(const std::string &, const std::string &output_directory = "",
+                  const double &sampling_period = 0.02);
 
   void setSimulation(unsigned long int, double, const unsigned short,
                      const unsigned short,
