@@ -34,7 +34,7 @@ TEST_OBJECTS :=  $(patsubst $(TEST_DIR)/%.cpp, $(TEST_BUILD)/%.o,$(TEST_SOURCES)
 CPPCHECK := cppcheck
 
 
-.PHONEY: all clean test run cppcheck
+.PHONY: all clean test run cppcheck
 
 # Linking
 $(TARGET): $(OBJECTS)
