@@ -27,13 +27,13 @@ public:
   /**
    * @brief Numerical identifier for the robot.
    */
-  int id;
+  unsigned short id;
 
   /**
    * @brief  Barcode associated with the robot. This is what the other robots
    * will read during there operation to identify each other.
    */
-  int barcode;
+  unsigned short barcode;
 
   /**
    * @brief Data attributes for a single groundtruth reading extracted from

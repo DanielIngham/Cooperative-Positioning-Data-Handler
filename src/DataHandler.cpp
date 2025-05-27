@@ -317,7 +317,13 @@ void DataHandler::readBarcodes(const std::string &dataset) {
     }
 
     /* Extract barcodes into barcodes array */
-    barcodes_[i++] = std::stoi(line.substr(line.find('\t', 0)));
+    barcodes_[i] = std::stoi(line.substr(line.find('\t', 0)));
+    if (i < total_robots) {
+      robots_[i].barcode = barcodes_[i];
+    } else {
+      landmarks_[i - total_robots].barcode = barcodes_[i];
+    }
+    i++;
   }
 
   file.close();

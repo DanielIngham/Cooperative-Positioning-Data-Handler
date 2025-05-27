@@ -16,10 +16,11 @@
  * structure with the appropriate values from a provided dataset.
  */
 struct Landmark {
-  int id;           ///< Numerical identifier for the landmark.
-  int barcode;      ///< Barcode associated with the landmark. This is what the
-                    ///< robots will read during there operation to identify the
-                    ///< landmarks.
+  unsigned short id;      ///< Numerical identifier for the landmark.
+  unsigned short barcode; ///< Barcode associated with the landmark. This is
+                          ///< what the robots will read during there operation
+                          ///< to identify the landmarks.
+
   double x;         ///< The landmark's golbal x-coordinate [m]
   double y;         ///< The landmark's golbal y-coordinate [m]
   double x_std_dev; ///< The x-standard deviation of the positioning error [m]
