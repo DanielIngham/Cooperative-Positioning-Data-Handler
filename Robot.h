@@ -140,7 +140,7 @@ public:
   RobotData raw;
   /** @brief The odometry and measurement values with synced timesteps. */
   RobotData synced;
-  /** The groundtruth */
+  /** @brief The groundtruth state of the robots */
   RobotData groundtruth;
   /** @brief The difference between the ground truth and the synced data */
   RobotData error;
