@@ -247,8 +247,20 @@ void DataHandler::setDataSet(const std::string &dataset,
 void DataHandler::setOutputDirectory(const std::string &output_directory,
                                      const std::string &folder) {
 
-  this->output_directory_ =
-      std::getenv("PROJECT_DIR") + ("/output/" + output_directory);
+  const char *project_env = std::getenv("PROJECT_DIR");
+
+  /* Check if the project environment variable has been set. If not, throw
+   * error.
+   */
+  if (project_env == NULL) {
+    throw std::runtime_error(
+        "Project directory environment variable not specified before "
+        "executation. Add command:  PROJECT_DIR=$(CURDIR) into your makefile.");
+  }
+
+  std::string project_directory(project_env);
+
+  this->output_directory_ = project_directory + ("/output/" + output_directory);
 
   /* Creates unique simulation folder using the current system time. */
   try {
