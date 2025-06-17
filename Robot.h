@@ -53,7 +53,7 @@ public:
     double orientation; ///< Robot Groundtruth orientation [rad].
 
     /** @brief Default constructor */
-    State();
+    State() : time(0.0), x(0.0), y(0.0), orientation(0.0) {};
 
     /**
      * @brief Constructor for convenient population of
