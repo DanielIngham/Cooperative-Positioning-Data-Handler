@@ -1,10 +1,17 @@
 data_folder = dataset_directory
 plots_folder = plots_directory
 
+pause_length = 0
+
 # Set plot to save to pdf output
 set term (file_type eq "pdf") ? "pdfcairo" : \
         (file_type eq "png") ? "pngcairo" : \
-        (file_type eq "svg") ? "svg" : qt
+        (file_type eq "svg") ? "svg" : "qt"
+
+# Check current terminal is qt
+if (GPVAL_TERM eq "qt") {
+	pause_length = -1
+} 
 
 set style fill empty border -1
 set ylabel "Error"
@@ -51,6 +58,8 @@ do for [i=1:5] {
 		gaussian(x) title sprintf("Gaussian: μ = %f, σ = %f", mu, sigma) with lines linewidth 2 linecolor rgb "red" #,\
 		# f(x) title sprintf("GNU Gaussian: μ = %f, σ = %f", a, b) with lines linewidth 2 linecolor rgb "blue"
 
+	pause pause_length
+
 	########################
 	# Angular-Velocity-Error
 	########################
@@ -81,6 +90,8 @@ do for [i=1:5] {
 		gaussian(x) title sprintf("Gaussian: μ = %f, σ = %f", mu, sigma) with lines linewidth 2 linecolor rgb "red" #,\
 	# f(x) title sprintf("GNU Gaussian: μ = %f, σ = %f", a, b) with lines linewidth 2 linecolor rgb "blue"
 
+	pause pause_length
+
 	########################
 	# Range Error
 	########################
@@ -109,6 +120,8 @@ do for [i=1:5] {
 		data_folder . "/Range-Error-PDF.dat" index (i-1) using 1:3:2 with boxes title "Range Error",\
 		gaussian(x) title sprintf("Gaussian: μ = %f, σ = %f", mu, sigma) with lines linewidth 2 linecolor rgb "red" #,\
 		# f(x) title sprintf("GNU Gaussian: μ = %f, σ = %f", a, b) with lines linewidth 2 linecolor rgb "blue"
+
+	pause pause_length
 
 	########################
 	# Bearing-Error
@@ -140,5 +153,7 @@ do for [i=1:5] {
 		data_folder . "/Bearing-Error-PDF.dat" index (i-1) using 1:3:2 with boxes title "Bearing Error",\
 		gaussian(x) title sprintf("Gaussian: μ = %f, σ = %f", mu, sigma) with lines linewidth 2 linecolor rgb "red" #,\
 		# f(x) title sprintf("GNU Gaussian: μ = %f, σ = %f", a, b) with lines linewidth 2 linecolor rgb "blue"
+
+	pause pause_length
 
 }

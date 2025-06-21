@@ -1880,10 +1880,16 @@ void DataHandler::plotInferenceError(std::string file_type) {
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  std::string plots_directory = data_inference_directory + "/plots/";
+  std::string plots_directory = "";
 
-  if (!std::filesystem::exists(plots_directory)) {
-    std::filesystem::create_directory(plots_directory);
+  /* If the file type is empty, then library will use the gnuplot qt terminal,
+   * and therefore nothing needs to be saved. */
+  if (file_type != "") {
+    plots_directory = data_inference_directory + "/plots/";
+
+    if (!std::filesystem::exists(plots_directory)) {
+      std::filesystem::create_directory(plots_directory);
+    }
   }
 
   std::string gnuplot_script_path =

@@ -1,10 +1,17 @@
 data_folder = dataset_directory
 plots_folder = plots_directory
 
+pause_length = 0
+
 # Set plot to save to pdf output
 set term (file_type eq "pdf") ? "pdfcairo" : \
         (file_type eq "png") ? "pngcairo" : \
-        (file_type eq "svg") ? "svg" : qt
+        (file_type eq "svg") ? "svg" : "qt"
+
+# Check current terminal is qt
+if (GPVAL_TERM eq "qt") {
+	pause_length = -1
+} 
 
 # Plot settings
 set xlabel "time [s]"
@@ -19,7 +26,9 @@ set datafile sep ",	"
 do for [i=1:5] {
 
 	# Set the output file 
-	set output sprintf(plots_folder . "/State/Robot-%d-State." . file_type , i)
+	if (GPVAL_TERM ne "qt") {
+		set output sprintf(plots_folder . "/State/Robot-%d-State." . file_type , i)
+	}
 	set multiplot layout 3,1 title sprintf("Robot %d Groundtruth Trajectory", i)
 
 	set ylabel "x-position [m]"
@@ -37,6 +46,7 @@ do for [i=1:5] {
 		data_folder . "/Groundtruth-State.dat" index (i-1) using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $4 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw", \
 		"" index (i-1) using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $4 : 1/0) with points pointsize 0.1 linecolor rgb "purple" title "Interpolated"
 
+	pause pause_length
 	unset multiplot
 	unset output
 	
@@ -45,8 +55,13 @@ do for [i=1:5] {
 	# Plotting xy coordinates 
 	# alongside landmarks
 	####################
-	set output sprintf(plots_folder . "/State/Robot-%d-Position." . file_type, i)
+
+	if (GPVAL_TERM ne "qt") {
+		set output sprintf(plots_folder . "/State/Robot-%d-Position." . file_type, i)
+	}
 	plot \
 		data_folder . "/Groundtruth-State.dat" index (i-1) using (stringcolumn(5) eq "s" ? $2 : 1/0):(stringcolumn(5) eq "s" ? $3 : 1/0) with linespoints pointsize 0.1 title "Robot Coordinate",\
 		data_folder . "/landmarks.dat" using 3:4 with points pointsize 1.0 pointtype 6 title "Landmarks"
+
+	pause pause_length
 }

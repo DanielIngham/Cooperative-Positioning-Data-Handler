@@ -1,10 +1,17 @@
 data_folder = dataset_directory
 plots_folder = plots_directory
 
+pause_length = 0
+
 # Set plot to save to pdf output
 set term (file_type eq "pdf") ? "pdfcairo" : \
         (file_type eq "png") ? "pngcairo" : \
-        (file_type eq "svg") ? "svg" : qt
+        (file_type eq "svg") ? "svg" : "qt"
+
+# Check current terminal is qt
+if (GPVAL_TERM eq "qt") {
+	pause_length = -1
+} 
 
 # Plot settings
 set xlabel "time [s]"
@@ -21,7 +28,9 @@ do for [i=1:5] {
 	#########################
 	# Forward Velocity  Error
 	#########################
-	set output sprintf(plots_folder . "/Forward-Velocity/Robot-%d-Foward-Velocity." . file_type , i)
+	if (GPVAL_TERM ne "qt") {
+		set output sprintf(plots_folder . "/Forward-Velocity/Robot-%d-Foward-Velocity." . file_type , i)
+	}
 	set title sprintf("Robot %d Forward Velocity", i)
 	set ylabel "Forward velocity [m/s]"
 	plot \
@@ -29,10 +38,14 @@ do for [i=1:5] {
 		data_folder . "/Odometry.dat" index (i-1) using (stringcolumn(4) eq "g" ? $1 : 1/0):(stringcolumn(4) eq "g" ? $2 : 1/0) with points pointsize 0.1 title "Groundtruth",\
 		"" index (i-1) using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $2 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw"
 
+	pause pause_length
+
 	#########################
 	# Angular Velocity  Error
 	#########################
-	set output sprintf(plots_folder . "/Angular-Velocity/Robot-%d-Angular-Velocity." . file_type , i)
+	if (GPVAL_TERM ne "qt") {
+		set output sprintf(plots_folder . "/Angular-Velocity/Robot-%d-Angular-Velocity." . file_type , i)
+	}
 	set title sprintf("Robot %d Angular Velocity", i)
 	set ylabel "Angular velocity [rad/s]"
 	plot \
@@ -40,10 +53,14 @@ do for [i=1:5] {
 		data_folder . "/Odometry.dat" index (i-1) using (stringcolumn(4) eq "g" ? $1 : 1/0):(stringcolumn(4) eq "g" ? $3 : 1/0) with points pointsize 0.1 title "Groundtruth",\
 		"" index (i-1) using (stringcolumn(4) eq "r" ? $1 : 1/0):(stringcolumn(4) eq "r" ? $3 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw"
 
+	pause pause_length
+
 	#########################
 	# Range Measurement
 	#########################
-	set output sprintf(plots_folder . "/Range/Robot-%d-Range." . file_type , i)
+	if (GPVAL_TERM ne "qt") {
+		set output sprintf(plots_folder . "/Range/Robot-%d-Range." . file_type , i)
+	}
 	set title sprintf("Robot %d Range Measurements", i)
 	set ylabel "Range [m]"
 	plot \
@@ -51,14 +68,20 @@ do for [i=1:5] {
 		"" index (i-1) using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $3 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
 		"" index (i-1) using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $3 : 1/0) with points pointsize 0.1 title "Interpolated"
 
+	pause pause_length
+
 	#########################
 	# Bearing Measurement
 	#########################
-	set output sprintf(plots_folder . "/Bearing/Robot-%d-Bearing." . file_type , i)
+	if (GPVAL_TERM ne "qt") {
+		set output sprintf(plots_folder . "/Bearing/Robot-%d-Bearing." . file_type , i)
+	}
 	set title sprintf("Robot %d Bearing Measurements", i)
 	set ylabel "Bearing [rad]"
 	plot \
 		data_folder . "/Measurement.dat" index (i-1) using (stringcolumn(5) eq "g" ? $1 : 1/0):(stringcolumn(5) eq "g" ? $4 : 1/0) with points pointsize 0.1 title "Groundtruth",\
 		"" index (i-1) using (stringcolumn(5) eq "r" ? $1 : 1/0):(stringcolumn(5) eq "r" ? $4 : 1/0) with points pointsize 0.1 linecolor rgb "red" pointtype 7 title "Raw",\
 		"" index (i-1) using (stringcolumn(5) eq "s" ? $1 : 1/0):(stringcolumn(5) eq "s" ? $4 : 1/0) with points pointsize 0.1 title "Interpolated"
+
+	pause pause_length
 }

@@ -61,13 +61,13 @@ public:
   void saveExtractedData();
   void saveStateError();
 
-  void plotExtractedData(std::string file_type = "png");
-  void plotPDFs(std::string file_type = "png");
-  void plotError(std::string file_type = "png");
-  void plotMeasurements(std::string file_type = "png");
-  void plotStates(std::string file_type = "png");
+  void plotExtractedData(std::string file_type = "");
+  void plotPDFs(std::string file_type = "");
+  void plotError(std::string file_type = "");
+  void plotMeasurements(std::string file_type = "");
+  void plotStates(std::string file_type = "");
 
-  void plotInferenceError(std::string file_type = "png");
+  void plotInferenceError(std::string file_type = "");
 
 private:
   /**
