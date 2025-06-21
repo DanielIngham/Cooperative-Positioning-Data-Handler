@@ -866,7 +866,7 @@ int main() {
   std::cout << "\033[3mNumber of treads supported:\033[0m "
             << std::thread::hardware_concurrency() << std::endl;
 
-  // std::thread unit_test_1(checkBarcodes);
+  std::thread unit_test_1(checkBarcodes);
   // std::thread unit_test_2(checkLandmarkBarcodes);
   // std::thread unit_test_3(checkGroundtruthExtraction);
   // std::thread unit_test_4(checkOdometryExtraction);
@@ -877,7 +877,7 @@ int main() {
   // std::thread unit_test_9(testGroundtruthOdometry);
   // std::thread unit_test_10(checkSyncedSize);
 
-  // unit_test_1.join();
+  unit_test_1.join();
   // unit_test_2.join();
   // unit_test_3.join();
   // unit_test_4.join();
@@ -888,7 +888,7 @@ int main() {
   // unit_test_9.join();
   // unit_test_10.join();
   // checkPDF();
-  checkSimulation();
+  // checkSimulation();
 
   auto end = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
