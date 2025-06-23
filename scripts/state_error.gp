@@ -44,32 +44,31 @@ if (GPVAL_TERM ne "qt") {
 	set output sprintf(plots_folder . "/Robot-State-error." . file_type , i)
 }
 set multiplot layout 3,1 title sprintf("All Robot State Estimation Error")
+set key inside
 
 set ylabel "|x-position error| [m]"
 plot \
-	data_folder . "/state_error.dat" index 0 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 notitle, \
-	"" index 1 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 2 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 3 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 4 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 notitle
+	data_folder . "/state_error.dat" index 0 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 title "Robot 1", \
+	"" index 1 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 title "Robot 2",\
+	"" index 2 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 title "Robot 3",\
+	"" index 3 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 title "Robot 4",\
+	"" index 4 using 1:(abs($2)) with linespoints pointsize 0.1 pointtype 7 title "Robot 5"
 
 set ylabel "|y-position error| [m]"
 plot \
-	data_folder . "/state_error.dat" index 0 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 notitle, \
-	"" index 0 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 1 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 2 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 3 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 4 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 notitle
+	data_folder . "/state_error.dat" index 0 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 title "Robot 1", \
+	"" index 1 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 title "Robot 2",\
+	"" index 2 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 title "Robot 3",\
+	"" index 3 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 title "Robot 4",\
+	"" index 4 using 1:(abs($3)) with linespoints pointsize 0.1 pointtype 7 title "Robot 5"
 
 set ylabel "|orientation error| [rad]"
 plot \
-	data_folder . "/state_error.dat" index 0 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 notitle, \
-	"" index 0 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 1 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 2 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 3 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 notitle,\
-	"" index 4 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 notitle
+	data_folder . "/state_error.dat" index 0 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 title "Robot 1", \
+	"" index 1 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 title "Robot 2",\
+	"" index 2 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 title "Robot 3",\
+	"" index 3 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 title "Robot 4",\
+	"" index 4 using 1:(abs($4)) with linespoints pointsize 0.1 pointtype 7 title "Robot 5"
 unset multiplot
 unset output
 
