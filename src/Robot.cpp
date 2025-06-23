@@ -447,11 +447,8 @@ void Robot::calculateStateError() {
                                this->synced.states[k].orientation;
 
     /* Normalise the orientation error between -180 and 180. */
-    while (orientation_error >= M_PI)
-      orientation_error -= 2.0 * M_PI;
-
-    while (orientation_error < -M_PI)
-      orientation_error += 2.0 * M_PI;
+    orientation_error -=
+        2.0 * M_PI * floor((orientation_error + M_PI) / (2.0 * M_PI));
 
     this->error.states.push_back(
         State(this->groundtruth.states[k].time,
