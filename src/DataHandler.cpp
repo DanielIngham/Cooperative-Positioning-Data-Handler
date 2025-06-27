@@ -681,6 +681,9 @@ void DataHandler::syncData(const double &sample_period) {
     auto odometry_iterator = robots_[id].raw.odometry.begin();
 
     for (double t = 0.0; t <= maximum_time; t += sample_period) {
+      /* Add empty items with the time stamps to the synced robot. The filters
+       * will then populate the estimated values. */
+      robots_[id].synced.states.push_back(Robot::State(t, 0, 0, 0));
 
       /* Find the first element that is larger than the current time step */
       groundtruth_iterator = std::find_if(
@@ -694,7 +697,6 @@ void DataHandler::syncData(const double &sample_period) {
             Robot::State(t, robots_[id].raw.states.front().x,
                          robots_[id].raw.states.front().y,
                          robots_[id].raw.states.front().orientation));
-        // continue;
       }
 
       /* If the element is the last item in the raw values, copy the raw values
@@ -704,7 +706,6 @@ void DataHandler::syncData(const double &sample_period) {
         robots_[id].groundtruth.states.push_back(Robot::State(
             t, robots_[id].raw.states.back().x, robots_[id].raw.states.back().y,
             robots_[id].raw.states.back().orientation));
-        // continue;
       } else {
         /* Interpolate the Groundtruth values */
         double interpolation_factor =
