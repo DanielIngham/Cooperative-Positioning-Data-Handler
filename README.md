@@ -6,6 +6,13 @@ This project provides a c++ class as an interface for using the [UTIAS Multi-Rob
 - Calculates the sensor error statistics used in Bayesian filtering frameworks.
 - Provides an interface for [gnuplot](http://gnuplot.info/) to allow for visualisation of extracted data and calculated error statistics.
 
+# Building the Data Handler
+To build the data handler, simply run the make file:
+```bash
+make
+```
+This builds the static library into the `./lib` with the name `libdata_handler.a`.
+
 # Documentation 
 For more information, the documentation for this project is available at: [Cooperative Positioning Data Handler GitHub page.](https://danielingham.github.io/Cooperative-Positioning-Data-Handler/)
 
