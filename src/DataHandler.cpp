@@ -677,24 +677,30 @@ void DataHandler::syncData(const double &sample_period) {
 
     robots_[id].synced.measurements.clear();
 
-    auto groundtruth_iterator = robots_[id].raw.states.begin();
-    auto odometry_iterator = robots_[id].raw.odometry.begin();
+    auto current_groundtruth = robots_[id].raw.states.begin();
+    auto current_odometry = robots_[id].raw.odometry.begin();
 
-    for (double t = 0.0; t <= maximum_time; t += sample_period) {
+    for (double synced_timestamp = 0.0; synced_timestamp <= maximum_time;
+         synced_timestamp += sample_period) {
+
       /* Add empty items with the time stamps to the synced robot. The filters
        * will then populate the estimated values. */
-      robots_[id].synced.states.push_back(Robot::State(t, 0, 0, 0));
+      robots_[id].synced.states.push_back(
+          Robot::State(synced_timestamp, 0, 0, 0));
 
       /* Find the first element that is larger than the current time step */
-      groundtruth_iterator = std::find_if(
-          groundtruth_iterator, robots_[id].raw.states.end(),
-          [t](const Robot::State &element) { return element.time > t; });
+      current_groundtruth =
+          std::find_if(current_groundtruth, robots_[id].raw.states.end(),
+                       [synced_timestamp](const Robot::State &element) {
+                         return element.time > synced_timestamp;
+                       });
+
       /* If the element is the first item in the raw values, copy the raw values
        * (no interpolation). This is assuming that the robot was stationary
        * before its ground truth was recorded. */
-      if (groundtruth_iterator == robots_[id].raw.states.begin()) {
+      if (current_groundtruth == robots_[id].raw.states.begin()) {
         robots_[id].groundtruth.states.push_back(
-            Robot::State(t, robots_[id].raw.states.front().x,
+            Robot::State(synced_timestamp, robots_[id].raw.states.front().x,
                          robots_[id].raw.states.front().y,
                          robots_[id].raw.states.front().orientation));
       }
@@ -702,72 +708,112 @@ void DataHandler::syncData(const double &sample_period) {
       /* If the element is the last item in the raw values, copy the raw values
          (no interpolation). This is assuming that the robot remains stationary
          after the ground truth recording ended. */
-      else if (groundtruth_iterator == robots_[id].raw.states.end()) {
-        robots_[id].groundtruth.states.push_back(Robot::State(
-            t, robots_[id].raw.states.back().x, robots_[id].raw.states.back().y,
-            robots_[id].raw.states.back().orientation));
+      else if (current_groundtruth == robots_[id].raw.states.end()) {
+        robots_[id].groundtruth.states.push_back(
+            Robot::State(synced_timestamp, robots_[id].raw.states.back().x,
+                         robots_[id].raw.states.back().y,
+                         robots_[id].raw.states.back().orientation));
       } else {
-        /* Interpolate the Groundtruth values */
-        double interpolation_factor =
-            (t - (groundtruth_iterator - 1)->time) /
-            (groundtruth_iterator->time - (groundtruth_iterator - 1)->time);
 
-        double next_orientation = groundtruth_iterator->orientation;
-        if (next_orientation - (groundtruth_iterator - 1)->orientation > 5) {
-          next_orientation -= 2.0 * M_PI;
-        } else if (next_orientation - (groundtruth_iterator - 1)->orientation <
-                   -5) {
-          next_orientation += 2.0 * M_PI;
+        /* Interpolate the Groundtruth values */
+        auto previous_groundtruth = (current_groundtruth - 1);
+
+        double interpolation_factor =
+            (synced_timestamp - previous_groundtruth->time) /
+            (current_groundtruth->time - previous_groundtruth->time);
+
+        double interpolated_orientation = current_groundtruth->orientation;
+
+        /* The linear interpolation does not take into account angle wrapping
+         * (i.e. the angle -180 and 180 are the same in the robots coordinate
+         * frame), and therefore would assume that the robot rotated 360 degrees
+         * as opposed to 0. To prevent this, a threshold is set that detects
+         * this angle wrapping.  */
+        const double angle_wrap_threshold = 5.0;
+
+        if (interpolated_orientation - previous_groundtruth->orientation >
+            angle_wrap_threshold) {
+          interpolated_orientation -= 2.0 * M_PI;
+
+        } else if (interpolated_orientation -
+                       previous_groundtruth->orientation <
+                   -angle_wrap_threshold) {
+          interpolated_orientation += 2.0 * M_PI;
         }
 
-        next_orientation =
+        interpolated_orientation =
             interpolation_factor *
-                (next_orientation - (groundtruth_iterator - 1)->orientation) +
-            (groundtruth_iterator - 1)->orientation;
+                (interpolated_orientation - previous_groundtruth->orientation) +
+            previous_groundtruth->orientation;
 
         /* Normalise the orientation between PI and -PI (180 and -180 degrees
          * respectively) */
-        while (next_orientation >= M_PI)
-          next_orientation -= 2.0 * M_PI;
-        while (next_orientation < -M_PI)
-          next_orientation += 2.0 * M_PI;
+        while (interpolated_orientation >= M_PI)
+          interpolated_orientation -= 2.0 * M_PI;
+        while (interpolated_orientation < -M_PI)
+          interpolated_orientation += 2.0 * M_PI;
 
-        robots_[id].groundtruth.states.push_back(Robot::State(
-            t,
+        double interpolated_x_position =
             interpolation_factor *
-                    (groundtruth_iterator->x - (groundtruth_iterator - 1)->x) +
-                (groundtruth_iterator - 1)->x,
+                (current_groundtruth->x - previous_groundtruth->x) +
+            previous_groundtruth->x;
+
+        double interpolated_y_position =
             interpolation_factor *
-                    (groundtruth_iterator->y - (groundtruth_iterator - 1)->y) +
-                (groundtruth_iterator - 1)->y,
-            next_orientation));
+                (current_groundtruth->y - previous_groundtruth->y) +
+            previous_groundtruth->y;
+
+        robots_[id].groundtruth.states.push_back(
+            Robot::State(synced_timestamp, interpolated_x_position,
+                         interpolated_y_position, interpolated_orientation));
       }
 
       /* The same process as above is repeated for the odometry, except assume
        * the robot is stationary prior to ground truth readings */
-      odometry_iterator = std::find_if(
-          odometry_iterator, robots_[id].raw.odometry.end(),
-          [t](const Robot::Odometry &element) { return element.time > t; });
+      current_odometry =
+          std::find_if(current_odometry, robots_[id].raw.odometry.end(),
+                       [synced_timestamp](const Robot::Odometry &element) {
+                         return element.time > synced_timestamp;
+                       });
 
-      if (odometry_iterator == robots_[id].raw.odometry.begin() ||
-          odometry_iterator == robots_[id].raw.odometry.end() - 1) {
-        robots_[id].synced.odometry.push_back(Robot::Odometry(t, 0, 0));
+      if (current_odometry == robots_[id].raw.odometry.begin() ||
+          current_odometry == robots_[id].raw.odometry.end() - 1) {
+        robots_[id].synced.odometry.push_back(
+            Robot::Odometry(synced_timestamp, 0, 0));
         continue;
       }
 
+      auto previous_odometry = (current_odometry - 1);
+
       /* Calculating Odometry Interpolation */
       double interpolation_factor =
-          (t - (odometry_iterator - 1)->time) /
-          (odometry_iterator->time - (odometry_iterator - 1)->time);
+          (synced_timestamp - previous_odometry->time) /
+          (current_odometry->time - previous_odometry->time);
 
-      robots_[id].synced.odometry.push_back(Robot::Odometry(
-          t,
-          interpolation_factor * (odometry_iterator->forward_velocity -
-                                  (odometry_iterator - 1)->forward_velocity) +
-              (odometry_iterator - 1)->forward_velocity,
-          interpolation_factor * (odometry_iterator->angular_velocity -
-                                  (odometry_iterator - 1)->angular_velocity) +
-              (odometry_iterator - 1)->angular_velocity));
+      double interpolated_forward_velocity =
+          interpolation_factor * (current_odometry->forward_velocity -
+                                  previous_odometry->forward_velocity) +
+          previous_odometry->forward_velocity;
+
+      double interpolated_angular_velocity =
+          interpolation_factor * (current_odometry->angular_velocity -
+                                  previous_odometry->angular_velocity) +
+          previous_odometry->angular_velocity;
+
+      /* To prevent issues with finite word length. */
+      const double decimal_threshold = 1e-4;
+
+      if (interpolated_forward_velocity < decimal_threshold) {
+        interpolated_forward_velocity = 0.0;
+      }
+
+      if (std::abs(interpolated_angular_velocity) < decimal_threshold) {
+        interpolated_angular_velocity = 0.0;
+      }
+
+      robots_[id].synced.odometry.push_back(
+          Robot::Odometry(synced_timestamp, interpolated_forward_velocity,
+                          interpolated_angular_velocity));
     }
 
     /* The orginal UTIAS data extractor did NOT perform any linear interpolation
@@ -836,22 +882,32 @@ void DataHandler::calculateGroundtruthOdometry() {
     for (std::size_t k = 0; k < robots_[id].groundtruth.states.size() - 1;
          k++) {
 
+      /* x and y position difference between consecutive time steps. */
       double x_difference = (robots_[id].groundtruth.states[k + 1].x -
                              robots_[id].groundtruth.states[k].x);
+
       double y_difference = (robots_[id].groundtruth.states[k + 1].y -
                              robots_[id].groundtruth.states[k].y);
 
-      robots_[id].groundtruth.odometry.push_back(Robot::Odometry(
-          robots_[id].groundtruth.states[k].time,
+      double odometry_timestamp = robots_[id].groundtruth.states[k].time;
+
+      /* Calculate the inputs that would result in the ground truth states. */
+      double forward_velocity_input =
           std::sqrt(x_difference * x_difference + y_difference * y_difference) /
-              this->sampling_period_,
+          this->sampling_period_;
+
+      double angular_velocity_input =
           std::atan2(
               std::sin(robots_[id].groundtruth.states[k + 1].orientation -
                        robots_[id].groundtruth.states[k].orientation),
               std::cos(robots_[id].groundtruth.states[k + 1].orientation -
                        robots_[id].groundtruth.states[k].orientation)) /
-              this->sampling_period_));
+          this->sampling_period_;
+
+      robots_[id].groundtruth.odometry.push_back(Robot::Odometry(
+          odometry_timestamp, forward_velocity_input, angular_velocity_input));
     }
+
     /* NOTE: Since the last groundtruth odometry value can not be calculated, it
      * is set equal to the synced measured value */
     robots_[id].groundtruth.odometry.push_back(
