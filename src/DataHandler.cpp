@@ -84,9 +84,9 @@ DataHandler::DataHandler(const std::string &dataset,
  * are saved.
  */
 void DataHandler::setSimulation(const unsigned long int data_points,
-                                double sample_period,
                                 const unsigned short number_of_robots,
                                 const unsigned short number_of_landmarks,
+                                double sample_period,
                                 const std::string &output_directory) {
 
   auto start = std::chrono::high_resolution_clock::now();

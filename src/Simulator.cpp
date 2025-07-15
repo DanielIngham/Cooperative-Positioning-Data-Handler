@@ -327,6 +327,8 @@ void Simulator::setRobotOdometryAndState() {
   /* Loop through each robot and assign them odometry inputs. */
   for (unsigned short id = 0; id < total_robots; id++) {
 
+    (*robots_)[id].synced.states.resize(data_points_);
+
     /* Check if the intial states for every robots has bee set. */
     if ((*robots_)[id].groundtruth.states.empty()) {
       throw std::runtime_error(
