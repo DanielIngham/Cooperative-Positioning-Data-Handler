@@ -20,19 +20,20 @@
  */
 class Simulator {
 public:
-  Simulator();
+  explicit Simulator(unsigned long seed = 0);
   Simulator(const unsigned long int, double, std::vector<Robot> &,
-            std::vector<Landmark> &, std::vector<unsigned short int> &);
+            std::vector<Landmark> &, std::vector<unsigned short int> &,
+            const unsigned long seed = 0);
   ~Simulator();
 
   /* Setters */
   void setSimulation(const unsigned long int, double, std::vector<Robot> &,
-                     std::vector<Landmark> &,
-                     std::vector<unsigned short int> &);
+                     std::vector<Landmark> &, std::vector<unsigned short int> &,
+                     const unsigned long seed = 0);
 
 private:
   /* Random Setup and seeding. */
-  std::mt19937 generator;
+  std::mt19937 generator_;
   /**
    * @ brief The total number of samples for each robot in the simulation.
    */
@@ -116,6 +117,7 @@ private:
   void setRobotsInitalState();
   void setRobotOdometryAndState();
   void setRobotMeasurement();
+  void setGeneratorSeed(const unsigned long);
   void addGaussianNoise();
 };
 

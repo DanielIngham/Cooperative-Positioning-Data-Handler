@@ -438,7 +438,13 @@ void Robot::removeOutliers() {
 void Robot::calculateStateError() {
   /* Check if the synced have been set. */
   if (this->synced.states.empty()) {
-    std::runtime_error("Synced states have to been set.");
+    throw std::runtime_error("Synced states have to been set.");
+  }
+
+  /* If the error states have already been set, clear the old values and
+   * recalculate them. */
+  if (!this->error.states.empty()) {
+    this->error.states.clear();
   }
 
   /* Calculate the error between the groundtruth and the states. */

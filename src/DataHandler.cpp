@@ -11,6 +11,7 @@
  */
 
 #include "DataHandler.h"
+#include "Simulator.h"
 
 #include <algorithm>  // std::remove_if and std::find
 #include <chrono>     // std::chrono
@@ -22,6 +23,7 @@
 #include <stdexcept>  // std::runtime_error
 #include <string>
 #include <unordered_map> // std::unordered_map
+
 /**
  * @brief Default constructor.
  */
@@ -46,7 +48,7 @@ DataHandler::DataHandler(const unsigned long int data_points,
       total_robots(number_of_robots),
       total_barcodes(total_landmarks + total_robots),
       total_synced_datapoints(data_points), landmarks_(total_landmarks),
-      robots_(total_robots), barcodes_(total_barcodes) {
+      robots_(total_robots), barcodes_(total_barcodes), simulator(42U) {
 
   setSimulation(data_points, sample_period, number_of_robots,
                 number_of_landmarks, output_directory);
@@ -87,7 +89,8 @@ void DataHandler::setSimulation(const unsigned long int data_points,
                                 const unsigned short number_of_robots,
                                 const unsigned short number_of_landmarks,
                                 double sample_period,
-                                const std::string &output_directory) {
+                                const std::string &output_directory,
+                                const unsigned long seed) {
 
   auto start = std::chrono::high_resolution_clock::now();
   /* Set class fields */
@@ -110,7 +113,7 @@ void DataHandler::setSimulation(const unsigned long int data_points,
   this->barcodes_.resize(total_barcodes, 0);
 
   simulator.setSimulation(data_points, sample_period, robots_, landmarks_,
-                          barcodes_);
+                          barcodes_, seed);
   try {
     /* Calculate odometry and measurement errors. */
     for (int i = 0; i < total_robots; i++) {
@@ -1700,6 +1703,8 @@ void DataHandler::saveStateError() {
     file << '\n';
     file << '\n';
   }
+
+  file.close();
 }
 
 /**

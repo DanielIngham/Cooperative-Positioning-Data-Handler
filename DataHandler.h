@@ -43,7 +43,8 @@ public:
                      const unsigned short number_of_robots = 5U,
                      const unsigned short number_of_landmarks = 15U,
                      double sample_period = 0.02,
-                     const std::string &output_directory = "");
+                     const std::string &output_directory = "",
+                     const unsigned long seed = 0);
 
   /* Getters */
   std::vector<Landmark> &getLandmarks();
