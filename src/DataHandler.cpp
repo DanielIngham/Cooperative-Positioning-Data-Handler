@@ -48,7 +48,7 @@ DataHandler::DataHandler(const unsigned long int data_points,
       total_robots(number_of_robots),
       total_barcodes(total_landmarks + total_robots),
       total_synced_datapoints(data_points), landmarks_(total_landmarks),
-      robots_(total_robots), barcodes_(total_barcodes), simulator(42U) {
+      robots_(total_robots), barcodes_(total_barcodes) {
 
   setSimulation(data_points, sample_period, number_of_robots,
                 number_of_landmarks, output_directory);
@@ -114,10 +114,13 @@ void DataHandler::setSimulation(const unsigned long int data_points,
 
   simulator.setSimulation(data_points, sample_period, robots_, landmarks_,
                           barcodes_, seed);
+
+  const bool simulation = true;
+
   try {
     /* Calculate odometry and measurement errors. */
     for (int i = 0; i < total_robots; i++) {
-      robots_[i].calculateSensorErrror();
+      robots_[i].calculateSensorErrror(simulation);
     }
 
     /* Stop timer after extraction. */

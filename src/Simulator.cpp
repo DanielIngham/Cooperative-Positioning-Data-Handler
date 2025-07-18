@@ -17,7 +17,7 @@
 /**
  * @brief Default constructor.
  */
-Simulator::Simulator(unsigned long seed) { setGeneratorSeed(seed); }
+Simulator::Simulator() {}
 /*
  * @brief Default destructor.
  */
@@ -388,8 +388,10 @@ void Simulator::setRobotOdometryAndState() {
          * adjustment. */
         double x_difference =
             centre_x - (*robots_)[id].groundtruth.states.at(k).x;
+
         double y_difference =
             centre_y - (*robots_)[id].groundtruth.states.at(k).y;
+
         double bearing_for_centre =
             std::atan2(y_difference, x_difference) -
             (*robots_)[id].groundtruth.states.at(k).orientation;
@@ -606,19 +608,19 @@ void Simulator::setRobotMeasurement() {
   }
 }
 
-void Simulator::setGeneratorSeed(const unsigned long seed) {
+void Simulator::setGeneratorSeed(unsigned long seed) {
 
   /* If a seed is not provided, generate a random one. Otherwise, use the one
    * provided by the user. */
-  std::cout << "Using seed " << seed << std::endl;
   if (seed == 0) {
 
     std::random_device random_device;
-    generator_.seed(random_device());
-  } else {
-
-    generator_.seed(seed);
+    seed = random_device();
   }
+
+  generator_.seed(seed);
+  std::cout << "\033[1;32mSimulator is using seed:\033[0m " << seed
+            << std::endl;
 }
 
 /**
@@ -634,9 +636,9 @@ void Simulator::addGaussianNoise() {
         0.0 == (*robots_)[id].angular_velocity_error.variance ||
         0.0 == (*robots_)[id].range_error.variance ||
         0.0 == (*robots_)[id].bearing_error.variance) {
-      throw std::runtime_error(
-          "Error variances not set, Call Simulator::setErrorStatistics before "
-          "calling this function");
+      throw std::runtime_error("Error variances not set, Call "
+                               "Simulator::setErrorStatistics before "
+                               "calling this function");
     }
 
     /* Create Gaussian noise generators. */
