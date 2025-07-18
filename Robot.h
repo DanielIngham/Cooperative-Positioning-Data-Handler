@@ -171,7 +171,7 @@ public:
   /** @brief Error associated with the angular velocity input. */
   ErrorStatistics angular_velocity_error;
 
-  void calculateSensorErrror();
+  void calculateSensorErrror(const bool simulation = false);
   void calculateSampleErrorStats();
   void calculateStateError();
 
@@ -182,7 +182,7 @@ private:
   void setQuartiles();
 
   void calculateOdometryError();
-  void calculateMeasurementError();
+  void calculateMeasurementError(const bool simulation = false);
 
   void removeOutliers();
 };

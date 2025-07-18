@@ -20,7 +20,7 @@
  */
 class Simulator {
 public:
-  explicit Simulator(unsigned long seed = 0);
+  Simulator();
   Simulator(const unsigned long int, double, std::vector<Robot> &,
             std::vector<Landmark> &, std::vector<unsigned short int> &,
             const unsigned long seed = 0);
@@ -117,7 +117,7 @@ private:
   void setRobotsInitalState();
   void setRobotOdometryAndState();
   void setRobotMeasurement();
-  void setGeneratorSeed(const unsigned long);
+  void setGeneratorSeed(unsigned long);
   void addGaussianNoise();
 };
 
