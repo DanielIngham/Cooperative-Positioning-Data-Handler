@@ -27,9 +27,9 @@ Robot::~Robot() {}
  * input odometry and measurement values.
  * @note If the function encounters an error, a std::runtime_error is thrown.
  */
-void Robot::calculateSensorErrror() {
+void Robot::calculateSensorErrror(const bool simulation) {
   calculateOdometryError();
-  calculateMeasurementError();
+  calculateMeasurementError(simulation);
   removeOutliers();
 }
 
@@ -82,15 +82,15 @@ void Robot::calculateOdometryError() {
  * @brief Calculates the difference between the measured range and bearing and
  * the calculated groundtruth.
  */
-void Robot::calculateMeasurementError() {
+void Robot::calculateMeasurementError(const bool simulation) {
   /* Check if the groundtruth has been set. */
-  if (this->groundtruth.measurements.size() == 0) {
+  if (this->groundtruth.measurements.size() == 0 && !simulation) {
     throw std::runtime_error("Groundtruth measurement values for robot " +
                              std::to_string(this->id) + " have not been set.");
   }
 
   /* Check if the synced data has been set. */
-  if (this->synced.measurements.size() == 0) {
+  if (this->synced.measurements.size() == 0 && !simulation) {
     throw std::runtime_error("Synced measurement values for robot " +
                              std::to_string(this->id) + " have not been set.");
   }
@@ -294,6 +294,10 @@ unsigned long int Robot::calculateMedian(const unsigned long int lower,
  */
 void Robot::calculateQuartiles(const std::vector<double> &sorted_vector,
                                Robot::ErrorStatistics &error_statistics) {
+
+  if (sorted_vector.empty()) {
+    return;
+  }
 
   unsigned long int index = calculateMedian(0, sorted_vector.size() - 1);
 
