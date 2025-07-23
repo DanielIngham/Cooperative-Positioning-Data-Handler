@@ -10,6 +10,7 @@
 
 #include "Simulator.h"
 
+#include <chrono>
 #include <iostream>
 #include <random>
 #include <stdexcept>
@@ -131,6 +132,7 @@ void Simulator::setErrorStatistics() {
   std::uniform_real_distribution<double> forward_velocity_error(
       this->variance.forward_velocity[MIN],
       this->variance.forward_velocity[MAX]);
+
   std::uniform_real_distribution<double> angular_velocity_error(
       this->variance.angular_velocity[MIN],
       this->variance.angular_velocity[MAX]);
@@ -146,6 +148,7 @@ void Simulator::setErrorStatistics() {
 
     (*robots_)[id].forward_velocity_error.variance =
         forward_velocity_error(this->generator_);
+
     (*robots_)[id].angular_velocity_error.variance =
         angular_velocity_error(this->generator_);
 
@@ -161,10 +164,12 @@ void Simulator::setLandmarkPositions() {
 
   /* Generate random x, y positions within the simulation region and some
    * buffer: 0.5 metres.*/
-  std::uniform_real_distribution<double> position_x(0.5,
-                                                    this->limits_.width - 0.5);
-  std::uniform_real_distribution<double> position_y(0.5,
-                                                    this->limits_.height - 0.5);
+  double position_padding = 0.5;
+  std::uniform_real_distribution<double> position_x(
+      position_padding, this->limits_.width - position_padding);
+
+  std::uniform_real_distribution<double> position_y(
+      position_padding, this->limits_.height - position_padding);
 
   /* Set the first landmark with a random x,y coordinate pair. */
   (*landmarks_)[0].x = position_x(this->generator_);
@@ -172,7 +177,30 @@ void Simulator::setLandmarkPositions() {
 
   /* Loop through each landmark and assign a x,y coordinate that is at least 2m
    * apart from all other landmarks. */
+
+  auto timer_start = std::chrono::high_resolution_clock::now();
+
   for (unsigned short i = 1; i < this->total_landmarks; i++) {
+    auto current_time = std::chrono::high_resolution_clock::now();
+
+    auto timer_duration = std::chrono::duration_cast<std::chrono::seconds>(
+        current_time - timer_start);
+
+    if (timer_duration.count() > 1) {
+      position_x.param(std::uniform_real_distribution<double>::param_type(
+          0.0, this->limits_.width));
+
+      position_y.param(std::uniform_real_distribution<double>::param_type(
+          0.0, this->limits_.height));
+    } else if (timer_duration.count() > 2) {
+      std::cout << timer_duration.count() << std::endl;
+      position_x.param(std::uniform_real_distribution<double>::param_type(
+          -1.0, this->limits_.width + 1));
+
+      position_y.param(std::uniform_real_distribution<double>::param_type(
+          -1.0, this->limits_.height + 1));
+    }
+
     /* Generate a random coordinate for the landmark*/
     (*landmarks_)[i].x = position_x(this->generator_);
     (*landmarks_)[i].y = position_y(this->generator_);
@@ -188,7 +216,9 @@ void Simulator::setLandmarkPositions() {
 
       /* If the point generated is too close to other points, restart the
        * process. */
-      if (distance < 2.0) {
+      double minimum_distance = 2.0;
+
+      if (distance < minimum_distance) {
         i--;
         break;
       }
