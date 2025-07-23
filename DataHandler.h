@@ -62,7 +62,7 @@ public:
 
   /* Output of Extracted Data */
   void saveExtractedData();
-  void saveStateError();
+  void saveInferenceData();
 
   void plotExtractedData(std::string file_type = "");
   void plotPDFs(std::string file_type = "");
@@ -70,7 +70,7 @@ public:
   void plotMeasurements(std::string file_type = "");
   void plotStates(std::string file_type = "");
 
-  void plotInferenceError(std::string file_type = "");
+  void plotInferenceData(std::string file_type = "");
 
 private:
   /**
