@@ -364,6 +364,8 @@ void Simulator::setRobotOdometryAndState() {
   /* Loop through each robot and assign them odometry inputs. */
   for (unsigned short id = 0; id < total_robots; id++) {
 
+    /* Preallocate the space for the inference data that the filters/smoothers
+     * will populate. */
     (*robots_)[id].synced.states.resize(data_points_);
 
     /* Check if the intial states for every robots has bee set. */
@@ -404,7 +406,9 @@ void Simulator::setRobotOdometryAndState() {
 
     /* Generate random odometry inputs for every datapoint. */
     double angular_input = 0.0;
+
     for (unsigned long k = 1; k < this->data_points_; k++) {
+
       double forward_adjustment = 0.0;
 
       /* If the robot is about to leave the simulation boundaries, the robot
@@ -506,6 +510,9 @@ void Simulator::setRobotOdometryAndState() {
 
       (*robots_)[id].groundtruth.states.push_back(Robot::State(
           this->sample_period_ * k, x_position, y_position, orienation));
+
+      /* Set the time of the synced state data points. */
+      (*robots_)[id].synced.states[k].time = this->sample_period_ * k;
     }
   }
 }
@@ -689,21 +696,25 @@ void Simulator::addGaussianNoise() {
 
     /* Apply Gaussian noise to range and bearing measurements. */
     std::normal_distribution<double> range_noise(
-        0, std::sqrt((*robots_)[id].range_error.variance));
+        (*robots_)[id].range_error.mean,
+        std::sqrt((*robots_)[id].range_error.variance));
 
     std::normal_distribution<double> bearing_noise(
-        0, std::sqrt((*robots_)[id].bearing_error.variance));
+        (*robots_)[id].bearing_error.mean,
+        std::sqrt((*robots_)[id].bearing_error.variance));
 
     /* For each measurment, add Gaussian noise. */
     for (const Robot::Measurement &measurement :
          (*robots_)[id].groundtruth.measurements) {
 
-      /* Copy the measurement into a tempory */
+      /* Copy the measurement */
       (*robots_)[id].synced.measurements.push_back(measurement);
 
       /* Adding Gaussian noise to the measurements of all the subjects. */
-      for (unsigned short s = 0;
-           s < (*robots_)[id].synced.measurements.back().subjects.size(); s++) {
+      size_t total_measurements =
+          (*robots_)[id].synced.measurements.back().subjects.size();
+
+      for (unsigned short s = 0; s < total_measurements; s++) {
 
         (*robots_)[id].synced.measurements.back().ranges[s] +=
             range_noise(this->generator_);
