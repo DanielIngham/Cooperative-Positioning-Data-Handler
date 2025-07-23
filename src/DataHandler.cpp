@@ -1669,17 +1669,22 @@ void DataHandler::saveLandmarks() {
 }
 
 /**
- * @brief Saves the error and absolute error between estimated state and the
- * groudtruth state.
+ * @brief Saves the infered robot states and absolute error between estimated
+ * state and the groudtruth state.
  */
-void DataHandler::saveStateError() {
+void DataHandler::saveInferenceData() {
   if (!std::filesystem::exists(data_inference_directory)) {
     std::filesystem::create_directories(data_inference_directory);
   }
 
+  /* Saving the absolute error. */
   std::string filename = data_inference_directory + "/state_error.dat";
 
   std::ofstream file(filename);
+
+  if (!file.is_open()) {
+    throw std::runtime_error("Unable to open file: " + filename);
+  }
 
   file << "#Time [s]  x Error [m] y error [m] orienation error [rad]  Robot "
           "ID\n";
@@ -1700,6 +1705,44 @@ void DataHandler::saveStateError() {
            << robots_[id].error.states[k].x << '\t'
            << robots_[id].error.states[k].y << '\t'
            << robots_[id].error.states[k].orientation << '\t' << robots_[id].id
+           << '\n';
+    }
+
+    file << '\n';
+    file << '\n';
+  }
+
+  file.close();
+
+  /* Saving the esitmated states. */
+  filename = data_inference_directory + "/infered_state.dat";
+
+  file.open(filename);
+
+  if (!file.is_open()) {
+    throw std::runtime_error("Unable to open file" + filename);
+  }
+
+  file << "#Time [s]  x Position [m] y Position [m] orienation [rad]  Robot "
+          "ID\n";
+
+  for (unsigned short id = 0; id < total_robots; id++) {
+    /* Populate the error state if it has not yet been done. */
+    if (robots_[id].synced.states.empty()) {
+      throw std::runtime_error("Synced robots not set");
+    }
+
+    if (total_synced_datapoints > robots_[id].error.states.size()) {
+      throw std::runtime_error("Robot " + std::to_string(id) +
+                               " has less synced datapoints than groundtruth "
+                               "points. Check your filter implementation.");
+    }
+
+    for (unsigned long k = 0; k < total_synced_datapoints; k++) {
+      file << robots_[id].synced.states[k].time << '\t'
+           << robots_[id].synced.states[k].x << '\t'
+           << robots_[id].synced.states[k].y << '\t'
+           << robots_[id].synced.states[k].orientation << '\t' << robots_[id].id
            << '\n';
     }
 
@@ -1823,18 +1866,24 @@ void DataHandler::plotExtractedData(std::string file_type) {
   createStatePlotDirectory();
   createMeasurementPlotDirectories();
 
-  plotPDFs(file_type);
-  plotMeasurements(file_type);
-  plotError(file_type);
-  plotStates(file_type);
+  try {
+    plotStates(file_type);
+    plotPDFs(file_type);
+    plotError(file_type);
+    plotMeasurements(file_type);
 
-  auto end = std::chrono::high_resolution_clock::now();
-  auto duration =
-      std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-  std::cout << "\033[1;32mExtracted Data Plotting Complete:\033[0m \033[3m"
-            << plots_directory << "\033[0m [" << duration.count() << " ms]"
-            << std::endl;
+    std::cout << "\033[1;32mExtracted Data Plotting Complete:\033[0m \033[3m"
+              << plots_directory << "\033[0m [" << duration.count() << " ms]"
+              << std::endl;
+
+  } catch (std::runtime_error &error) {
+    std::cout << "Unable to plot all data: " << error.what() << std::endl;
+    return;
+  }
 }
 
 /**
@@ -1941,7 +1990,7 @@ void DataHandler::plotStates(std::string file_type) {
  * corresponding to the estimated system state.
  * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotInferenceError(std::string file_type) {
+void DataHandler::plotInferenceData(std::string file_type) {
 
   auto start = std::chrono::high_resolution_clock::now();
 
