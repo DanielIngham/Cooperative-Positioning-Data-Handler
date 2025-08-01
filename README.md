@@ -7,11 +7,21 @@ This project provides a c++ class as an interface for using the [UTIAS Multi-Rob
 - Provides an interface for [gnuplot](http://gnuplot.info/) to allow for visualisation of extracted data and calculated error statistics.
 
 # Building the Data Handler
-To build the data handler, simply run the make file:
+To build the data handler library, simply run the following commands:
 ```bash
-make
+mkdir build && cd build
+cmake ..
+cmake --build .
 ```
-This builds the static library into the `./lib` with the name `libdata_handler.a`.
+This builds the static library into the `./build` with the name `libdata_handler.a`.
+
+# Including the library in your CMakeLists.txt 
+To include the library your CMakeLists.txt:
+```CMake
+add_subdirectory([path/to/library] "LibBuild")
+
+target_link_libraries(<target> PRIVATE DataHandler)
+```
 
 # Documentation 
 For more information, the documentation for this project is available at: [Cooperative Positioning Data Handler GitHub page.](https://danielingham.github.io/Cooperative-Positioning-Data-Handler/)
