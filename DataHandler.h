@@ -16,6 +16,11 @@
 #include "Robot.h"
 #include "Simulator.h"
 
+struct DataHandlerDefaults {
+  static constexpr double kSamplePeriod = 0.02;
+  static const inline std::string kOutputDir = "";
+};
+
 /**
  * @class DataHandler
  * @brief Extracts the data from the UTIAS Multi-robot Localisaion and Mapping
@@ -28,23 +33,31 @@ class DataHandler {
 public:
   /* Constructors */
   DataHandler();
-  explicit DataHandler(const std::string &,
-                       const std::string &output_directory = "",
-                       const double &sampling_period = 0.02);
+  explicit DataHandler(
+      const std::string &,
+      const std::string &output_directory = DataHandlerDefaults::kOutputDir,
+      const double &sampling_period = DataHandlerDefaults::kSamplePeriod);
 
-  DataHandler(const unsigned long int, double, const unsigned short,
-              const unsigned short, const std::string &output_directory = "");
+  DataHandler(
+      const unsigned long int,
+      double sample_period = SimulationDefaults::kSamplePeriod,
+      const unsigned short number_of_robots = SimulationDefaults::kRobots,
+      const unsigned short number_of_landmarks = SimulationDefaults::kLandmarks,
+      const std::string &output_directory = SimulationDefaults::kOutputDir);
 
   /* Setters */
-  void setDataSet(const std::string &, const std::string &output_directory = "",
-                  const double &sampling_period = 0.02);
+  void setDataSet(
+      const std::string &,
+      const std::string &output_directory = DataHandlerDefaults::kOutputDir,
+      const double &sampling_period = DataHandlerDefaults::kSamplePeriod);
 
-  void setSimulation(unsigned long int,
-                     const unsigned short number_of_robots = 5U,
-                     const unsigned short number_of_landmarks = 15U,
-                     double sample_period = 0.02,
-                     const std::string &output_directory = "",
-                     const unsigned long seed = 0);
+  void setSimulation(
+      unsigned long int,
+      const unsigned short number_of_robots = SimulationDefaults::kRobots,
+      const unsigned short number_of_landmarks = SimulationDefaults::kLandmarks,
+      double sample_period = SimulationDefaults::kSamplePeriod,
+      const std::string &output_directory = SimulationDefaults::kOutputDir,
+      const unsigned long seed = SimulationDefaults::kSeed);
 
   /* Getters */
   std::vector<Landmark> &getLandmarks();

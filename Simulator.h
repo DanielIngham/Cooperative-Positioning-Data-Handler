@@ -14,6 +14,14 @@
 #include <random>
 #include <vector>
 
+struct SimulationDefaults {
+  static constexpr unsigned short kRobots = 5;
+  static constexpr unsigned short kLandmarks = 15;
+  static constexpr double kSamplePeriod = 0.02;
+  static constexpr unsigned long kSeed = 0;
+  static const inline std::string kOutputDir = "";
+};
+
 /**
  * @class Simulator
  * @brief Populates Robot and Landmark vectors with simulated values.
@@ -23,13 +31,13 @@ public:
   Simulator();
   Simulator(const unsigned long int, double, std::vector<Robot> &,
             std::vector<Landmark> &, std::vector<unsigned short int> &,
-            const unsigned long seed = 0);
+            const unsigned long seed = SimulationDefaults::kSeed);
   ~Simulator();
 
   /* Setters */
   void setSimulation(const unsigned long int, double, std::vector<Robot> &,
                      std::vector<Landmark> &, std::vector<unsigned short int> &,
-                     const unsigned long seed = 0);
+                     const unsigned long seed = SimulationDefaults::kSeed);
 
 private:
   /* Random Setup and seeding. */
