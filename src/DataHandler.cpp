@@ -259,7 +259,13 @@ void DataHandler::setDataSet(const std::string &dataset,
 void DataHandler::setOutputDirectory(const std::string &output_directory,
                                      const std::string &folder) {
 
+  /* The PROJECT_DIR preprocessor should be set by Cmake, but if not, then check
+   * if a environment variable was made by make. */
+#ifdef PROJECT_DIR
+  const char *project_env = PROJECT_DIR;
+#else
   const char *project_env = std::getenv("PROJECT_DIR");
+#endif // PROJECT_DIR
 
   /* Check if the project environment variable has been set. If not, throw
    * error.
