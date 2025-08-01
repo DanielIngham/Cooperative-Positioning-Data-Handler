@@ -15,12 +15,17 @@ cmake --build .
 ```
 This builds the static library into the `./build` with the name `libdata_handler.a`.
 
-# Including the library in your CMakeLists.txt 
+# Including the Library 
+You can include the library by adding it as a git submodule:
+```bash
+mkdir external 
+git submodule add https://github.com/DanielIngham/Cooperative-Positioning-Data-Handler.git external/DataHandler
+```
 To include the library your CMakeLists.txt:
 ```CMake
-add_subdirectory([path/to/library] "LibBuild")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/external/DataHandler")
 
-target_link_libraries(<target> PRIVATE DataHandler)
+target_link_libraries(${PROJECT_TARGET} PRIVATE DataHandler)
 ```
 
 # Documentation 
