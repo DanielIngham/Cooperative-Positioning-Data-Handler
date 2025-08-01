@@ -1,5 +1,5 @@
 /**
- * @file InputHandler.h
+ * @file ArgumentHandler.h
  * @brief Header file containing functionality for parsing arguments given to
  * the executable into the DataHandler class.
  * @author Daniel Ingham
@@ -129,7 +129,7 @@ inline double argToDouble(char *argument) {
  * given data set, this function is responsible for setting the dataset options.
  * @param argc Argument counter. Number of arguments provided by the user.
  * @param argv Argument values. The strings corresponding to the arguments.
- * @para data DataHandler instance to be set based on provided arguments.
+ * @param data DataHandler instance to be set based on provided arguments.
  */
 inline void setDataSet(int argc, char *argv[], DataHandler &data) {
 
@@ -190,7 +190,7 @@ inline void setDataSet(int argc, char *argv[], DataHandler &data) {
  * options.
  * @param argc Argument counter. Number of arguments provided by the user.
  * @param argv Argument values. The strings corresponding to the arguments.
- * @para data DataHandler instance to be set based on provided arguments.
+ * @param data DataHandler instance to be set based on provided arguments.
  */
 inline void setSimulation(int argc, char *argv[], DataHandler &data) {
   int data_points;
@@ -264,7 +264,7 @@ inline void setSimulation(int argc, char *argv[], DataHandler &data) {
  * for the data handler.
  * @param argc Argument counter. Number of arguments provided by the user.
  * @param argv Argument values. The strings corresponding to the arguments.
- * @para data DataHandler instance to be set based on provided arguments.
+ * @param data DataHandler instance to be set based on provided arguments.
  */
 inline void setArguments(int argc, char *argv[], DataHandler &data) {
 

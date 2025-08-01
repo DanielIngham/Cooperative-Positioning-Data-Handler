@@ -79,11 +79,12 @@ DataHandler::DataHandler(const std::string &dataset,
 /**
  * @brief Creates simulation values for the robots and landmarks.
  * @param[in] data_points The number of timestep to be simulated.
- * @param[in] sample_period The period at which the odometry sensor is sampled.
  * @param[in] number_of_robots The total number of robots to be simulated.
  * @param[in] number_of_landmarks The total number of landmarks to be simulated.
+ * @param[in] sample_period The period at which the odometry sensor is sampled.
  * @param[in] output_directory The directory where the extracted data and plots
  * are saved.
+ * @param[in] seed The seed used by the random number generator for simulation.
  */
 void DataHandler::setSimulation(const unsigned long int data_points,
                                 const unsigned short number_of_robots,

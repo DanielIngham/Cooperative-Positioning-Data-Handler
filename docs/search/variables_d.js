@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['sample_5fperiod_5f_0',['sample_period_',['../classSimulator.html#a9de375c80acbbf5af28119fad6665752',1,'Simulator']]],
-  ['sampling_5fperiod_5f_1',['sampling_period_',['../classDataHandler.html#ab78d2ee79468cdc819f039cc850ce0d5',1,'DataHandler']]],
-  ['simulator_2',['simulator',['../classDataHandler.html#a035432aa868d477d6e47b6c5fe9fb7ee',1,'DataHandler']]],
-  ['states_3',['states',['../structRobot_1_1RobotData.html#a521036974cd6d4a47a49fcdf71befcaf',1,'Robot::RobotData']]],
-  ['subjects_4',['subjects',['../structRobot_1_1Measurement.html#a990519251fbb00ce8ec7329eb9e31b05',1,'Robot::Measurement']]],
-  ['synced_5',['synced',['../classRobot.html#abf6fab556a0df40d178c89a916b865b0',1,'Robot']]]
+  ['range_0',['range',['../classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb',1,'Simulator']]],
+  ['range_5ferror_1',['range_error',['../classRobot.html#a3e3294bc6bf1277bdb5fbfb44410f362',1,'Robot']]],
+  ['ranges_2',['ranges',['../structRobot_1_1Measurement.html#aa071e829eca62fa89473fcc66a532101',1,'Robot::Measurement']]],
+  ['raw_3',['raw',['../classRobot.html#a47fe1ae41e8d9ec7e33e73bd83b64b9f',1,'Robot']]],
+  ['robots_5f_4',['robots_',['../classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff',1,'DataHandler::robots_'],['../classSimulator.html#a6504b73695a99ac0af2f2e164e10ae70',1,'Simulator::robots_']]]
 ];

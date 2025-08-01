@@ -1,11 +1,9 @@
 var searchData=
 [
-  ['max_0',['MAX',['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34baab3fdd67b327def24cd68d041c426596',1,'Simulator']]],
-  ['mean_1',['mean',['../structRobot_1_1ErrorStatistics.html#ad2dbeae999277b6348581e41a85a41d6',1,'Robot::ErrorStatistics']]],
-  ['measurement_2',['measurement',['../structRobot_1_1Measurement.html',1,'Robot::Measurement'],['../structRobot_1_1Measurement.html#aa59700843b55c981414f4678dcecba16',1,'Robot::Measurement::Measurement(const Robot::Measurement &amp;measurement)'],['../structRobot_1_1Measurement.html#a9ab2cf9ccdc8e6c5910e784720f53851',1,'Robot::Measurement::Measurement(double time_, const std::vector&lt; unsigned short &gt; &amp;subjects_, const std::vector&lt; double &gt; &amp;ranges_, const std::vector&lt; double &gt; &amp;bearings_)'],['../structRobot_1_1Measurement.html#adb771def8671ca0582fa0b1a94c4e966',1,'Robot::Measurement::Measurement(double time_, unsigned short subject_, double range_, double bearing_)']]],
-  ['measurement_5fperiod_5f_3',['measurement_period_',['../classSimulator.html#ad777df8a75682e4b9b50544309ea29d4',1,'Simulator']]],
-  ['measurements_4',['measurements',['../structRobot_1_1RobotData.html#ad1dbc295c69339de323fe1afd685bfe5',1,'Robot::RobotData']]],
-  ['median_5',['median',['../structRobot_1_1ErrorStatistics.html#a756192357bfe497d3ec610961575fc29',1,'Robot::ErrorStatistics']]],
-  ['min_6',['MIN',['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34ba35c44b547e01fb11878d1ce75ebbb0fa',1,'Simulator']]],
-  ['multi_20robot_20data_20extractor_7',['C++ UTIAS Multi-Robot Data Extractor',['../index.html',1,'']]]
+  ['landmark_0',['Landmark',['../structLandmark.html',1,'']]],
+  ['landmark_2eh_1',['Landmark.h',['../Landmark_8h.html',1,'']]],
+  ['landmarks_2',['landmarks',['../classSimulator.html#afcf45b5faab374197fd9daacd9812418',1,'Simulator']]],
+  ['landmarks_5f_3',['landmarks_',['../classDataHandler.html#a13e2b0e8726025195db9a97415f97e06',1,'DataHandler::landmarks_'],['../classSimulator.html#ad1d12f099e85b131a994a2077cb559af',1,'Simulator::landmarks_']]],
+  ['library_4',['Including the Library',['../index.html#autotoc_md2',1,'']]],
+  ['limits_5f_5',['limits_',['../classSimulator.html#aafb2597a44371b1bb63c3ef17de6d4a1',1,'Simulator']]]
 ];

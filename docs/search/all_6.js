@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['generator_0',['generator',['../classSimulator.html#a98ffc188bde1528710a9e836f9a1c725',1,'Simulator']]],
+  ['generator_5f_0',['generator_',['../classSimulator.html#ac403b36f4f3891a2a91cfd9b59d5359b',1,'Simulator']]],
   ['getbarcodes_1',['getBarcodes',['../classDataHandler.html#ad7747aa9babd266a120e39f2da3896b9',1,'DataHandler']]],
   ['getid_2',['getID',['../classDataHandler.html#a6123767a322a5fd166709bd4916b7816',1,'DataHandler']]],
   ['getlandmarks_3',['getLandmarks',['../classDataHandler.html#a6fc08eea7f3ea6b7999c3b00bdec00ea',1,'DataHandler']]],

@@ -1,5 +1,29 @@
 var searchData=
 [
-  ['_7erobot_0',['~Robot',['../classRobot.html#a924320124b09c2f2ac1621aa210d5f38',1,'Robot']]],
-  ['_7esimulator_1',['~Simulator',['../classSimulator.html#a0f49aa04f42060a785adf77346b9de9f',1,'Simulator']]]
+  ['saveerrordata_0',['saveErrorData',['../classDataHandler.html#a74b3af53854d30f7a058fff74426c0c3',1,'DataHandler']]],
+  ['saveextracteddata_1',['saveExtractedData',['../classDataHandler.html#ac1c2354ee32b3c0e96c649506300ec2f',1,'DataHandler']]],
+  ['saveinferencedata_2',['saveInferenceData',['../classDataHandler.html#aee71e8e9f3afc5e0e35db9a466d13044',1,'DataHandler']]],
+  ['savelandmarks_3',['saveLandmarks',['../classDataHandler.html#ae7b9d658a462ff9106f8e3dcd094687d',1,'DataHandler']]],
+  ['savemeasurementdata_4',['saveMeasurementData',['../classDataHandler.html#ae017941f3f166dc85c4dcb1c54588c17',1,'DataHandler']]],
+  ['savemeasurementerrorpdf_5',['saveMeasurementErrorPDF',['../classDataHandler.html#a5da3bb3fb0bf8791c50103f743c36e8f',1,'DataHandler']]],
+  ['saveodometrydata_6',['saveOdometryData',['../classDataHandler.html#a02ddc17bbff7ae0a54bd2be2932d8574',1,'DataHandler']]],
+  ['saveodometryerrorpdf_7',['saveOdometryErrorPDF',['../classDataHandler.html#a7e72fad87a3ac47dec2956c1118b2941',1,'DataHandler']]],
+  ['saveroboterrorstatistics_8',['saveRobotErrorStatistics',['../classDataHandler.html#a44a6564ad7dce49b4eeb5a8f1a5d8f08',1,'DataHandler']]],
+  ['savestatedata_9',['saveStateData',['../classDataHandler.html#adcf0108de94cdd9b986c06c2d9bf1d1b',1,'DataHandler']]],
+  ['setarguments_10',['setArguments',['../namespaceArgumentHandler.html#a27b71007e09dcdb5827f509445032844',1,'ArgumentHandler']]],
+  ['setbarcodes_11',['setBarcodes',['../classSimulator.html#addcecd71b4ca2b4105c2360d53346342',1,'Simulator']]],
+  ['setdataset_12',['setdataset',['../classDataHandler.html#aa539c7febf0052822152c3d5582eb494',1,'DataHandler::setDataSet()'],['../namespaceArgumentHandler.html#a402caf264a902a2969e4406eb40febd8',1,'ArgumentHandler::setDataSet()']]],
+  ['seterrorstatistics_13',['setErrorStatistics',['../classSimulator.html#ac7000348251c76521e2ccdaff1199518',1,'Simulator']]],
+  ['setgeneratorseed_14',['setGeneratorSeed',['../classSimulator.html#afc0b05ffdcb3a9d6f2a582ab199b3374',1,'Simulator']]],
+  ['setlandmarkpositions_15',['setLandmarkPositions',['../classSimulator.html#af1d6c7ca84e8b192414181cd87de2c66',1,'Simulator']]],
+  ['setoutputdirectory_16',['setOutputDirectory',['../classDataHandler.html#af1acccdaa069dd88b9b43842750dcff1',1,'DataHandler']]],
+  ['setquartiles_17',['setQuartiles',['../classRobot.html#ad6ccae894258430ac82ffc6b21c1e821',1,'Robot']]],
+  ['setrobotmeasurement_18',['setRobotMeasurement',['../classSimulator.html#aea84799359baf3c4ac09348eeb41bdf8',1,'Simulator']]],
+  ['setrobotodometryandstate_19',['setRobotOdometryAndState',['../classSimulator.html#a57b6272a59208341293a7c5bb4e1e194',1,'Simulator']]],
+  ['setrobotsinitalstate_20',['setRobotsInitalState',['../classSimulator.html#a708be46896a6d458210911debbdf9136',1,'Simulator']]],
+  ['setsimulation_21',['setsimulation',['../classDataHandler.html#a3f2de7240d4e8cee7d8497f0b16d230d',1,'DataHandler::setSimulation()'],['../classSimulator.html#ae877c8b6d1a6187d522aa39e83f56ddf',1,'Simulator::setSimulation()'],['../namespaceArgumentHandler.html#ab6553cf13d81c939c33d496d87b1ab7d',1,'ArgumentHandler::setSimulation(int argc, char *argv[], DataHandler &amp;data)']]],
+  ['showhelp_22',['showHelp',['../namespaceArgumentHandler.html#a15c87c0dc92230195e0fc4e54de309c7',1,'ArgumentHandler']]],
+  ['simulator_23',['simulator',['../classSimulator.html#a031573bfcfe2e0f5c9539bcc1c7fc5d9',1,'Simulator::Simulator()'],['../classSimulator.html#ad6426be36aee25a2602b8bfbcaee4a05',1,'Simulator::Simulator(const unsigned long int, double, std::vector&lt; Robot &gt; &amp;, std::vector&lt; Landmark &gt; &amp;, std::vector&lt; unsigned short int &gt; &amp;, const unsigned long seed=SimulationDefaults::kSeed)']]],
+  ['state_24',['state',['../structRobot_1_1State.html#a0e79a34a49a9a3c40117089008e4cf1f',1,'Robot::State::State()'],['../structRobot_1_1State.html#a30d70945b7f3b1f2fe905d91c9a56ebe',1,'Robot::State::State(double time_, double x_, double y_, double orientation_)']]],
+  ['syncdata_25',['syncData',['../classDataHandler.html#abe8ebc3776653a1a55a3caa9ef0c1f7f',1,'DataHandler']]]
 ];

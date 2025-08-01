@@ -90,11 +90,11 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ac4be122e70dbff1f922f7068a2b4bbb0" id="r_ac4be122e70dbff1f922f7068a2b4bbb0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLandmark.html#ac4be122e70dbff1f922f7068a2b4bbb0">id</a></td></tr>
-<tr class="memdesc:ac4be122e70dbff1f922f7068a2b4bbb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Numerical identifier for the landmark.  <br /></td></tr>
-<tr class="separator:ac4be122e70dbff1f922f7068a2b4bbb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82fe4ab2201c642d533d8267563fbb2b" id="r_a82fe4ab2201c642d533d8267563fbb2b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLandmark.html#a82fe4ab2201c642d533d8267563fbb2b">barcode</a></td></tr>
-<tr class="separator:a82fe4ab2201c642d533d8267563fbb2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5baf49532e9732140e16ecaba6408c4" id="r_ad5baf49532e9732140e16ecaba6408c4"><td class="memItemLeft" align="right" valign="top">unsigned short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLandmark.html#ad5baf49532e9732140e16ecaba6408c4">id</a></td></tr>
+<tr class="memdesc:ad5baf49532e9732140e16ecaba6408c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Numerical identifier for the landmark.  <br /></td></tr>
+<tr class="separator:ad5baf49532e9732140e16ecaba6408c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a451a41b40488ab26783b50e6010be9db" id="r_a451a41b40488ab26783b50e6010be9db"><td class="memItemLeft" align="right" valign="top">unsigned short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLandmark.html#a451a41b40488ab26783b50e6010be9db">barcode</a></td></tr>
+<tr class="separator:a451a41b40488ab26783b50e6010be9db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0649276901971922c6bcc30a4c97d63a" id="r_a0649276901971922c6bcc30a4c97d63a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structLandmark.html#a0649276901971922c6bcc30a4c97d63a">x</a></td></tr>
 <tr class="memdesc:a0649276901971922c6bcc30a4c97d63a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The landmark's golbal x-coordinate [m].  <br /></td></tr>
 <tr class="separator:a0649276901971922c6bcc30a4c97d63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,14 +112,14 @@ Public Attributes</h2></td></tr>
 <div class="textblock"><p>Houses all data related to a given landmark in the UTIAS multi-robot localisation and mapping dataset. </p>
 <p>This struct contains all the data found in the Landmarks.dat files. The DataExtractor::readLandmarks is responsible for populating this data structure with the appropriate values from a provided dataset. </p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a82fe4ab2201c642d533d8267563fbb2b" name="a82fe4ab2201c642d533d8267563fbb2b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a82fe4ab2201c642d533d8267563fbb2b">&#9670;&#160;</a></span>barcode</h2>
+<a id="a451a41b40488ab26783b50e6010be9db" name="a451a41b40488ab26783b50e6010be9db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a451a41b40488ab26783b50e6010be9db">&#9670;&#160;</a></span>barcode</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int Landmark::barcode</td>
+          <td class="memname">unsigned short Landmark::barcode</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -127,14 +127,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ac4be122e70dbff1f922f7068a2b4bbb0" name="ac4be122e70dbff1f922f7068a2b4bbb0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac4be122e70dbff1f922f7068a2b4bbb0">&#9670;&#160;</a></span>id</h2>
+<a id="ad5baf49532e9732140e16ecaba6408c4" name="ad5baf49532e9732140e16ecaba6408c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5baf49532e9732140e16ecaba6408c4">&#9670;&#160;</a></span>id</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int Landmark::id</td>
+          <td class="memname">unsigned short Landmark::id</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -208,7 +208,7 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/dan/Code/UTIAS-Multi-Robot/Filters/lib/DataHandler/<a class="el" href="Landmark_8h_source.html">Landmark.h</a></li>
+<li>/home/dan/Code/UTIAS-Multi-Robot/CL_gtsam/external/DataHandler/<a class="el" href="Landmark_8h_source.html">Landmark.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
