@@ -167,7 +167,13 @@ void DataHandler::setDataSet(const std::string &dataset,
   auto start = std::chrono::high_resolution_clock::now();
 
   /* Check if the data set directory exists */
-  this->dataset_ = LIB_DIR + ("/data/" + dataset);
+
+#ifndef LIB_DIR
+  throw std::runtime_error("LIB_DIR not set")
+
+#endif // !LIB_DIR
+
+      this->dataset_ = LIB_DIR + ("/data/" + dataset);
 
   if (!std::filesystem::exists(dataset_)) {
     throw std::runtime_error("Dataset file path does not exist: " + dataset_);
