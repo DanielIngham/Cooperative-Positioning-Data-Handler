@@ -35,7 +35,7 @@ The data handler comes with a `ArgumentHandler.h` which contains functionality t
 
 int main(int argc, char *argv[]) { 
     DataHandler data;
-    ArgumentHandler::setArguments(int argc, char *argv[], data);
+    ArgumentHandler::setArguments(argc, argv, data);
 }
 ```
 Once added into main, the help menu options for the argument handler can be seen using the `-h` help flag:
