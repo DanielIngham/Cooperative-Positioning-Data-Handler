@@ -15,10 +15,10 @@
 #include <vector>
 
 struct SimulationDefaults {
-  static constexpr unsigned short kRobots = 5;
-  static constexpr unsigned short kLandmarks = 15;
+  static constexpr unsigned short kRobots = 5U;
+  static constexpr unsigned short kLandmarks = 15U;
   static constexpr double kSamplePeriod = 0.02;
-  static constexpr unsigned long kSeed = 0;
+  static constexpr unsigned long kSeed = 0U;
   static const inline std::string kOutputDir = "";
 };
 
