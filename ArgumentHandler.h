@@ -175,6 +175,12 @@ inline void setDataSet(int argc, char *argv[], DataHandler &data) {
     }
   }
 
+  /* NOTE: If the output directory is not specified by the user, the set the
+   * output directory to the executables name. */
+  if (output_directory == DataHandlerDefaults::kOutputDir) {
+    output_directory = std::string(argv[EXECUTABLE]);
+  }
+
   std::cout << "\033[1;32m" << "Dataset Options" << "\033[0m" << std::endl
             << '\t' << "- Dataset: " << dataset << std::endl
             << '\t' << "- Sample Period: " << sample_period << std::endl
@@ -193,7 +199,7 @@ inline void setDataSet(int argc, char *argv[], DataHandler &data) {
  * @param data DataHandler instance to be set based on provided arguments.
  */
 inline void setSimulation(int argc, char *argv[], DataHandler &data) {
-  int data_points;
+  int data_points = 7500U;
   int robots = SimulationDefaults::kRobots;
   int landmarks = SimulationDefaults::kLandmarks;
   int seed = SimulationDefaults::kSeed;
@@ -244,6 +250,12 @@ inline void setSimulation(int argc, char *argv[], DataHandler &data) {
       throw std::runtime_error("Unknown option: " + std::string(argv[i]));
       break;
     }
+  }
+
+  /* NOTE: If the output directory is not specified by the user, the set the
+   * output directory to the executables name. */
+  if (output_directory == SimulationDefaults::kOutputDir) {
+    output_directory = std::string(argv[EXECUTABLE]);
   }
 
   std::cout << "\033[1;32m" << "Simulation Options" << "\033[0m" << std::endl
