@@ -22,10 +22,19 @@ enum MyEnum {
   ARG         ///< The third argument should be the value
 };
 
+/**
+ * Returns a string telling the user how to access the help menu.
+ * @param executable name of the executable file.
+ */
 inline std::string helpMessage(char *executable) {
   return "Help Menu: " + std::string(executable) + " -h";
 }
 
+/**
+ * Checks whether the argument provided is a flag (i.e. has a '-' prefix)
+ * @param flag argument provided by the user.
+ * @returns Flag indicating whether the argument is a flag.
+ */
 inline bool checkFlag(char *flag) {
   if (flag[0] != '-') {
     std::cout << "First argument must be a flag." << std::endl;
