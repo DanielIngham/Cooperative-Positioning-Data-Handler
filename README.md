@@ -34,7 +34,7 @@ The data handler comes with a `ArgumentHandler.h` which contains functionality t
 #include <DataHandler.h>
 
 int main(int argc, char *argv[]) { 
-    DataHandler data;
+    Data::Handler data;
     ArgumentHandler::setArguments(argc, argv, data);
 }
 ```
