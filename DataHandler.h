@@ -77,7 +77,6 @@ public:
       const std::string &output_directory = SimulationDefaults::kOutputDir,
       const unsigned long seed = SimulationDefaults::kSeed);
 
-  /* Getters */
   std::vector<Landmark> &getLandmarks();
   std::vector<Robot> &getRobots();
   std::vector<unsigned short int> &getBarcodes();
