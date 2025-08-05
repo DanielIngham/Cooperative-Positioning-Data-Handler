@@ -15,7 +15,7 @@
 #include <random>
 #include <stdexcept>
 
-namespace DataHandler {
+namespace Data {
 
 /**
  * @brief Default constructor.
@@ -733,4 +733,4 @@ void Simulator::addGaussianNoise() {
     }
   }
 }
-} // namespace DataHandler
+} // namespace Data

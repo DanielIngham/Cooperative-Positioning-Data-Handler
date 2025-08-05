@@ -1,7 +1,7 @@
 /**
  * @file ArgumentHandler.h
  * @brief Header file containing functionality for parsing arguments given to
- * the executable into the DataHandler class.
+ * the executable into the Data::Handler class.
  * @author Daniel Ingham
  * @date 2025-08-01
  */
@@ -16,6 +16,7 @@
 #include "Simulator.h"
 
 namespace ArgumentHandler {
+
 enum MyEnum {
   EXECUTABLE, ///< The first argument is always the executable.
   FLAG,       ///< The second argument should be a flag prefaced with '-'.
@@ -138,13 +139,13 @@ inline double argToDouble(char *argument) {
  * given data set, this function is responsible for setting the dataset options.
  * @param argc Argument counter. Number of arguments provided by the user.
  * @param argv Argument values. The strings corresponding to the arguments.
- * @param data DataHandler instance to be set based on provided arguments.
+ * @param data Data::Handler instance to be set based on provided arguments.
  */
-inline void setDataSet(int argc, char *argv[], DataHandler &data) {
+inline void setDataSet(int argc, char *argv[], Data::Handler &data) {
 
   std::string dataset;
-  std::string output_directory = DataHandlerDefaults::kOutputDir;
-  double sample_period = DataHandlerDefaults::kSamplePeriod;
+  std::string output_directory = Data::HandlerDefaults::kOutputDir;
+  double sample_period = Data::HandlerDefaults::kSamplePeriod;
 
   if (argc == 2) {
     throw std::runtime_error("No dataset provided. " +
@@ -186,7 +187,7 @@ inline void setDataSet(int argc, char *argv[], DataHandler &data) {
 
   /* NOTE: If the output directory is not specified by the user, the set the
    * output directory to the executables name. */
-  if (output_directory == DataHandlerDefaults::kOutputDir) {
+  if (output_directory == Data::HandlerDefaults::kOutputDir) {
     output_directory = std::string(argv[EXECUTABLE]);
   }
 
@@ -205,17 +206,17 @@ inline void setDataSet(int argc, char *argv[], DataHandler &data) {
  * options.
  * @param argc Argument counter. Number of arguments provided by the user.
  * @param argv Argument values. The strings corresponding to the arguments.
- * @param data DataHandler instance to be set based on provided arguments.
+ * @param data Data::Handler instance to be set based on provided arguments.
  */
-inline void setSimulation(int argc, char *argv[], DataHandler &data) {
+inline void setSimulation(int argc, char *argv[], Data::Handler &data) {
   int data_points = 7500U;
-  int robots = SimulationDefaults::kRobots;
-  int landmarks = SimulationDefaults::kLandmarks;
-  int seed = SimulationDefaults::kSeed;
+  int robots = Data::SimulationDefaults::kRobots;
+  int landmarks = Data::SimulationDefaults::kLandmarks;
+  int seed = Data::SimulationDefaults::kSeed;
 
-  double sample_period = SimulationDefaults::kSamplePeriod;
+  double sample_period = Data::SimulationDefaults::kSamplePeriod;
 
-  std::string output_directory = SimulationDefaults::kOutputDir;
+  std::string output_directory = Data::SimulationDefaults::kOutputDir;
 
   if (argc == 2) {
     throw std::runtime_error("Number of datapoints not specified. " +
@@ -263,7 +264,7 @@ inline void setSimulation(int argc, char *argv[], DataHandler &data) {
 
   /* NOTE: If the output directory is not specified by the user, the set the
    * output directory to the executables name. */
-  if (output_directory == SimulationDefaults::kOutputDir) {
+  if (output_directory == Data::SimulationDefaults::kOutputDir) {
     output_directory = std::string(argv[EXECUTABLE]);
   }
 
@@ -285,10 +286,9 @@ inline void setSimulation(int argc, char *argv[], DataHandler &data) {
  * for the data handler.
  * @param argc Argument counter. Number of arguments provided by the user.
  * @param argv Argument values. The strings corresponding to the arguments.
- * @param data DataHandler instance to be set based on provided arguments.
+ * @param data Data::Handler instance to be set based on provided arguments.
  */
-inline void setArguments(int argc, char *argv[],
-                         DataHandler::DataHandler &data) {
+inline void setArguments(int argc, char *argv[], Data::Handler &data) {
 
   /* Check if an argument is provided. */
   if (argc == 1) {

@@ -7,7 +7,7 @@
 #ifndef INCLUDE_INCLUDE_LANDMARK_H_
 #define INCLUDE_INCLUDE_LANDMARK_H_
 
-namespace DataHandler {
+namespace Data {
 
 /**
  * @struct Landmark
@@ -28,6 +28,6 @@ struct Landmark {
   double x_std_dev; ///< The x-standard deviation of the positioning error [m]
   double y_std_dev; ///< The y-standard deviation of the positioning error [m]
 };
-} // namespace DataHandler
+} // namespace Data
 
 #endif // INCLUDE_INCLUDE_LANDMARK_H_

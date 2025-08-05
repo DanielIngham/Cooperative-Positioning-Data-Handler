@@ -24,12 +24,12 @@
 #include <string>
 #include <unordered_map> // std::unordered_map
 
-namespace DataHandler {
+namespace Data {
 
 /**
  * @brief Default constructor.
  */
-DataHandler::DataHandler() {}
+Handler::Handler() {}
 
 /**
  * @brief Constructor that sets the simuation values for the multi-robot
@@ -41,11 +41,10 @@ DataHandler::DataHandler() {}
  * @param[in] output_directory The directory where the extracted data and plots
  * are saved.
  */
-DataHandler::DataHandler(const unsigned long int data_points,
-                         double sample_period,
-                         const unsigned short number_of_robots,
-                         const unsigned short number_of_landmarks,
-                         const std::string &output_directory)
+Handler::Handler(const unsigned long int data_points, double sample_period,
+                 const unsigned short number_of_robots,
+                 const unsigned short number_of_landmarks,
+                 const std::string &output_directory)
     : sampling_period_(sample_period), total_landmarks(number_of_landmarks),
       total_robots(number_of_robots),
       total_barcodes(total_landmarks + total_robots),
@@ -66,9 +65,9 @@ DataHandler::DataHandler(const unsigned long int data_points,
  * are saved.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
-DataHandler::DataHandler(const std::string &dataset,
-                         const std::string &output_directory,
-                         const double &sample_period)
+Handler::Handler(const std::string &dataset,
+                 const std::string &output_directory,
+                 const double &sample_period)
     : dataset_(dataset), output_directory_(output_directory),
       sampling_period_(sample_period), total_landmarks(15), total_robots(5),
       total_barcodes(total_landmarks + total_robots),
@@ -88,12 +87,12 @@ DataHandler::DataHandler(const std::string &dataset,
  * are saved.
  * @param[in] seed The seed used by the random number generator for simulation.
  */
-void DataHandler::setSimulation(const unsigned long int data_points,
-                                const unsigned short number_of_robots,
-                                const unsigned short number_of_landmarks,
-                                double sample_period,
-                                const std::string &output_directory,
-                                const unsigned long seed) {
+void Handler::setSimulation(const unsigned long int data_points,
+                            const unsigned short number_of_robots,
+                            const unsigned short number_of_landmarks,
+                            double sample_period,
+                            const std::string &output_directory,
+                            const unsigned long seed) {
 
   auto start = std::chrono::high_resolution_clock::now();
   /* Set class fields */
@@ -163,9 +162,9 @@ void DataHandler::setSimulation(const unsigned long int data_points,
  * function is called to resample to data points through linear interpolation to
  * ensure all robots have the same time stamps.
  */
-void DataHandler::setDataSet(const std::string &dataset,
-                             const std::string &output_directory,
-                             const double &sample_period) {
+void Handler::setDataSet(const std::string &dataset,
+                         const std::string &output_directory,
+                         const double &sample_period) {
   /* Start timer for measurement of extraction period. */
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -259,8 +258,8 @@ void DataHandler::setDataSet(const std::string &dataset,
  * @param[in] output_directory The output directory.
  * @param[in] folder The name of folder within the output_directory.
  */
-void DataHandler::setOutputDirectory(const std::string &output_directory,
-                                     const std::string &folder) {
+void Handler::setOutputDirectory(const std::string &output_directory,
+                                 const std::string &folder) {
 
   /* The PROJECT_DIR preprocessor should be set by Cmake, but if not, then check
    * if a environment variable was made by make. */
@@ -311,7 +310,7 @@ void DataHandler::setOutputDirectory(const std::string &output_directory,
  * @note If the data could not be extracted from the specified dataset, a
  * std::runtime_error is thrown.
  */
-void DataHandler::readBarcodes(const std::string &dataset) {
+void Handler::readBarcodes(const std::string &dataset) {
   /* Check that the dataset was specified */
   if ("" == this->dataset_) {
     throw std::runtime_error(
@@ -369,7 +368,7 @@ void DataHandler::readBarcodes(const std::string &dataset) {
  * @note If the data could not be extracted from the specified dataset, a
  * std::runtime_error is thrown.
  */
-void DataHandler::readLandmarks(const std::string &dataset) {
+void Handler::readLandmarks(const std::string &dataset) {
 
   std::string filename = dataset + "/Landmark_Groundtruth.dat";
   std::ifstream file(filename);
@@ -447,7 +446,7 @@ void DataHandler::readLandmarks(const std::string &dataset) {
  * the robot x. These are used to populate the Robot::raw states member for a
  * given robot in DataHandler::robots_.
  */
-void DataHandler::readGroundTruth(const std::string &dataset, int robot_id) {
+void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
   /* Clear all previous elements in the ground truth vector. */
   robots_[robot_id].raw.states.clear();
 
@@ -515,7 +514,7 @@ void DataHandler::readGroundTruth(const std::string &dataset, int robot_id) {
  * measured odometry input into robot x. These are used to populate the
  * Robot::raw odometry member for a given robot in DataHandler::robots_.
  */
-void DataHandler::readOdometry(const std::string &dataset, int robot_id) {
+void Handler::readOdometry(const std::string &dataset, int robot_id) {
   /* Clear all previous elements in the odometry vector. */
   robots_[robot_id].raw.odometry.clear();
 
@@ -576,7 +575,7 @@ void DataHandler::readOdometry(const std::string &dataset, int robot_id) {
  * (subjects, ranges and bearings) are filled with only one value. The grouping
  * by time stamp occurs in the DataHandler::syncData function.
  */
-void DataHandler::readMeasurements(const std::string &dataset, int robot_id) {
+void Handler::readMeasurements(const std::string &dataset, int robot_id) {
   /* Clear all previous elements in the measurement vector. */
   robots_[robot_id].raw.measurements.clear();
   robots_[robot_id].synced.measurements.clear();
@@ -639,7 +638,7 @@ void DataHandler::readMeasurements(const std::string &dataset, int robot_id) {
  * DataHandler::robots_->groundtruth struct vector whereas synced odometry are
  * saved in the DataHandler::robots_->synced struct
  */
-void DataHandler::syncData(const double &sample_period) {
+void Handler::syncData(const double &sample_period) {
   /* Find the minimum and maximimum times in the datasets */
   double minimum_time = robots_[0].raw.states.front().time;
   double maximum_time = robots_[0].raw.states.back().time;
@@ -896,7 +895,7 @@ void DataHandler::syncData(const double &sample_period) {
  * and \f$v\f$ denotes the angular velocity and forward velocity of the robot
  * respectively.
  */
-void DataHandler::calculateGroundtruthOdometry() {
+void Handler::calculateGroundtruthOdometry() {
   for (int id = 0; id < total_robots; id++) {
     robots_[id].groundtruth.odometry.clear();
 
@@ -952,7 +951,7 @@ void DataHandler::calculateGroundtruthOdometry() {
  * current time step; \f$\theta\f$ denotes the robot's orientation; and \f$ y\f$
  * denotes the robot's y-coordinate.
  */
-void DataHandler::calculateGroundtruthMeasurement() {
+void Handler::calculateGroundtruthMeasurement() {
   for (int id = 0; id < total_robots; id++) {
 
     robots_[id].groundtruth.measurements.clear();
@@ -1053,7 +1052,7 @@ void DataHandler::calculateGroundtruthMeasurement() {
  * using the groundtruth state values extracted from the dataset for each robot.
  * @note This is only for robot 1 at this stage.
  */
-void DataHandler::relativeRobotDistance() {
+void Handler::relativeRobotDistance() {
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Relative_robot.dat";
   robot_file.open(filename);
@@ -1086,7 +1085,7 @@ void DataHandler::relativeRobotDistance() {
  * the dataset for each landmark and the ego robot respectively.
  * @note This is only for robot 1 at this stage.
  */
-void DataHandler::relativeLandmarkDistance() {
+void Handler::relativeLandmarkDistance() {
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Relative_landmark.dat";
   robot_file.open(filename);
@@ -1113,7 +1112,7 @@ void DataHandler::relativeLandmarkDistance() {
  * @brief Saves all the extracted and processed data in the DataHandler class
  * after data extraction and processing.
  */
-void DataHandler::saveExtractedData() {
+void Handler::saveExtractedData() {
   auto start = std::chrono::high_resolution_clock::now();
 
   if (!std::filesystem::exists(data_extraction_directory_)) {
@@ -1158,7 +1157,7 @@ void DataHandler::saveExtractedData() {
  * groundtruth robot state data extracted from the dataset after, which includes
  * its x-coordinate, y-coordinate and heading.
  */
-void DataHandler::saveStateData() {
+void Handler::saveStateData() {
 
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Groundtruth-State.dat";
@@ -1215,7 +1214,7 @@ void DataHandler::saveStateData() {
  * DataHandler::calculateGroundtruthMeasurement) into Measurement.dat and
  * Groundtruth-Measurement.dat respectively.
  */
-void DataHandler::saveMeasurementData() {
+void Handler::saveMeasurementData() {
 
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Measurement.dat";
@@ -1304,7 +1303,7 @@ void DataHandler::saveMeasurementData() {
  * @details Saves the odometry data (as extracted from the dataset) into
  * Odometry.dat.
  */
-void DataHandler::saveOdometryData() {
+void Handler::saveOdometryData() {
 
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Odometry.dat";
@@ -1365,7 +1364,7 @@ void DataHandler::saveOdometryData() {
  * bye Robot::calculateMeasurementError is saved into their respective .dat
  * files.
  */
-void DataHandler::saveErrorData() {
+void Handler::saveErrorData() {
 
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Odometry-Error.dat";
@@ -1440,7 +1439,7 @@ void DataHandler::saveErrorData() {
  * pdf, where the sum of the area of all the bins should equal 1. This is done
  * for better visualisation when fitting a Gaussian curve to the data.
  */
-void DataHandler::saveOdometryErrorPDF(double bin_size) {
+void Handler::saveOdometryErrorPDF(double bin_size) {
   std::ofstream robot_file;
 
   /* Forward Velocity */
@@ -1534,7 +1533,7 @@ void DataHandler::saveOdometryErrorPDF(double bin_size) {
  * pdf, where the sum of the area of all the bins should equal 1. This is done
  * for better visualisation when fitting a Gaussian curve to the data.
  */
-void DataHandler::saveMeasurementErrorPDF(double bin_size) {
+void Handler::saveMeasurementErrorPDF(double bin_size) {
   std::ofstream robot_file;
 
   /* Range */
@@ -1627,7 +1626,7 @@ void DataHandler::saveMeasurementErrorPDF(double bin_size) {
  * @brief Saves the sample mean and sample variance of the measured odometry and
  * tracking data for each robot.
  */
-void DataHandler::saveRobotErrorStatistics() {
+void Handler::saveRobotErrorStatistics() {
   std::string filename =
       this->data_extraction_directory_ + "/Robot-Error-Statistics.dat";
 
@@ -1662,7 +1661,7 @@ void DataHandler::saveRobotErrorStatistics() {
   file.close();
 }
 
-void DataHandler::saveLandmarks() {
+void Handler::saveLandmarks() {
   std::string filename = data_extraction_directory_ + "/landmarks.dat";
 
   std::ofstream file(filename);
@@ -1687,7 +1686,7 @@ void DataHandler::saveLandmarks() {
  * @brief Saves the infered robot states and absolute error between estimated
  * state and the groudtruth state.
  */
-void DataHandler::saveInferenceData() {
+void Handler::saveInferenceData() {
   if (!std::filesystem::exists(data_inference_directory)) {
     std::filesystem::create_directories(data_inference_directory);
   }
@@ -1775,7 +1774,7 @@ void DataHandler::saveInferenceData() {
  * @note if the dataset has not been set, the function will throw a
  * std::runtime_error.
  */
-std::vector<unsigned short int> &DataHandler::getBarcodes() {
+std::vector<unsigned short int> &Handler::getBarcodes() {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
@@ -1788,7 +1787,7 @@ std::vector<unsigned short int> &DataHandler::getBarcodes() {
 /**
  * @brief Create the directory for the state plots.
  */
-void DataHandler::createStatePlotDirectory() {
+void Handler::createStatePlotDirectory() {
 
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
@@ -1815,7 +1814,7 @@ void DataHandler::createStatePlotDirectory() {
 /**
  * @brief Checks Create the directories required for the measurement plots.
  */
-void DataHandler::createMeasurementPlotDirectories() {
+void Handler::createMeasurementPlotDirectories() {
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
   /* Check if the data extraction directory exists */
@@ -1872,7 +1871,7 @@ void DataHandler::createMeasurementPlotDirectories() {
  * @note At this stage only png and pdf file types are implemented. Any other
  * file type will throw a std::runtime_error.
  */
-void DataHandler::plotExtractedData(std::string file_type) {
+void Handler::plotExtractedData(std::string file_type) {
   /* Start the Timer */
   auto start = std::chrono::high_resolution_clock::now();
   std::string plots_directory = data_extraction_directory_ + "plots/";
@@ -1906,7 +1905,7 @@ void DataHandler::plotExtractedData(std::string file_type) {
  * velocity) along with the range and bearing error PDF.
  * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotPDFs(std::string file_type) {
+void Handler::plotPDFs(std::string file_type) {
   createMeasurementPlotDirectories();
 
   std::string plots_directory = data_extraction_directory_ + "plots/";
@@ -1933,7 +1932,7 @@ void DataHandler::plotPDFs(std::string file_type) {
  * along with the range and bearing error.
  * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotError(std::string file_type) {
+void Handler::plotError(std::string file_type) {
   createMeasurementPlotDirectories();
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
@@ -1958,7 +1957,7 @@ void DataHandler::plotError(std::string file_type) {
  * the raw, synced and groundtruth range and bearing measurements.
  * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotMeasurements(std::string file_type) {
+void Handler::plotMeasurements(std::string file_type) {
   createMeasurementPlotDirectories();
   std::string plots_directory = data_extraction_directory_ + "plots/";
 
@@ -1982,7 +1981,7 @@ void DataHandler::plotMeasurements(std::string file_type) {
  * with a x,y position plot.
  * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotStates(std::string file_type) {
+void Handler::plotStates(std::string file_type) {
   createStatePlotDirectory();
 
   std::string plots_directory = data_extraction_directory_ + "plots/";
@@ -2005,7 +2004,7 @@ void DataHandler::plotStates(std::string file_type) {
  * corresponding to the estimated system state.
  * @param[in] file_type The file type of the output plot.
  */
-void DataHandler::plotInferenceData(std::string file_type) {
+void Handler::plotInferenceData(std::string file_type) {
 
   auto start = std::chrono::high_resolution_clock::now();
 
@@ -2055,7 +2054,7 @@ void DataHandler::plotInferenceData(std::string file_type) {
  * @note if the dataset has not been set, the function will throw a
  * std::runtime_error.
  */
-int DataHandler::getID(unsigned short int barcode) {
+int Handler::getID(unsigned short int barcode) {
   for (int i = 0; i < total_barcodes; i++) {
     if (barcodes_[i] == barcode) {
       return (i + 1);
@@ -2069,7 +2068,7 @@ int DataHandler::getID(unsigned short int barcode) {
  * @return a reference to the Landmarks class vector, populated by extracting
  * data form Landmarks.dat.
  */
-std::vector<Landmark> &DataHandler::getLandmarks() {
+std::vector<Landmark> &Handler::getLandmarks() {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
@@ -2087,7 +2086,7 @@ std::vector<Landmark> &DataHandler::getLandmarks() {
  * @note if the dataset has not been set, the function will throw a
  * std::runtime_error.
  */
-std::vector<Robot> &DataHandler::getRobots() {
+std::vector<Robot> &Handler::getRobots() {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
@@ -2103,7 +2102,7 @@ std::vector<Robot> &DataHandler::getRobots() {
  * @return the sampling period set by the user.
  * @note DataExtractor::sampling_period_ has a default value of 0.02.
  */
-double DataHandler::getSamplePeriod() { return sampling_period_; }
+double Handler::getSamplePeriod() { return sampling_period_; }
 
 /**
  * @brief Getter for the DataHandler::total_robots field.
@@ -2111,7 +2110,7 @@ double DataHandler::getSamplePeriod() { return sampling_period_; }
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
  */
-unsigned short int DataHandler::getNumberOfRobots() {
+unsigned short int Handler::getNumberOfRobots() {
   if (0 == total_robots) {
     throw std::runtime_error("The total number of robots have not been set.");
   }
@@ -2124,7 +2123,7 @@ unsigned short int DataHandler::getNumberOfRobots() {
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
  */
-unsigned short int DataHandler::getNumberOfLandmarks() {
+unsigned short int Handler::getNumberOfLandmarks() {
   if (0 == total_landmarks) {
     throw std::runtime_error(
         "The total number of landmarks have not been set.");
@@ -2138,7 +2137,7 @@ unsigned short int DataHandler::getNumberOfLandmarks() {
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
  */
-unsigned short int DataHandler::getNumberOfBarcodes() {
+unsigned short int Handler::getNumberOfBarcodes() {
   if (0 == total_barcodes) {
     throw std::runtime_error("The total number of barcodes have not been set.");
   }
@@ -2148,8 +2147,8 @@ unsigned short int DataHandler::getNumberOfBarcodes() {
 /**
  * @brief Getter for the DataHandler::getNumberOfSyncedDatapoints field.
  */
-unsigned long DataHandler::getNumberOfSyncedDatapoints() {
+unsigned long Handler::getNumberOfSyncedDatapoints() {
   return total_synced_datapoints;
 }
 
-} // namespace DataHandler
+} // namespace Data

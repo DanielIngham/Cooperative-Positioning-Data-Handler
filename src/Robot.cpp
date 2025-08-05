@@ -13,7 +13,7 @@
 #include <stdexcept> // std::runtime_error
 #include <string>    // std::string
 
-namespace DataHandler {
+namespace Data {
 
 /**
  * @brief Default constructor.
@@ -470,4 +470,4 @@ void Robot::calculateStateError() {
               orientation_error));
   }
 }
-} // namespace DataHandler
+} // namespace Data

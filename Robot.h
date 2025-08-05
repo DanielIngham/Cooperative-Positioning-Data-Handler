@@ -10,7 +10,7 @@
 #include <cmath>  // std::atan2
 #include <vector> // std::vector
 
-namespace DataHandler {
+namespace Data {
 
 /**
  * @class Robot
@@ -188,6 +188,6 @@ private:
 
   void removeOutliers();
 };
-} // namespace DataHandler
+} // namespace Data
 
 #endif // INCLUDE_INCLUDE_ROBOT_H_

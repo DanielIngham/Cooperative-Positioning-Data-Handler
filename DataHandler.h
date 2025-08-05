@@ -1,6 +1,6 @@
 /**
  * @file DataHandler.h
- * @brief Header file of the DataHandler class,
+ * @brief Header file of the Handler class,
  * @author Daniel Ingham
  * @date 2025-04-04
  */
@@ -16,15 +16,15 @@
 #include "Robot.h"
 #include "Simulator.h"
 
-namespace DataHandler {
+namespace Data {
 
 /**
  * @struct DataHandlerDefaults
- * Contains the default parameters for the DataHandler class constructor so the
+ * Contains the default parameters for the Handler class constructor so the
  * the argument handler can set the defaults if the user does not provide input
  * for those arguments.
  */
-struct DataHandlerDefaults {
+struct HandlerDefaults {
   /**
    * Time betweenn samples. Use by the linear interpolation to sync the data
    * timesteps.
@@ -39,23 +39,24 @@ struct DataHandlerDefaults {
 };
 
 /**
- * @class DataHandler
+ * @class Handler
  * @brief Extracts the data from the UTIAS Multi-robot Localisaion and Mapping
  * Dataset.
  * @details The class extracts the textfile dataset form UTIAS multi-robot
- * localisation and mapping dataset into three members: DataHandler::barcodes_,
- * DataHandler::landmarks_, and DataHandler::robots_.
+ * localisation and mapping dataset into three members:
+ * Data::Handler::barcodes_, Data::Handler::landmarks_, and
+ * Data::Handler::robots_.
  */
-class DataHandler {
+class Handler {
 public:
   /* Constructors */
-  DataHandler();
-  explicit DataHandler(
+  Handler();
+  explicit Handler(
       const std::string &,
-      const std::string &output_directory = DataHandlerDefaults::kOutputDir,
-      const double &sampling_period = DataHandlerDefaults::kSamplePeriod);
+      const std::string &output_directory = HandlerDefaults::kOutputDir,
+      const double &sampling_period = HandlerDefaults::kSamplePeriod);
 
-  DataHandler(
+  Handler(
       const unsigned long int,
       double sample_period = SimulationDefaults::kSamplePeriod,
       const unsigned short number_of_robots = SimulationDefaults::kRobots,
@@ -63,10 +64,10 @@ public:
       const std::string &output_directory = SimulationDefaults::kOutputDir);
 
   /* Setters */
-  void setDataSet(
-      const std::string &,
-      const std::string &output_directory = DataHandlerDefaults::kOutputDir,
-      const double &sampling_period = DataHandlerDefaults::kSamplePeriod);
+  void
+  setDataSet(const std::string &,
+             const std::string &output_directory = HandlerDefaults::kOutputDir,
+             const double &sampling_period = HandlerDefaults::kSamplePeriod);
 
   void setSimulation(
       unsigned long int,
@@ -141,7 +142,7 @@ private:
   /**
    * @brief the total number of barcodes in the dataset.
    * @note the value of this variable is the summation of the
-   * DataHandler::TOTAL_LANDMARKS and DataHandler::TOTAL_ROBOTS.
+   * Data::Handler::TOTAL_LANDMARKS and Data::Handler::TOTAL_ROBOTS.
    */
   unsigned short total_barcodes = 0U;
 
@@ -162,8 +163,8 @@ private:
    * the robots. The 'Robotx_Odometry.dat', 'Robotx_Measurement.dat' and
    * 'Robotx_Groundtruth.dat' are used to populate the class. Additionally, the
    * groundtruth values that are not provided by the dataset are calculated
-   * using DataHandler::calculateGroundtruthOdometry and
-   * DataHandler::calculateGroundtruthMeasurement.
+   * using Data::Handler::calculateGroundtruthOdometry and
+   * Data::Handler::calculateGroundtruthMeasurement.
    */
   std::vector<Robot> robots_;
 
@@ -175,8 +176,8 @@ private:
    * landmarks exctracted from the 'Barcodes.dat' file. The UTIAS dataset
    * contains 20 barcodes: 5 robots and 15 landmarks. All barcodes are
    * initialised to 0. Since none of the barcodes have a value of 0, this will
-   * be used as a check by DataHandler::readLandmarks to see if all the barcodes
-   * were correctly set.
+   * be used as a check by Data::Handler::readLandmarks to see if all the
+   * barcodes were correctly set.
    */
   std::vector<unsigned short int> barcodes_;
 
@@ -219,5 +220,5 @@ private:
   void relativeRobotDistance();
   void relativeLandmarkDistance();
 };
-} // namespace DataHandler
+} // namespace Data
 #endif // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_
