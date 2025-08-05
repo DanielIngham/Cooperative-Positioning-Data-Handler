@@ -104,11 +104,6 @@ inline int argToInt(char *argument) {
     throw;
   }
 
-  /* There are only 9 UTIAS datasets. */
-  if (argument_integer < 1 || argument_integer > 9) {
-    throw std::runtime_error("Select a dataset between 1 and 9.");
-  }
-
   return argument_integer;
 }
 
@@ -253,7 +248,7 @@ inline void setSimulation(int argc, char *argv[], Data::Handler &data) {
 
     /* Seed */
     case 'S':
-      argToInt(argv[i + 1]);
+      seed = argToInt(argv[i + 1]);
       break;
 
     default:
