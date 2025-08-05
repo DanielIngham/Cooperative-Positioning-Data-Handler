@@ -287,7 +287,8 @@ inline void setSimulation(int argc, char *argv[], DataHandler &data) {
  * @param argv Argument values. The strings corresponding to the arguments.
  * @param data DataHandler instance to be set based on provided arguments.
  */
-inline void setArguments(int argc, char *argv[], DataHandler &data) {
+inline void setArguments(int argc, char *argv[],
+                         DataHandler::DataHandler &data) {
 
   /* Check if an argument is provided. */
   if (argc == 1) {

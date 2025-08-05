@@ -12,6 +12,9 @@
 #include <numeric>   // std::accumulate
 #include <stdexcept> // std::runtime_error
 #include <string>    // std::string
+
+namespace DataHandler {
+
 /**
  * @brief Default constructor.
  */
@@ -467,3 +470,4 @@ void Robot::calculateStateError() {
               orientation_error));
   }
 }
+} // namespace DataHandler

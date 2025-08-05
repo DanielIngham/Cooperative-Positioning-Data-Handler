@@ -14,6 +14,8 @@
 #include <random>
 #include <vector>
 
+namespace DataHandler {
+
 struct SimulationDefaults {
   static constexpr unsigned short kRobots = 5U;
   static constexpr unsigned short kLandmarks = 15U;
@@ -128,5 +130,6 @@ private:
   void setGeneratorSeed(unsigned long);
   void addGaussianNoise();
 };
+} // namespace DataHandler
 
 #endif // INCLUDE_INCLUDE_SIMULATOR_H_

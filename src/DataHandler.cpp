@@ -24,6 +24,8 @@
 #include <string>
 #include <unordered_map> // std::unordered_map
 
+namespace DataHandler {
+
 /**
  * @brief Default constructor.
  */
@@ -2149,3 +2151,5 @@ unsigned short int DataHandler::getNumberOfBarcodes() {
 unsigned long DataHandler::getNumberOfSyncedDatapoints() {
   return total_synced_datapoints;
 }
+
+} // namespace DataHandler

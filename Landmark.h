@@ -7,6 +7,8 @@
 #ifndef INCLUDE_INCLUDE_LANDMARK_H_
 #define INCLUDE_INCLUDE_LANDMARK_H_
 
+namespace DataHandler {
+
 /**
  * @struct Landmark
  * @brief Houses all data related to a given landmark in the UTIAS multi-robot
@@ -26,5 +28,6 @@ struct Landmark {
   double x_std_dev; ///< The x-standard deviation of the positioning error [m]
   double y_std_dev; ///< The y-standard deviation of the positioning error [m]
 };
+} // namespace DataHandler
 
 #endif // INCLUDE_INCLUDE_LANDMARK_H_

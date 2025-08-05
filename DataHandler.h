@@ -16,8 +16,25 @@
 #include "Robot.h"
 #include "Simulator.h"
 
+namespace DataHandler {
+
+/**
+ * @struct DataHandlerDefaults
+ * Contains the default parameters for the DataHandler class constructor so the
+ * the argument handler can set the defaults if the user does not provide input
+ * for those arguments.
+ */
 struct DataHandlerDefaults {
+  /**
+   * Time betweenn samples. Use by the linear interpolation to sync the data
+   * timesteps.
+   */
   static constexpr double kSamplePeriod = 0.02;
+
+  /**
+   * The subdirectory within the "output" directory where the processed data
+   * is stored.
+   */
   static const inline std::string kOutputDir = "";
 };
 
@@ -202,5 +219,5 @@ private:
   void relativeRobotDistance();
   void relativeLandmarkDistance();
 };
-
+} // namespace DataHandler
 #endif // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_

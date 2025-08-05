@@ -10,6 +10,8 @@
 #include <cmath>  // std::atan2
 #include <vector> // std::vector
 
+namespace DataHandler {
+
 /**
  * @class Robot
  * @brief Houses all data and functionality related to a given robot in a
@@ -186,5 +188,6 @@ private:
 
   void removeOutliers();
 };
+} // namespace DataHandler
 
 #endif // INCLUDE_INCLUDE_ROBOT_H_
