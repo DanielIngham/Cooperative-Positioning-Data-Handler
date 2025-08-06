@@ -1,4 +1,7 @@
-#include "DataHandler.h" // DataHandler
+#include "DataHandler.h" // Data::Handler
+#include "Landmark.h"
+#include "Plotter.h"
+#include "Robot.h"
 
 #include <algorithm> // std::find
 #include <assert.h>
@@ -44,7 +47,7 @@ std::size_t countFileLines(const std::string &filename) {
  * @brief Unit Test 1: check if barcodes were set.
  */
 void checkBarcodes() {
-  DataHandler data;
+  Data::Handler data;
   bool flag = true;
 
   for (unsigned short int d = 1; d <= TOTAL_DATASETS; d++) {
@@ -76,7 +79,7 @@ void checkBarcodes() {
  * @brief Unit Test 2: compare landmark barcodes to barcodes.
  */
 void checkLandmarkBarcodes() {
-  DataHandler data;
+  Data::Handler data;
   bool flag = true;
 
   for (unsigned short int i = 1; i <= TOTAL_DATASETS; i++) {
@@ -108,7 +111,7 @@ void checkLandmarkBarcodes() {
  * @brief Unit Test 3: check that all the ground truth values were extracted.
  */
 void checkGroundtruthExtraction() {
-  DataHandler data;
+  Data::Handler data;
   bool flag = true;
 
   for (unsigned short int d = 1; d <= TOTAL_DATASETS; d++) {
@@ -152,7 +155,7 @@ void checkGroundtruthExtraction() {
  * @brief Unit Test 4: check that all the odometry values were extracted.
  */
 void checkOdometryExtraction() {
-  DataHandler data;
+  Data::Handler data;
   bool flag = true;
 
   /* Loop through every data */
@@ -194,7 +197,7 @@ void checkOdometryExtraction() {
  * @brief Unit Test 5: check that all the measurement values were extracted.
  */
 void checkMeasurementExtraction() {
-  DataHandler data;
+  Data::Handler data;
   bool flag = true;
 
   /* Loop through every data */
@@ -253,7 +256,7 @@ void checkMeasurementExtraction() {
  * the matlab script.
  */
 void testInterpolation() {
-  DataHandler data("MRCLAM_Dataset1");
+  Data::Handler data("MRCLAM_Dataset1");
   const auto robots = data.getRobots();
   bool flag = true;
 
@@ -569,7 +572,7 @@ void testInterpolation() {
  * to the defined sampling period.
  */
 void checkSamplingRate() {
-  DataHandler data("MRCLAM_Dataset1");
+  Data::Handler data("MRCLAM_Dataset1");
 
   auto robots = data.getRobots();
   double sample_period = data.getSamplePeriod();
@@ -671,7 +674,7 @@ void saveData() {
   bool flag = true;
 
   for (unsigned short int d = 0; d < 1; d++) {
-    DataHandler data("MRCLAM_Dataset" + std::to_string(d + 1));
+    Data::Handler data("MRCLAM_Dataset" + std::to_string(d + 1));
     data.saveExtractedData();
     data.plotExtractedData();
   }
@@ -690,7 +693,7 @@ void testGroundtruthOdometry() {
   bool flag = true;
 
   for (unsigned short int dataset = 0; dataset < TOTAL_DATASETS; dataset++) {
-    DataHandler data("MRCLAM_Dataset" + std::to_string(dataset + 1));
+    Data::Handler data("MRCLAM_Dataset" + std::to_string(dataset + 1));
 
     auto robots = data.getRobots();
 
@@ -808,7 +811,7 @@ void checkSyncedSize() {
 
   bool flag = true;
   for (unsigned short int dataset = 5; dataset < 6; dataset++) {
-    DataHandler data("MRCLAM_Dataset" + std::to_string(dataset + 1));
+    Data::Handler data("MRCLAM_Dataset" + std::to_string(dataset + 1));
     std::cout << "MRCLAM_Dataset" + std::to_string(dataset + 1) << std::endl;
     auto robots = data.getRobots();
 
@@ -853,11 +856,22 @@ void checkSyncedSize() {
 }
 
 void checkSimulation() {
-  DataHandler data;
+  Data::Handler data;
 
-  data.setSimulation(70000, 0.02, 5U, 15U);
+  data.setSimulation(70000, 5U, 15U, 0.02);
   data.saveExtractedData();
   data.plotExtractedData();
+}
+
+void checkPlotting() {
+  Data::Handler data;
+  const std::string dataset = "MRCLAM_Dataset" + std::to_string(1);
+  data.setDataSet(dataset);
+
+  std::vector<Data::Robot> &robots = data.getRobots();
+  std::vector<Data::Landmark> &landmarks = data.getLandmarks();
+
+  Data::Plot::plotGroundruth(robots, landmarks);
 }
 
 int main() {
@@ -866,7 +880,9 @@ int main() {
   std::cout << "\033[3mNumber of treads supported:\033[0m "
             << std::thread::hardware_concurrency() << std::endl;
 
-  std::thread unit_test_1(checkBarcodes);
+  checkPlotting();
+
+  // std::thread unit_test_1(checkBarcodes);
   // std::thread unit_test_2(checkLandmarkBarcodes);
   // std::thread unit_test_3(checkGroundtruthExtraction);
   // std::thread unit_test_4(checkOdometryExtraction);
@@ -877,7 +893,7 @@ int main() {
   // std::thread unit_test_9(testGroundtruthOdometry);
   // std::thread unit_test_10(checkSyncedSize);
 
-  unit_test_1.join();
+  // unit_test_1.join();
   // unit_test_2.join();
   // unit_test_3.join();
   // unit_test_4.join();
@@ -887,6 +903,7 @@ int main() {
   // unit_test_8.join();
   // unit_test_9.join();
   // unit_test_10.join();
+
   // checkPDF();
   // checkSimulation();
 
