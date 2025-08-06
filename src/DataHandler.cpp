@@ -193,7 +193,7 @@ void Handler::setDataSet(const std::string &dataset,
   /* All datasets contain 15 landmarks and 5 robots. */
   this->total_landmarks_ = 15U;
   this->total_robots_ = 5U;
-  this->total_barcodes = total_landmarks_ + total_robots_;
+  this->total_barcodes_ = total_landmarks_ + total_robots_;
 
   /* Resize the dataset vectors */
   this->landmarks_.resize(total_landmarks_);
