@@ -109,6 +109,10 @@ private:
    */
   std::string dataset_ = "";
 
+  /**
+   * @brief Folder location of the output directory inside the "./output/"
+   * folder.
+   */
   std::string output_directory_ = "";
 
   /**
