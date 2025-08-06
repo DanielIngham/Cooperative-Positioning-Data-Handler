@@ -2183,7 +2183,7 @@ const unsigned long Handler::getNumberOfSyncedDatapoints() const {
  */
 const std::vector<size_t> Handler::getNumberOfSyncedMeasurements() const {
 
-  assert(total_synced_measurements_.empty() &&
+  assert(!total_synced_measurements_.empty() &&
          "total_synced_measurements_() empty, call "
          "setNumberOfSyncedMeasurements().");
 
