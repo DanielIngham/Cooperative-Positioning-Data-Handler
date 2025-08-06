@@ -13,7 +13,8 @@
 #include "DataHandler.h"
 #include "Simulator.h"
 
-#include <algorithm>  // std::remove_if and std::find
+#include <algorithm> // std::remove_if and std::find
+#include <cassert>
 #include <chrono>     // std::chrono
 #include <cstdlib>    // std::getenv
 #include <filesystem> // std::filesystem
@@ -23,6 +24,7 @@
 #include <stdexcept>  // std::runtime_error
 #include <string>
 #include <unordered_map> // std::unordered_map
+#include <vector>
 
 namespace Data {
 
@@ -116,6 +118,8 @@ void Handler::setSimulation(const unsigned long int data_points,
 
   simulator_.setSimulation(data_points, sample_period, robots_, landmarks_,
                            barcodes_, seed);
+
+  setNumberOfSyncedMeasurements();
 
   const bool simulation = true;
 
@@ -231,6 +235,9 @@ void Handler::setDataSet(const std::string &dataset,
   /* Calculate the measurement values that would correspond to the ground truth
    * range and bearing values. */
   calculateGroundtruthMeasurement();
+
+  /* Calculate the number of measurements for each robot.  */
+  setNumberOfSyncedMeasurements();
 
   try {
     /* Calculate odometry and measurement errors. */
@@ -1042,6 +1049,25 @@ void Handler::calculateGroundtruthMeasurement() {
         }
       }
     }
+  }
+}
+
+void Handler::setNumberOfSyncedMeasurements() {
+  total_synced_measurements_.assign(total_robots_, 0U);
+
+  for (unsigned short id = 0; id < total_robots_; ++id) {
+
+    const std::vector<Robot::Measurement> &measurements =
+        robots_[id].synced.measurements;
+
+    if (measurements.empty())
+      continue;
+
+    total_synced_measurements_[id] = std::accumulate(
+        measurements.begin(), measurements.end(), 0U,
+        [](unsigned int sum, const auto &group) {
+          return sum + static_cast<unsigned int>(group.subjects.size());
+        });
   }
 }
 
@@ -2152,8 +2178,16 @@ const unsigned long Handler::getNumberOfSyncedDatapoints() const {
   return total_synced_datapoints_;
 }
 
+/**
+ * @brief Returns the number of measurements for each robot.
+ */
 const std::vector<size_t> Handler::getNumberOfSyncedMeasurements() const {
-  return total_measurements_;
+
+  assert(total_synced_measurements_.empty() &&
+         "total_synced_measurements_() empty, call "
+         "setNumberOfSyncedMeasurements().");
+
+  return total_synced_measurements_;
 }
 
 } // namespace Data

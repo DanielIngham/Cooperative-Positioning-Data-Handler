@@ -156,9 +156,9 @@ private:
   unsigned long total_synced_datapoints_ = 0U;
 
   /**
-   * @brief the total number of measurements for each robot.
+   * @brief the total number of synced measurements for each robot.
    */
-  std::vector<size_t> total_measurements_;
+  std::vector<size_t> total_synced_measurements_;
 
   /**
    * @brief All landmarks containing all the data extracted form
@@ -210,6 +210,8 @@ private:
 
   void calculateGroundtruthOdometry();
   void calculateGroundtruthMeasurement();
+
+  void setNumberOfSyncedMeasurements();
 
   void createStatePlotDirectory();
   void createMeasurementPlotDirectories();
