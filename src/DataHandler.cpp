@@ -2152,4 +2152,8 @@ const unsigned long Handler::getNumberOfSyncedDatapoints() const {
   return total_synced_datapoints;
 }
 
+const std::vector<size_t> Handler::getNumberOfSyncedMeasurements() const {
+  return total_measurements;
+}
+
 } // namespace Data

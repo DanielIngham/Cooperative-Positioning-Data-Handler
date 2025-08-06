@@ -87,6 +87,7 @@ public:
   const unsigned short getNumberOfLandmarks() const;
   const unsigned short getNumberOfBarcodes() const;
   const unsigned long getNumberOfSyncedDatapoints() const;
+  const std::vector<size_t> getNumberOfSyncedMeasurements() const;
 
   const int getID(const unsigned short int) const;
 
@@ -149,6 +150,11 @@ private:
    * @brief The number of datapoints after calling Robot::sync_data.
    */
   unsigned long total_synced_datapoints = 0U;
+
+  /**
+   * @brief the total number of measurements for each robot.
+   */
+  std::vector<size_t> total_measurements;
 
   /**
    * @brief All landmarks containing all the data extracted form
