@@ -1,5 +1,4 @@
 #include "DataHandler.h" // Data::Handler
-#include "Landmark.h"
 #include "Plotter.h"
 #include "Robot.h"
 
@@ -868,10 +867,8 @@ void checkPlotting() {
   const std::string dataset = "MRCLAM_Dataset" + std::to_string(1);
   data.setDataSet(dataset);
 
-  std::vector<Data::Robot> &robots = data.getRobots();
-  std::vector<Data::Landmark> &landmarks = data.getLandmarks();
-
-  Data::Plot::plotGroundruth(robots, landmarks);
+  Data::Plotter plot(data);
+  plot.plotGroundruth(1);
 }
 
 int main() {
