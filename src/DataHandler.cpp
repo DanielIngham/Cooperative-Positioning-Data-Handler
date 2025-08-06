@@ -1774,13 +1774,14 @@ void Handler::saveInferenceData() {
  * @note if the dataset has not been set, the function will throw a
  * std::runtime_error.
  */
-std::vector<unsigned short int> &Handler::getBarcodes() {
+const std::vector<unsigned short int> &Handler::getBarcodes() const {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
         "ensure you call void setDataSet(std::string) before attempting to get "
         "data.");
   }
+
   return barcodes_;
 }
 
@@ -2054,7 +2055,7 @@ void Handler::plotInferenceData(std::string file_type) {
  * @note if the dataset has not been set, the function will throw a
  * std::runtime_error.
  */
-int Handler::getID(unsigned short int barcode) {
+const int Handler::getID(unsigned short int barcode) const {
   for (int i = 0; i < total_barcodes; i++) {
     if (barcodes_[i] == barcode) {
       return (i + 1);
@@ -2068,7 +2069,7 @@ int Handler::getID(unsigned short int barcode) {
  * @return a reference to the Landmarks class vector, populated by extracting
  * data form Landmarks.dat.
  */
-std::vector<Landmark> &Handler::getLandmarks() {
+const std::vector<Landmark> &Handler::getLandmarks() const {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
@@ -2102,7 +2103,7 @@ std::vector<Robot> &Handler::getRobots() {
  * @return the sampling period set by the user.
  * @note DataExtractor::sampling_period_ has a default value of 0.02.
  */
-double Handler::getSamplePeriod() { return sampling_period_; }
+const double Handler::getSamplePeriod() const { return sampling_period_; }
 
 /**
  * @brief Getter for the DataHandler::total_robots field.
@@ -2110,7 +2111,7 @@ double Handler::getSamplePeriod() { return sampling_period_; }
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
  */
-unsigned short int Handler::getNumberOfRobots() {
+const unsigned short int Handler::getNumberOfRobots() const {
   if (0 == total_robots) {
     throw std::runtime_error("The total number of robots have not been set.");
   }
@@ -2123,7 +2124,7 @@ unsigned short int Handler::getNumberOfRobots() {
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
  */
-unsigned short int Handler::getNumberOfLandmarks() {
+const unsigned short int Handler::getNumberOfLandmarks() const {
   if (0 == total_landmarks) {
     throw std::runtime_error(
         "The total number of landmarks have not been set.");
@@ -2137,7 +2138,7 @@ unsigned short int Handler::getNumberOfLandmarks() {
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
  */
-unsigned short int Handler::getNumberOfBarcodes() {
+const unsigned short int Handler::getNumberOfBarcodes() const {
   if (0 == total_barcodes) {
     throw std::runtime_error("The total number of barcodes have not been set.");
   }
@@ -2147,7 +2148,7 @@ unsigned short int Handler::getNumberOfBarcodes() {
 /**
  * @brief Getter for the DataHandler::getNumberOfSyncedDatapoints field.
  */
-unsigned long Handler::getNumberOfSyncedDatapoints() {
+const unsigned long Handler::getNumberOfSyncedDatapoints() const {
   return total_synced_datapoints;
 }
 

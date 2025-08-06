@@ -77,18 +77,18 @@ public:
       const std::string &output_directory = SimulationDefaults::kOutputDir,
       const unsigned long seed = SimulationDefaults::kSeed);
 
-  std::vector<Landmark> &getLandmarks();
   std::vector<Robot> &getRobots();
-  std::vector<unsigned short int> &getBarcodes();
+  const std::vector<Landmark> &getLandmarks() const;
+  const std::vector<unsigned short int> &getBarcodes() const;
 
-  double getSamplePeriod();
+  const double getSamplePeriod() const;
 
-  unsigned short getNumberOfRobots();
-  unsigned short getNumberOfLandmarks();
-  unsigned short getNumberOfBarcodes();
-  unsigned long getNumberOfSyncedDatapoints();
+  const unsigned short getNumberOfRobots() const;
+  const unsigned short getNumberOfLandmarks() const;
+  const unsigned short getNumberOfBarcodes() const;
+  const unsigned long getNumberOfSyncedDatapoints() const;
 
-  int getID(unsigned short int);
+  const int getID(const unsigned short int) const;
 
   /* Output of Extracted Data */
   void saveExtractedData();
