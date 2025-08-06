@@ -45,11 +45,11 @@ Handler::Handler(const unsigned long int data_points, double sample_period,
                  const unsigned short number_of_robots,
                  const unsigned short number_of_landmarks,
                  const std::string &output_directory)
-    : sampling_period_(sample_period), total_landmarks(number_of_landmarks),
-      total_robots(number_of_robots),
-      total_barcodes(total_landmarks + total_robots),
-      total_synced_datapoints(data_points), landmarks_(total_landmarks),
-      robots_(total_robots), barcodes_(total_barcodes) {
+    : sampling_period_(sample_period), total_landmarks_(number_of_landmarks),
+      total_robots_(number_of_robots),
+      total_barcodes_(total_landmarks_ + total_robots_),
+      total_synced_datapoints_(data_points), landmarks_(total_landmarks_),
+      robots_(total_robots_), barcodes_(total_barcodes_) {
 
   setSimulation(data_points, sample_period, number_of_robots,
                 number_of_landmarks, output_directory);
@@ -69,10 +69,10 @@ Handler::Handler(const std::string &dataset,
                  const std::string &output_directory,
                  const double &sample_period)
     : dataset_(dataset), output_directory_(output_directory),
-      sampling_period_(sample_period), total_landmarks(15), total_robots(5),
-      total_barcodes(total_landmarks + total_robots),
-      landmarks_(total_landmarks), robots_(total_robots),
-      barcodes_(total_barcodes, 0) {
+      sampling_period_(sample_period), total_landmarks_(15), total_robots_(5),
+      total_barcodes_(total_landmarks_ + total_robots_),
+      landmarks_(total_landmarks_), robots_(total_robots_),
+      barcodes_(total_barcodes_, 0) {
 
   setDataSet(dataset, output_directory, sample_period);
 }
@@ -101,27 +101,27 @@ void Handler::setSimulation(const unsigned long int data_points,
   setOutputDirectory(output_directory, "/simulation/");
 
   /* Set class fields. */
-  this->total_synced_datapoints = data_points;
+  this->total_synced_datapoints_ = data_points;
 
   this->sampling_period_ = sample_period;
 
-  this->total_landmarks = number_of_landmarks;
-  this->total_robots = number_of_robots;
-  this->total_barcodes = total_landmarks + total_robots;
+  this->total_landmarks_ = number_of_landmarks;
+  this->total_robots_ = number_of_robots;
+  this->total_barcodes_ = total_landmarks_ + total_robots_;
 
   /* Resize the dataset vectors */
-  this->landmarks_.resize(total_landmarks);
-  this->robots_.resize(total_robots);
-  this->barcodes_.resize(total_barcodes, 0);
+  this->landmarks_.resize(total_landmarks_);
+  this->robots_.resize(total_robots_);
+  this->barcodes_.resize(total_barcodes_, 0);
 
-  simulator.setSimulation(data_points, sample_period, robots_, landmarks_,
-                          barcodes_, seed);
+  simulator_.setSimulation(data_points, sample_period, robots_, landmarks_,
+                           barcodes_, seed);
 
   const bool simulation = true;
 
   try {
     /* Calculate odometry and measurement errors. */
-    for (int i = 0; i < total_robots; i++) {
+    for (int i = 0; i < total_robots_; i++) {
       robots_[i].calculateSensorErrror(simulation);
     }
 
@@ -187,17 +187,17 @@ void Handler::setDataSet(const std::string &dataset,
   this->sampling_period_ = sample_period;
 
   /* All datasets contain 15 landmarks and 5 robots. */
-  this->total_landmarks = 15U;
-  this->total_robots = 5U;
-  this->total_barcodes = total_landmarks + total_robots;
+  this->total_landmarks_ = 15U;
+  this->total_robots_ = 5U;
+  this->total_barcodes = total_landmarks_ + total_robots_;
 
   /* Resize the dataset vectors */
-  this->landmarks_.resize(total_landmarks);
-  this->robots_.resize(total_robots);
-  this->barcodes_.resize(total_barcodes, 0);
+  this->landmarks_.resize(total_landmarks_);
+  this->robots_.resize(total_robots_);
+  this->barcodes_.resize(total_barcodes_, 0);
 
   /* Set the robot ID */
-  for (unsigned short int id = 0; id < total_robots; id++) {
+  for (unsigned short int id = 0; id < total_robots_; id++) {
     robots_[id].id = id + 1;
   }
 
@@ -207,7 +207,7 @@ void Handler::setDataSet(const std::string &dataset,
     readLandmarks(dataset_);
 
     /* Populate the values for each robot from the dataset */
-    for (int id = 0; id < total_robots; id++) {
+    for (int id = 0; id < total_robots_; id++) {
       readGroundTruth(dataset_, id);
       readOdometry(dataset_, id);
       readMeasurements(dataset_, id);
@@ -234,7 +234,7 @@ void Handler::setDataSet(const std::string &dataset,
 
   try {
     /* Calculate odometry and measurement errors. */
-    for (int i = 0; i < total_robots; i++) {
+    for (int i = 0; i < total_robots_; i++) {
       robots_[i].calculateSensorErrror();
       robots_[i].calculateSampleErrorStats();
     }
@@ -296,7 +296,7 @@ void Handler::setOutputDirectory(const std::string &output_directory,
         output_directory_ + '/' + folder + '/' + oss.str();
 
     this->data_extraction_directory_ = unique_directory + "/data_extraction/";
-    this->data_inference_directory = unique_directory + "/inference";
+    this->data_inference_directory_ = unique_directory + "/inference";
 
   } catch (std::runtime_error &error) {
     std::cout << "Unable to set dataset: " << error.what() << std::endl;
@@ -338,7 +338,7 @@ void Handler::readBarcodes(const std::string &dataset) {
     /* Remove whitespaces */
     line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
-    if (i >= total_barcodes) {
+    if (i >= total_barcodes_) {
       throw std::runtime_error("The number of barcodes read exceeds total "
                                "number of barcodes specified.");
     }
@@ -350,10 +350,10 @@ void Handler::readBarcodes(const std::string &dataset) {
 
     /* Extract barcodes into barcodes array */
     barcodes_[i] = std::stoi(line.substr(line.find('\t', 0)));
-    if (i < total_robots) {
+    if (i < total_robots_) {
       robots_[i].barcode = barcodes_[i];
     } else {
-      landmarks_[i - total_robots].barcode = barcodes_[i];
+      landmarks_[i - total_robots_].barcode = barcodes_[i];
     }
     i++;
   }
@@ -389,7 +389,7 @@ void Handler::readLandmarks(const std::string &dataset) {
     /* Remove whitespaces */
     line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
-    if (i >= total_landmarks) {
+    if (i >= total_landmarks_) {
       throw std::runtime_error(
           "Total number of read landmarks exceeds TOTAL_LANDMARKS variable.\n");
     }
@@ -643,7 +643,7 @@ void Handler::syncData(const double &sample_period) {
   double minimum_time = robots_[0].raw.states.front().time;
   double maximum_time = robots_[0].raw.states.back().time;
 
-  for (int i = 1; i < total_robots; i++) {
+  for (int i = 1; i < total_robots_; i++) {
     double robot_minimum_time =
         std::min({robots_[i].raw.states.front().time,
                   robots_[i].raw.odometry.front().time,
@@ -662,7 +662,7 @@ void Handler::syncData(const double &sample_period) {
 
   /* Subtract the minimum time from all timesteps to make t=0 the intial time of
    * the system. */
-  for (int i = 0; i < total_robots; i++) {
+  for (int i = 0; i < total_robots_; i++) {
     /* Set the loop length to the size of the largest vector */
     std::size_t dataset_size =
         std::max({robots_[i].raw.states.size(), robots_[i].raw.odometry.size(),
@@ -682,18 +682,18 @@ void Handler::syncData(const double &sample_period) {
   }
 
   maximum_time -= minimum_time;
-  total_synced_datapoints = std::floor(maximum_time / sample_period) + 1;
+  total_synced_datapoints_ = std::floor(maximum_time / sample_period) + 1;
 
   /* Linear Interpolation. This section performs linear interpolation on the
    * ground truth and odometry values to ensure that all robots have syncronised
    * time steps. */
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
     /* Clear all previously interpolated values */
     robots_[id].groundtruth.states.clear();
-    robots_[id].groundtruth.states.reserve(total_synced_datapoints);
+    robots_[id].groundtruth.states.reserve(total_synced_datapoints_);
 
     robots_[id].synced.odometry.clear();
-    robots_[id].synced.odometry.reserve(total_synced_datapoints);
+    robots_[id].synced.odometry.reserve(total_synced_datapoints_);
 
     robots_[id].synced.measurements.clear();
 
@@ -896,7 +896,7 @@ void Handler::syncData(const double &sample_period) {
  * respectively.
  */
 void Handler::calculateGroundtruthOdometry() {
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
     robots_[id].groundtruth.odometry.clear();
 
     for (std::size_t k = 0; k < robots_[id].groundtruth.states.size() - 1;
@@ -952,7 +952,7 @@ void Handler::calculateGroundtruthOdometry() {
  * denotes the robot's y-coordinate.
  */
 void Handler::calculateGroundtruthMeasurement() {
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
 
     robots_[id].groundtruth.measurements.clear();
     auto iterator = robots_[id].groundtruth.measurements.begin();
@@ -1064,7 +1064,7 @@ void Handler::relativeRobotDistance() {
 
   robot_file << "# Time [s]	Robot	Ranges [m]	Robot ID\n";
   for (std::size_t k = 0; k < robots_[0].groundtruth.states.size(); k++) {
-    for (int id = 0; id < total_robots; id++) {
+    for (int id = 0; id < total_robots_; id++) {
       double x = robots_[0].groundtruth.states[k].x -
                  robots_[id].groundtruth.states[k].x;
       double y = robots_[0].groundtruth.states[k].y -
@@ -1097,7 +1097,7 @@ void Handler::relativeLandmarkDistance() {
 
   robot_file << "# Time [s]	Landmark	Ranges [m]	Robot ID\n";
   for (std::size_t k = 0; k < robots_[0].groundtruth.states.size(); k++) {
-    for (int l = 0; l < total_landmarks; l++) {
+    for (int l = 0; l < total_landmarks_; l++) {
       double x = robots_[0].groundtruth.states[k].x - landmarks_[l].x;
       double y = robots_[0].groundtruth.states[k].y - landmarks_[l].y;
       double range = std::sqrt(x * x + y * y);
@@ -1174,7 +1174,7 @@ void Handler::saveStateData() {
                 "(r) / Synced (s)	Robot ID\n";
 
   /* Loop through the data structures for each robot */
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
     /* Determine which dataset is larger and set that as the loop iterations
      */
     std::size_t largest_vector_size = std::max(
@@ -1234,7 +1234,7 @@ void Handler::saveMeasurementData() {
   /* Save the values of the raw and synced measurment values of a given robot
    * into the same file with the last row indicating 'g' for raw  and 'i' for
    * synced.*/
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
 
     /* NOTE: when the "raw" measurement data structure is populated, it only
      * adds one element to the members for each time stamp. After
@@ -1321,7 +1321,7 @@ void Handler::saveOdometryData() {
       << "# Time [s]	Forward Velocity [m/s]	Angular Velocity "
          "[rad/s]	Raw (r)/Synced(s)/Groundtruth(g)	Robot ID\n";
 
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
     std::size_t largest_vector_size = std::max(
         {robots_[id].raw.odometry.size(), robots_[id].synced.odometry.size()});
 
@@ -1382,7 +1382,7 @@ void Handler::saveErrorData() {
                 "[rad/s]	Robot ID\n";
 
   /* Save the error values of the odometry.*/
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
     for (std::size_t k = 0; k < robots_[id].error.odometry.size(); k++) {
       robot_file << robots_[id].error.odometry[k].time << '\t'
                  << robots_[id].error.odometry[k].forward_velocity << '\t'
@@ -1409,7 +1409,7 @@ void Handler::saveErrorData() {
       << "# Time [s]	Subject	Range [m]	Bearing[rad]	Robot ID\n";
 
   /* Save the error values of the odometry.*/
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
 
     for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
       for (std::size_t s = 0;
@@ -1457,7 +1457,7 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
   robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
 
   /* Save the plot data for the Forward Velocity Error  */
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
     std::unordered_map<int, double> forward_velocity_bin_counts;
 
     for (const auto &odometry : robots_[id].error.odometry) {
@@ -1497,7 +1497,7 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
 
   robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
 
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
     /* Save the plot data for the Angular Velocity Error  */
 
     std::unordered_map<int, double> angular_velocity_bin_counts;
@@ -1548,7 +1548,7 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
 
   robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
   /* Save the plot data for the Forward Velocity Error  */
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
 
     double number_of_measurements = 0.0;
     for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
@@ -1589,7 +1589,7 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
 
   robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
 
-  for (int id = 0; id < total_robots; id++) {
+  for (int id = 0; id < total_robots_; id++) {
     /* Save the plot data for the Angular Velocity Error  */
 
     double number_of_measurements = 0.0;
@@ -1642,7 +1642,7 @@ void Handler::saveRobotErrorStatistics() {
           "Veolcity [rad^2]	Range Mean [m]	Range Variance [m^2]	"
           "Bearing Mean [rad]	Bearing Variance [rad^2]\n";
 
-  for (unsigned short int id = 0; id < total_robots; id++) {
+  for (unsigned short int id = 0; id < total_robots_; id++) {
     file << id + 1 << '\t' << robots_[id].forward_velocity_error.mean << '\t'
          << robots_[id].forward_velocity_error.variance << '\t'
          << robots_[id].angular_velocity_error.mean << '\t'
@@ -1672,7 +1672,7 @@ void Handler::saveLandmarks() {
 
   file << "# ID	Barcode	x-coordinate [m]	y-coordinate "
           "[m]	x std-dev [m]	y std-dev [m]\n";
-  for (unsigned short int id = 0; id < total_landmarks; id++) {
+  for (unsigned short int id = 0; id < total_landmarks_; id++) {
     file << landmarks_[id].id << '\t' << landmarks_[id].barcode << '\t'
          << landmarks_[id].x << '\t' << landmarks_[id].y << '\t'
          << landmarks_[id].x_std_dev << '\t' << landmarks_[id].y_std_dev
@@ -1687,12 +1687,12 @@ void Handler::saveLandmarks() {
  * state and the groudtruth state.
  */
 void Handler::saveInferenceData() {
-  if (!std::filesystem::exists(data_inference_directory)) {
-    std::filesystem::create_directories(data_inference_directory);
+  if (!std::filesystem::exists(data_inference_directory_)) {
+    std::filesystem::create_directories(data_inference_directory_);
   }
 
   /* Saving the absolute error. */
-  std::string filename = data_inference_directory + "/state_error.dat";
+  std::string filename = data_inference_directory_ + "/state_error.dat";
 
   std::ofstream file(filename);
 
@@ -1703,18 +1703,18 @@ void Handler::saveInferenceData() {
   file << "#Time [s]  x Error [m] y error [m] orienation error [rad]  Robot "
           "ID\n";
 
-  for (unsigned short id = 0; id < total_robots; id++) {
+  for (unsigned short id = 0; id < total_robots_; id++) {
     /* Populate the error state if it has not yet been done. */
     if (robots_[id].error.states.empty()) {
       robots_[id].calculateStateError();
     }
-    if (total_synced_datapoints > robots_[id].error.states.size()) {
+    if (total_synced_datapoints_ > robots_[id].error.states.size()) {
       throw std::runtime_error("Robot " + std::to_string(id) +
                                " has less synced datapoints than groundtruth "
                                "points. Check your filter implementation.");
     }
 
-    for (unsigned long k = 0; k < total_synced_datapoints; k++) {
+    for (unsigned long k = 0; k < total_synced_datapoints_; k++) {
       file << robots_[id].error.states[k].time << '\t'
            << robots_[id].error.states[k].x << '\t'
            << robots_[id].error.states[k].y << '\t'
@@ -1729,7 +1729,7 @@ void Handler::saveInferenceData() {
   file.close();
 
   /* Saving the esitmated states. */
-  filename = data_inference_directory + "/infered_state.dat";
+  filename = data_inference_directory_ + "/infered_state.dat";
 
   file.open(filename);
 
@@ -1740,19 +1740,19 @@ void Handler::saveInferenceData() {
   file << "#Time [s]  x Position [m] y Position [m] orienation [rad]  Robot "
           "ID\n";
 
-  for (unsigned short id = 0; id < total_robots; id++) {
+  for (unsigned short id = 0; id < total_robots_; id++) {
     /* Populate the error state if it has not yet been done. */
     if (robots_[id].synced.states.empty()) {
       throw std::runtime_error("Synced robots not set");
     }
 
-    if (total_synced_datapoints > robots_[id].error.states.size()) {
+    if (total_synced_datapoints_ > robots_[id].error.states.size()) {
       throw std::runtime_error("Robot " + std::to_string(id) +
                                " has less synced datapoints than groundtruth "
                                "points. Check your filter implementation.");
     }
 
-    for (unsigned long k = 0; k < total_synced_datapoints; k++) {
+    for (unsigned long k = 0; k < total_synced_datapoints_; k++) {
       file << robots_[id].synced.states[k].time << '\t'
            << robots_[id].synced.states[k].x << '\t'
            << robots_[id].synced.states[k].y << '\t'
@@ -2014,7 +2014,7 @@ void Handler::plotInferenceData(std::string file_type) {
   /* If the file type is empty, then library will use the gnuplot qt terminal,
    * and therefore nothing needs to be saved. */
   if (file_type != "") {
-    plots_directory = data_inference_directory + "/plots/";
+    plots_directory = data_inference_directory_ + "/plots/";
 
     if (!std::filesystem::exists(plots_directory)) {
       std::filesystem::create_directory(plots_directory);
@@ -2025,7 +2025,7 @@ void Handler::plotInferenceData(std::string file_type) {
       std::string(LIB_DIR) + "/scripts/state_error.gp";
 
   std::string command = "gnuplot -e \"dataset_directory='" +
-                        data_inference_directory + "'; plots_directory='" +
+                        data_inference_directory_ + "'; plots_directory='" +
                         plots_directory + "'; file_type='" + file_type +
                         "'\" " + gnuplot_script_path;
   int ret = system(command.c_str());
@@ -2056,7 +2056,7 @@ void Handler::plotInferenceData(std::string file_type) {
  * std::runtime_error.
  */
 const int Handler::getID(unsigned short int barcode) const {
-  for (int i = 0; i < total_barcodes; i++) {
+  for (int i = 0; i < total_barcodes_; i++) {
     if (barcodes_[i] == barcode) {
       return (i + 1);
     }
@@ -2112,10 +2112,10 @@ const double Handler::getSamplePeriod() const { return sampling_period_; }
  * std::runtime_error will be throw.
  */
 const unsigned short int Handler::getNumberOfRobots() const {
-  if (0 == total_robots) {
+  if (0 == total_robots_) {
     throw std::runtime_error("The total number of robots have not been set.");
   }
-  return total_robots;
+  return total_robots_;
 }
 
 /**
@@ -2125,11 +2125,11 @@ const unsigned short int Handler::getNumberOfRobots() const {
  * std::runtime_error will be throw.
  */
 const unsigned short int Handler::getNumberOfLandmarks() const {
-  if (0 == total_landmarks) {
+  if (0 == total_landmarks_) {
     throw std::runtime_error(
         "The total number of landmarks have not been set.");
   }
-  return total_landmarks;
+  return total_landmarks_;
 }
 
 /**
@@ -2139,21 +2139,21 @@ const unsigned short int Handler::getNumberOfLandmarks() const {
  * std::runtime_error will be throw.
  */
 const unsigned short int Handler::getNumberOfBarcodes() const {
-  if (0 == total_barcodes) {
+  if (0 == total_barcodes_) {
     throw std::runtime_error("The total number of barcodes have not been set.");
   }
-  return total_barcodes;
+  return total_barcodes_;
 }
 
 /**
  * @brief Getter for the Data::Handler::getNumberOfSyncedDatapoints field.
  */
 const unsigned long Handler::getNumberOfSyncedDatapoints() const {
-  return total_synced_datapoints;
+  return total_synced_datapoints_;
 }
 
 const std::vector<size_t> Handler::getNumberOfSyncedMeasurements() const {
-  return total_measurements;
+  return total_measurements_;
 }
 
 } // namespace Data

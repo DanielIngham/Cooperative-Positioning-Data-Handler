@@ -121,7 +121,7 @@ private:
    * @brief Folder location for the output data corresponding to the infernce
    * peformance.
    */
-  std::string data_inference_directory = "";
+  std::string data_inference_directory_ = "";
 
   /**
    * @brief the desired sample period for resampling the data to sync the
@@ -132,29 +132,29 @@ private:
   /**
    * @brief The total number of landmarks in the dataset.
    */
-  unsigned short total_landmarks = 0U;
+  unsigned short total_landmarks_ = 0U;
 
   /**
    * @brief The total number of robots in the dataset.
    */
-  unsigned short total_robots = 0U;
+  unsigned short total_robots_ = 0U;
 
   /**
    * @brief the total number of barcodes in the dataset.
    * @note the value of this variable is the summation of the
    * Data::Handler::TOTAL_LANDMARKS and Data::Handler::TOTAL_ROBOTS.
    */
-  unsigned short total_barcodes = 0U;
+  unsigned short total_barcodes_ = 0U;
 
   /**
    * @brief The number of datapoints after calling Robot::sync_data.
    */
-  unsigned long total_synced_datapoints = 0U;
+  unsigned long total_synced_datapoints_ = 0U;
 
   /**
    * @brief the total number of measurements for each robot.
    */
-  std::vector<size_t> total_measurements;
+  std::vector<size_t> total_measurements_;
 
   /**
    * @brief All landmarks containing all the data extracted form
@@ -190,7 +190,7 @@ private:
    * @brief Simulator class responsible for creating odometry, and measurement
    * data for the robots, and assigning positions to the landmarks.
    */
-  Simulator simulator;
+  Simulator simulator_;
 
   void setOutputDirectory(const std::string &, const std::string &);
 
