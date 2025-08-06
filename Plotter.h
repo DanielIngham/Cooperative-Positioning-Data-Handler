@@ -6,10 +6,9 @@
 #pragma once
 
 #include "DataHandler.h"
-#include <chrono>
+
 #include <cmath>
-#include <iostream>
-#include <thread>
+#include <tuple>
 #include <unistd.h>
 #include <vector>
 
@@ -17,70 +16,120 @@
 #define GNUPLOT_DEPRECATE_WARN
 #include "./external/gnuplot/gnuplot-iostream.h"
 
-#include "DataHandler.h"
-
 namespace Data {
 
-namespace Plot {
+class Plotter {
+public:
+  explicit Plotter(Handler &);
+  Plotter(Plotter &&) = delete;
+  Plotter(const Plotter &) = delete;
+  Plotter &operator=(Plotter &&) = delete;
+  Plotter &operator=(const Plotter &) = delete;
+  ~Plotter();
 
-inline void demo_animation() {
+  void demo_animation();
+  void plotGroundruth(unsigned short);
 
-  Gnuplot gp;
+private:
+  /** Reference to a data handler instance */
+  Handler &data_;
 
-  std::cout << "Press Ctrl-C to quit (closing gnuplot window doesn't quit)."
-            << std::endl;
+  /** Total number of synced data points in the dataset. */
+  size_t data_points_;
 
-  gp << "set yrange [-1:1]\n";
+  /** Total number of synced measurements present for each robot in the dataset.
+   */
+  std::vector<size_t> total_measurements_;
 
-  const int N = 1000;
-  std::vector<double> pts(N);
+  /** Total number of robots present in the dataset. */
+  unsigned short total_robots_;
 
-  double theta = 0;
-  while (1) {
-    for (int i = 0; i < N; i++) {
-      double alpha = (static_cast<double>(i) / N - 0.5) * 10;
-      pts[i] = sin(alpha * 8.0 + theta) * exp(-alpha * alpha / 2.0);
-    }
+  /** Total number of landmarks present in the dataset. */
+  unsigned short total_landmarks_;
 
-    gp << "plot '-' binary" << gp.binFmt1d(pts, "array")
-       << "with lines notitle\n";
-    gp.sendBinary1d(pts);
-    gp.flush();
+  /** Instance of the gnuplot iostream class that allows for plotting */
+  Gnuplot gnuplot_;
 
-    theta += 0.2;
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
-  }
-}
+  /**
+   * Type defintion for the vector of tuples containing the serialised data of
+   * the robots odometry inputs. The vector will be of size total_robots.
+   * The elements in the vector correspond to:
+   *   - double : time [s]
+   *   - double : forward velocity [m/s]
+   *   - double : angular velocity [rad/s]
+   */
+  typedef std::vector<
+      std::tuple<double /* time [s] */, double /* forward velocity [m/s]*/,
+                 double /* Angular velocity [rad/s]*/>>
+      odometry_tuple;
 
-inline void plotGroundruth(Handler &handler) {
+  /**
+   * Type defintion for the vector of tuples containing the serialised data of
+   * the robots poses. The vector will be of size total_robots.
+   * The elements in the vector correspond to:
+   *   - double : time [s]
+   *   - double : global x position [m]
+   *   - double : global y position [m]
+   *   - double : global orientation [rad]
+   */
+  typedef std::vector<
+      std::tuple<double /* time [s] */, double /* x position [m] */,
+                 double /* y position [m] */, double /* orientation [rad] */>>
+      pose_tuple;
 
-  Gnuplot gp;
-  std::vector<Robot> &robots = handler.getRobots();
-  std::vector<Landmark> &landmarks;
+  /**
+   * Type defintion for the vector of tuples containing the serialised data of
+   * the landmarks points. The vector will be of size total_landmarks.
+   * The elements in the vector correspond to:
+   *   - double : time [s]
+   *   - double : global x position [m]
+   *   - double : global y position [m]
+   */
+  typedef std::vector<
+      std::tuple<double /* x position [m] */, double /* y position [m] */>>
+      point_tuple;
 
-  std::vector<double> x;
-  std::vector<double> y;
+  /**
+   * Type defintion for the vector of tuples containing the serialised data of
+   * the landmarks points. The vector will be of size total_landmarks.
+   * The elements in the vector correspond to:
+   *   - double : time [s]
+   *   - unsigned short: Subject ID
+   *   - double : relative range to agent measured [m]
+   *   - double : relative bearing to agent measured [rad]
+   */
+  typedef std::vector<
+      std::tuple<double /* time [s] */, unsigned short /* Subject */,
+                 double /* range [m] */, double /* bearing [rad] */>>
+      measurement_tuple;
 
-  for (size_t i = 0; i < robots[0].groundtruth.states.size(); ++i) {
-    x.push_back(robots[0].groundtruth.states[i].x);
-    y.push_back(robots[0].groundtruth.states[i].y);
-  }
+  /**
+   * @struct RobotData
+   * Houses the serialised data fields for all information pertaining to the
+   * robots.
+   */
+  struct RobotData {
 
-  // Plot using std::pair (XY format)
-  std::vector<std::pair<double, double>> xy;
-  for (size_t i = 0; i < x.size(); ++i) {
-    xy.emplace_back(x[i], y[i]);
-  }
-  gp << "set term wxt noraise\n";
-  gp << "plot '-' with lines title 'xy plot'\n";
-  gp.send1d(xy);
+    odometry_tuple odometry;
+    measurement_tuple measurement;
 
-  // gp << "plot '-' binary" << gp.binFmt1d(pts, "array")
-  //    << "with lines notitle\n";
-  // gp.sendBinary1d(pts);
+    struct {
+      pose_tuple estimate;
+      pose_tuple groundtruth;
+    } pose;
+  };
 
-  gp.flush();
-}
-} // namespace Plot
+  /** Vector containing the serialised data extracted into the RobotData struct.
+   */
+  std::vector<RobotData> serial_robot_data_;
+
+  /** Vector containing the global points of each landmark. */
+  point_tuple serial_landmark_data_;
+
+  void serialiseRobotInputData();
+  void serialiseRobotOutputData();
+
+  void serialiseLandmarkData();
+};
 
 } // namespace Data
