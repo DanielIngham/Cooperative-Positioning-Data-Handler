@@ -22,6 +22,11 @@ struct SimulationDefaults {
   static constexpr double kSamplePeriod = 0.02;
   static constexpr unsigned long kSeed = 0U;
   static const inline std::string kOutputDir = "";
+
+  /* The measurement sensor is slower than the odometry sensor, so the is used
+   * to determine when a measurment should be taken. */
+  static constexpr unsigned short kmeasurement_to_odometry_ratio = 5U;
+  static constexpr double kmax_range = 4.0;
 };
 
 /**
@@ -72,7 +77,7 @@ private:
    * @note the value of this variable is the summation of the
    * DataHandler::TOTAL_LANDMARKS and DataHandler::TOTAL_ROBOTS.
    */
-  unsigned short int total_barcodes = 0;
+  unsigned short int total_barcodes_ = 0;
 
   /**
    * @brief Pointer to input robot vector.
@@ -118,7 +123,7 @@ private:
     double bearing[2] = {0.00062, 0.00596};
 
     double landmarks[2] = {0.00004964 * 0.00004964, 0.00041465 * 0.00041465};
-  } variance;
+  } variance_;
 
   void assignVectorMemory();
   void setBarcodes();
