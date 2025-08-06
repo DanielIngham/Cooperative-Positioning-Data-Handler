@@ -156,9 +156,9 @@ void Handler::setSimulation(const unsigned long int data_points,
  * these two values.
  * @note The function only checks the existence of the given datset folder. The
  * data extraction is performed by calling the functions:
- * DataHandler::readBarcodes, DataHandler::readLandmarks,
- * DataHandler::readGroundTruth, DataHandler::readOdometry, and
- * DataHandler::readMeasurements. Additionally, the DataHandler::syncData
+ * Data::Handler::readBarcodes, Data::Handler::readLandmarks,
+ * Data::Handler::readGroundTruth, Data::Handler::readOdometry, and
+ * Data::Handler::readMeasurements. Additionally, the Data::Handler::syncData
  * function is called to resample to data points through linear interpolation to
  * ensure all robots have the same time stamps.
  */
@@ -315,7 +315,7 @@ void Handler::readBarcodes(const std::string &dataset) {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset not specified. Please specify a dataset at construction of "
-        "the DataHandler class instance or using DataHandler::setDataSet.");
+        "the Data::Handler class instance or using Data::Handler::setDataSet.");
   }
 
   std::string filename = dataset + "/Barcodes.dat";
@@ -363,8 +363,8 @@ void Handler::readBarcodes(const std::string &dataset) {
 /**
  * @brief Extracts data from the landmarks data file: Landmark_Groundtruth.dat.
  * @param[in] dataset path to the dataset folder.
- * @note DataHandler::readBarcodes needs to be called before this function since
- * this function relies on the barcodes extracted.
+ * @note Data::Handler::readBarcodes needs to be called before this function
+ * since this function relies on the barcodes extracted.
  * @note If the data could not be extracted from the specified dataset, a
  * std::runtime_error is thrown.
  */
@@ -444,7 +444,7 @@ void Handler::readLandmarks(const std::string &dataset) {
  * @details The data extracted form the Robotx_Groundtruth.dat contains the
  * timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of
  * the robot x. These are used to populate the Robot::raw states member for a
- * given robot in DataHandler::robots_.
+ * given robot in Data::Handler::robots_.
  */
 void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
   /* Clear all previous elements in the ground truth vector. */
@@ -512,7 +512,7 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
  * @details The data extracted form the Robotx_Odometry.dat contains the
  * timestamp [s], Forward Velocity [m/s], and Angular velocity [rad/s] of the
  * measured odometry input into robot x. These are used to populate the
- * Robot::raw odometry member for a given robot in DataHandler::robots_.
+ * Robot::raw odometry member for a given robot in Data::Handler::robots_.
  */
 void Handler::readOdometry(const std::string &dataset, int robot_id) {
   /* Clear all previous elements in the odometry vector. */
@@ -573,7 +573,7 @@ void Handler::readOdometry(const std::string &dataset, int robot_id) {
  * @note Grouping of measurements with the same time stamps does not occur
  * during the reading. Therfore, the each member vector of measurements
  * (subjects, ranges and bearings) are filled with only one value. The grouping
- * by time stamp occurs in the DataHandler::syncData function.
+ * by time stamp occurs in the Data::Handler::syncData function.
  */
 void Handler::readMeasurements(const std::string &dataset, int robot_id) {
   /* Clear all previous elements in the measurement vector. */
@@ -635,8 +635,8 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
  * @param[in] sample_period the desired sample period for resampling the data to
  * sync the timesteps between the vehicles.
  * @note Synced values for the ground truth are saved in the
- * DataHandler::robots_->groundtruth struct vector whereas synced odometry are
- * saved in the DataHandler::robots_->synced struct
+ * Data::Handler::robots_->groundtruth struct vector whereas synced odometry are
+ * saved in the Data::Handler::robots_->synced struct
  */
 void Handler::syncData(const double &sample_period) {
   /* Find the minimum and maximimum times in the datasets */
@@ -1109,7 +1109,7 @@ void Handler::relativeLandmarkDistance() {
 }
 
 /**
- * @brief Saves all the extracted and processed data in the DataHandler class
+ * @brief Saves all the extracted and processed data in the Data::Handler class
  * after data extraction and processing.
  */
 void Handler::saveExtractedData() {
@@ -1153,7 +1153,7 @@ void Handler::saveExtractedData() {
 }
 
 /**
- * @brief Writes the synced (performed by DataHandler::syncData) and raw
+ * @brief Writes the synced (performed by Data::Handler::syncData) and raw
  * groundtruth robot state data extracted from the dataset after, which includes
  * its x-coordinate, y-coordinate and heading.
  */
@@ -1208,10 +1208,10 @@ void Handler::saveStateData() {
 
 /**
  * @brief Saves the extracted measurement and calculated groundtruth measurement
- * data from the DataHandler class into .dat files to be plotted by gnuplot.
+ * data from the Data::Handler class into .dat files to be plotted by gnuplot.
  * @details Saves both the measurement data (as extracted from the dataset) and
  * the calculated groundtruth measurement values (calculated by
- * DataHandler::calculateGroundtruthMeasurement) into Measurement.dat and
+ * Data::Handler::calculateGroundtruthMeasurement) into Measurement.dat and
  * Groundtruth-Measurement.dat respectively.
  */
 void Handler::saveMeasurementData() {
@@ -1298,7 +1298,7 @@ void Handler::saveMeasurementData() {
 }
 
 /**
- * @brief Saves the measured odometry data from the DataHandler class into a
+ * @brief Saves the measured odometry data from the Data::Handler class into a
  * .dat file to be plotted by gnuplot.
  * @details Saves the odometry data (as extracted from the dataset) into
  * Odometry.dat.
@@ -2051,7 +2051,7 @@ void Handler::plotInferenceData(std::string file_type) {
  * @return the ID of the robot of landmark. If the ID is not found -1 is
  * returned.
  * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and
- * index 3 in the array DataHandler::robots_.
+ * index 3 in the array Data::Handler::robots_.
  * @note if the dataset has not been set, the function will throw a
  * std::runtime_error.
  */
@@ -2099,14 +2099,14 @@ std::vector<Robot> &Handler::getRobots() {
 }
 
 /**
- * @brief Getter for the DataHandler::sampling_period_ field.
+ * @brief Getter for the Data::Handler::sampling_period_ field.
  * @return the sampling period set by the user.
  * @note DataExtractor::sampling_period_ has a default value of 0.02.
  */
 const double Handler::getSamplePeriod() const { return sampling_period_; }
 
 /**
- * @brief Getter for the DataHandler::total_robots field.
+ * @brief Getter for the Data::Handler::total_robots field.
  * @return the number of robots set by the user dataset.
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
@@ -2119,7 +2119,7 @@ const unsigned short int Handler::getNumberOfRobots() const {
 }
 
 /**
- * @brief Getter for the DataHandler::total_landmarks field.
+ * @brief Getter for the Data::Handler::total_landmarks field.
  * @return the number of landmarks set by the user or the dataset.
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
@@ -2133,7 +2133,7 @@ const unsigned short int Handler::getNumberOfLandmarks() const {
 }
 
 /**
- * @brief Getter for the DataHandler::total_barcodes field.
+ * @brief Getter for the Data::Handler::total_barcodes field.
  * @return the number of landmarks set by the user or the dataset.
  * @note the field is initialised to zero, therefore if it is not set, a
  * std::runtime_error will be throw.
@@ -2146,7 +2146,7 @@ const unsigned short int Handler::getNumberOfBarcodes() const {
 }
 
 /**
- * @brief Getter for the DataHandler::getNumberOfSyncedDatapoints field.
+ * @brief Getter for the Data::Handler::getNumberOfSyncedDatapoints field.
  */
 const unsigned long Handler::getNumberOfSyncedDatapoints() const {
   return total_synced_datapoints;
