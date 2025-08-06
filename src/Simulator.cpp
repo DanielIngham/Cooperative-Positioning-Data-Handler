@@ -56,7 +56,7 @@ void Simulator::setSimulation(const unsigned long int data_points,
 
   this->total_landmarks = landmarks.size();
   this->total_robots = robots.size();
-  this->total_barcodes = this->total_landmarks + this->total_robots;
+  this->total_barcodes_ = this->total_landmarks + this->total_robots;
 
   this->robots_ = &robots;
   this->landmarks_ = &landmarks;
@@ -98,7 +98,7 @@ void Simulator::assignVectorMemory() {
  * simulation, this checksum is not nessary and therefore not incorporated.
  */
 void Simulator::setBarcodes() {
-  for (unsigned short int id = 0; id < total_barcodes; id++) {
+  for (unsigned short int id = 0; id < total_barcodes_; id++) {
     (*barcodes_)[id] = id + 1;
     if (id < this->total_robots) {
       (*robots_)[id].barcode = id + 1;
@@ -116,8 +116,8 @@ void Simulator::setErrorStatistics() {
 
   /* Set the landmarks standard deviation */
   std::uniform_real_distribution<double> deviation(
-      std::sqrt(this->variance.landmarks[MIN]),
-      std::sqrt(this->variance.landmarks[MAX]));
+      std::sqrt(this->variance_.landmarks[MIN]),
+      std::sqrt(this->variance_.landmarks[MAX]));
 
   /* Loop through each landmark and set the id and standard deviation */
   for (unsigned short i = 0; i < this->total_landmarks; i++) {
@@ -132,18 +132,18 @@ void Simulator::setErrorStatistics() {
 
   /* Set all the robot ID's and variance robots */
   std::uniform_real_distribution<double> forward_velocity_error(
-      this->variance.forward_velocity[MIN],
-      this->variance.forward_velocity[MAX]);
+      this->variance_.forward_velocity[MIN],
+      this->variance_.forward_velocity[MAX]);
 
   std::uniform_real_distribution<double> angular_velocity_error(
-      this->variance.angular_velocity[MIN],
-      this->variance.angular_velocity[MAX]);
+      this->variance_.angular_velocity[MIN],
+      this->variance_.angular_velocity[MAX]);
 
-  std::uniform_real_distribution<double> range_error(this->variance.range[MIN],
-                                                     this->variance.range[MAX]);
+  std::uniform_real_distribution<double> range_error(
+      this->variance_.range[MIN], this->variance_.range[MAX]);
 
   std::uniform_real_distribution<double> bearing_error(
-      this->variance.bearing[MIN], this->variance.bearing[MAX]);
+      this->variance_.bearing[MIN], this->variance_.bearing[MAX]);
 
   for (unsigned short id = 0; id < this->total_robots; id++) {
     (*robots_)[id].id = id + 1;
@@ -524,10 +524,11 @@ void Simulator::setRobotOdometryAndState() {
  * that fall within a given range.
  */
 void Simulator::setRobotMeasurement() {
-  /* The measurement sensor is slower than the odometry sensor, so the is used
-   * to determine when a measurment should be taken. */
-  unsigned short measurement_to_odometry_ratio = 5;
-  double max_range = 4.0;
+
+  unsigned short measurement_to_odometry_ratio =
+      SimulationDefaults::kmeasurement_to_odometry_ratio;
+
+  double max_range = SimulationDefaults::kmax_range;
 
   for (unsigned long k = 0; k < this->data_points_; k++) {
 
