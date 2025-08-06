@@ -51,10 +51,10 @@ class Handler {
 public:
   /* Constructors */
   Handler();
-  explicit Handler(
-      const std::string &,
-      const std::string &output_directory = HandlerDefaults::kOutputDir,
-      const double &sampling_period = HandlerDefaults::kSamplePeriod);
+
+  Handler(const std::string &,
+          const std::string &output_directory = HandlerDefaults::kOutputDir,
+          const double &sampling_period = HandlerDefaults::kSamplePeriod);
 
   Handler(
       const unsigned long int,
