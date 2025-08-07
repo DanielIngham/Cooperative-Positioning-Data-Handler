@@ -10,11 +10,13 @@
 #include <cmath>
 #include <tuple>
 #include <unistd.h>
+#include <variant>
 #include <vector>
 
 /* Warn about depreciated functions. */
 #define GNUPLOT_DEPRECATE_WARN
 #include "./external/gnuplot/gnuplot-iostream.h"
+#include "./external/gnuplot/gnuplot_helper.h"
 
 namespace Data {
 
@@ -105,6 +107,9 @@ private:
                  double /* range [m] */, double /* bearing [rad] */>>
       measurement_tuple;
 
+  using PlotData =
+      std::variant<pose_tuple, point_tuple, measurement_tuple, odometry_tuple>;
+
   /**
    * @struct RobotData
    * Houses the serialised data fields for all information pertaining to the
@@ -143,11 +148,8 @@ private:
 
   void serialiseLandmarkData();
 
-  std::string setTerminal(unsigned short terminal_number = 0);
-
-  std::string setMultiplot(unsigned short, unsigned short,
-                           const std::string title = "");
-  std::string unsetMultiplot();
+  void plot(const std::vector<PlotData> &,
+            const std::vector<gnuplot::PlotSettings> &);
 };
 
 } // namespace Data
