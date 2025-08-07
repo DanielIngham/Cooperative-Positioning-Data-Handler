@@ -29,6 +29,7 @@ public:
 
   void demo_animation();
   void plotGroundruthStates(unsigned short robot_id = 0);
+  void plotGroundruthTrajectory(unsigned short robot_id = 0);
 
 private:
   /** Reference to a data handler instance */

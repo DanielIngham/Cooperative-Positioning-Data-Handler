@@ -32,6 +32,7 @@ Plotter::Plotter(Handler &data)
   }
 
   serialiseRobotInputData();
+  serialiseLandmarkData();
 }
 
 /**
@@ -85,11 +86,6 @@ void Plotter::serialiseRobotOutputData() {
  * using gnuplot.
  */
 void Plotter::serialiseLandmarkData() {
-  /* The landmark data should be constant for a data set, therefore it only
-   * needs to be serialised in once. */
-  if (!serial_landmark_data_.empty())
-    return;
-
   const std::vector<Landmark> &input_landmark_data = data_.getLandmarks();
 
   std::transform(input_landmark_data.begin(), input_landmark_data.end(),
@@ -170,7 +166,43 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
 
     gnuplot_ << unsetMultiplot();
 
-    // gnuplot_.flush();
+    gnuplot_.flush();
+  }
+}
+
+void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
+
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  for (; id < end_point; ++id) {
+    std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
+
+    gnuplot_ << setTerminal(id);
+    gnuplot_ << "set grid\n";
+
+    gnuplot_ << "$groundtruth_pose << EOD\n";
+    gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
+    gnuplot_ << "EOD\n";
+
+    gnuplot_ << "$raw_pose << EOD\n";
+    gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
+    gnuplot_ << "EOD\n";
+
+    gnuplot_ << "$landmarks << EOD\n";
+    gnuplot_.send1d(serial_landmark_data_);
+    gnuplot_ << "EOD\n";
+
+    gnuplot_ << "set style data line\n";
+    gnuplot_ << "set pointsize 0.1\n";
+
+    gnuplot_ << "plot $landmarks using 1:2 with points pointsize 1.0 pointtype "
+                "6 title 'Landmarks',"
+             << "$groundtruth_pose using 2:3 title 'Interpolated' lc rgb "
+                "'purple'\n";
+
+    gnuplot_.flush();
   }
 }
 
