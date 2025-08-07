@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <string>
 #include <thread>
 #include <tuple>
 #include <vector>
@@ -124,16 +125,88 @@ void Plotter::demo_animation() {
   }
 }
 
-void Plotter::plotGroundruth(unsigned short robot_id) {
+/**
+ * Plots the groundtruth states of the robots.
+ * @param robot_id The id of the robot whose states will be plotted.
+ * @note If the parameter is left empty or set to 0, then all robots data will
+ * be plotted in individual terminals.
+ */
+void Plotter::plotGroundruthStates(unsigned short robot_id) {
 
-  gnuplot_ << "set mouse\n"
-           << "set term wxt noraise\n"
-           << "set samples 1000\n";
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
-  gnuplot_ << "plot '-' using 1:1 with lines title 'xy plot'\n";
-  gnuplot_.send1d(serial_robot_data_[robot_id].pose.groundtruth);
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
-  gnuplot_.flush();
+  for (; id < end_point; ++id) {
+    std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
+
+    gnuplot_ << setTerminal(id);
+    gnuplot_ << "set grid\n";
+    gnuplot_ << setMultiplot(3, 1, title);
+
+    gnuplot_ << "$groundtruth_pose << EOD\n";
+    gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
+    gnuplot_ << "EOD\n";
+
+    gnuplot_ << "$raw_pose << EOD\n";
+    gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
+    gnuplot_ << "EOD\n";
+
+    /* Let style */
+    gnuplot_ << "set style data points\n";
+    gnuplot_ << "set pointsize 0.1\n";
+
+    gnuplot_ << "plot $raw_pose using 1:2 title 'Raw' lc rgb 'red' pt 7,"
+             << "$groundtruth_pose using 1:2 title 'Interpolated' lc rgb "
+                "'purple'\n";
+
+    gnuplot_ << "plot $raw_pose using 1:3 title 'Raw' lc rgb 'red' pt 7,"
+             << "$groundtruth_pose using 1:3 title 'Interpolated' lc rgb "
+                "'purple'\n";
+
+    gnuplot_ << "plot $raw_pose using 1:4 title 'Raw' lc rgb 'red' pt 7,"
+             << "$groundtruth_pose using 1:4 title 'Interpolated' lc rgb "
+                "'purple'\n";
+
+    gnuplot_ << unsetMultiplot();
+
+    // gnuplot_.flush();
+  }
 }
+
+std::string Plotter::setTerminal(unsigned short terminal_number) {
+  std::string terminal_type = " qt ";
+  std::string terminal_size = " size 1336,768 ";
+
+  std::string terminal_settings = "";
+  terminal_settings += " set mouse\n";
+  terminal_settings += " set term " + terminal_type +
+                       std::to_string(terminal_number) + terminal_size +
+                       " noraise\n";
+  terminal_settings += "set samples 1000\n";
+
+  return terminal_settings;
+}
+
+std::string Plotter::setMultiplot(unsigned short rows, unsigned short columns,
+                                  const std::string title) {
+  //      set multiplot layout 3,1 title sprintf("Robot %d Groundtruth
+  // Trajectory", i)
+  std::string multi_plot_settings = "set multiplot ";
+
+  /* Adding layout constraints */
+  multi_plot_settings +=
+      "layout " + std::to_string(rows) + "," + std::to_string(columns) + " ";
+
+  if (title != "") {
+    multi_plot_settings += "title \"" + title + '"';
+  }
+
+  multi_plot_settings += '\n';
+
+  return multi_plot_settings;
+}
+
+std::string Plotter::unsetMultiplot() { return "unset multiplot\n"; }
 
 } // namespace Data

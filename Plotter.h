@@ -28,7 +28,7 @@ public:
   ~Plotter();
 
   void demo_animation();
-  void plotGroundruth(unsigned short);
+  void plotGroundruthStates(unsigned short robot_id = 0);
 
 private:
   /** Reference to a data handler instance */
@@ -130,6 +130,12 @@ private:
   void serialiseRobotOutputData();
 
   void serialiseLandmarkData();
+
+  std::string setTerminal(unsigned short terminal_number = 0);
+
+  std::string setMultiplot(unsigned short, unsigned short,
+                           const std::string title = "");
+  std::string unsetMultiplot();
 };
 
 } // namespace Data
