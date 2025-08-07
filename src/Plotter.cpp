@@ -17,15 +17,18 @@ Plotter::Plotter(Handler &data)
       total_robots_(data_.getNumberOfRobots()),
       total_landmarks_(data_.getNumberOfLandmarks()) {
 
+  std::vector<Robot> &input_robot_data = data_.getRobots();
+
   /* Assign memory to each of the tuples. */
   serial_robot_data_.resize(total_robots_);
   serial_landmark_data_.resize(total_landmarks_);
 
   for (unsigned short id = 0; id < total_robots_; ++id) {
+    serial_robot_data_[id].odometry.interpolated.resize(data_points_);
+    serial_robot_data_[id].odometry.groundtruth.resize(data_points_);
 
-    serial_robot_data_[id].odometry.resize(data_points_);
-
-    serial_robot_data_[id].measurement.resize(data_points_);
+    serial_robot_data_[id].measurement.interpolated.resize(
+        total_measurements_[id]);
 
     serial_robot_data_[id].pose.estimate.resize(data_points_);
     serial_robot_data_[id].pose.groundtruth.resize(data_points_);
@@ -49,15 +52,38 @@ void Plotter::serialiseRobotInputData() {
 
   for (unsigned short id = 0; id < total_robots_; ++id) {
 
+    /* Serialise state data. */
     const std::vector<Robot::State> &groundtruth_states =
         input_robot_data[id].groundtruth.states;
 
-    /* Serialise the robot data structure. */
     std::transform(groundtruth_states.begin(), groundtruth_states.end(),
                    serial_robot_data_[id].pose.groundtruth.begin(),
                    [](const Robot::State &state) {
                      return std::make_tuple(state.time, state.x, state.y,
                                             state.orientation);
+                   });
+
+    /* Serialise odometry */
+    const std::vector<Robot::Odometry> &interpolated_odometry =
+        input_robot_data[id].groundtruth.odometry;
+
+    std::transform(interpolated_odometry.begin(), interpolated_odometry.end(),
+                   serial_robot_data_[id].odometry.interpolated.begin(),
+                   [](const Robot::Odometry &odometry) {
+                     return std::make_tuple(odometry.time,
+                                            odometry.forward_velocity,
+                                            odometry.angular_velocity);
+                   });
+
+    const std::vector<Robot::Odometry> &groundtruth_odometry =
+        input_robot_data[id].groundtruth.odometry;
+
+    std::transform(groundtruth_odometry.begin(), groundtruth_odometry.end(),
+                   serial_robot_data_[id].odometry.groundtruth.begin(),
+                   [](const Robot::Odometry &odometry) {
+                     return std::make_tuple(odometry.time,
+                                            odometry.forward_velocity,
+                                            odometry.angular_velocity);
                    });
   }
 }
@@ -144,24 +170,17 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
     gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
     gnuplot_ << "EOD\n";
 
-    gnuplot_ << "$raw_pose << EOD\n";
-    gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
-    gnuplot_ << "EOD\n";
-
     /* Let style */
     gnuplot_ << "set style data points\n";
     gnuplot_ << "set pointsize 0.1\n";
 
-    gnuplot_ << "plot $raw_pose using 1:2 title 'Raw' lc rgb 'red' pt 7,"
-             << "$groundtruth_pose using 1:2 title 'Interpolated' lc rgb "
+    gnuplot_ << "plot $groundtruth_pose using 1:2 title 'Interpolated' lc rgb "
                 "'purple'\n";
 
-    gnuplot_ << "plot $raw_pose using 1:3 title 'Raw' lc rgb 'red' pt 7,"
-             << "$groundtruth_pose using 1:3 title 'Interpolated' lc rgb "
+    gnuplot_ << "plot $groundtruth_pose using 1:3 title 'Interpolated' lc rgb "
                 "'purple'\n";
 
-    gnuplot_ << "plot $raw_pose using 1:4 title 'Raw' lc rgb 'red' pt 7,"
-             << "$groundtruth_pose using 1:4 title 'Interpolated' lc rgb "
+    gnuplot_ << "plot $groundtruth_pose using 1:4 title 'Interpolated' lc rgb "
                 "'purple'\n";
 
     gnuplot_ << unsetMultiplot();
@@ -170,6 +189,10 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
   }
 }
 
+/**
+ * Plots the xy trajectory of the robots alongside the positions of the
+ * landmarks.
+ */
 void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
@@ -186,10 +209,6 @@ void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
     gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
     gnuplot_ << "EOD\n";
 
-    gnuplot_ << "$raw_pose << EOD\n";
-    gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
-    gnuplot_ << "EOD\n";
-
     gnuplot_ << "$landmarks << EOD\n";
     gnuplot_.send1d(serial_landmark_data_);
     gnuplot_ << "EOD\n";
@@ -202,6 +221,46 @@ void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
              << "$groundtruth_pose using 2:3 title 'Interpolated' lc rgb "
                 "'purple'\n";
 
+    gnuplot_.flush();
+  }
+}
+
+void Plotter::plotOdometry(unsigned short robot_id) {
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  for (; id < end_point; ++id) {
+    std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
+
+    gnuplot_ << setTerminal(id);
+    gnuplot_ << setMultiplot(2, 1);
+    gnuplot_ << "set grid\n";
+
+    gnuplot_ << "$interpolated_odometry << EOD\n";
+    gnuplot_.send1d(serial_robot_data_[id].odometry.interpolated);
+    gnuplot_ << "EOD\n";
+
+    gnuplot_ << "$groundtruth_odometry << EOD\n";
+    gnuplot_.send1d(serial_robot_data_[id].odometry.groundtruth);
+    gnuplot_ << "EOD\n";
+
+    gnuplot_ << "set style data line\n";
+    gnuplot_ << "set pointsize 0.1\n";
+
+    gnuplot_
+        << "plot $interpolated_odometry using 1:2 with points pointsize 1.0 "
+           "pointtype 6 title 'Interpolated',"
+        << " $groundtruth_odometry using 1:2 with points pointsize 1.0 "
+           "pointtype 6 title 'Interpolated'\n";
+
+    gnuplot_
+        << "plot $interpolated_odometry using 1:3 with points pointsize 1.0 "
+           "pointtype 6 title 'Interpolated',"
+        << " $groundtruth_odometry using 1:3 with points pointsize 1.0 "
+           "pointtype 6 title 'Interpolated'\n";
+
+    gnuplot_ << unsetMultiplot();
     gnuplot_.flush();
   }
 }

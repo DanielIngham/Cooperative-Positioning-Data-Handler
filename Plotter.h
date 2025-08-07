@@ -30,6 +30,7 @@ public:
   void demo_animation();
   void plotGroundruthStates(unsigned short robot_id = 0);
   void plotGroundruthTrajectory(unsigned short robot_id = 0);
+  void plotOdometry(unsigned short robot_id = 0);
 
 private:
   /** Reference to a data handler instance */
@@ -111,12 +112,22 @@ private:
    */
   struct RobotData {
 
-    odometry_tuple odometry;
-    measurement_tuple measurement;
+    struct {
+      odometry_tuple interpolated;
+      odometry_tuple groundtruth;
+      odometry_tuple raw;
+    } odometry;
+
+    struct {
+      measurement_tuple interpolated;
+      measurement_tuple raw;
+
+    } measurement;
 
     struct {
       pose_tuple estimate;
       pose_tuple groundtruth;
+      pose_tuple raw;
     } pose;
   };
 
