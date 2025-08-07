@@ -868,7 +868,7 @@ void checkPlotting() {
   data.setDataSet(dataset);
 
   Data::Plotter plot(data);
-  plot.plotGroundruth(1);
+  plot.plotGroundruthStates(1);
 }
 
 int main() {
