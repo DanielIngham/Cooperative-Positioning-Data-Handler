@@ -106,6 +106,21 @@ struct PlotSettings {
   double linewidth = 1.0;
 };
 
+struct AxisSettings {
+  struct {
+    double min = 0.0;
+    double max = 0.0;
+  } x_range;
+
+  struct {
+    double min = 0.0;
+    double max = 0.0;
+  } y_range;
+
+  std::string x_label = "";
+  std::string y_label = "";
+};
+
 /**
  * Converts the PointStyle enum into a string to parse to gnuplot.
  * @param style PlotStyle element.
@@ -211,7 +226,7 @@ inline std::string to_string(PointType type) {
  * @param settings settings for the plot.
  * @returns string representing the gnuplot command.
  */
-inline std::string command(const PlotSettings &settings) {
+inline std::string setPlotSettings(const PlotSettings &settings) {
   std::ostringstream oss;
 
   oss << " using " << settings.x << ":" << settings.y << " "
@@ -228,6 +243,51 @@ inline std::string command(const PlotSettings &settings) {
   }
 
   oss << " linewidth " << settings.linewidth;
+
+  return oss.str();
+}
+
+/**
+ * Creates the instructions for setting the axis settings of the plots.
+ * @param settings structure containing all the settings regarding the plot
+ * axis.
+ * @returns A string containing the arguments required by gnuplot to set the
+ * axis according the the values specified in `settings`.
+ */
+inline std::string setAxisSettings(AxisSettings settings) {
+  std::ostringstream oss;
+
+  /* Set the x and y range if the user has changed them form default. */
+  if (settings.x_range.min != settings.x_range.max) {
+
+    /* If the min is larger than the max, switch them around. */
+    if (settings.x_range.min > settings.x_range.max) {
+      double temp = settings.x_range.max;
+      settings.x_range.max = settings.x_range.min;
+      settings.x_range.min = temp;
+    }
+
+    oss << "set xrange [" << settings.x_range.min << ":" << settings.x_range.max
+        << "]" << '\n';
+  }
+
+  if (settings.y_range.min != settings.y_range.max) {
+
+    /* If the min is larger than the max, switch them around. */
+    if (settings.y_range.min > settings.y_range.max) {
+      double temp = settings.x_range.max;
+      settings.y_range.max = settings.y_range.min;
+      settings.y_range.min = temp;
+    }
+
+    oss << "set yrange [" << settings.y_range.min << ":" << settings.y_range.max
+        << "]" << '\n';
+  }
+
+  oss << "set xlabel \"" << settings.x_label << '"' << '\n';
+  oss << "set ylabel \"" << settings.y_label << '"' << '\n';
+
+  oss << '\n';
 
   return oss.str();
 }
