@@ -367,4 +367,13 @@ inline std::string grid(const bool on = true) {
   return on ? "set grid\n" : "unset grid\n";
 }
 
+inline std::string setTitle(const std::string title) {
+  std::ostringstream oss;
+  oss << "set title " << '"' << title << '"' << '\n';
+
+  return oss.str();
+}
+
+inline std::string unsetTitle() { return "unset title\n"; }
+
 } // namespace gnuplot
