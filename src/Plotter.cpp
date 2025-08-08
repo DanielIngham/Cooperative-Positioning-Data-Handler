@@ -161,27 +161,46 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
 
   for (; id < end_point; ++id) {
     std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
+    gnuplot_ << gnuplot::setTitle(title);
 
     gnuplot_ << gnuplot::setTerminal(id);
     gnuplot_ << gnuplot::grid();
-    gnuplot_ << gnuplot::setMultiplot(3, 1, title);
+    gnuplot_ << gnuplot::setMultiplot(3, 1);
 
-    gnuplot_ << "$groundtruth_pose << EOD\n";
-    gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
-    gnuplot_ << "EOD\n";
+    /* Plot X Position */
+    PlotList x_plots;
+    x_plots.emplace_back(serial_robot_data_[id].pose.groundtruth);
+    x_plots[0].settings.title = "Groundtruth";
 
-    /* Let style */
-    gnuplot_ << "set style data points\n";
-    gnuplot_ << "set pointsize 0.1\n";
+    gnuplot::AxisSettings x_position_axis;
+    x_position_axis.x_label = "Time [s]";
+    x_position_axis.y_label = "X Position [m]";
 
-    gnuplot_ << "plot $groundtruth_pose using 1:2 title 'Interpolated' lc rgb "
-                "'purple'\n";
+    plot(x_plots, x_position_axis);
 
-    gnuplot_ << "plot $groundtruth_pose using 1:3 title 'Interpolated' lc rgb "
-                "'purple'\n";
+    /* Plot Y Position */
+    PlotList y_plots;
+    y_plots.emplace_back(serial_robot_data_[id].pose.groundtruth);
+    y_plots[0].settings.title = "Groundtruth";
+    y_plots[0].settings.y = Y_POSITION;
 
-    gnuplot_ << "plot $groundtruth_pose using 1:4 title 'Interpolated' lc rgb "
-                "'purple'\n";
+    gnuplot::AxisSettings y_position_axis;
+    y_position_axis.x_label = "Time [s]";
+    y_position_axis.y_label = "X Position [m]";
+
+    plot(y_plots, y_position_axis);
+
+    /* Plot Orientation Position */
+    PlotList orientation_plots;
+    orientation_plots.emplace_back(serial_robot_data_[id].pose.groundtruth);
+    orientation_plots[0].settings.title = "Groundtruth";
+    orientation_plots[0].settings.y = ORIENTATION;
+
+    gnuplot::AxisSettings orientation_axis;
+    orientation_axis.x_label = "Time [s]";
+    orientation_axis.y_label = "X Position [m]";
+
+    plot(orientation_plots, orientation_axis);
 
     gnuplot_ << gnuplot::unsetMultiplot();
 
@@ -215,8 +234,8 @@ void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
 
     /* Create the plot for the trajectory of the robots. */
     plots.emplace_back(serial_robot_data_[id].pose.groundtruth);
-    plots[1].settings.x = 2;
-    plots[1].settings.y = 3;
+    plots[1].settings.x = X_POSITION;
+    plots[1].settings.y = Y_POSITION;
     plots[1].settings.style = gnuplot::PlotStyle::LINES;
     plots[1].settings.title = "Robot Trajectory";
 
