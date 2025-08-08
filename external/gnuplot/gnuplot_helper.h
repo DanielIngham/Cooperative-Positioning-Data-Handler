@@ -84,15 +84,25 @@ enum Colour {
 struct PlotSettings {
   std::string title = "";
 
+  /** Element in the tuple that correponds to the x axis data point. */
   unsigned short x = 1;
+
+  /** Element in the tuple that correponds to the y axis data point. */
   unsigned short y = 2;
 
+  /* The type of plot. */
   PlotStyle style = POINTS;
 
+  /* The style of the symbols that represent the points in the point plot. */
   PointType pointtype = CIRCLE;
+  /* Size of the points. */
   double pointsize = 1.0;
 
+  /* Colour of the plot line. Note that NONE means gnuplot automatically assigns
+   * it. */
   Colour linecolor = NONE;
+
+  /* Width of the plot line. */
   double linewidth = 1.0;
 };
 
