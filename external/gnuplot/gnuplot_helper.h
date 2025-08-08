@@ -227,16 +227,31 @@ inline std::string command(const PlotSettings &settings) {
 inline std::string setTerminal(unsigned short terminal_number) {
   /* TODO: add more terminal settings functionality. */
   std::string terminal_type = " qt ";
-  std::string terminal_size = " size 1336,768 ";
+  std::string terminal_size = "  1336,768 ";
 
-  std::string terminal_settings = "";
-  terminal_settings += " set mouse\n";
-  terminal_settings += " set term " + terminal_type +
-                       std::to_string(terminal_number) + terminal_size +
-                       " noraise\n";
-  terminal_settings += "set samples 1000\n";
+  size_t total_samples = 1000U;
 
-  return terminal_settings;
+  std::ostringstream oss;
+
+  /* Allow for mouse interaction. */
+  oss << " set mouse\n";
+
+  /* Set the number of samples that should represent a plot. */
+  oss << "set samples " << total_samples << "\n";
+
+  /* Set the terminal type and instance number. */
+  oss << " set term " << terminal_type << terminal_number;
+
+  /* Set the terminal size. */
+  oss << " size " << terminal_size;
+
+  /* When replotting or updating the graph, do not automatically bring the plot
+   * window to the front (raise it above other windows)*/
+  oss << " noraise\n";
+
+  oss << '\n';
+
+  return oss.str();
 }
 
 /**
