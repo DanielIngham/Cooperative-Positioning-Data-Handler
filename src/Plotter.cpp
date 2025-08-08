@@ -65,7 +65,7 @@ void Plotter::serialiseRobotInputData() {
 
     /* Serialise odometry */
     const std::vector<Robot::Odometry> &interpolated_odometry =
-        input_robot_data[id].groundtruth.odometry;
+        input_robot_data[id].synced.odometry;
 
     std::transform(interpolated_odometry.begin(), interpolated_odometry.end(),
                    serial_robot_data_[id].odometry.interpolated.begin(),
@@ -181,8 +181,8 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
     /* Plot Y Position */
     PlotList y_plots;
     y_plots.emplace_back(serial_robot_data_[id].pose.groundtruth);
-    y_plots[0].settings.title = "Groundtruth";
-    y_plots[0].settings.y = Y_POSITION;
+    y_plots.back().settings.title = "Groundtruth";
+    y_plots.back().settings.y = Y_POSITION;
 
     gnuplot::AxisSettings y_position_axis;
     y_position_axis.x_label = "Time [s]";
@@ -193,8 +193,8 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
     /* Plot Orientation Position */
     PlotList orientation_plots;
     orientation_plots.emplace_back(serial_robot_data_[id].pose.groundtruth);
-    orientation_plots[0].settings.title = "Groundtruth";
-    orientation_plots[0].settings.y = ORIENTATION;
+    orientation_plots.back().settings.title = "Groundtruth";
+    orientation_plots.back().settings.y = ORIENTATION;
 
     gnuplot::AxisSettings orientation_axis;
     orientation_axis.x_label = "Time [s]";
@@ -229,15 +229,15 @@ void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
 
     PlotList plots;
     plots.emplace_back(serial_landmark_data_);
-    plots[0].settings.style = gnuplot::PlotStyle::POINTS;
-    plots[0].settings.title = "Landmarks";
+    plots.back().settings.style = gnuplot::PlotStyle::POINTS;
+    plots.back().settings.title = "Landmarks";
 
     /* Create the plot for the trajectory of the robots. */
     plots.emplace_back(serial_robot_data_[id].pose.groundtruth);
-    plots[1].settings.x = X_POSITION;
-    plots[1].settings.y = Y_POSITION;
-    plots[1].settings.style = gnuplot::PlotStyle::LINES;
-    plots[1].settings.title = "Robot Trajectory";
+    plots.back().settings.x = X_POSITION;
+    plots.back().settings.y = Y_POSITION;
+    plots.back().settings.style = gnuplot::PlotStyle::LINES;
+    plots.back().settings.title = "Robot Trajectory";
 
     gnuplot::AxisSettings axis;
 
@@ -275,26 +275,30 @@ void Plotter::plotOdometry(unsigned short robot_id) {
     /* Forward Velcoty Plot */
     PlotList forward_velocity_plots;
 
-    forward_velocity_plots.emplace_back(
-        serial_robot_data_[id].odometry.groundtruth);
-    forward_velocity_plots[0].settings.title = "Groundtruth";
+    // forward_velocity_plots.emplace_back(
+    //     serial_robot_data_[id].odometry.groundtruth);
+    // forward_velocity_plots.back().settings.title = "Groundtruth";
 
     forward_velocity_plots.emplace_back(
         serial_robot_data_[id].odometry.interpolated);
-    forward_velocity_plots[1].settings.title = "Interpolated";
+    forward_velocity_plots.back().settings.title = "Interpolated";
 
     plot(forward_velocity_plots, forward_velocity_axis);
 
     /* Angular Velcoty Plot */
     PlotList angular_velocity_plots;
 
-    angular_velocity_plots.emplace_back(
-        serial_robot_data_[id].odometry.groundtruth);
-    angular_velocity_plots[0].settings.title = "Groundtruth";
+    // angular_velocity_plots.emplace_back(
+    //     serial_robot_data_[id].odometry.groundtruth);
+    //
+    // angular_velocity_plots.back().settings.title = "Groundtruth";
+    // angular_velocity_plots.back().settings.y = ANGULAR_VELOCITY;
 
     angular_velocity_plots.emplace_back(
-        serial_robot_data_[id].odometry.groundtruth);
-    angular_velocity_plots[1].settings.title = "Interpolated";
+        serial_robot_data_[id].odometry.interpolated);
+
+    angular_velocity_plots.back().settings.title = "Interpolated";
+    angular_velocity_plots.back().settings.y = ANGULAR_VELOCITY;
 
     gnuplot::AxisSettings angular_velocity_axis;
 
