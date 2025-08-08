@@ -163,7 +163,7 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
     std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
 
     gnuplot_ << gnuplot::setTerminal(id);
-    gnuplot_ << "set grid\n";
+    gnuplot_ << gnuplot::grid();
     gnuplot_ << gnuplot::setMultiplot(3, 1, title);
 
     gnuplot_ << "$groundtruth_pose << EOD\n";
@@ -192,6 +192,8 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
 /**
  * Plots the xy trajectory of the robots alongside the positions of the
  * landmarks.
+ * @param robot_id Identifier of the robot whose data you want to plot. If the
+ * value is 0, then all robots data is plotted.
  */
 void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
 
@@ -203,28 +205,29 @@ void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
     std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
 
     gnuplot_ << gnuplot::setTerminal(id);
-    gnuplot_ << "set grid\n";
+    gnuplot_ << gnuplot::grid();
 
-    gnuplot_ << "$groundtruth_pose << EOD\n";
-    gnuplot_.send1d(serial_robot_data_[id].pose.groundtruth);
-    gnuplot_ << "EOD\n";
+    std::vector<Plot> plots;
+    plots.emplace_back(serial_landmark_data_);
+    plots[0].settings.style = gnuplot::PlotStyle::POINTS;
+    plots[0].settings.title = "Landmarks";
 
-    gnuplot_ << "$landmarks << EOD\n";
-    gnuplot_.send1d(serial_landmark_data_);
-    gnuplot_ << "EOD\n";
+    /* Create the plot for the trajectory of the robots. */
+    plots.emplace_back(serial_robot_data_[id].pose.groundtruth);
+    plots[1].settings.x = 2;
+    plots[1].settings.y = 3;
+    plots[1].settings.style = gnuplot::PlotStyle::LINES;
+    plots[1].settings.title = "Robot Trajectory";
 
-    gnuplot_ << "set style data line\n";
-    gnuplot_ << "set pointsize 0.1\n";
-
-    gnuplot_ << "plot $landmarks using 1:2 with points pointsize 1.0 pointtype "
-                "6 title 'Landmarks',"
-             << "$groundtruth_pose using 2:3 title 'Interpolated' lc rgb "
-                "'purple'\n";
+    plot(plots);
 
     gnuplot_.flush();
   }
 }
 
+/**
+ *
+ */
 void Plotter::plotOdometry(unsigned short robot_id) {
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
@@ -235,20 +238,20 @@ void Plotter::plotOdometry(unsigned short robot_id) {
 
     gnuplot_ << gnuplot::setTerminal(id);
     gnuplot_ << gnuplot::setMultiplot(2, 1);
-    gnuplot_ << gnuplot::setGrid();
+    gnuplot_ << gnuplot::grid();
 
     gnuplot::PlotSettings forward_velocity;
 
-    plot({serial_robot_data_[id].odometry.groundtruth,
-          serial_robot_data_[id].odometry.interpolated},
-         {forward_velocity, forward_velocity});
+    // plot({serial_robot_data_[id].odometry.groundtruth,
+    //       serial_robot_data_[id].odometry.interpolated},
+    //      {forward_velocity, forward_velocity});
 
     gnuplot::PlotSettings angular_velocity;
     angular_velocity.y = 3;
 
-    plot({serial_robot_data_[id].odometry.groundtruth,
-          serial_robot_data_[id].odometry.interpolated},
-         {angular_velocity, angular_velocity});
+    // plot({serial_robot_data_[id].odometry.groundtruth,
+    //       serial_robot_data_[id].odometry.interpolated},
+    //      {angular_velocity, angular_velocity});
 
     // gnuplot_ << "plot $interpolated_odometry using 1:2 with points pointsize
     // "
@@ -267,55 +270,10 @@ void Plotter::plotOdometry(unsigned short robot_id) {
   }
 }
 
-#if 0
+void Plotter::plot(const std::vector<Plot> &plots) {
 
-void Plotter::plot(const std::vector<PlotData> &datasets,
-                   const std::vector<gnuplot::PlotSettings> &plot_settings) {
+  size_t total_plots = plots.size();
 
-  size_t total_plots = datasets.size();
-  std::string command = "";
-
-  for (size_t i = 0; i < total_plots; ++i) {
-
-    char identifier = 'A' + i;
-    std::string dataset_name = &"$data"[identifier];
-
-    std::visit(
-        [i, this, dataset_name, plot_settings](const auto &vec) {
-          using VecType = std::decay_t<decltype(vec)>;
-
-          gnuplot_ << dataset_name + " << EOD\n";
-          gnuplot_.send1d(vec);
-          gnuplot_ << "EOD\n";
-        },
-        datasets[i]);
-
-    if (i == 0) {
-      gnuplot_ << "plot";
-      command += "plot";
-    }
-
-    gnuplot_ << " " + dataset_name + gnuplot::command(plot_settings[i]);
-    command += " " + dataset_name + gnuplot::command(plot_settings[i]);
-
-    if (i == total_plots - 1) {
-      gnuplot_ << '\n';
-      command += '\n';
-    } else {
-      gnuplot_ << ',';
-      command += ',';
-    }
-  }
-  std::cout << command << std::endl;
-}
-#endif // 0
-void Plotter::plot(const std::vector<PlotData> &datasets,
-                   const std::vector<gnuplot::PlotSettings> &plot_settings) {
-
-  size_t total_plots = datasets.size();
-  std::string command = "";
-
-  // First, define all data blocks
   for (size_t i = 0; i < total_plots; ++i) {
     char identifier = 'A' + i;
     std::string dataset_name = "$data" + std::string(1, identifier);
@@ -326,32 +284,25 @@ void Plotter::plot(const std::vector<PlotData> &datasets,
           gnuplot_.send1d(vec);
           gnuplot_ << "EOD\n";
         },
-        datasets[i]);
+        plots[i].dataset);
   }
 
-  // Then create the plot command
   gnuplot_ << "plot";
-  command += "plot";
 
   for (size_t i = 0; i < total_plots; ++i) {
     char identifier = 'A' + i;
     std::string dataset_name = "$data" + std::string(1, identifier);
 
     std::string plot_part =
-        " " + dataset_name + gnuplot::command(plot_settings[i]);
+        " " + dataset_name + gnuplot::set_plot_settings(plots[i].settings);
 
     gnuplot_ << plot_part;
-    command += plot_part;
 
     if (i < total_plots - 1) {
       gnuplot_ << ",";
-      command += ",";
     }
   }
 
   gnuplot_ << "\n";
-  command += "\n";
-
-  std::cout << command << std::endl;
 }
 } // namespace Data
