@@ -216,8 +216,12 @@ inline std::string command(const PlotSettings &settings) {
 
   oss << " using " << settings.x << ":" << settings.y << " "
       << "title \"" << settings.title << "\" "
-      << "with " << to_string(settings.style) << " pointtype "
-      << to_string(settings.pointtype) << " pointsize " << settings.pointsize;
+      << "with " << to_string(settings.style);
+
+  if (settings.style == POINTS || settings.style == LINESPOINTS) {
+    oss << " pointtype " << to_string(settings.pointtype) << " pointsize "
+        << settings.pointsize;
+  }
 
   if (settings.linecolor != NONE) {
     oss << " linecolor rgb \"" << to_string(settings.linecolor) << "\" ";
