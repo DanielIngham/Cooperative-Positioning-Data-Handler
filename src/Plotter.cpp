@@ -275,30 +275,32 @@ void Plotter::plotOdometry(unsigned short robot_id) {
     /* Forward Velcoty Plot */
     PlotList forward_velocity_plots;
 
-    // forward_velocity_plots.emplace_back(
-    //     serial_robot_data_[id].odometry.groundtruth);
-    // forward_velocity_plots.back().settings.title = "Groundtruth";
+    forward_velocity_plots.emplace_back(
+        serial_robot_data_[id].odometry.groundtruth);
+    forward_velocity_plots.back().settings.title = "Groundtruth";
 
     forward_velocity_plots.emplace_back(
         serial_robot_data_[id].odometry.interpolated);
     forward_velocity_plots.back().settings.title = "Interpolated";
+    forward_velocity_plots.back().settings.linecolor = gnuplot::Colour::RED;
 
     plot(forward_velocity_plots, forward_velocity_axis);
 
     /* Angular Velcoty Plot */
     PlotList angular_velocity_plots;
 
-    // angular_velocity_plots.emplace_back(
-    //     serial_robot_data_[id].odometry.groundtruth);
-    //
-    // angular_velocity_plots.back().settings.title = "Groundtruth";
-    // angular_velocity_plots.back().settings.y = ANGULAR_VELOCITY;
+    angular_velocity_plots.emplace_back(
+        serial_robot_data_[id].odometry.groundtruth);
+
+    angular_velocity_plots.back().settings.title = "Groundtruth";
+    angular_velocity_plots.back().settings.y = ANGULAR_VELOCITY;
 
     angular_velocity_plots.emplace_back(
         serial_robot_data_[id].odometry.interpolated);
 
     angular_velocity_plots.back().settings.title = "Interpolated";
     angular_velocity_plots.back().settings.y = ANGULAR_VELOCITY;
+    angular_velocity_plots.back().settings.linecolor = gnuplot::Colour::RED;
 
     gnuplot::AxisSettings angular_velocity_axis;
 
