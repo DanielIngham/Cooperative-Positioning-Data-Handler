@@ -15,6 +15,7 @@
 
 /* Warn about depreciated functions. */
 #define GNUPLOT_DEPRECATE_WARN
+/* TODO: Fix the include path in CMake. */
 #include "./external/gnuplot/gnuplot-iostream.h"
 #include "./external/gnuplot/gnuplot_helper.h"
 
@@ -62,10 +63,9 @@ private:
    *   - double : forward velocity [m/s]
    *   - double : angular velocity [rad/s]
    */
-  typedef std::vector<
+  using odometry_tuple = std::vector<
       std::tuple<double /* time [s] */, double /* forward velocity [m/s]*/,
-                 double /* Angular velocity [rad/s]*/>>
-      odometry_tuple;
+                 double /* Angular velocity [rad/s]*/>>;
 
   /**
    * Type defintion for the vector of tuples containing the serialised data of
@@ -76,10 +76,9 @@ private:
    *   - double : global y position [m]
    *   - double : global orientation [rad]
    */
-  typedef std::vector<
+  using pose_tuple = std::vector<
       std::tuple<double /* time [s] */, double /* x position [m] */,
-                 double /* y position [m] */, double /* orientation [rad] */>>
-      pose_tuple;
+                 double /* y position [m] */, double /* orientation [rad] */>>;
 
   /**
    * Type defintion for the vector of tuples containing the serialised data of
@@ -89,9 +88,8 @@ private:
    *   - double : global x position [m]
    *   - double : global y position [m]
    */
-  typedef std::vector<
-      std::tuple<double /* x position [m] */, double /* y position [m] */>>
-      point_tuple;
+  using point_tuple = std::vector<
+      std::tuple<double /* x position [m] */, double /* y position [m] */>>;
 
   /**
    * Type defintion for the vector of tuples containing the serialised data of
@@ -102,10 +100,9 @@ private:
    *   - double : relative range to agent measured [m]
    *   - double : relative bearing to agent measured [rad]
    */
-  typedef std::vector<
+  using measurement_tuple = std::vector<
       std::tuple<double /* time [s] */, unsigned short /* Subject */,
-                 double /* range [m] */, double /* bearing [rad] */>>
-      measurement_tuple;
+                 double /* range [m] */, double /* bearing [rad] */>>;
 
   using PlotData =
       std::variant<pose_tuple, point_tuple, measurement_tuple, odometry_tuple>;
@@ -148,8 +145,18 @@ private:
 
   void serialiseLandmarkData();
 
-  void plot(const std::vector<PlotData> &,
-            const std::vector<gnuplot::PlotSettings> &);
+  struct Plot {
+    const PlotData dataset;
+    gnuplot::PlotSettings settings;
+
+    template <typename DataType>
+    Plot(const DataType &data_vec) : dataset(data_vec) {}
+  };
+
+  void plot(const std::vector<Plot> &);
+
+  // void plot(const std::vector<PlotData> &,
+  //           const std::vector<gnuplot::PlotSettings> &);
 };
 
 } // namespace Data
