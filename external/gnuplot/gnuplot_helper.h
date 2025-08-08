@@ -284,6 +284,13 @@ inline std::string setMultiplot(unsigned short rows, unsigned short columns,
  */
 inline std::string unsetMultiplot() { return "unset multiplot\n"; }
 
-inline std::string setGrid() { return "set grid\n"; }
-inline std::string unsetGrid() { return "unset grid\n"; }
+/**
+ * Creates string that gnuplot uses to determine whether it should plot a grid
+ * or not.
+ * @param on Turn on the grid.
+ */
+inline std::string grid(const bool on = true) {
+  return on ? "set grid\n" : "unset grid\n";
+}
+
 } // namespace gnuplot
