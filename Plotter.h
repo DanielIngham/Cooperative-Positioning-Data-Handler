@@ -36,6 +36,8 @@ public:
   void plotOdometry(unsigned short robot_id = 0);
 
 private:
+  class Plot;
+
   /** Reference to a data handler instance */
   Handler &data_;
 
@@ -107,6 +109,8 @@ private:
   using PlotData =
       std::variant<pose_tuple, point_tuple, measurement_tuple, odometry_tuple>;
 
+  using PlotList = std::vector<Plot>;
+
   /**
    * @struct RobotData
    * Houses the serialised data fields for all information pertaining to the
@@ -148,15 +152,11 @@ private:
   struct Plot {
     const PlotData dataset;
     gnuplot::PlotSettings settings;
-
     template <typename DataType>
     Plot(const DataType &data_vec) : dataset(data_vec) {}
   };
 
-  void plot(const std::vector<Plot> &);
-
-  // void plot(const std::vector<PlotData> &,
-  //           const std::vector<gnuplot::PlotSettings> &);
+  void plot(const PlotList &, const gnuplot::AxisSettings &);
 };
 
 } // namespace Data

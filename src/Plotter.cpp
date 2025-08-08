@@ -202,12 +202,13 @@ void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   for (; id < end_point; ++id) {
-    std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
+    std::string title = "Robot " + std::to_string(id + 1) + " Trajectory";
+    gnuplot_ << gnuplot::setTitle(title);
 
     gnuplot_ << gnuplot::setTerminal(id);
     gnuplot_ << gnuplot::grid();
 
-    std::vector<Plot> plots;
+    PlotList plots;
     plots.emplace_back(serial_landmark_data_);
     plots[0].settings.style = gnuplot::PlotStyle::POINTS;
     plots[0].settings.title = "Landmarks";
@@ -219,7 +220,12 @@ void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
     plots[1].settings.style = gnuplot::PlotStyle::LINES;
     plots[1].settings.title = "Robot Trajectory";
 
-    plot(plots);
+    gnuplot::AxisSettings axis;
+
+    axis.x_label = "x position [m]";
+    axis.y_label = "y position [m]";
+
+    plot(plots, axis);
 
     gnuplot_.flush();
   }
@@ -234,45 +240,62 @@ void Plotter::plotOdometry(unsigned short robot_id) {
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   for (; id < end_point; ++id) {
-    std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
+    std::string title = "Robot " + std::to_string(id + 1) + " Odometry";
+    gnuplot_ << gnuplot::setTitle(title);
 
     gnuplot_ << gnuplot::setTerminal(id);
     gnuplot_ << gnuplot::setMultiplot(2, 1);
     gnuplot_ << gnuplot::grid();
 
-    gnuplot::PlotSettings forward_velocity;
+    /* Set forward velocity axis labels */
+    gnuplot::AxisSettings forward_velocity_axis;
 
-    // plot({serial_robot_data_[id].odometry.groundtruth,
-    //       serial_robot_data_[id].odometry.interpolated},
-    //      {forward_velocity, forward_velocity});
+    forward_velocity_axis.y_label = "Forward Velocity [m/s]";
+    forward_velocity_axis.x_label = "Time [s]";
 
-    gnuplot::PlotSettings angular_velocity;
-    angular_velocity.y = 3;
+    /* Forward Velcoty Plot */
+    PlotList forward_velocity_plots;
 
-    // plot({serial_robot_data_[id].odometry.groundtruth,
-    //       serial_robot_data_[id].odometry.interpolated},
-    //      {angular_velocity, angular_velocity});
+    forward_velocity_plots.emplace_back(
+        serial_robot_data_[id].odometry.groundtruth);
+    forward_velocity_plots[0].settings.title = "Groundtruth";
 
-    // gnuplot_ << "plot $interpolated_odometry using 1:2 with points pointsize
-    // "
-    //             "1.0 pointtype 6 title 'Interpolated',"
-    //          << " $groundtruth_odometry using 1:2 with points pointsize 1.0 "
-    //             "pointtype 6 title 'Interpolated'\n";
+    forward_velocity_plots.emplace_back(
+        serial_robot_data_[id].odometry.interpolated);
+    forward_velocity_plots[1].settings.title = "Interpolated";
 
-    // gnuplot_
-    //     << "plot $interpolated_odometry using 1:3 with points pointsize 1.0 "
-    //        "pointtype 6 title 'Interpolated',"
-    //     << " $groundtruth_odometry using 1:3 with points pointsize 1.0 "
-    //        "pointtype 6 title 'Interpolated'\n";
+    plot(forward_velocity_plots, forward_velocity_axis);
+
+    /* Angular Velcoty Plot */
+    PlotList angular_velocity_plots;
+
+    angular_velocity_plots.emplace_back(
+        serial_robot_data_[id].odometry.groundtruth);
+    angular_velocity_plots[0].settings.title = "Groundtruth";
+
+    angular_velocity_plots.emplace_back(
+        serial_robot_data_[id].odometry.groundtruth);
+    angular_velocity_plots[1].settings.title = "Interpolated";
+
+    gnuplot::AxisSettings angular_velocity_axis;
+
+    angular_velocity_axis.y_label = "Angular Velocity [rad/s]";
+    angular_velocity_axis.x_label = "Time [s]";
+
+    plot(angular_velocity_plots, angular_velocity_axis);
 
     gnuplot_ << gnuplot::unsetMultiplot();
     gnuplot_.flush();
   }
 }
 
-void Plotter::plot(const std::vector<Plot> &plots) {
+void Plotter::plot(const PlotList &plots,
+                   const gnuplot::AxisSettings &axis_settings) {
 
   size_t total_plots = plots.size();
+
+  /* Set the axis settings. */
+  gnuplot_ << gnuplot::setAxisSettings(axis_settings);
 
   for (size_t i = 0; i < total_plots; ++i) {
     char identifier = 'A' + i;
@@ -294,7 +317,7 @@ void Plotter::plot(const std::vector<Plot> &plots) {
     std::string dataset_name = "$data" + std::string(1, identifier);
 
     std::string plot_part =
-        " " + dataset_name + gnuplot::set_plot_settings(plots[i].settings);
+        " " + dataset_name + gnuplot::setPlotSettings(plots[i].settings);
 
     gnuplot_ << plot_part;
 
