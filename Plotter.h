@@ -111,6 +111,24 @@ private:
 
   using PlotList = std::vector<Plot>;
 
+  /** Indexs of the items in the tuples used for gnuplotting.
+   * @note gnuplot starts its indexing at 1. */
+  enum tuples_index_plot {
+    TIME = 1,
+    /* Odometry */
+    FORWARD_VELOCITY = 2,
+    ANGULAR_VELOCITY = 3,
+    /* Measurements */
+    SUBJECT = 2,
+    RANGE = 3,
+    BEARING = 4,
+    /* Pose/ Point */
+    X_POSITION = 2,
+    Y_POSITION = 3,
+    ORIENTATION = 4
+
+  };
+
   /**
    * @struct RobotData
    * Houses the serialised data fields for all information pertaining to the
