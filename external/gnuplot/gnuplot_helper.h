@@ -1,10 +1,18 @@
+/**
+ * @file gnuplot_helper.h
+ * @brief Functions that allow for easier use of the gnuplot iostream header.
+ * @author Daniel Ingham
+ * @date 2025-08-08
+ */
 #include <sstream>
 #include <string>
 
 namespace gnuplot {
 
-// gnuplot_ << "using 1:2 with points pointsize "1.0 pointtype 6 title
-// 'Interpolated',";
+/**
+ * Most plot styles available to gnuplot (i.e. scatter plot (points),
+ * histograms, etc).
+ */
 enum PlotStyle {
   POINTS,
   LINES,
@@ -20,6 +28,9 @@ enum PlotStyle {
   YERRORBARS
 };
 
+/**
+ * Types of symbols available to represent points in gnuplot.
+ */
 enum PointType {
   DOT,
   PLUS,
@@ -39,6 +50,9 @@ enum PointType {
   FILLED_PENTAGON,
 };
 
+/**
+ * Most plot colours available in gnuplot.
+ */
 enum Colour {
   NONE,
   BLACK,
@@ -63,6 +77,10 @@ enum Colour {
   BISQUE,
 };
 
+/**
+ * Data structure that houses the settings required by gnuplot for plotting.
+ * @struct PlotSettings
+ */
 struct PlotSettings {
   std::string title = "";
 
@@ -78,6 +96,11 @@ struct PlotSettings {
   double linewidth = 1.0;
 };
 
+/**
+ * Converts the PointStyle enum into a string to parse to gnuplot.
+ * @param style PlotStyle element.
+ * @return string representing the plot style that gnuplot can use.
+ */
 inline std::string to_string(PlotStyle style) {
   switch (style) {
   case POINTS:
@@ -110,6 +133,11 @@ inline std::string to_string(PlotStyle style) {
   }
 }
 
+/**
+ * Converts the Colour enum into a string to parse to gnuplot.
+ * @param colour Colour element.
+ * @return string representing the plot colour that gnuplot can use.
+ */
 inline std::string to_string(Colour colour) {
   switch (colour) {
   case NONE:
@@ -159,28 +187,45 @@ inline std::string to_string(Colour colour) {
   }
 }
 
+/**
+ * Converts a PointType element to a string the gnuplot can process.
+ * @param type symbol that should be drawn representing a data point.
+ * @returns string for gnuplot command.
+ */
 inline std::string to_string(PointType type) {
   return std::to_string(static_cast<int>(type));
 }
 
-inline std::string command(const PlotSettings &s) {
+/**
+ * Creates a gnuplot command based off the fields in a PlotSettings instance.
+ * @param settings settings for the plot.
+ * @returns string representing the gnuplot command.
+ */
+inline std::string command(const PlotSettings &settings) {
   std::ostringstream oss;
 
-  oss << " using " << s.x << ":" << s.y << " "
-      << "title \"" << s.title << "\" "
-      << "with " << to_string(s.style) << " pointtype "
-      << to_string(s.pointtype) << " pointsize " << s.pointsize;
+  oss << " using " << settings.x << ":" << settings.y << " "
+      << "title \"" << settings.title << "\" "
+      << "with " << to_string(settings.style) << " pointtype "
+      << to_string(settings.pointtype) << " pointsize " << settings.pointsize;
 
-  if (s.linecolor != NONE) {
-    oss << " linecolor rgb \"" << to_string(s.linecolor) << "\" ";
+  if (settings.linecolor != NONE) {
+    oss << " linecolor rgb \"" << to_string(settings.linecolor) << "\" ";
   }
 
-  oss << " linewidth " << s.linewidth;
+  oss << " linewidth " << settings.linewidth;
 
   return oss.str();
 }
 
+/**
+ * Sets the settings regarding gnuplot terminal output.
+ * @note At the moment this is just for the qt terminal and all settings are
+ * hardcoded.
+ * @param terminal_number the number of the terminal instance.
+ */
 inline std::string setTerminal(unsigned short terminal_number) {
+  /* TODO: add more terminal settings functionality. */
   std::string terminal_type = " qt ";
   std::string terminal_size = " size 1336,768 ";
 
@@ -194,24 +239,34 @@ inline std::string setTerminal(unsigned short terminal_number) {
   return terminal_settings;
 }
 
+/**
+ * Interface that creates a string that represents the gnuplot command required
+ * to create a multiplot in gnuplot.
+ * @param rows The number of rows in the multiplot.
+ * @param columns The number of columns in the multiplot.
+ * @param title The title of the multiplot.
+ */
 inline std::string setMultiplot(unsigned short rows, unsigned short columns,
                                 const std::string title = "") {
+  std::ostringstream oss;
 
-  std::string multi_plot_settings = "set multiplot ";
+  oss << "set multiplot ";
 
   /* Adding layout constraints */
-  multi_plot_settings +=
-      "layout " + std::to_string(rows) + "," + std::to_string(columns) + " ";
+  oss << "layout " << rows << "," << columns << " ";
 
-  if (title != "") {
-    multi_plot_settings += "title \"" + title + '"';
-  }
+  /* Adding title */
+  oss << "title \"" + title + '"';
 
-  multi_plot_settings += '\n';
+  oss << '\n';
 
-  return multi_plot_settings;
+  return oss.str();
 }
 
+/*
+ * Interface that creates a string that represents the gnuplot command required
+ * to unset a multiplot.
+ */
 inline std::string unsetMultiplot() { return "unset multiplot\n"; }
 
 inline std::string setGrid() { return "set grid\n"; }
