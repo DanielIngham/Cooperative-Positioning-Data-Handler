@@ -6,6 +6,7 @@
 #pragma once
 
 #include "DataHandler.h"
+#include "Landmark.h"
 
 #include <cmath>
 #include <tuple>
@@ -40,6 +41,8 @@ private:
 
   /** Reference to a data handler instance */
   Handler &data_;
+
+  std::string dataset_name_;
 
   /** Total number of synced data points in the dataset. */
   size_t data_points_;
@@ -111,7 +114,7 @@ private:
 
   using PlotList = std::vector<Plot>;
 
-  /** Indexs of the items in the tuples used for gnuplotting.
+  /** Indices of the items in the tuples used for gnuplotting.
    * @note gnuplot starts its indexing at 1. */
   enum tuples_index_plot {
     TIME = 1,
@@ -137,44 +140,56 @@ private:
   struct RobotData {
 
     struct {
-      odometry_tuple interpolated;
-      odometry_tuple groundtruth;
-      odometry_tuple raw;
+      std::string interpolated;
+      std::string groundtruth;
+      std::string raw;
     } odometry;
 
     struct {
-      measurement_tuple interpolated;
-      measurement_tuple raw;
+      std::string interpolated;
+
+      std::string groundtruth;
+
+      std::string raw;
 
     } measurement;
 
     struct {
-      pose_tuple estimate;
-      pose_tuple groundtruth;
-      pose_tuple raw;
+      std::string estimate;
+
+      std::string groundtruth;
+
+      std::string raw;
     } pose;
   };
 
+  /** Filename of the binary landmark data. */
+  std::string binary_landmark_data_;
+
   /** Vector containing the serialised data extracted into the RobotData struct.
    */
-  std::vector<RobotData> serial_robot_data_;
+  std::vector<RobotData> binary_robot_data_;
 
-  /** Vector containing the global points of each landmark. */
-  point_tuple serial_landmark_data_;
-
-  void serialiseRobotInputData();
-  void serialiseRobotOutputData();
-
-  void serialiseLandmarkData();
+  void binariseRobotPoseData();
+  void binariseRobotInferenceData();
+  void binariseLandmarkData();
+  void binariseOdometryData();
+  void binariseMeasurementData();
 
   struct Plot {
-    const PlotData dataset;
+    std::string dataset_name;
+
     gnuplot::PlotSettings settings;
-    template <typename DataType>
-    Plot(const DataType &data_vec) : dataset(data_vec) {}
+
+    Plot(const std::string data_vec) : dataset_name(data_vec) {}
   };
 
   void plot(const PlotList &, const gnuplot::AxisSettings &);
+
+  void write_binary(std::string &, const std::vector<Robot::Odometry> &);
+  void write_binary(std::string &, const std::vector<Robot::State> &);
+  void write_binary(std::string &, const std::vector<Robot::Measurement> &);
+  void write_binary(std::string &, const std::vector<Landmark> &);
 };
 
 } // namespace Data
