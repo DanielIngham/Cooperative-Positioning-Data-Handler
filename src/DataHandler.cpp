@@ -2070,6 +2070,8 @@ void Handler::plotInferenceData(std::string file_type) {
             << std::endl;
 }
 
+std::string Handler::getDatasetName() { return dataset_; }
+
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the
  * robot or landmark.

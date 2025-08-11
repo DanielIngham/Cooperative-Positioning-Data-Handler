@@ -77,6 +77,8 @@ public:
       const std::string &output_directory = SimulationDefaults::kOutputDir,
       const unsigned long seed = SimulationDefaults::kSeed);
 
+  std::string getDatasetName();
+
   std::vector<Robot> &getRobots();
   const std::vector<Landmark> &getLandmarks() const;
   const std::vector<unsigned short int> &getBarcodes() const;
