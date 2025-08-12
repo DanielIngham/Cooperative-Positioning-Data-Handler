@@ -167,12 +167,6 @@ private:
    */
   std::vector<RobotData> binary_robot_data_;
 
-  void binariseRobotPoseData(unsigned short);
-  void binariseRobotInferenceData(unsigned short);
-  void binariseLandmarkData();
-  void binariseOdometryData(unsigned short);
-  void binariseMeasurementData(unsigned short);
-
   struct Plot {
     std::string binary_name;
     std::string binary_format;
@@ -184,6 +178,12 @@ private:
   };
 
   void plot(const PlotList &, const gnuplot::AxisSettings &);
+
+  void binariseRobotPoseData(unsigned short);
+  void binariseRobotInferenceData(unsigned short);
+  void binariseLandmarkData();
+  void binariseOdometryData(unsigned short);
+  void binariseMeasurementData(unsigned short);
 
   void write_binary(std::string &, const std::vector<Robot::Odometry> &);
   void write_binary(std::string &, const std::vector<Robot::State> &);

@@ -44,7 +44,7 @@ void Plotter::binariseRobotPoseData(unsigned short robot_id) {
 
   for (; id < end_point; ++id) {
 
-    /* Serialise state data. */
+    /* Groundtruth State Data. */
     const std::vector<Robot::State> &groundtruth_states =
         input_robot_data[id].groundtruth.states;
 
@@ -92,7 +92,25 @@ void Plotter::binariseOdometryData(unsigned short robot_id) {
     write_binary(binary_robot_data_[id].odometry.groundtruth,
                  groundtruth_odometry);
 
-    /* TODO: binarise raw odometry */
+    /* Binarise raw odometry. */
+    const std::vector<Robot::Odometry> &raw_odometry =
+        input_robot_data[id].raw.odometry;
+
+    binary_robot_data_[id].odometry.raw = dataset_name_ + "_Robot_" +
+                                          std::to_string(id + 1) + "_raw" +
+                                          "_odometry";
+
+    write_binary(binary_robot_data_[id].odometry.raw, raw_odometry);
+
+    /* Binarise error odometry. */
+    const std::vector<Robot::Odometry> &error_odometry =
+        input_robot_data[id].error.odometry;
+
+    binary_robot_data_[id].odometry.error = dataset_name_ + "_Robot_" +
+                                            std::to_string(id + 1) + "_error" +
+                                            "_odometry";
+
+    write_binary(binary_robot_data_[id].odometry.error, error_odometry);
   }
 }
 
@@ -137,6 +155,17 @@ void Plotter::binariseMeasurementData(unsigned short robot_id) {
                    "_measurement";
 
     write_binary(raw_filename, raw_measurements);
+
+    /* Error measurement */
+    const std::vector<Robot::Measurement> &error_measurements =
+        output_robot_data[id].error.measurements;
+
+    std::string &error_filename = binary_robot_data_[id].measurement.error;
+
+    error_filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) +
+                     "_error" + "_measurement";
+
+    write_binary(error_filename, error_measurements);
   }
 }
 
@@ -150,6 +179,7 @@ void Plotter::binariseRobotInferenceData(unsigned short robot_id) {
 
   for (; id < end_point; ++id) {
 
+    /* Inference Data */
     const std::vector<Robot::State> &estimated_states =
         output_robot_data[id].synced.states;
 
@@ -158,6 +188,16 @@ void Plotter::binariseRobotInferenceData(unsigned short robot_id) {
                                          "_odometry";
 
     write_binary(binary_robot_data_[id].pose.synced, estimated_states);
+
+    /* Error Data */
+    const std::vector<Robot::State> &error_states =
+        output_robot_data[id].error.states;
+
+    binary_robot_data_[id].pose.error = dataset_name_ + "_Robot_" +
+                                        std::to_string(id + 1) + "_error" +
+                                        "_odometry";
+
+    write_binary(binary_robot_data_[id].pose.error, error_states);
   }
 }
 
@@ -488,9 +528,11 @@ void Plotter::write_binary(std::string &filename,
   /* Prepend temporary directory to filename. */
   filename = "/tmp/" + filename + ".bin";
 
+#ifdef REUSE
   if (std::filesystem::exists(filename)) {
     return;
   }
+#endif // REUSE
 
   /* Convert odometry data to binary. */
   std::ofstream fout(filename, std::ios::binary);
@@ -520,9 +562,11 @@ void Plotter::write_binary(std::string &filename,
   /* Prepend temporary directory to filename. */
   filename = "/tmp/" + filename + ".bin";
 
+#ifdef REUSE
   if (std::filesystem::exists(filename)) {
     return;
   }
+#endif // REUSE
 
   /* Convert odometry data to binary. */
   std::ofstream fout(filename, std::ios::binary);
@@ -553,9 +597,11 @@ void Plotter::write_binary(
   /* Prepend temporary directory to filename. */
   filename = "/tmp/" + filename + ".bin";
 
-  // if (std::filesystem::exists(filename)) {
-  //   return;
-  // }
+#ifdef REUSE
+  if (std::filesystem::exists(filename)) {
+    return;
+  }
+#endif // REUSE
 
   /* Convert odometry data to binary. */
   std::ofstream fout(filename, std::ios::binary);
@@ -589,9 +635,11 @@ void Plotter::write_binary(std::string &filename,
   /* Prepend temporary directory to filename. */
   filename = "/tmp/" + filename + ".bin";
 
+#ifdef REUSE
   if (std::filesystem::exists(filename)) {
     return;
   }
+#endif // REUSE
 
   /* Convert odometry data to binary. */
   std::ofstream fout(filename, std::ios::binary);
@@ -634,13 +682,13 @@ void Plotter::plot(const PlotList &plots,
     }
   }
 
-#ifdef DEBUG
   plot_command << "\n";
-#endif // DEBUG
 
   gnuplot_ << plot_command.str();
 
+#ifdef DEBUG
   std::cout << plot_command.str() << std::endl;
+#endif // DEBUG
 }
 
 } // namespace Data
