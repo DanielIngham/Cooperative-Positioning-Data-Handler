@@ -5,6 +5,7 @@
 #include <chrono>
 #include <filesystem>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -399,6 +400,88 @@ void Plotter::plotOdometry(unsigned short robot_id) {
   }
 }
 
+void Plotter::plotMeasurements(unsigned short robot_id) {
+  if (robot_id > total_robots_ || robot_id <= 0) {
+    throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
+  }
+
+  binariseMeasurementData(robot_id);
+
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  for (; id < end_point; ++id) {
+    std::string title = "Robot " + std::to_string(id + 1) + " Odometry";
+    gnuplot_ << gnuplot::setTitle(title);
+
+    gnuplot_ << gnuplot::setTerminal(id);
+    gnuplot_ << gnuplot::setMultiplot(2, 1);
+    gnuplot_ << gnuplot::grid();
+
+    /* Set forward velocity axis labels */
+    gnuplot::AxisSettings forward_velocity_axis;
+
+    forward_velocity_axis.y_label = "Range [m]";
+    forward_velocity_axis.x_label = "Time [s]";
+
+    /* Forward Velcoty Plot */
+    PlotList range_plots;
+
+    range_plots.emplace_back(binary_robot_data_[id].measurement.groundtruth,
+                             binary_robot_data_[id].measurement.binary_format);
+
+    range_plots.back().settings.title = "Groundtruth";
+    range_plots.back().settings.x = TIME;
+    range_plots.back().settings.y = RANGE;
+
+    range_plots.emplace_back(binary_robot_data_[id].measurement.synced,
+                             binary_robot_data_[id].measurement.binary_format);
+
+    range_plots.back().settings.title = "Synced";
+    range_plots.back().settings.x = TIME;
+    range_plots.back().settings.y = RANGE;
+
+    plot(range_plots, forward_velocity_axis);
+
+    /* Angular Velcoty Plot */
+    PlotList bearing_plots;
+
+    /* Groundtruth */
+    bearing_plots.emplace_back(
+        binary_robot_data_[id].measurement.groundtruth,
+        binary_robot_data_[id].measurement.binary_format);
+
+    bearing_plots.back().settings.title = "Groundtruth";
+    bearing_plots.back().settings.x = TIME;
+    bearing_plots.back().settings.y = BEARING;
+
+    /* Synced */
+    bearing_plots.emplace_back(
+        binary_robot_data_[id].measurement.synced,
+        binary_robot_data_[id].measurement.binary_format);
+
+    bearing_plots.back().settings.title = "Synced";
+    bearing_plots.back().settings.x = TIME;
+    bearing_plots.back().settings.y = BEARING;
+
+    gnuplot::AxisSettings angular_velocity_axis;
+
+    angular_velocity_axis.y_label = "Bearing [rad]";
+    angular_velocity_axis.x_label = "Time [s]";
+
+    plot(bearing_plots, angular_velocity_axis);
+
+    gnuplot_ << gnuplot::unsetMultiplot();
+    gnuplot_.flush();
+  }
+}
+
+/**
+ * Writes binary file for odometry data.
+ * @param filename the name of the output binary file.
+ * @param odometry_data Vector of measurements.
+ */
 void Plotter::write_binary(std::string &filename,
                            const std::vector<Robot::Odometry> &odometry_data) {
 
@@ -426,6 +509,11 @@ void Plotter::write_binary(std::string &filename,
   fout.close();
 }
 
+/**
+ * Writes binary file for pose data.
+ * @param filename the name of the output binary file.
+ * @param state_data Vector of measurements.
+ */
 void Plotter::write_binary(std::string &filename,
                            const std::vector<Robot::State> &state_data) {
 
@@ -453,6 +541,11 @@ void Plotter::write_binary(std::string &filename,
   fout.close();
 }
 
+/**
+ * Writes binary file for measurement data.
+ * @param filename the name of the output binary file.
+ * @param measurement_data Vector of measurements.
+ */
 void Plotter::write_binary(
     std::string &filename,
     const std::vector<Robot::Measurement> &measurement_data) {
@@ -460,9 +553,9 @@ void Plotter::write_binary(
   /* Prepend temporary directory to filename. */
   filename = "/tmp/" + filename + ".bin";
 
-  if (std::filesystem::exists(filename)) {
-    return;
-  }
+  // if (std::filesystem::exists(filename)) {
+  //   return;
+  // }
 
   /* Convert odometry data to binary. */
   std::ofstream fout(filename, std::ios::binary);
@@ -473,7 +566,7 @@ void Plotter::write_binary(
   for (auto const &row : measurement_data) {
     for (unsigned short i = 0; i < row.subjects.size(); ++i) {
       fout.write(reinterpret_cast<const char *>(&row.time), sizeof(double));
-      fout.write(reinterpret_cast<const char *>(&row.subjects),
+      fout.write(reinterpret_cast<const char *>(&row.subjects[i]),
                  sizeof(unsigned short));
       fout.write(reinterpret_cast<const char *>(&row.ranges[i]),
                  sizeof(double));
@@ -485,6 +578,11 @@ void Plotter::write_binary(
   fout.close();
 }
 
+/**
+ * Writes binary file for landmark data.
+ * @param filename the name of the output binary file.
+ * @param landmark_data Vector of landmarks.
+ */
 void Plotter::write_binary(std::string &filename,
                            const std::vector<Landmark> &landmark_data) {
 
@@ -510,7 +608,7 @@ void Plotter::write_binary(std::string &filename,
 }
 
 /**
- *
+ * Sends plot commands to gnuplot.
  */
 void Plotter::plot(const PlotList &plots,
                    const gnuplot::AxisSettings &axis_settings) {
@@ -518,22 +616,31 @@ void Plotter::plot(const PlotList &plots,
   size_t total_plots = plots.size();
 
   /* Set the axis settings. */
+
   gnuplot_ << gnuplot::setAxisSettings(axis_settings);
 
-  gnuplot_ << "plot";
+  std::ostringstream plot_command;
+  plot_command << "plot";
 
   for (size_t i = 0; i < total_plots; ++i) {
     assert(plots[i].binary_name != "" && "Dataset name not set.");
 
-    gnuplot_ << " '" << plots[i].binary_name << "' " << plots[i].binary_format
-             << gnuplot::setPlotSettings(plots[i].settings);
+    plot_command << " '" << plots[i].binary_name << "' "
+                 << plots[i].binary_format
+                 << gnuplot::setPlotSettings(plots[i].settings);
 
     if (i < total_plots - 1) {
-      gnuplot_ << ",";
+      plot_command << ",";
     }
   }
 
-  gnuplot_ << "\n";
+#ifdef DEBUG
+  plot_command << "\n";
+#endif // DEBUG
+
+  gnuplot_ << plot_command.str();
+
+  std::cout << plot_command.str() << std::endl;
 }
 
 } // namespace Data

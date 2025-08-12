@@ -35,6 +35,7 @@ public:
   void plotGroundruthStates(unsigned short robot_id = 0);
   void plotGroundruthTrajectory(unsigned short robot_id = 0);
   void plotOdometry(unsigned short robot_id = 0);
+  void plotMeasurements(unsigned short robot_id = 0);
 
 private:
   class Plot;
@@ -143,6 +144,7 @@ private:
       std::string raw;
       std::string synced;
       std::string groundtruth;
+      std::string error;
       const std::string binary_format;
     };
 
