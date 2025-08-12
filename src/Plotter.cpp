@@ -103,6 +103,39 @@ void Plotter::binariseMeasurementData(unsigned short robot_id) {
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   for (; id < end_point; ++id) {
+    /* Synced measurements. */
+    const std::vector<Robot::Measurement> &synced_measurements =
+        output_robot_data[id].synced.measurements;
+
+    std::string &synced_filename = binary_robot_data_[id].measurement.synced;
+
+    synced_filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) +
+                      "_synced" + "_measurement";
+
+    write_binary(synced_filename, synced_measurements);
+
+    /* Groundtruth measurements. */
+    const std::vector<Robot::Measurement> &groundtruth_measurements =
+        output_robot_data[id].groundtruth.measurements;
+
+    std::string &groundtruth_filename =
+        binary_robot_data_[id].measurement.groundtruth;
+
+    groundtruth_filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) +
+                           "_groundtruth" + "_measurement";
+
+    write_binary(groundtruth_filename, groundtruth_measurements);
+
+    /* Raw measurement */
+    const std::vector<Robot::Measurement> &raw_measurements =
+        output_robot_data[id].raw.measurements;
+
+    std::string &raw_filename = binary_robot_data_[id].measurement.raw;
+
+    raw_filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) + "_raw" +
+                   "_measurement";
+
+    write_binary(raw_filename, raw_measurements);
   }
 }
 
