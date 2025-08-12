@@ -139,49 +139,46 @@ private:
    */
   struct RobotData {
 
-    struct {
-      std::string interpolated;
-      std::string groundtruth;
+    struct Types {
       std::string raw;
-    } odometry;
-
-    struct {
-      std::string interpolated;
-
+      std::string synced;
       std::string groundtruth;
+      const std::string binary_format;
+    };
 
-      std::string raw;
+    Types odometry{.binary_format = " binary format='%double%double%double' "};
 
-    } measurement;
+    Types measurement{.binary_format =
+                          " binary format='%double%ushort%double%double' "};
 
-    struct {
-      std::string estimate;
-
-      std::string groundtruth;
-
-      std::string raw;
-    } pose;
+    Types pose{.binary_format =
+                   " binary format='%double%double%double%double' "};
   };
 
   /** Filename of the binary landmark data. */
-  std::string binary_landmark_data_;
+  struct {
+    std::string filename;
+    const std::string binary_format = " binary format='%double%double' ";
+  } binary_landmark_data_;
 
   /** Vector containing the serialised data extracted into the RobotData struct.
    */
   std::vector<RobotData> binary_robot_data_;
 
-  void binariseRobotPoseData();
-  void binariseRobotInferenceData();
+  void binariseRobotPoseData(unsigned short);
+  void binariseRobotInferenceData(unsigned short);
   void binariseLandmarkData();
-  void binariseOdometryData();
-  void binariseMeasurementData();
+  void binariseOdometryData(unsigned short);
+  void binariseMeasurementData(unsigned short);
 
   struct Plot {
-    std::string dataset_name;
+    std::string binary_name;
+    std::string binary_format;
 
     gnuplot::PlotSettings settings;
 
-    Plot(const std::string data_vec) : dataset_name(data_vec) {}
+    Plot(const std::string binary_name, std::string binary_format)
+        : binary_name(binary_name), binary_format(binary_format) {}
   };
 
   void plot(const PlotList &, const gnuplot::AxisSettings &);

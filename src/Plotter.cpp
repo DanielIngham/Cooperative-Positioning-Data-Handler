@@ -1,7 +1,6 @@
 #include "Plotter.h"
 #include "Landmark.h"
 
-#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <filesystem>
@@ -9,7 +8,6 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
-#include <tuple>
 #include <unistd.h>
 #include <vector>
 
@@ -36,10 +34,14 @@ Plotter::~Plotter() {}
  * Converts the Robot data structure into serial tuples for plotting
  * using gnuplot.
  */
-void Plotter::binariseRobotPoseData() {
+void Plotter::binariseRobotPoseData(unsigned short robot_id) {
   std::vector<Robot> &input_robot_data = data_.getRobots();
 
-  for (unsigned short id = 0; id < total_robots_; ++id) {
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  for (; id < end_point; ++id) {
 
     /* Serialise state data. */
     const std::vector<Robot::State> &groundtruth_states =
@@ -57,23 +59,26 @@ void Plotter::binariseRobotPoseData() {
 }
 
 /**
- * Covert robot odoemtry sensor values to temporary binary files for gnuplot.
+ * Covert robot odometry sensor values to temporary binary files for gnuplot.
  */
-void Plotter::binariseOdometryData() {
+void Plotter::binariseOdometryData(unsigned short robot_id) {
   std::vector<Robot> &input_robot_data = data_.getRobots();
 
-  for (unsigned short id = 0; id < total_robots_; ++id) {
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
-    /* Binarise interpolated odometry. */
-    const std::vector<Robot::Odometry> &interpolated_odometry =
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  for (; id < end_point; ++id) {
+
+    /* Binarise synced odometry. */
+    const std::vector<Robot::Odometry> &synced_odometry =
         input_robot_data[id].synced.odometry;
 
-    binary_robot_data_[id].odometry.interpolated =
-        dataset_name_ + "_Robot_" + std::to_string(id + 1) + "_interpolated" +
-        "_odometry";
+    binary_robot_data_[id].odometry.synced = dataset_name_ + "_Robot_" +
+                                             std::to_string(id + 1) +
+                                             "_synced" + "_odometry";
 
-    write_binary(binary_robot_data_[id].odometry.interpolated,
-                 interpolated_odometry);
+    write_binary(binary_robot_data_[id].odometry.synced, synced_odometry);
 
     /* Binarise groundtruth odometry. */
     const std::vector<Robot::Odometry> &groundtruth_odometry =
@@ -90,22 +95,35 @@ void Plotter::binariseOdometryData() {
   }
 }
 
-void Plotter::binariseMeasurementData() {}
+void Plotter::binariseMeasurementData(unsigned short robot_id) {
+  std::vector<Robot> &output_robot_data = data_.getRobots();
 
-void Plotter::binariseRobotInferenceData() {
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  for (; id < end_point; ++id) {
+  }
+}
+
+void Plotter::binariseRobotInferenceData(unsigned short robot_id) {
 
   std::vector<Robot> &output_robot_data = data_.getRobots();
 
-  for (unsigned short id = 0; id < total_robots_; ++id) {
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  for (; id < end_point; ++id) {
 
     const std::vector<Robot::State> &estimated_states =
         output_robot_data[id].synced.states;
 
-    binary_robot_data_[id].pose.estimate = dataset_name_ + "_Robot_" +
-                                           std::to_string(id + 1) +
-                                           "_estimated" + "_odometry";
+    binary_robot_data_[id].pose.synced = dataset_name_ + "_Robot_" +
+                                         std::to_string(id + 1) + "_estimated" +
+                                         "_odometry";
 
-    write_binary(binary_robot_data_[id].pose.estimate, estimated_states);
+    write_binary(binary_robot_data_[id].pose.synced, estimated_states);
   }
 }
 
@@ -117,9 +135,9 @@ void Plotter::binariseLandmarkData() {
 
   const std::vector<Landmark> &input_landmark_data = data_.getLandmarks();
 
-  binary_landmark_data_ = dataset_name_ + "_Landmarks";
+  binary_landmark_data_.filename = dataset_name_ + "_Landmarks";
 
-  write_binary(binary_landmark_data_, input_landmark_data);
+  write_binary(binary_landmark_data_.filename, input_landmark_data);
 }
 
 void Plotter::demo_animation() {
@@ -156,6 +174,11 @@ void Plotter::demo_animation() {
  * be plotted in individual terminals.
  */
 void Plotter::plotGroundruthStates(unsigned short robot_id) {
+  if (robot_id > total_robots_ || robot_id <= 0) {
+    throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
+  }
+
+  binariseRobotPoseData(robot_id);
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
@@ -171,7 +194,9 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
 
     /* Plot X Position */
     PlotList x_plots;
-    x_plots.emplace_back(binary_robot_data_[id].pose.groundtruth.dataset_name);
+    x_plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
+                         binary_robot_data_[id].pose.binary_format);
+
     x_plots.back().settings.title = "Groundtruth";
 
     gnuplot::AxisSettings x_position_axis;
@@ -182,7 +207,8 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
 
     /* Plot Y Position */
     PlotList y_plots;
-    y_plots.emplace_back(binary_robot_data_[id].pose.groundtruth.dataset_name);
+    y_plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
+                         binary_robot_data_[id].pose.binary_format);
     y_plots.back().settings.title = "Groundtruth";
     y_plots.back().settings.y = Y_POSITION;
 
@@ -194,8 +220,9 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
 
     /* Plot Orientation Position */
     PlotList orientation_plots;
-    orientation_plots.emplace_back(
-        binary_robot_data_[id].pose.groundtruth.dataset_name);
+    orientation_plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
+                                   binary_robot_data_[id].pose.binary_format);
+
     orientation_plots.back().settings.title = "Groundtruth";
     orientation_plots.back().settings.y = ORIENTATION;
 
@@ -218,6 +245,12 @@ void Plotter::plotGroundruthStates(unsigned short robot_id) {
  * value is 0, then all robots data is plotted.
  */
 void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
+  if (robot_id > total_robots_ || robot_id <= 0) {
+    throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
+  }
+
+  binariseLandmarkData();
+  binariseRobotPoseData(robot_id);
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
@@ -231,12 +264,16 @@ void Plotter::plotGroundruthTrajectory(unsigned short robot_id) {
     gnuplot_ << gnuplot::grid();
 
     PlotList plots;
-    plots.emplace_back(binary_landmark_data_.dataset_name);
+    plots.emplace_back(binary_landmark_data_.filename,
+                       binary_landmark_data_.binary_format);
+
     plots.back().settings.style = gnuplot::PlotStyle::POINTS;
     plots.back().settings.title = "Landmarks";
 
     /* Create the plot for the trajectory of the robots. */
-    plots.emplace_back(binary_robot_data_[id].pose.groundtruth.dataset_name);
+    plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
+                       binary_robot_data_[id].pose.binary_format);
+
     plots.back().settings.x = X_POSITION;
     plots.back().settings.y = Y_POSITION;
     plots.back().settings.style = gnuplot::PlotStyle::LINES;
@@ -261,7 +298,7 @@ void Plotter::plotOdometry(unsigned short robot_id) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
-  sendOdometryDataToGnuplot();
+  binariseOdometryData(robot_id);
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
@@ -285,12 +322,16 @@ void Plotter::plotOdometry(unsigned short robot_id) {
     PlotList forward_velocity_plots;
 
     forward_velocity_plots.emplace_back(
-        binary_robot_data_[id].odometry.groundtruth.dataset_name);
+        binary_robot_data_[id].odometry.groundtruth,
+        binary_robot_data_[id].odometry.binary_format);
+
     forward_velocity_plots.back().settings.title = "Groundtruth";
 
     forward_velocity_plots.emplace_back(
-        binary_robot_data_[id].odometry.interpolated.dataset_name);
-    forward_velocity_plots.back().settings.title = "Interpolated";
+        binary_robot_data_[id].odometry.synced,
+        binary_robot_data_[id].odometry.binary_format);
+
+    forward_velocity_plots.back().settings.title = "synced";
     forward_velocity_plots.back().settings.linecolor = gnuplot::Colour::RED;
 
     plot(forward_velocity_plots, forward_velocity_axis);
@@ -299,15 +340,17 @@ void Plotter::plotOdometry(unsigned short robot_id) {
     PlotList angular_velocity_plots;
 
     angular_velocity_plots.emplace_back(
-        binary_robot_data_[id].odometry.groundtruth.dataset_name);
+        binary_robot_data_[id].odometry.groundtruth,
+        binary_robot_data_[id].odometry.binary_format);
 
     angular_velocity_plots.back().settings.title = "Groundtruth";
     angular_velocity_plots.back().settings.y = ANGULAR_VELOCITY;
 
     angular_velocity_plots.emplace_back(
-        binary_robot_data_[id].odometry.interpolated.dataset_name);
+        binary_robot_data_[id].odometry.synced,
+        binary_robot_data_[id].odometry.binary_format);
 
-    angular_velocity_plots.back().settings.title = "Interpolated";
+    angular_velocity_plots.back().settings.title = "synced";
     angular_velocity_plots.back().settings.y = ANGULAR_VELOCITY;
     angular_velocity_plots.back().settings.linecolor = gnuplot::Colour::RED;
 
@@ -323,48 +366,18 @@ void Plotter::plotOdometry(unsigned short robot_id) {
   }
 }
 
-/**
- *
- */
-void Plotter::plot(const PlotList &plots,
-                   const gnuplot::AxisSettings &axis_settings) {
-
-  size_t total_plots = plots.size();
-
-  /* Set the axis settings. */
-  gnuplot_ << gnuplot::setAxisSettings(axis_settings);
-
-  gnuplot_ << "plot";
-
-  for (size_t i = 0; i < total_plots; ++i) {
-    std::string dataset_name = plots[i].dataset_name;
-    assert(dataset_name != "" && "Dataset name not set.");
-
-    std::string plot_part =
-        " " + dataset_name + gnuplot::setPlotSettings(plots[i].settings);
-
-    gnuplot_ << plot_part;
-
-    if (i < total_plots - 1) {
-      gnuplot_ << ",";
-    }
-  }
-
-  gnuplot_ << "\n";
-}
-
-void Plotter::write_odometry_binary(
-    std::string &filename, const std::vector<Robot::Odometry> &odometry_data) {
+void Plotter::write_binary(std::string &filename,
+                           const std::vector<Robot::Odometry> &odometry_data) {
 
   /* Prepend temporary directory to filename. */
-  filename = "/tmp/" + filename;
+  filename = "/tmp/" + filename + ".bin";
 
   if (std::filesystem::exists(filename)) {
     return;
   }
 
   /* Convert odometry data to binary. */
-  std::ofstream fout(temporary_file, std::ios::binary);
+  std::ofstream fout(filename, std::ios::binary);
   if (!fout) {
     throw std::runtime_error("Could not open temporary file");
   }
@@ -384,9 +397,9 @@ void Plotter::write_binary(std::string &filename,
                            const std::vector<Robot::State> &state_data) {
 
   /* Prepend temporary directory to filename. */
-  filename = "/tmp/" + filename;
+  filename = "/tmp/" + filename + ".bin";
 
-  if (std::filesystem::exists(file_name)) {
+  if (std::filesystem::exists(filename)) {
     return;
   }
 
@@ -410,10 +423,11 @@ void Plotter::write_binary(std::string &filename,
 void Plotter::write_binary(
     std::string &filename,
     const std::vector<Robot::Measurement> &measurement_data) {
-  /* Prepend temporary directory to filename. */
-  filename = "/tmp/" + filename;
 
-  if (std::filesystem::exists(file_name)) {
+  /* Prepend temporary directory to filename. */
+  filename = "/tmp/" + filename + ".bin";
+
+  if (std::filesystem::exists(filename)) {
     return;
   }
 
@@ -442,9 +456,9 @@ void Plotter::write_binary(std::string &filename,
                            const std::vector<Landmark> &landmark_data) {
 
   /* Prepend temporary directory to filename. */
-  filename = "/tmp/" + filename;
+  filename = "/tmp/" + filename + ".bin";
 
-  if (std::filesystem::exists(file_name)) {
+  if (std::filesystem::exists(filename)) {
     return;
   }
 
@@ -457,10 +471,36 @@ void Plotter::write_binary(std::string &filename,
   for (auto const &row : landmark_data) {
     fout.write(reinterpret_cast<const char *>(&row.x), sizeof(double));
     fout.write(reinterpret_cast<const char *>(&row.y), sizeof(double));
-               sizeof(double));
   }
 
   fout.close();
+}
+
+/**
+ *
+ */
+void Plotter::plot(const PlotList &plots,
+                   const gnuplot::AxisSettings &axis_settings) {
+
+  size_t total_plots = plots.size();
+
+  /* Set the axis settings. */
+  gnuplot_ << gnuplot::setAxisSettings(axis_settings);
+
+  gnuplot_ << "plot";
+
+  for (size_t i = 0; i < total_plots; ++i) {
+    assert(plots[i].binary_name != "" && "Dataset name not set.");
+
+    gnuplot_ << " '" << plots[i].binary_name << "' " << plots[i].binary_format
+             << gnuplot::setPlotSettings(plots[i].settings);
+
+    if (i < total_plots - 1) {
+      gnuplot_ << ",";
+    }
+  }
+
+  gnuplot_ << "\n";
 }
 
 } // namespace Data
