@@ -2070,7 +2070,14 @@ void Handler::plotInferenceData(std::string file_type) {
             << std::endl;
 }
 
-std::string Handler::getDatasetName() { return dataset_; }
+/**
+ * Returns the name of the dataset folder (not the full path).
+ */
+std::string Handler::getDatasetName() {
+  std::filesystem::path dataset_path(dataset_);
+  /* Extracts the folder name and returns it. */
+  return dataset_path.filename().string();
+}
 
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the
