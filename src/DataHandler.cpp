@@ -1486,9 +1486,11 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
   for (int id = 0; id < total_robots_; id++) {
     std::unordered_map<int, double> forward_velocity_bin_counts;
 
+    /* Create PDF. */
     for (const auto &odometry : robots_[id].error.odometry) {
       int bin_index =
           static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
+
       /* NOTE: The bin count is actually the area contribution of the odometry
        * error for the given measurement. This means that the output is a
        * discretized pdf, where the sum of the area of all the bins should
@@ -1498,6 +1500,7 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
           1.0 / (robots_[id].error.odometry.size() * bin_size);
     }
 
+    /* Save PDF to file. */
     for (const auto &[bin_index, count] : forward_velocity_bin_counts) {
       double bin_start = bin_index * bin_size;
       double bin_end = bin_start + bin_size;
@@ -1573,15 +1576,14 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
   }
 
   robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
-  /* Save the plot data for the Forward Velocity Error  */
+
+  /* Save the plot data for the Range Error  */
   for (int id = 0; id < total_robots_; id++) {
 
-    double number_of_measurements = 0.0;
-    for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
-      number_of_measurements += robots_[id].error.measurements[k].ranges.size();
-    }
+    double number_of_measurements = total_synced_measurements_[id];
 
     std::unordered_map<int, double> range_bin_counts;
+
     for (const auto &measurement : robots_[id].error.measurements) {
       for (auto range : measurement.ranges) {
         int bin_index = static_cast<int>(std::floor(range / bin_size));
@@ -1616,13 +1618,8 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
   robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
 
   for (int id = 0; id < total_robots_; id++) {
-    /* Save the plot data for the Angular Velocity Error  */
-
-    double number_of_measurements = 0.0;
-
-    for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
-      number_of_measurements += robots_[id].error.measurements[k].ranges.size();
-    }
+    /* Save the plot data for the Bearing Error  */
+    double number_of_measurements = total_synced_measurements_[id];
 
     std::unordered_map<int, double> bearing_bin_counts;
 
