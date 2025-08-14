@@ -90,6 +90,9 @@ struct PlotSettings {
   /** Element in the tuple that correponds to the y axis data point. */
   unsigned short y = 2;
 
+  /** Element in the tuple corresponding to the width of bar type plots. */
+  unsigned short box_width = 3;
+
   /* The type of plot. */
   PlotStyle style = POINTS;
 
@@ -229,8 +232,14 @@ inline std::string to_string(PointType type) {
 inline std::string setPlotSettings(const PlotSettings &settings) {
   std::ostringstream oss;
 
-  oss << " using " << settings.x << ":" << settings.y << " "
-      << "title \"" << settings.title << "\" "
+  if (settings.style == BOXES) {
+    oss << " using " << settings.x << ":" << settings.y << ":"
+        << settings.box_width << " ";
+  } else {
+    oss << " using " << settings.x << ":" << settings.y << " ";
+  }
+
+  oss << "title \"" << settings.title << "\" "
       << "with " << to_string(settings.style);
 
   if (settings.style == POINTS || settings.style == LINESPOINTS) {
@@ -300,7 +309,8 @@ inline std::string setAxisSettings(AxisSettings settings) {
  */
 inline std::string setTerminal(unsigned short terminal_number) {
   /* TODO: add more terminal settings functionality. */
-  std::string terminal_type = " qt ";
+  // std::string terminal_type = " qt ";
+  std::string terminal_type = " x11 ";
   std::string terminal_size = "  1336,768 ";
 
   size_t total_samples = 1000U;
