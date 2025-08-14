@@ -9,6 +9,7 @@
 #include "Landmark.h"
 
 #include <cmath>
+#include <initializer_list>
 #include <tuple>
 #include <unistd.h>
 #include <variant>
@@ -31,11 +32,23 @@ public:
   Plotter &operator=(const Plotter &) = delete;
   ~Plotter();
 
+  enum PlotType { SYNCED, RAW, GROUNDTRUTH, ERROR };
+
   void demo_animation();
-  void plotGroundruthStates(unsigned short robot_id = 0);
-  void plotGroundruthTrajectory(unsigned short robot_id = 0);
-  void plotOdometry(unsigned short robot_id = 0);
-  void plotMeasurements(unsigned short robot_id = 0);
+
+  void plotGroundruthStates(std::initializer_list<PlotType> plots,
+                            unsigned short robot_id = 0);
+  void plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
+                                unsigned short robot_id = 0);
+  void plotOdometry(std::initializer_list<PlotType> plots,
+                    unsigned short robot_id = 0);
+
+  void plotMeasurements(std::initializer_list<PlotType> plots,
+                        unsigned short robot_id = 0);
+
+  void plotOdometryPDFs(unsigned short, const double bin_size = 0.001);
+  void plotMeasurementPDFs(unsigned short robot_id,
+                           const double bin_size = 0.001);
 
 private:
   class Plot;
@@ -140,27 +153,40 @@ private:
    */
   struct RobotData {
 
+    /**
+     * @class PDF
+     * Contains the name and binary format of data file.
+     */
+    struct PDF {
+      std::string filename;
+      const std::string binary_format = "%double%double%double";
+    } forward_velocity_pdf, angular_velocity_pdf, range_pdf, bearing_pdf;
+
+    /**
+     * @class PDF
+     * Contains the names and binary format of data files associated with the
+     * different types of data structures.
+     */
     struct Types {
-      std::string raw;
-      std::string synced;
-      std::string groundtruth;
-      std::string error;
-      const std::string binary_format;
+      std::string raw;                 ///< Raw data.
+      std::string synced;              ///< Data synced by linear interpolation.
+      std::string groundtruth;         ///< Groundtruth data.
+      std::string error;               ///< Error data (synced - groundtruth)
+      const std::string binary_format; ///< Format of the binary file.
     };
 
-    Types odometry{.binary_format = " binary format='%double%double%double' "};
+    Types odometry{.binary_format = "%double%double%double"};
 
-    Types measurement{.binary_format =
-                          " binary format='%double%ushort%double%double' "};
+    Types measurement{.binary_format = "%double%ushort%double%double"};
+    // Types measurement{.binary_format = "'%double%double%double'"};
 
-    Types pose{.binary_format =
-                   " binary format='%double%double%double%double' "};
+    Types pose{.binary_format = "%double%double%double%double"};
   };
 
   /** Filename of the binary landmark data. */
   struct {
     std::string filename;
-    const std::string binary_format = " binary format='%double%double' ";
+    const std::string binary_format = "%double%double";
   } binary_landmark_data_;
 
   /** Vector containing the serialised data extracted into the RobotData struct.
@@ -184,11 +210,15 @@ private:
   void binariseLandmarkData();
   void binariseOdometryData(unsigned short);
   void binariseMeasurementData(unsigned short);
+  void binariseOdometryPDF(unsigned short, const double);
+  void binariseMeasurementPDF(unsigned short, const double);
 
   void write_binary(std::string &, const std::vector<Robot::Odometry> &);
   void write_binary(std::string &, const std::vector<Robot::State> &);
   void write_binary(std::string &, const std::vector<Robot::Measurement> &);
   void write_binary(std::string &, const std::vector<Landmark> &);
+  void write_binary(std::string &, const std::unordered_map<int, double> &,
+                    const double &);
 };
 
 } // namespace Data
