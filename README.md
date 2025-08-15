@@ -1,3 +1,5 @@
+# NOTE: Deprecated Gnuplot scripots
+This branch was made as a backup for when gnuplot scripting was used for creating the plots. This branch will no longer be maintained since the move to gnuplot-iostream.
 # C++ UTIAS Multi-Robot Data Extractor
 This project provides a c++ class as an interface for using the [UTIAS Multi-Robot Cooperative Localisation and Mapping dataset](http://asrl.utias.utoronto.ca/datasets/mrclam/index.html). The project provides the following functionality:
 - Extracts the UTIAS dataset into a c++ class allowing for easy interfacing with the dataset.
