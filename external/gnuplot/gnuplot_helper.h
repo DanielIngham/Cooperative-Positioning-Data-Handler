@@ -107,6 +107,9 @@ struct PlotSettings {
 
   /* Width of the plot line. */
   double linewidth = 1.0;
+
+  /* Plot created from a mathematical expression and NOT datapoints. */
+  bool math_expression = false;
 };
 
 struct AxisSettings {
@@ -235,7 +238,7 @@ inline std::string setPlotSettings(const PlotSettings &settings) {
   if (settings.style == BOXES) {
     oss << " using " << settings.x << ":" << settings.y << ":"
         << settings.box_width << " ";
-  } else {
+  } else if (!settings.math_expression) {
     oss << " using " << settings.x << ":" << settings.y << " ";
   }
 
