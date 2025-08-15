@@ -614,9 +614,12 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
 }
 
 void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
+  /* Check that the provided ID is within bounds. */
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
+
+  std::vector<Robot> robots = data_.getRobots();
 
   binariseOdometryPDF(robot_id, bin_size);
 
@@ -633,6 +636,7 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
   angular_velocity_axis.y_label = "Probability Density [s/rad]";
 
   for (; id < end_point; ++id) {
+    /* TODO: Add Gaussian plot. */
     std::string title = "Odometry PDF";
 
     gnuplot_ << gnuplot::setTitle(title);
@@ -653,6 +657,19 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
     forward_velocity_pdf.back().settings.box_width = 2;
     forward_velocity_pdf.back().settings.style = gnuplot::BOXES;
 
+    double sigma = std::sqrt(robots[id].forward_velocity_error.variance);
+    double mu = robots[id].forward_velocity_error.mean;
+
+    std::ostringstream forward_velocity_gaussian_plot;
+    forward_velocity_gaussian_plot
+        << " 1.0 /" << "( " << sigma << " * sqrt(2 * pi)) "
+        << "* exp(- " << "( x - " << mu << ")**2 / (2 *" << std::pow(sigma, 2)
+        << "))";
+
+    forward_velocity_pdf.emplace_back(forward_velocity_gaussian_plot.str());
+    forward_velocity_pdf.back().settings.math_expression = true;
+    forward_velocity_pdf.back().settings.style = gnuplot::LINES;
+
     PlotList angular_velocity_pdf;
 
     angular_velocity_pdf.emplace_back(
@@ -662,6 +679,19 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
     angular_velocity_pdf.back().settings.y = 3;
     angular_velocity_pdf.back().settings.box_width = 2;
     angular_velocity_pdf.back().settings.style = gnuplot::BOXES;
+
+    sigma = std::sqrt(robots[id].angular_velocity_error.variance);
+    mu = robots[id].angular_velocity_error.mean;
+
+    std::ostringstream angular_velocity_gaussian_plot;
+    angular_velocity_gaussian_plot
+        << " 1.0 /" << "( " << sigma << " * sqrt(2 * pi)) "
+        << "* exp(- " << "( x - " << mu << ")**2 / (2 *" << std::pow(sigma, 2)
+        << "))";
+
+    angular_velocity_pdf.emplace_back(forward_velocity_gaussian_plot.str());
+    angular_velocity_pdf.back().settings.math_expression = true;
+    angular_velocity_pdf.back().settings.style = gnuplot::LINES;
 
     plot(forward_velocity_pdf, forward_velocity_axis);
     plot(angular_velocity_pdf, angular_velocity_axis);
