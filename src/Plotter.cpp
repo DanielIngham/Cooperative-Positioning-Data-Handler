@@ -1,5 +1,4 @@
 #include "Plotter.h"
-#include "Landmark.h"
 
 #include <cassert>
 #include <chrono>
@@ -16,6 +15,7 @@
 #endif // REUSE
 
 namespace Data {
+size_t Plotter::terminal_number_ = 0;
 
 Plotter::Plotter(Handler &data)
     : data_(data), dataset_name_(data_.getDatasetName()),
@@ -25,7 +25,7 @@ Plotter::Plotter(Handler &data)
       total_landmarks_(data_.getNumberOfLandmarks()) {
 
   std::vector<Robot> &input_robot_data = data_.getRobots();
-
+  terminal_.type = gnuplot::TerminalType::WXT;
   binary_robot_data_.resize(total_robots_);
 }
 
@@ -58,7 +58,16 @@ void Plotter::binariseRobotPoseData(unsigned short robot_id) {
 
     write_binary(filename, groundtruth_states);
 
-    /* TODO: Add Raw . */
+    /* Add Raw . */
+    const std::vector<Robot::State> &raw_states =
+        input_robot_data[id].raw.states;
+
+    std::string &raw_filename = binary_robot_data_[id].pose.raw;
+
+    raw_filename =
+        dataset_name_ + "_Robot_" + std::to_string(id + 1) + "_raw" + "_pose";
+
+    write_binary(raw_filename, raw_states);
   }
 }
 
@@ -355,7 +364,7 @@ void Plotter::demo_animation() {
  */
 void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
                                        unsigned short robot_id) {
-  if (robot_id > total_robots_ || robot_id <= 0) {
+  if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
@@ -370,7 +379,8 @@ void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
     std::string title = "Robot " + std::to_string(id + 1) + " Trajectory";
     gnuplot_ << gnuplot::setTitle(title);
 
-    gnuplot_ << gnuplot::setTerminal(id);
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
     gnuplot_ << gnuplot::grid();
 
     PlotList plots;
@@ -396,6 +406,7 @@ void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
 
     plot(plots, axis);
 
+    gnuplot_ << gnuplot::unsetMultiplot();
     gnuplot_.flush();
   }
 }
@@ -408,7 +419,7 @@ void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
  */
 void Plotter::plotGroundruthStates(std::initializer_list<PlotType> plots,
                                    unsigned short robot_id) {
-  if (robot_id > total_robots_ || robot_id <= 0) {
+  if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
@@ -422,7 +433,9 @@ void Plotter::plotGroundruthStates(std::initializer_list<PlotType> plots,
     std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
     gnuplot_ << gnuplot::setTitle(title);
 
-    gnuplot_ << gnuplot::setTerminal(id);
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+
     gnuplot_ << gnuplot::grid();
     gnuplot_ << gnuplot::setMultiplot(3, 1);
 
@@ -509,7 +522,7 @@ void Plotter::plotGroundruthStates(std::initializer_list<PlotType> plots,
  */
 void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
                            unsigned short robot_id) {
-  if (robot_id > total_robots_ || robot_id <= 0) {
+  if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
@@ -524,7 +537,9 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
 
     gnuplot_ << gnuplot::setTitle(title);
 
-    gnuplot_ << gnuplot::setTerminal(id);
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+
     gnuplot_ << gnuplot::setMultiplot(2, 1);
     gnuplot_ << gnuplot::grid();
 
@@ -599,7 +614,7 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
 }
 
 void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
-  if (robot_id > total_robots_ || robot_id <= 0) {
+  if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
@@ -622,7 +637,9 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
 
     gnuplot_ << gnuplot::setTitle(title);
 
-    gnuplot_ << gnuplot::setTerminal(id);
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+
     gnuplot_ << gnuplot::setMultiplot(2, 1);
     gnuplot_ << gnuplot::grid();
 
@@ -648,13 +665,15 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
 
     plot(forward_velocity_pdf, forward_velocity_axis);
     plot(angular_velocity_pdf, angular_velocity_axis);
+
+    gnuplot_ << gnuplot::unsetMultiplot();
     gnuplot_.flush();
   }
 }
 
 void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
                                unsigned short robot_id) {
-  if (robot_id > total_robots_ || robot_id <= 0) {
+  if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
@@ -668,7 +687,9 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
     std::string title = "Robot " + std::to_string(id + 1) + " Measurements";
     gnuplot_ << gnuplot::setTitle(title);
 
-    gnuplot_ << gnuplot::setTerminal(id);
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+
     gnuplot_ << gnuplot::setMultiplot(2, 1);
     gnuplot_ << gnuplot::grid();
 
@@ -740,7 +761,7 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
 
 void Plotter::plotMeasurementPDFs(unsigned short robot_id,
                                   const double bin_size) {
-  if (robot_id > total_robots_ || robot_id <= 0) {
+  if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
@@ -758,12 +779,16 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
   bearing_axis.x_label = "Error [rad]";
   bearing_axis.y_label = "Probability Density [1/rad]";
 
+  std::vector<Data::Robot> &robots = data_.getRobots();
+
   for (; id < end_point; ++id) {
     std::string title = "Measurement PDF";
 
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+
     gnuplot_ << gnuplot::setTitle(title);
 
-    gnuplot_ << gnuplot::setTerminal(id);
     gnuplot_ << gnuplot::setMultiplot(2, 1);
     gnuplot_ << gnuplot::grid();
 
@@ -776,6 +801,16 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
     range_pdf.back().settings.box_width = 2;
     range_pdf.back().settings.style = gnuplot::BOXES;
 
+    double sigma = std::sqrt(robots[id].range_error.variance);
+    double mu = robots[id].range_error.mean;
+
+    std::ostringstream range_gaussian_plot;
+    range_gaussian_plot << " 1.0 /" << "( " << sigma << " * sqrt(2 * pi)) "
+                        << "* exp(- " << "( x - " << mu << ")**2 / (2 *"
+                        << std::pow(sigma, 2) << "))";
+
+    range_pdf.emplace_back(range_gaussian_plot.str());
+
     PlotList bearing_pdf;
 
     bearing_pdf.emplace_back(binary_robot_data_[id].bearing_pdf.filename,
@@ -785,8 +820,19 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
     bearing_pdf.back().settings.box_width = 2;
     bearing_pdf.back().settings.style = gnuplot::BOXES;
 
+    sigma = std::sqrt(robots[id].bearing_error.variance);
+    mu = robots[id].bearing_error.mean;
+
+    std::ostringstream bearing_gaussian_plot;
+    bearing_gaussian_plot << " 1.0 /" << "( " << sigma << " * sqrt(2 * pi)) "
+                          << "* exp(- " << "( x - " << mu << ")**2 / (2 *"
+                          << std::pow(sigma, 2) << "))";
+
+    bearing_pdf.emplace_back(bearing_gaussian_plot.str());
+
     plot(range_pdf, range_axis);
     plot(bearing_pdf, bearing_axis);
+    gnuplot_ << gnuplot::unsetMultiplot();
     gnuplot_.flush();
   }
 }
@@ -975,11 +1021,16 @@ void Plotter::plot(const PlotList &plots,
   plot_command << "plot ";
 
   for (size_t i = 0; i < total_plots; ++i) {
-    assert(plots[i].binary_name != "" && "Dataset name not set.");
+    if (plots[i].using_binary_file) {
+      assert(plots[i].binary_name != "" && "Binary file not set.");
 
-    plot_command << "'" << plots[i].binary_name << "'" << " binary "
-                 << "format='" << plots[i].binary_format << "'"
-                 << gnuplot::setPlotSettings(plots[i].settings);
+      plot_command << "'" << plots[i].binary_name << "'" << " binary "
+                   << "format='" << plots[i].binary_format << "' ";
+    } else {
+      plot_command << plots[i].plot_string << " ";
+    }
+
+    plot_command << gnuplot::setPlotSettings(plots[i].settings);
 
     if (i < total_plots - 1) {
       plot_command << ",";
@@ -989,7 +1040,6 @@ void Plotter::plot(const PlotList &plots,
   plot_command << "\n";
 
   gnuplot_ << plot_command.str();
-  /* Close all the files. */
 
   std::cout << plot_command.str() << std::endl;
 #ifdef DEBUG
