@@ -1,18 +1,23 @@
-<map id="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Filters/lib/DataHandler/Robot.h" name="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Filters/lib/DataHandler/Robot.h">
-<area shape="rect" id="Node000001" title="Header file of the Robot class." alt="" coords="392,5,575,60"/>
-<area shape="rect" id="Node000002" href="$DataHandler_8h.html" title="Header file of the DataHandler class,." alt="" coords="375,211,600,265"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="487,74,489,210,484,210,481,74"/>
-<area shape="rect" id="Node000005" href="$Simulator_8h.html" title="Header file of the Simulator class,." alt="" coords="235,108,441,163"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="436,70,378,110,375,106,433,66"/>
-<area shape="rect" id="Node000007" href="$Robot_8cpp.html" title="Class implementation file responsible for the robot datastructor." alt="" coords="521,108,741,163"/>
-<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="534,65,594,106,591,110,531,70"/>
-<area shape="rect" id="Node000003" href="$ArgumentHandler_8h.html" title="Header file containing functionality for parsing arguments given to the executable into the DataHandl..." alt="" coords="401,313,659,368"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="506,277,521,312,516,314,501,279"/>
-<area shape="rect" id="Node000004" href="$DataHandler_8cpp.html" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="113,313,376,368"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="413,273,309,316,307,311,411,268"/>
-<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="390,168,450,208,447,213,387,172"/>
-<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="339,176,345,221,353,244,365,264,395,291,432,311,429,316,392,295,361,267,348,246,340,222,334,177"/>
-<area shape="poly" id="edge7_Node000005_Node000004" title=" " alt="" coords="323,176,259,314,255,312,318,174"/>
-<area shape="rect" id="Node000006" href="$Simulator_8cpp.html" title="Class implementation file responsible for simulating the data for multi&#45;robot localisation and mappin..." alt="" coords="5,211,249,265"/>
-<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="272,171,183,213,181,208,270,166"/>
+<map id="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Data&#45;Handler/Robot.h" name="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Data&#45;Handler/Robot.h">
+<area shape="rect" id="Node000001" title="Header file of the Robot class." alt="" coords="459,5,653,60"/>
+<area shape="rect" id="Node000002" href="$DataHandler_8h.html" title="Header file of the Handler class,." alt="" coords="359,211,553,265"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="539,73,472,211,467,209,535,71"/>
+<area shape="rect" id="Node000004" href="$Plotter_8h.html" title="Contains gnuplot functionality." alt="" coords="480,313,675,368"/>
+<area shape="poly" id="edge6_Node000001_Node000004" title=" " alt="" coords="561,74,578,313,573,313,556,74"/>
+<area shape="rect" id="Node000007" href="$Simulator_8h.html" title="Header file of the Simulator class,." alt="" coords="140,108,335,163"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="461,67,321,110,320,105,459,62"/>
+<area shape="rect" id="Node000009" href="$Robot_8cpp.html" title="Class implementation file responsible for the robot datastructor." alt="" coords="628,108,823,163"/>
+<area shape="poly" id="edge12_Node000001_Node000009" title=" " alt="" coords="613,65,682,105,680,110,611,69"/>
+<area shape="rect" id="Node000003" href="$ArgumentHandler_8h.html" title="Header file containing functionality for parsing arguments given to the executable into the Data::Han..." alt="" coords="5,313,200,368"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="352,272,195,316,194,311,350,266"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="500,272,547,311,544,315,497,276"/>
+<area shape="rect" id="Node000006" href="$DataHandler_8cpp.html" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="249,313,444,368"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="419,277,377,315,373,311,415,273"/>
+<area shape="rect" id="Node000005" href="$Plotter_8cpp.html" title=" " alt="" coords="480,416,675,471"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="580,382,580,416,575,416,575,382"/>
+<area shape="poly" id="edge9_Node000007_Node000002" title=" " alt="" coords="308,166,400,208,398,213,306,171"/>
+<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="158,172,134,190,116,212,105,237,100,263,101,313,96,313,95,263,100,235,111,209,131,186,155,168"/>
+<area shape="poly" id="edge10_Node000007_Node000006" title=" " alt="" coords="168,172,147,190,130,212,121,239,123,251,130,264,148,278,176,292,250,316,248,321,174,297,145,283,126,267,118,252,116,238,126,209,143,186,165,168"/>
+<area shape="rect" id="Node000008" href="$Simulator_8cpp.html" title="Class implementation file responsible for simulating the data for multi&#45;robot localisation and mappin..." alt="" coords="140,211,335,265"/>
+<area shape="poly" id="edge11_Node000007_Node000008" title=" " alt="" coords="240,176,240,211,235,211,235,176"/>
 </map>

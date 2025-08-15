@@ -1,12 +1,6 @@
 var searchData=
 [
-  ['readbarcodes_0',['readBarcodes',['../classDataHandler.html#aa14208d969d119de417608388169ed58',1,'DataHandler']]],
-  ['readgroundtruth_1',['readGroundTruth',['../classDataHandler.html#a053359b5ac1ae982c471228ceb60adae',1,'DataHandler']]],
-  ['readlandmarks_2',['readLandmarks',['../classDataHandler.html#adaffb621609a97ecd82da0820c897cad',1,'DataHandler']]],
-  ['readmeasurements_3',['readMeasurements',['../classDataHandler.html#a7fa0e569a5642ca0ea5b1ce84d89b11c',1,'DataHandler']]],
-  ['readodometry_4',['readOdometry',['../classDataHandler.html#af02dfeca8e73dccc3d0288d358edb9fc',1,'DataHandler']]],
-  ['relativelandmarkdistance_5',['relativeLandmarkDistance',['../classDataHandler.html#acc8d74867aa39b8095a52bac985065c9',1,'DataHandler']]],
-  ['relativerobotdistance_6',['relativeRobotDistance',['../classDataHandler.html#aceeae17f8c300f0c82f55de7567bb583',1,'DataHandler']]],
-  ['removeoutliers_7',['removeOutliers',['../classRobot.html#a6dc831e2b692655ee088831a46aba3ac',1,'Robot']]],
-  ['robot_8',['robot',['../classRobot.html#a4fc7c70ae20623f05e06f2ecb388b6c4',1,'Robot::Robot()'],['../classRobot.html#a47aec46e3bb5782500d1d268f0d8c406',1,'Robot::Robot(Robot &amp;&amp;)=default'],['../classRobot.html#a4fd835c7c44337d31d9fd09921d29908',1,'Robot::Robot(const Robot &amp;)=default']]]
+  ['main_0',['main',['../CMakeCCompilerId_8c.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;CMakeCCompilerId.c'],['../CMakeCXXCompilerId_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;CMakeCXXCompilerId.cpp']]],
+  ['make_5ftmpfile_1',['make_tmpfile',['../classgnuplotio_1_1GnuplotTmpfileCollection.html#a3c9e6499cac89f2a36009baf0552676b',1,'gnuplotio::GnuplotTmpfileCollection::make_tmpfile()'],['../classgnuplotio_1_1Gnuplot.html#a4f09df1bc60e8f26bb2c8500ad34da8e',1,'gnuplotio::Gnuplot::make_tmpfile()']]],
+  ['measurement_2',['measurement',['../structData_1_1Robot_1_1Measurement.html#a3b70c3492cd52f7853359f6c0b93101a',1,'Data::Robot::Measurement::Measurement(const Robot::Measurement &amp;measurement)'],['../structData_1_1Robot_1_1Measurement.html#a3f847ba4a8328e2f3c2f1aa8ebd2b417',1,'Data::Robot::Measurement::Measurement(double time_, const std::vector&lt; unsigned short &gt; &amp;subjects_, const std::vector&lt; double &gt; &amp;ranges_, const std::vector&lt; double &gt; &amp;bearings_)'],['../structData_1_1Robot_1_1Measurement.html#a0dacfab71a662d170f8de9e30ea27405',1,'Data::Robot::Measurement::Measurement(double time_, unsigned short subject_, double range_, double bearing_)']]]
 ];

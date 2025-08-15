@@ -1,4 +1,29 @@
 var searchData=
 [
-  ['utias_20multi_20robot_20data_20extractor_0',['C++ UTIAS Multi-Robot Data Extractor',['../index.html',1,'']]]
+  ['r_0',['r',['../classgnuplotio_1_1PairOfRange.html#a7c96877f553ed746e4b8d80e5ca0965e',1,'gnuplotio::PairOfRange']]],
+  ['r_5fdepth_1',['r_depth',['../classgnuplotio_1_1ArrayTraitsImpl_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html#a020f9c0ad2925fef7dea46fe00aad865',1,'gnuplotio::ArrayTraitsImpl&lt; std::pair&lt; T, U &gt; &gt;']]],
+  ['range_2',['range',['../classData_1_1Plotter.html#a2a9e068c1d2852af363e341fb989c5cea84bbd9d1a84e8c5dd49cfab61aa2307e',1,'Data::Plotter::RANGE'],['../classData_1_1Simulator.html#af5d6cb3208e6a67d7fe897bccee54d3d',1,'Data::Simulator::range'],['../classData_1_1Simulator.html#a2bdf6dc56ccd691abd97da528da1a2a9',1,'Data::Simulator::Range']]],
+  ['range_5ferror_3',['range_error',['../classData_1_1Robot.html#a83604c60aa5590809dfb78ddf028c125',1,'Data::Robot']]],
+  ['range_5fpdf_4',['range_pdf',['../structData_1_1Plotter_1_1RobotData.html#a86a24075078e944734000a72077dd6c4',1,'Data::Plotter::RobotData']]],
+  ['range_5ftype_5',['range_type',['../classgnuplotio_1_1ArrayTraitsImpl_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html#a450d636f907aab4c9c201d7a2e91499a',1,'gnuplotio::ArrayTraitsImpl&lt; std::pair&lt; T, U &gt; &gt;::range_type'],['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_0fN_0e_4.html#ae2bfe3138387e322353b85c14183a98a',1,'gnuplotio::ArrayTraitsImpl&lt; T[N]&gt;::range_type'],['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_00_01typename_01std_1_1enable__if__t_3_01is__like__stl__container2_3_01T_01_4_01_4_01_4.html#a355967833a1e63271a4d841a97f3a5cf',1,'gnuplotio::ArrayTraitsImpl&lt; T, typename std::enable_if_t&lt; is_like_stl_container2&lt; T &gt; &gt; &gt;::range_type'],['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_00_01typename_01std_1_1enable__if__t_3_01is__like__stl__container_3_01T_01_4_01_4_01_4.html#abd3a8c5d592934f9fc285b2334ab9ee4',1,'gnuplotio::ArrayTraitsImpl&lt; T, typename std::enable_if_t&lt; is_like_stl_container&lt; T &gt; &gt; &gt;::range_type'],['../classgnuplotio_1_1ArrayTraitsImpl.html#ada8beafc1d5b068172d1980a6cb68986',1,'gnuplotio::ArrayTraitsImpl::range_type']]],
+  ['ranges_6',['ranges',['../structData_1_1Robot_1_1Measurement.html#a6b3076009ed1983256c35c131ca1c60f',1,'Data::Robot::Measurement']]],
+  ['raw_7',['raw',['../classData_1_1Plotter.html#aa130833dbe6fd2bbae05bd1eb9a033e3a3f54410cc4d716daa9c8624bcd271aca',1,'Data::Plotter::RAW'],['../structData_1_1Plotter_1_1RobotData_1_1Types.html#a5e4e84739381a571a9c27001eca61e76',1,'Data::Plotter::RobotData::Types::raw'],['../classData_1_1Robot.html#aaae91e8ad46a29f0277a16d51c1d326a',1,'Data::Robot::raw']]],
+  ['readbarcodes_8',['readBarcodes',['../classData_1_1Handler.html#a5bdff14684ce720dc6be740b42d12dd7',1,'Data::Handler']]],
+  ['readgroundtruth_9',['readGroundTruth',['../classData_1_1Handler.html#af9e415b7f3cfeea8dc0258fde3792951',1,'Data::Handler']]],
+  ['readlandmarks_10',['readLandmarks',['../classData_1_1Handler.html#aff2796580da31c9dcc449a44f4f3b8b5',1,'Data::Handler']]],
+  ['readme_2emd_11',['README.md',['../README_8md.html',1,'']]],
+  ['readmeasurements_12',['readMeasurements',['../classData_1_1Handler.html#abbf7ce7333f612bfd5c09e9d52713202',1,'Data::Handler']]],
+  ['readodometry_13',['readOdometry',['../classData_1_1Handler.html#a21b1c6b1b8f9bad387561c854de01140',1,'Data::Handler']]],
+  ['red_14',['RED',['../namespacegnuplot.html#af631d0d4fb03d5da4d444b5af2e7344ea3c3c5c26240a80613ed520a7f0b2a822',1,'gnuplot']]],
+  ['relativelandmarkdistance_15',['relativeLandmarkDistance',['../classData_1_1Handler.html#a8275db1d45108575f1ac9a4ead320f54',1,'Data::Handler']]],
+  ['relativerobotdistance_16',['relativeRobotDistance',['../classData_1_1Handler.html#a7ed964c9fb828e31f9a7090ef329409b',1,'Data::Handler']]],
+  ['removeoutliers_17',['removeOutliers',['../classData_1_1Robot.html#a94783f63af2a6c7b80af6d6635f02899',1,'Data::Robot']]],
+  ['resolution_18',['resolution',['../structgnuplot_1_1TerminalSettings.html#a6d40400d16ae077f05a11a6ce426aeea',1,'gnuplot::TerminalSettings::resolution'],['../structgnuplot_1_1TerminalSettings_1_1Resolution.html',1,'gnuplot::TerminalSettings::Resolution']]],
+  ['robot_19',['robot',['../classData_1_1Robot.html#a565e7d2da2eda0793e9f3e725039d345',1,'Data::Robot::Robot()'],['../classData_1_1Robot.html#afe3052f919e8f9cc4366b968feee31dd',1,'Data::Robot::Robot(Robot &amp;&amp;)=default'],['../classData_1_1Robot.html#a84b8e381323cfd3acaa1c96fea0f1709',1,'Data::Robot::Robot(const Robot &amp;)=default'],['../classData_1_1Robot.html',1,'Data::Robot']]],
+  ['robot_20data_20extractor_20',['C++ UTIAS Multi-Robot Data Extractor',['../index.html',1,'']]],
+  ['robot_2ecpp_21',['Robot.cpp',['../Robot_8cpp.html',1,'']]],
+  ['robot_2eh_22',['Robot.h',['../Robot_8h.html',1,'']]],
+  ['robotdata_23',['robotdata',['../structData_1_1Robot_1_1RobotData.html',1,'Data::Robot::RobotData'],['../structData_1_1Plotter_1_1RobotData.html',1,'Data::Plotter::RobotData']]],
+  ['robots_5f_24',['robots_',['../classData_1_1Handler.html#a6a7b8d21599025e06dce9e417283c189',1,'Data::Handler::robots_'],['../classData_1_1Simulator.html#a08536eab37b7ad84c7416ac809cec70b',1,'Data::Simulator::robots_']]],
+  ['rvec_25',['rvec',['../classgnuplotio_1_1VecOfRange.html#a44d625920b73b31599579fff8e514e7f',1,'gnuplotio::VecOfRange']]]
 ];

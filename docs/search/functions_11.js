@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['write_5fbinary_0',['write_binary',['../classData_1_1Plotter.html#ab1a378da369725c507967a0442ef9cc0',1,'Data::Plotter::write_binary(std::string &amp;, const std::vector&lt; Robot::Odometry &gt; &amp;)'],['../classData_1_1Plotter.html#a1a54c31037adfceae039179a9c723693',1,'Data::Plotter::write_binary(std::string &amp;, const std::vector&lt; Robot::State &gt; &amp;)'],['../classData_1_1Plotter.html#aef4d3069164711a23c6506d8bc213e4c',1,'Data::Plotter::write_binary(std::string &amp;, const std::vector&lt; Robot::Measurement &gt; &amp;)'],['../classData_1_1Plotter.html#a9391098a202e01156a8d86ae01d2a742',1,'Data::Plotter::write_binary(std::string &amp;, const std::vector&lt; Landmark &gt; &amp;)'],['../classData_1_1Plotter.html#a36fe6898ed9a154a7680518e89bd7120',1,'Data::Plotter::write_binary(std::string &amp;, const std::unordered_map&lt; int, double &gt; &amp;, const double &amp;)']]]
+];

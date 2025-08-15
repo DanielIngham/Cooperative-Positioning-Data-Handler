@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>UTIAS Multi-Robot Data Extractor: /home/dan/Code/UTIAS-Multi-Robot/Filters/lib/DataHandler/DataHandler.h File Reference</title>
+<title>UTIAS Multi-Robot Data Extractor: /home/dan/Code/UTIAS-Multi-Robot/Data-Handler/DataHandler.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -77,12 +77,13 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
-  <div class="headertitle"><div class="title">/home/dan/Code/UTIAS-Multi-Robot/Filters/lib/DataHandler/DataHandler.h File Reference</div></div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
+  <div class="headertitle"><div class="title">/home/dan/Code/UTIAS-Multi-Robot/Data-Handler/DataHandler.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Header file of the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class,.  
+<p>Header file of the Handler class,.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
@@ -94,11 +95,11 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for DataHandler.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="DataHandler_8h__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2DataHandler_8h" alt=""/></div>
-<map name="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2DataHandler_8h" id="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2DataHandler_8h">
-<area shape="rect" title="Header file of the DataHandler class,." alt="" coords="252,5,477,60"/>
+<div class="center"><img src="DataHandler_8h__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2DataHandler_8h" alt=""/></div>
+<map name="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2DataHandler_8h" id="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2DataHandler_8h">
+<area shape="rect" title="Header file of the Handler class,." alt="" coords="267,5,462,60"/>
 <area shape="rect" title=" " alt="" coords="26,255,89,280"/>
-<area shape="poly" title=" " alt="" coords="252,48,186,64,119,90,87,108,58,129,33,154,12,182,8,198,12,214,35,244,31,247,8,216,3,198,7,180,29,150,55,125,84,103,116,85,184,59,251,43"/>
+<area shape="poly" title=" " alt="" coords="267,46,198,61,127,86,93,104,62,126,34,152,12,182,8,198,12,214,35,244,31,247,8,216,3,198,7,180,30,149,58,122,90,100,125,82,197,55,266,40"/>
 <area shape="rect" title=" " alt="" coords="489,108,554,133"/>
 <area shape="poly" title=" " alt="" coords="414,58,490,99,487,104,411,62"/>
 <area shape="rect" title=" " alt="" coords="579,108,638,133"/>
@@ -124,13 +125,17 @@ Include dependency graph for DataHandler.h:</div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="DataHandler_8h__dep__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2DataHandler_8hdep" alt=""/></div>
-<map name="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2DataHandler_8hdep" id="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2DataHandler_8hdep">
-<area shape="rect" title="Header file of the DataHandler class,." alt="" coords="165,5,390,60"/>
-<area shape="rect" href="ArgumentHandler_8h.html" title="Header file containing functionality for parsing arguments given to the executable into the DataHandl..." alt="" coords="5,108,264,163"/>
-<area shape="poly" title=" " alt="" coords="231,70,174,110,171,106,227,66"/>
-<area shape="rect" href="DataHandler_8cpp.html" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="289,108,551,163"/>
-<area shape="poly" title=" " alt="" coords="327,66,384,106,381,110,324,70"/>
+<div class="center"><img src="DataHandler_8h__dep__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2DataHandler_8hdep" alt=""/></div>
+<map name="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2DataHandler_8hdep" id="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2DataHandler_8hdep">
+<area shape="rect" title="Header file of the Handler class,." alt="" coords="224,5,419,60"/>
+<area shape="rect" href="ArgumentHandler_8h.html" title="Header file containing functionality for parsing arguments given to the executable into the Data::Han..." alt="" coords="5,108,200,163"/>
+<area shape="poly" title=" " alt="" coords="253,68,161,110,159,106,251,63"/>
+<area shape="rect" href="Plotter_8h.html" title="Contains gnuplot functionality." alt="" coords="224,108,419,163"/>
+<area shape="poly" title=" " alt="" coords="324,74,324,108,319,108,319,74"/>
+<area shape="rect" href="DataHandler_8cpp.html" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="443,108,637,163"/>
+<area shape="poly" title=" " alt="" coords="392,63,484,106,482,110,390,68"/>
+<area shape="rect" href="Plotter_8cpp.html" title=" " alt="" coords="224,211,419,265"/>
+<area shape="poly" title=" " alt="" coords="324,176,324,211,319,211,319,176"/>
 </map>
 </div>
 </div>
@@ -138,14 +143,19 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDataHandlerDefaults.html">DataHandlerDefaults</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structData_1_1HandlerDefaults.html">Data::HandlerDefaults</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDataHandler.html">DataHandler</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.  <a href="classDataHandler.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classData_1_1Handler.html">Data::Handler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.  <a href="classData_1_1Handler.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceData" id="r_namespaceData"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceData.html">Data</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Header file of the <a class="el" href="classDataHandler.html" title="Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.">DataHandler</a> class,. </p>
+<div class="textblock"><p>Header file of the Handler class,. </p>
 <dl class="section author"><dt>Author</dt><dd>Daniel Ingham </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2025-04-04 </dd></dl>
 </div></div><!-- contents -->

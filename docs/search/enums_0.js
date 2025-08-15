@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['myenum_0',['MyEnum',['../namespaceArgumentHandler.html#a7b67ad4d65b31c0770e2d5219ff408b2',1,'ArgumentHandler']]]
+  ['colour_0',['Colour',['../namespacegnuplot.html#af631d0d4fb03d5da4d444b5af2e7344e',1,'gnuplot']]]
 ];

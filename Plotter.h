@@ -33,7 +33,13 @@ public:
   Plotter &operator=(const Plotter &) = delete;
   ~Plotter();
 
-  enum PlotType { SYNCED, RAW, GROUNDTRUTH, ERROR };
+  /** Type of data extracted/calculated from the dataset. */
+  enum PlotType {
+    SYNCED,      ///< Synced data after linear interpolation.
+    RAW,         ///< Raw data extracted from the dataset.
+    GROUNDTRUTH, ///< Groundtruth data extracted or calculated from the dataset.
+    ERROR        ///< Difference between the groundtruth and the synced data.
+  };
 
   void demo_animation();
 

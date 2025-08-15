@@ -1,7 +1,7 @@
-<map id="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Filters/lib/DataHandler/DataHandler.h" name="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Filters/lib/DataHandler/DataHandler.h">
-<area shape="rect" id="Node000001" title="Header file of the DataHandler class,." alt="" coords="252,5,477,60"/>
+<map id="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Data&#45;Handler/DataHandler.h" name="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Data&#45;Handler/DataHandler.h">
+<area shape="rect" id="Node000001" title="Header file of the Handler class,." alt="" coords="267,5,462,60"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="26,255,89,280"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="252,48,186,64,119,90,87,108,58,129,33,154,12,182,8,198,12,214,35,244,31,247,8,216,3,198,7,180,29,150,55,125,84,103,116,85,184,59,251,43"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="267,46,198,61,127,86,93,104,62,126,34,152,12,182,8,198,12,214,35,244,31,247,8,216,3,198,7,180,30,149,58,122,90,100,125,82,197,55,266,40"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="489,108,554,133"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="414,58,490,99,487,104,411,62"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="579,108,638,133"/>

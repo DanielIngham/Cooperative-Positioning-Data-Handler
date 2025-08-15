@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['y_0',['y',['../structLandmark.html#a09b0032238107de951efd17be0995c45',1,'Landmark::y'],['../structRobot_1_1State.html#a02fb2c453f37d21ff0aa2ed82820ca83',1,'Robot::State::y']]],
-  ['y_5fstd_5fdev_1',['y_std_dev',['../structLandmark.html#a0a639934c39aba67fde4eb9b0231ce1f',1,'Landmark']]]
+  ['variance_0',['variance',['../structData_1_1Robot_1_1ErrorStatistics.html#aa0fe418b217e87c163c9e493947735c7',1,'Data::Robot::ErrorStatistics']]],
+  ['variance_5f_1',['variance_',['../classData_1_1Simulator.html#a0c42c018f479e3e5036c9b5f584be52e',1,'Data::Simulator']]]
 ];

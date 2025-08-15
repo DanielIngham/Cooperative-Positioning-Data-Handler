@@ -1,0 +1,17 @@
+<map id="Data::Plotter" name="Data::Plotter">
+<area shape="rect" id="Node000001" title=" " alt="" coords="644,70,748,95"/>
+<area shape="rect" id="Node000002" href="$structgnuplot_1_1TerminalSettings.html" title=" " alt="" coords="341,17,529,42"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="518,42,621,63,644,68,643,73,619,68,517,47"/>
+<area shape="rect" id="Node000003" href="$structgnuplot_1_1TerminalSettings_1_1Resolution.html" title=" " alt="" coords="19,5,207,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="221,24,341,26,341,31,221,29"/>
+<area shape="rect" id="Node000004" href="$classData_1_1Handler.html" title="Extracts the data from the UTIAS Multi&#45;robot Localisaion and Mapping Dataset." alt="" coords="379,70,491,95"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="505,80,644,80,644,85,505,85"/>
+<area shape="rect" id="Node000005" href="$classData_1_1Simulator.html" title="Populates Robot and Landmark vectors with simulated values." alt="" coords="51,70,175,95"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="189,80,379,80,379,85,189,85"/>
+<area shape="rect" id="Node000006" href="$classgnuplotio_1_1Gnuplot.html" title=" " alt="" coords="364,119,507,145"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="520,118,619,100,650,93,651,98,621,105,521,123"/>
+<area shape="rect" id="Node000007" href="$structgnuplotio_1_1FileHandleWrapper.html" title=" " alt="" coords="5,119,220,145"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="234,129,364,129,364,135,234,135"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="20,169,205,223"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="218,172,370,142,371,147,219,178"/>
+</map>

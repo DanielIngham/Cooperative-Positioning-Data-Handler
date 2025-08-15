@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['klandmarks_0',['kLandmarks',['../structSimulationDefaults.html#ac4935b5dee75a5b92898e790df78902a',1,'SimulationDefaults']]],
-  ['koutputdir_1',['koutputdir',['../structDataHandlerDefaults.html#ab9760684a0e2cddecd39d75e32bca095',1,'DataHandlerDefaults::kOutputDir'],['../structSimulationDefaults.html#a05f8d10ed35385e49d93ff6b55ddbfd1',1,'SimulationDefaults::kOutputDir']]],
-  ['krobots_2',['kRobots',['../structSimulationDefaults.html#af330afca3c241d5e253e522bbdb9aabb',1,'SimulationDefaults']]],
-  ['ksampleperiod_3',['ksampleperiod',['../structDataHandlerDefaults.html#a2560d410d646d156ddf5ebe2442a8522',1,'DataHandlerDefaults::kSamplePeriod'],['../structSimulationDefaults.html#ac162c258fd48dead9c9d25dbbed78c24',1,'SimulationDefaults::kSamplePeriod']]],
-  ['kseed_4',['kSeed',['../structSimulationDefaults.html#a800fee460eea0dbbac6d1b3f4f5d0318',1,'SimulationDefaults']]]
+  ['klandmarks_0',['kLandmarks',['../structData_1_1SimulationDefaults.html#a21685b728c394ea45200173e1180976c',1,'Data::SimulationDefaults']]],
+  ['kmax_5frange_1',['kmax_range',['../structData_1_1SimulationDefaults.html#a34d8458f74d9824151e088630e315864',1,'Data::SimulationDefaults']]],
+  ['kmeasurement_5fto_5fodometry_5fratio_2',['kmeasurement_to_odometry_ratio',['../structData_1_1SimulationDefaults.html#af0e337c87de0f6d7305173f5838240c0',1,'Data::SimulationDefaults']]],
+  ['koutputdir_3',['koutputdir',['../structData_1_1HandlerDefaults.html#a03f0c7fb80c6cc569dbd0bbe06668b56',1,'Data::HandlerDefaults::kOutputDir'],['../structData_1_1SimulationDefaults.html#af16ee816ecffc1218ed0f704c31aefc2',1,'Data::SimulationDefaults::kOutputDir']]],
+  ['krobots_4',['kRobots',['../structData_1_1SimulationDefaults.html#abb42ba80e55551a5579052a83cc7b658',1,'Data::SimulationDefaults']]],
+  ['ksampleperiod_5',['ksampleperiod',['../structData_1_1HandlerDefaults.html#a87873d123985aa707835ceb3424377db',1,'Data::HandlerDefaults::kSamplePeriod'],['../structData_1_1SimulationDefaults.html#a98337331afcaf5a0aafdd7b869cfdae6',1,'Data::SimulationDefaults::kSamplePeriod']]],
+  ['kseed_6',['kSeed',['../structData_1_1SimulationDefaults.html#a53af642ede9ba6ad9f18b25b41de28a5',1,'Data::SimulationDefaults']]]
 ];

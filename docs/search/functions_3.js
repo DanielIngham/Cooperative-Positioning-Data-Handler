@@ -1,12 +1,8 @@
 var searchData=
 [
-  ['getbarcodes_0',['getBarcodes',['../classDataHandler.html#ad7747aa9babd266a120e39f2da3896b9',1,'DataHandler']]],
-  ['getid_1',['getID',['../classDataHandler.html#a6123767a322a5fd166709bd4916b7816',1,'DataHandler']]],
-  ['getlandmarks_2',['getLandmarks',['../classDataHandler.html#a6fc08eea7f3ea6b7999c3b00bdec00ea',1,'DataHandler']]],
-  ['getnumberofbarcodes_3',['getNumberOfBarcodes',['../classDataHandler.html#ae491399396321214011ca5c86d0d5e6e',1,'DataHandler']]],
-  ['getnumberoflandmarks_4',['getNumberOfLandmarks',['../classDataHandler.html#a31bb832993e948b6346f2bd30ebbb4cf',1,'DataHandler']]],
-  ['getnumberofrobots_5',['getNumberOfRobots',['../classDataHandler.html#ab894ac8650fdaf7d7510254909e04f0c',1,'DataHandler']]],
-  ['getnumberofsynceddatapoints_6',['getNumberOfSyncedDatapoints',['../classDataHandler.html#a8312ebf35f246a522ffe405f9663ee23',1,'DataHandler']]],
-  ['getrobots_7',['getRobots',['../classDataHandler.html#a9627420edb689af9c1463e4815693da4',1,'DataHandler']]],
-  ['getsampleperiod_8',['getSamplePeriod',['../classDataHandler.html#afb04d371c2be3284199e81d4188700d0',1,'DataHandler']]]
+  ['demo_5fanimation_0',['demo_animation',['../classData_1_1Plotter.html#a23b878e5446342cac2bd43ee89e64fa9',1,'Data::Plotter']]],
+  ['deref_1',['deref',['../classgnuplotio_1_1IteratorRange.html#a516ffb8c3716ef5e30f067b595f7dbfb',1,'gnuplotio::IteratorRange::deref()'],['../classgnuplotio_1_1PairOfRange.html#af4ed81400c73c45c9aa1e6d0ad14579f',1,'gnuplotio::PairOfRange::deref()'],['../classgnuplotio_1_1VecOfRange.html#ab0a35bc07a4f12b18bd1541bc4b771fc',1,'gnuplotio::VecOfRange::deref()']]],
+  ['deref_5fand_5fprint_2',['deref_and_print',['../namespacegnuplotio.html#a3adca0b62f20d72b3f7dec71b25498f9',1,'gnuplotio::deref_and_print(std::ostream &amp;stream, const T &amp;arg, PrintMode)'],['../namespacegnuplotio.html#a5c876cf029351bfa2285961f7521acd2',1,'gnuplotio::deref_and_print(std::ostream &amp;stream, const T &amp;arg, PrintMode)'],['../namespacegnuplotio.html#acd0cb4bd9679f0b75bac15c8afcc10e6',1,'gnuplotio::deref_and_print(std::ostream &amp;stream, const PairOfRange&lt; T, U &gt; &amp;arg, PrintMode)'],['../namespacegnuplotio.html#ae768911c8adb77bfc080d5e4561573e6',1,'gnuplotio::deref_and_print(std::ostream &amp;stream, const VecOfRange&lt; T &gt; &amp;arg, PrintMode)']]],
+  ['deref_5fsubiter_3',['deref_subiter',['../classgnuplotio_1_1IteratorRange.html#a34ef78d431ad8a643d412851016b2122',1,'gnuplotio::IteratorRange::deref_subiter()'],['../classgnuplotio_1_1PairOfRange.html#aaab5fb2c7de99651a2c7eef7685545fd',1,'gnuplotio::PairOfRange::deref_subiter()'],['../classgnuplotio_1_1VecOfRange.html#a9b02d8bd8ec62ba77de16ad8ea8a87b2',1,'gnuplotio::VecOfRange::deref_subiter()']]],
+  ['do_5fflush_4',['do_flush',['../classgnuplotio_1_1Gnuplot.html#a0fe1681b2ae4a372b683de488e340faa',1,'gnuplotio::Gnuplot']]]
 ];

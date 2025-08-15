@@ -1,15 +1,14 @@
 var searchData=
 [
-  ['calculategroundtruthmeasurement_0',['calculateGroundtruthMeasurement',['../classDataHandler.html#a1d3466847c92c0252729186cf54735ef',1,'DataHandler']]],
-  ['calculategroundtruthodometry_1',['calculateGroundtruthOdometry',['../classDataHandler.html#a1b52c287f259b3e02c37b1686febf073',1,'DataHandler']]],
-  ['calculatemeasurementerror_2',['calculateMeasurementError',['../classRobot.html#a059485535d0edce0bf91fdc63321546a',1,'Robot']]],
-  ['calculatemedian_3',['calculateMedian',['../classRobot.html#a9ebddc96148f97b382a5e82ba224b5f6',1,'Robot']]],
-  ['calculateodometryerror_4',['calculateOdometryError',['../classRobot.html#a8d9b81c0a6d74fb930de1f097e5d6be4',1,'Robot']]],
-  ['calculatequartiles_5',['calculateQuartiles',['../classRobot.html#a4d2e9b87c8eca91eafccb71a77e48098',1,'Robot']]],
-  ['calculatesampleerrorstats_6',['calculateSampleErrorStats',['../classRobot.html#a6a90c17286e966cde7f896dd9a21e1e5',1,'Robot']]],
-  ['calculatesensorerrror_7',['calculateSensorErrror',['../classRobot.html#ae25f0d77ee1ad4f33137ca564d7884da',1,'Robot']]],
-  ['calculatestateerror_8',['calculateStateError',['../classRobot.html#a8e9f9cef988d089ca0dc8352668266bb',1,'Robot']]],
-  ['checkflag_9',['checkFlag',['../namespaceArgumentHandler.html#aed8fad98ca9df5d9adcd5b322b0175e9',1,'ArgumentHandler']]],
-  ['createmeasurementplotdirectories_10',['createMeasurementPlotDirectories',['../classDataHandler.html#ad47e95e9632c8ba00b8307e81447ac6b',1,'DataHandler']]],
-  ['createstateplotdirectory_11',['createStatePlotDirectory',['../classDataHandler.html#a0e0cd3a150f2fa8600f1af9d55b53cff',1,'DataHandler']]]
+  ['binariselandmarkdata_0',['binariseLandmarkData',['../classData_1_1Plotter.html#a27de9174a288888367c95aee88015eb8',1,'Data::Plotter']]],
+  ['binarisemeasurementdata_1',['binariseMeasurementData',['../classData_1_1Plotter.html#a1eebc00218ac75ce19f810dd9973bc68',1,'Data::Plotter']]],
+  ['binarisemeasurementpdf_2',['binariseMeasurementPDF',['../classData_1_1Plotter.html#a4888b862f03dd99ff09fd6e52b9b8f23',1,'Data::Plotter']]],
+  ['binariseodometrydata_3',['binariseOdometryData',['../classData_1_1Plotter.html#acd8972a77e7399b3f76b9aac26523fd4',1,'Data::Plotter']]],
+  ['binariseodometrypdf_4',['binariseOdometryPDF',['../classData_1_1Plotter.html#ad3fcd27fd2f3779f14206f1963de4186',1,'Data::Plotter']]],
+  ['binariserobotinferencedata_5',['binariseRobotInferenceData',['../classData_1_1Plotter.html#a4412363bb8dac26c5a01e7928303d95a',1,'Data::Plotter']]],
+  ['binariserobotposedata_6',['binariseRobotPoseData',['../classData_1_1Plotter.html#a83f41ff26a2c74f1829a18c528e1ad11',1,'Data::Plotter']]],
+  ['binaryfile_7',['binaryFile',['../classgnuplotio_1_1Gnuplot.html#ad90501e6dbab5379abcd76fd0e2e4ef1',1,'gnuplotio::Gnuplot']]],
+  ['binarysendernotimplemented_8',['BinarySenderNotImplemented',['../classgnuplotio_1_1BinarySenderNotImplemented.html#a53dda4db3a0391bcf90dcc95006034f5',1,'gnuplotio::BinarySenderNotImplemented']]],
+  ['binconfig_9',['binConfig',['../classgnuplotio_1_1PlotData.html#a0f79892daf79bd269c2e1180c1052df2',1,'gnuplotio::PlotData']]],
+  ['binfmt_10',['binfmt',['../classgnuplotio_1_1Gnuplot.html#a43fe103649ec168b453c43aecdacce81',1,'gnuplotio::Gnuplot']]]
 ];

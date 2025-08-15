@@ -76,10 +76,10 @@ $(function() {
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">C++ UTIAS Multi-Robot Data Extractor </div></div>
+  <div class="headertitle"><div class="title">C++ UTIAS Multi-Robot <a class="el" href="namespaceData.html">Data</a> Extractor </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2README"></a>This project provides a c++ class as an interface for using the <a href="http://asrl.utias.utoronto.ca/datasets/mrclam/index.html">UTIAS Multi-Robot Cooperative Localisation and Mapping dataset</a>. The project provides the following functionality:</p><ul>
+<div class="textblock"><p><a class="anchor" id="md__2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2README"></a>This project provides a c++ class as an interface for using the <a href="http://asrl.utias.utoronto.ca/datasets/mrclam/index.html">UTIAS Multi-Robot Cooperative Localisation and Mapping dataset</a>. The project provides the following functionality:</p><ul>
 <li>Extracts the UTIAS dataset into a c++ class allowing for easy interfacing with the dataset.</li>
 <li>Syncs the timesteps across all measurements using the same approach as that of the <a href="http://asrl.utias.utoronto.ca/datasets/mrclam/#Tools">MATLAB Script</a> provided with the dataset (linear interpolation).</li>
 <li>Calculates the corresponding sensor groundtruth for the odometry and measurement sensors, using the provided state groundtruth (2D position and heading).</li>
@@ -101,17 +101,18 @@ Including the Library</h1>
 <div class="line">target_link_libraries(${PROJECT_TARGET} PRIVATE DataHandler)</div>
 </div><!-- fragment --> <h1><a class="anchor" id="autotoc_md3"></a>
 Argument Handler</h1>
-<p>The data handler comes with a <code><a class="el" href="ArgumentHandler_8h.html" title="Header file containing functionality for parsing arguments given to the executable into the DataHandl...">ArgumentHandler.h</a></code> which contains functionality to set options of the data handler through executable arguments. To use the argument handler: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="ArgumentHandler_8h.html">ArgumentHandler.h</a>&gt;</span></div>
+<p>The data handler comes with a <code><a class="el" href="ArgumentHandler_8h.html" title="Header file containing functionality for parsing arguments given to the executable into the Data::Han...">ArgumentHandler.h</a></code> which contains functionality to set options of the data handler through executable arguments. To use the argument handler: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &lt;<a class="code" href="ArgumentHandler_8h.html">ArgumentHandler.h</a>&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;<a class="code" href="DataHandler_8h.html">DataHandler.h</a>&gt;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[]) { </div>
-<div class="line">    <a class="code hl_class" href="classDataHandler.html">DataHandler</a> data;</div>
-<div class="line">    <a class="code hl_namespace" href="namespaceArgumentHandler.html">ArgumentHandler</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[], data);</div>
+<div class="line"><span class="keywordtype">int</span> <a class="code hl_function" href="CMakeCCompilerId_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[]) { </div>
+<div class="line">    <a class="code hl_class" href="classData_1_1Handler.html">Data::Handler</a> data;</div>
+<div class="line">    <a class="code hl_function" href="namespaceArgumentHandler.html#aea61fd490fe171327f87cce10af06437">ArgumentHandler::setArguments</a>(argc, argv, data);</div>
 <div class="line">}</div>
-<div class="ttc" id="aArgumentHandler_8h_html"><div class="ttname"><a href="ArgumentHandler_8h.html">ArgumentHandler.h</a></div><div class="ttdoc">Header file containing functionality for parsing arguments given to the executable into the DataHandl...</div></div>
-<div class="ttc" id="aDataHandler_8h_html"><div class="ttname"><a href="DataHandler_8h.html">DataHandler.h</a></div><div class="ttdoc">Header file of the DataHandler class,.</div></div>
-<div class="ttc" id="aclassDataHandler_html"><div class="ttname"><a href="classDataHandler.html">DataHandler</a></div><div class="ttdoc">Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.</div><div class="ttdef"><b>Definition</b> DataHandler.h:32</div></div>
-<div class="ttc" id="anamespaceArgumentHandler_html"><div class="ttname"><a href="namespaceArgumentHandler.html">ArgumentHandler</a></div><div class="ttdef"><b>Definition</b> ArgumentHandler.h:18</div></div>
+<div class="ttc" id="aArgumentHandler_8h_html"><div class="ttname"><a href="ArgumentHandler_8h.html">ArgumentHandler.h</a></div><div class="ttdoc">Header file containing functionality for parsing arguments given to the executable into the Data::Han...</div></div>
+<div class="ttc" id="aCMakeCCompilerId_8c_html_a0ddf1224851353fc92bfbff6f499fa97"><div class="ttname"><a href="CMakeCCompilerId_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a></div><div class="ttdeci">int main(int argc, char *argv[])</div><div class="ttdef"><b>Definition</b> CMakeCCompilerId.c:853</div></div>
+<div class="ttc" id="aDataHandler_8h_html"><div class="ttname"><a href="DataHandler_8h.html">DataHandler.h</a></div><div class="ttdoc">Header file of the Handler class,.</div></div>
+<div class="ttc" id="aclassData_1_1Handler_html"><div class="ttname"><a href="classData_1_1Handler.html">Data::Handler</a></div><div class="ttdoc">Extracts the data from the UTIAS Multi-robot Localisaion and Mapping Dataset.</div><div class="ttdef"><b>Definition</b> DataHandler.h:50</div></div>
+<div class="ttc" id="anamespaceArgumentHandler_html_aea61fd490fe171327f87cce10af06437"><div class="ttname"><a href="namespaceArgumentHandler.html#aea61fd490fe171327f87cce10af06437">ArgumentHandler::setArguments</a></div><div class="ttdeci">void setArguments(int argc, char *argv[], Data::Handler &amp;data)</div><div class="ttdef"><b>Definition</b> ArgumentHandler.h:286</div></div>
 </div><!-- fragment --><p> Once added into main, the help menu options for the argument handler can be seen using the <code>-h</code> help flag: </p><div class="fragment"><div class="line">&lt;Executable name&gt; -h</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md4"></a>
 Documentation</h1>

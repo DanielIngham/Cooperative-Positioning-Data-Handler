@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['y_0',['y',['../structLandmark.html#a09b0032238107de951efd17be0995c45',1,'Landmark::y'],['../structRobot_1_1State.html#a02fb2c453f37d21ff0aa2ed82820ca83',1,'Robot::State::y']]],
-  ['y_5fstd_5fdev_1',['y_std_dev',['../structLandmark.html#a0a639934c39aba67fde4eb9b0231ce1f',1,'Landmark']]]
+  ['valtype_0',['ValType',['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_00_01typename_01std_1_1enable__if__t_3_01is__like__stl__container2_3_01T_01_4_01_4_01_4.html#aa921d6a5b94fd7cbe7c41a9ba8d8256e',1,'gnuplotio::ArrayTraitsImpl&lt; T, typename std::enable_if_t&lt; is_like_stl_container2&lt; T &gt; &gt; &gt;']]],
+  ['value_5ftype_1',['value_type',['../classgnuplotio_1_1ArrayTraitsImpl.html#a5ea1bfcdbac0fc5927a39eb97076cec5',1,'gnuplotio::ArrayTraitsImpl::value_type'],['../classgnuplotio_1_1ArrayTraitsDefaults.html#ad7a9e8d19419fabe2ab9cc1b76c9965b',1,'gnuplotio::ArrayTraitsDefaults::value_type'],['../classgnuplotio_1_1IteratorRange.html#adee6ffc3b1e565b3d4243e3f015b8c85',1,'gnuplotio::IteratorRange::value_type'],['../classgnuplotio_1_1PairOfRange.html#a0cc8b0cc4d9c3377c43843ed9a658eeb',1,'gnuplotio::PairOfRange::value_type'],['../classgnuplotio_1_1ArrayTraitsImpl_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html#a5d97be41a55239b761a7bcb7c59a2478',1,'gnuplotio::ArrayTraitsImpl&lt; std::pair&lt; T, U &gt; &gt;::value_type'],['../classgnuplotio_1_1VecOfRange.html#aed503f2f8d8ed71b303f2db26872bafd',1,'gnuplotio::VecOfRange::value_type']]],
+  ['variance_2',['variance',['../structData_1_1Robot_1_1ErrorStatistics.html#aa0fe418b217e87c163c9e493947735c7',1,'Data::Robot::ErrorStatistics']]],
+  ['variance_5f_3',['variance_',['../classData_1_1Simulator.html#a0c42c018f479e3e5036c9b5f584be52e',1,'Data::Simulator']]],
+  ['vecofrange_4',['vecofrange',['../classgnuplotio_1_1VecOfRange.html',1,'gnuplotio::VecOfRange&lt; RT &gt;'],['../classgnuplotio_1_1VecOfRange.html#a077cf69b9ea96d4f0da78a5e72ab2427',1,'gnuplotio::VecOfRange::VecOfRange()'],['../classgnuplotio_1_1VecOfRange.html#a81e04f9ab4b8641d69df61f695e97e34',1,'gnuplotio::VecOfRange::VecOfRange(const std::vector&lt; RT &gt; &amp;_rvec)']]]
 ];

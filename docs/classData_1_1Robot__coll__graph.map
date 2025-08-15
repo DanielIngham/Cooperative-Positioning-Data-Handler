@@ -1,0 +1,7 @@
+<map id="Data::Robot" name="Data::Robot">
+<area shape="rect" id="Node000001" title="Houses all data and functionality related to a given robot in a multi&#45;robot localisation environment." alt="" coords="149,137,248,163"/>
+<area shape="rect" id="Node000002" href="$structData_1_1Robot_1_1RobotData.html" title="Vectors related to the robot data." alt="" coords="5,5,181,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,40,191,135,187,139,109,43"/>
+<area shape="rect" id="Node000003" href="$structData_1_1Robot_1_1ErrorStatistics.html" title="Error statistics used by filters for inference." alt="" coords="206,5,405,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="297,44,279,79,253,115,222,139,218,135,249,111,274,77,293,42"/>
+</map>

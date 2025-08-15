@@ -17,12 +17,23 @@
 namespace Data {
 size_t Plotter::terminal_number_ = 0;
 
+/**
+ * Constructor for instance of the Plotter which sets its fields using the data
+ * extracted by the Handler.
+ * @param data Instance of the Handler class that has been assigned a dataset.
+ * @note NOTE: At this state, the plotter requires the data Handler to have its
+ * dataset set before creating an instance of the plotter.
+ */
 Plotter::Plotter(Handler &data)
     : data_(data), dataset_name_(data_.getDatasetName()),
       data_points_(data_.getNumberOfSyncedDatapoints()),
       total_measurements_(data_.getNumberOfSyncedMeasurements()),
       total_robots_(data_.getNumberOfRobots()),
       total_landmarks_(data_.getNumberOfLandmarks()) {
+
+  assert(dataset_name_ != "" &&
+         "Data set not set. Set the dataset in the Handler before attempting "
+         "to create an instance of the plotter.");
 
   std::vector<Robot> &input_robot_data = data_.getRobots();
   terminal_.type = gnuplot::TerminalType::WXT;
@@ -35,10 +46,18 @@ Plotter::Plotter(Handler &data)
 Plotter::~Plotter() {}
 
 /**
- * Converts the Robot data structure into serial tuples for plotting
- * using gnuplot.
+ * Converts the robots Pose data extracted by the Handler into the binary format
+ * and saves it to a binary file in the termporary directory that gnuplot can
+ * use for plotting.
+ * @param robot_id ID number of the robot whose plot the user wants to see.
+ * @note If the ID number is 0, all robot plots will be shown.
  */
 void Plotter::binariseRobotPoseData(unsigned short robot_id) {
+  if (robot_id > total_robots_ || robot_id < 0) {
+    throw std::runtime_error("Robot ID provided is not valid: " +
+                             std::to_string(robot_id));
+  }
+
   std::vector<Robot> &input_robot_data = data_.getRobots();
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
@@ -72,9 +91,16 @@ void Plotter::binariseRobotPoseData(unsigned short robot_id) {
 }
 
 /**
- * Covert robot odometry sensor values to temporary binary files for gnuplot.
+ * Coverts robot odometry sensor values to temporary binary files for gnuplot.
+ * @param robot_id ID number of the robot whose plot the user wants to see.
+ * @note If the ID number is 0, all robot plots will be shown.
  */
 void Plotter::binariseOdometryData(unsigned short robot_id) {
+
+  if (robot_id > total_robots_ || robot_id < 0) {
+    throw std::runtime_error("Robot ID provided is not valid: " +
+                             std::to_string(robot_id));
+  }
   std::vector<Robot> &input_robot_data = data_.getRobots();
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
@@ -126,6 +152,11 @@ void Plotter::binariseOdometryData(unsigned short robot_id) {
   }
 }
 
+/**
+ * Converts the robot measurement data into binary files for gnuplot.
+ * @param robot_id ID number of the robot whose plot the user wants to see.
+ * @note If the ID number is 0, all robot plots will be shown.
+ */
 void Plotter::binariseMeasurementData(unsigned short robot_id) {
   std::vector<Robot> &output_robot_data = data_.getRobots();
 
@@ -181,6 +212,13 @@ void Plotter::binariseMeasurementData(unsigned short robot_id) {
   }
 }
 
+/**
+ * Groups the robots measurement error for its range and bearing sensing, and
+ * creates a quasi PDF (scaled PMF).
+ * @param robot_id ID number of the robot whose plot the user wants to see.
+ * @param bin_size Size of the bins in which the error values are grouped.
+ * @note If the ID number is 0, all robot plots will be shown.
+ */
 void Plotter::binariseMeasurementPDF(unsigned short robot_id,
                                      const double bin_size) {
 
@@ -230,6 +268,13 @@ void Plotter::binariseMeasurementPDF(unsigned short robot_id,
   }
 }
 
+/**
+ * Groups the robots odometry error for its range and bearing sensing, and
+ * creates a quasi PDF (scaled PMF).
+ * @param robot_id ID number of the robot whose plot the user wants to see.
+ * @param bin_size Size of the bins in which the error values are grouped.
+ * @note If the ID number is 0, all robot plots will be shown.
+ */
 void Plotter::binariseOdometryPDF(unsigned short robot_id,
                                   const double bin_size) {
   std::vector<Robot> &robots = data_.getRobots();
@@ -284,6 +329,11 @@ void Plotter::binariseOdometryPDF(unsigned short robot_id,
   }
 }
 
+/**
+ * Converts the robot infered pose data into binary files for gnuplot.
+ * @param robot_id ID number of the robot whose plot the user wants to see.
+ * @note If the ID number is 0, all robot plots will be shown.
+ */
 void Plotter::binariseRobotInferenceData(unsigned short robot_id) {
 
   std::vector<Robot> &output_robot_data = data_.getRobots();
@@ -317,8 +367,7 @@ void Plotter::binariseRobotInferenceData(unsigned short robot_id) {
 }
 
 /**
- * Converts the Landmark data structure into serial tuples for plotting
- * using gnuplot.
+ * Converts the landmark position data structure into a binary file for gnuplt.
  */
 void Plotter::binariseLandmarkData() {
 
@@ -329,6 +378,9 @@ void Plotter::binariseLandmarkData() {
   write_binary(binary_landmark_data_.filename, input_landmark_data);
 }
 
+/**
+ * TODO: Replace this with "live" (or maybe animated?) inference plot.
+ */
 void Plotter::demo_animation() {
 
   std::cout << "Press Ctrl-C to quit (closing gnuplot window doesn't quit)."
@@ -359,6 +411,8 @@ void Plotter::demo_animation() {
 /**
  * Plots the xy trajectory of the robots alongside the positions of the
  * landmarks.
+ * @param plots List containing the type of data extracted/calculated from the
+ * dataset.
  * @param robot_id Identifier of the robot whose data you want to plot. If the
  * value is 0, then all robots data is plotted.
  */
@@ -412,7 +466,9 @@ void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
 }
 
 /**
- * Plots the groundtruth states of the robots.
+ * Plots the groundtruth states (poses) of the robots.
+ * @param plots List containing the type of data extracted/calculated from the
+ * dataset.
  * @param robot_id The id of the robot whose states will be plotted.
  * @note If the parameter is left empty or set to 0, then all robots data will
  * be plotted in individual terminals.
@@ -518,7 +574,13 @@ void Plotter::plotGroundruthStates(std::initializer_list<PlotType> plots,
 }
 
 /**
- *
+ * Plots the odometry inputs that each vehicle recieved through a run in the
+ * dataset.
+ * @param plots List containing the type of data extracted/calculated from the
+ * dataset.
+ * @param robot_id The id of the robot whose states will be plotted.
+ * @note If the parameter is left empty or set to 0, then all robots data will
+ * be plotted in individual terminals.
  */
 void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
                            unsigned short robot_id) {
@@ -613,6 +675,14 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
   }
 }
 
+/**
+ * Plot the Probability Density Function (Scaled Pobability Mass Function (PMF))
+ * for error of the odometry inputs.
+ * @param robot_id The id of the robot whose states will be plotted.
+ * @param bin_size Size of the bins in which the error values are grouped.
+ * @note If the parameter is left empty or set to 0, then all robots data will
+ * be plotted in individual terminals.
+ */
 void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
   /* Check that the provided ID is within bounds. */
   if (robot_id > total_robots_ || robot_id < 0) {
@@ -636,7 +706,6 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
   angular_velocity_axis.y_label = "Probability Density [s/rad]";
 
   for (; id < end_point; ++id) {
-    /* TODO: Add Gaussian plot. */
     std::string title = "Odometry PDF";
 
     gnuplot_ << gnuplot::setTitle(title);
@@ -701,6 +770,15 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
   }
 }
 
+/**
+ * Plots the range and bearing measurements that each vehicle recieved through a
+ * run in the dataset.
+ * @param plots List containing the type of data extracted/calculated from the
+ * dataset.
+ * @param robot_id The id of the robot whose states will be plotted.
+ * @note If the parameter is left empty or set to 0, then all robots data will
+ * be plotted in individual terminals.
+ */
 void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
                                unsigned short robot_id) {
   if (robot_id > total_robots_ || robot_id < 0) {
@@ -789,6 +867,14 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
   }
 }
 
+/**
+ * Plot the Probability Density Function (Scaled Pobability Mass Function (PMF))
+ * for error of the range and bearing measurements.
+ * @param robot_id The id of the robot whose states will be plotted.
+ * @param bin_size Size of the bins in which the error values are grouped.
+ * @note If the parameter is left empty or set to 0, then all robots data will
+ * be plotted in individual terminals.
+ */
 void Plotter::plotMeasurementPDFs(unsigned short robot_id,
                                   const double bin_size) {
   if (robot_id > total_robots_ || robot_id < 0) {
@@ -902,7 +988,8 @@ void Plotter::write_binary(std::string &filename,
 }
 
 /**
- * Writes binary file for pose data.
+ * Writes binary file containing robot pose (state) data such that gnuplot can
+ * use it for plotting.
  * @param filename the name of the output binary file.
  * @param state_data Vector of measurements.
  */
@@ -936,7 +1023,8 @@ void Plotter::write_binary(std::string &filename,
 }
 
 /**
- * Writes binary file for measurement data.
+ * Writes binary file containing robot measurement data such that gnuplot can
+ * use it for plotting.
  * @param filename the name of the output binary file.
  * @param measurement_data Vector of measurements.
  */
@@ -978,7 +1066,8 @@ void Plotter::write_binary(
 }
 
 /**
- * Writes binary file for landmark data.
+ * Writes binary file containing landmark position data such that gnuplot can
+ * use it for plotting.
  * @param filename the name of the output binary file.
  * @param landmark_data Vector of landmarks.
  */
@@ -1035,6 +1124,7 @@ void Plotter::write_binary(std::string &filename,
 }
 
 /**
+ * TODO: Add documentation.
  * Sends plot commands to gnuplot.
  */
 void Plotter::plot(const PlotList &plots,
@@ -1071,7 +1161,6 @@ void Plotter::plot(const PlotList &plots,
 
   gnuplot_ << plot_command.str();
 
-  std::cout << plot_command.str() << std::endl;
 #ifdef DEBUG
   std::cout << plot_command.str() << std::endl;
 #endif // DEBUG

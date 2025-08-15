@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['simulator_0',['Simulator',['../classSimulator.html',1,'']]],
-  ['state_1',['State',['../structRobot_1_1State.html',1,'Robot']]]
+  ['handler_0',['Handler',['../classData_1_1Handler.html',1,'Data']]],
+  ['handlerdefaults_1',['HandlerDefaults',['../structData_1_1HandlerDefaults.html',1,'Data']]]
 ];

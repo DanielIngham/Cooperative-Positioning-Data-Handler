@@ -1,13 +1,17 @@
-<map id="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Filters/lib/DataHandler/Simulator.h" name="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Filters/lib/DataHandler/Simulator.h">
-<area shape="rect" id="Node000001" title="Header file of the Simulator class,." alt="" coords="249,5,455,60"/>
-<area shape="rect" id="Node000002" href="$ArgumentHandler_8h.html" title="Header file containing functionality for parsing arguments given to the executable into the DataHandl..." alt="" coords="5,211,264,265"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="237,57,192,78,172,92,155,110,142,133,135,160,134,211,129,210,130,159,137,131,151,106,169,88,189,73,234,52"/>
-<area shape="rect" id="Node000003" href="$DataHandler_8h.html" title="Header file of the DataHandler class,." alt="" coords="165,108,390,163"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="326,73,299,109,295,106,322,70"/>
-<area shape="rect" id="Node000004" href="$DataHandler_8cpp.html" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="291,211,554,265"/>
-<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="384,70,404,107,418,161,424,210,419,210,413,162,399,109,379,73"/>
-<area shape="rect" id="Node000005" href="$Simulator_8cpp.html" title="Class implementation file responsible for simulating the data for multi&#45;robot localisation and mappin..." alt="" coords="465,108,709,163"/>
-<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="427,63,527,105,524,110,424,68"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="231,173,174,213,171,208,227,168"/>
-<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="328,168,386,208,383,213,325,173"/>
+<map id="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Data&#45;Handler/Simulator.h" name="/home/dan/Code/UTIAS&#45;Multi&#45;Robot/Data&#45;Handler/Simulator.h">
+<area shape="rect" id="Node000001" title="Header file of the Simulator class,." alt="" coords="291,5,485,60"/>
+<area shape="rect" id="Node000002" href="$ArgumentHandler_8h.html" title="Header file containing functionality for parsing arguments given to the executable into the Data::Han..." alt="" coords="5,211,200,265"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="292,68,252,87,214,110,186,134,160,161,122,212,117,209,156,157,182,130,210,106,249,82,290,63"/>
+<area shape="rect" id="Node000003" href="$DataHandler_8h.html" title="Header file of the Handler class,." alt="" coords="224,108,419,163"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="365,73,341,109,337,106,361,70"/>
+<area shape="rect" id="Node000006" href="$DataHandler_8cpp.html" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="443,211,637,265"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="417,70,483,161,521,209,517,212,479,164,412,73"/>
+<area shape="rect" id="Node000007" href="$Simulator_8cpp.html" title="Class implementation file responsible for simulating the data for multi&#45;robot localisation and mappin..." alt="" coords="493,108,688,163"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="454,64,539,106,537,110,452,68"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="253,171,161,213,159,208,251,166"/>
+<area shape="rect" id="Node000004" href="$Plotter_8h.html" title="Contains gnuplot functionality." alt="" coords="224,211,419,265"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="324,176,324,211,319,211,319,176"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="392,166,484,208,482,213,390,171"/>
+<area shape="rect" id="Node000005" href="$Plotter_8cpp.html" title=" " alt="" coords="224,313,419,368"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="324,279,324,313,319,313,319,279"/>
 </map>

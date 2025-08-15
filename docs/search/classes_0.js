@@ -1,5 +1,16 @@
 var searchData=
 [
-  ['datahandler_0',['DataHandler',['../classDataHandler.html',1,'']]],
-  ['datahandlerdefaults_1',['DataHandlerDefaults',['../structDataHandlerDefaults.html',1,'']]]
+  ['arraytraitsdefaults_0',['ArrayTraitsDefaults',['../classgnuplotio_1_1ArrayTraitsDefaults.html',1,'gnuplotio']]],
+  ['arraytraitsdefaults_3c_20std_3a_3aiterator_5ftraits_3c_20decltype_28begin_28std_3a_3adeclval_3c_20t_20const_20_3e_28_29_29_29_3e_3a_3avalue_5ftype_20_3e_1',['ArrayTraitsDefaults&lt; std::iterator_traits&lt; decltype(begin(std::declval&lt; T const &gt;()))&gt;::value_type &gt;',['../classgnuplotio_1_1ArrayTraitsDefaults.html',1,'gnuplotio']]],
+  ['arraytraitsdefaults_3c_20t_20_3e_2',['ArrayTraitsDefaults&lt; T &gt;',['../classgnuplotio_1_1ArrayTraitsDefaults.html',1,'gnuplotio']]],
+  ['arraytraitsdefaults_3c_20t_3a_3avalue_5ftype_20_3e_3',['ArrayTraitsDefaults&lt; T::value_type &gt;',['../classgnuplotio_1_1ArrayTraitsDefaults.html',1,'gnuplotio']]],
+  ['arraytraitsimpl_4',['ArrayTraitsImpl',['../classgnuplotio_1_1ArrayTraitsImpl.html',1,'gnuplotio']]],
+  ['arraytraitsimpl_3c_20std_3a_3apair_3c_20t_2c_20u_20_3e_20_3e_5',['ArrayTraitsImpl&lt; std::pair&lt; T, U &gt; &gt;',['../classgnuplotio_1_1ArrayTraitsImpl_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html',1,'gnuplotio']]],
+  ['arraytraitsimpl_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e_6',['ArrayTraitsImpl&lt; std::tuple&lt; Args... &gt; &gt;',['../classgnuplotio_1_1ArrayTraitsImpl_3_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'gnuplotio']]],
+  ['arraytraitsimpl_3c_20t_2c_20typename_20std_3a_3aenable_5fif_5ft_3c_20is_5fboost_5ftuple_3c_20t_20_3e_20_26_26_21is_5fboost_5ftuple_5fnulltype_3c_20typename_20t_3a_3atail_5ftype_20_3e_20_3e_20_3e_7',['ArrayTraitsImpl&lt; T, typename std::enable_if_t&lt; is_boost_tuple&lt; T &gt; &amp;&amp;!is_boost_tuple_nulltype&lt; typename T::tail_type &gt; &gt; &gt;',['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_00_01typename_01std_1_1enable__if__t_3_01is__boost__tupldc9a4a46a2c15d8592b02fbaab9f7510.html',1,'gnuplotio']]],
+  ['arraytraitsimpl_3c_20t_2c_20typename_20std_3a_3aenable_5fif_5ft_3c_20is_5fboost_5ftuple_3c_20t_20_3e_20_26_26is_5fboost_5ftuple_5fnulltype_3c_20typename_20t_3a_3atail_5ftype_20_3e_20_3e_20_3e_8',['ArrayTraitsImpl&lt; T, typename std::enable_if_t&lt; is_boost_tuple&lt; T &gt; &amp;&amp;is_boost_tuple_nulltype&lt; typename T::tail_type &gt; &gt; &gt;',['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_00_01typename_01std_1_1enable__if__t_3_01is__boost__tupl9cd2a68075ce3451ee1e03d371c7a602.html',1,'gnuplotio']]],
+  ['arraytraitsimpl_3c_20t_2c_20typename_20std_3a_3aenable_5fif_5ft_3c_20is_5flike_5fstl_5fcontainer2_3c_20t_20_3e_20_3e_20_3e_9',['ArrayTraitsImpl&lt; T, typename std::enable_if_t&lt; is_like_stl_container2&lt; T &gt; &gt; &gt;',['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_00_01typename_01std_1_1enable__if__t_3_01is__like__stl__container2_3_01T_01_4_01_4_01_4.html',1,'gnuplotio']]],
+  ['arraytraitsimpl_3c_20t_2c_20typename_20std_3a_3aenable_5fif_5ft_3c_20is_5flike_5fstl_5fcontainer_3c_20t_20_3e_20_3e_20_3e_10',['ArrayTraitsImpl&lt; T, typename std::enable_if_t&lt; is_like_stl_container&lt; T &gt; &gt; &gt;',['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_00_01typename_01std_1_1enable__if__t_3_01is__like__stl__container_3_01T_01_4_01_4_01_4.html',1,'gnuplotio']]],
+  ['arraytraitsimpl_3c_20t_5bn_5d_3e_11',['ArrayTraitsImpl&lt; T[N]&gt;',['../classgnuplotio_1_1ArrayTraitsImpl_3_01T_0fN_0e_4.html',1,'gnuplotio']]],
+  ['axissettings_12',['AxisSettings',['../structgnuplot_1_1AxisSettings.html',1,'gnuplot']]]
 ];

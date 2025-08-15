@@ -1,0 +1,7 @@
+<map id="Data::Plotter::RobotData" name="Data::Plotter::RobotData">
+<area shape="rect" id="Node000001" title=" " alt="" coords="133,152,314,177"/>
+<area shape="rect" id="Node000002" href="$structData_1_1Plotter_1_1RobotData_1_1PDF.html" title=" " alt="" coords="5,13,220,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,50,140,88,167,126,199,150,196,154,163,130,136,91,118,53"/>
+<area shape="rect" id="Node000003" href="$structData_1_1Plotter_1_1RobotData_1_1Types.html" title=" " alt="" coords="245,5,426,45"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="336,59,327,95,319,113,308,130,290,144,270,154,268,150,287,140,304,126,315,111,322,94,331,58"/>
+</map>

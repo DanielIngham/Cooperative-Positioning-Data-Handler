@@ -1,22 +1,10 @@
 var searchData=
 [
-  ['range_0',['range',['../classSimulator.html#a266818ccfcf4d923a0caf0539474e34b',1,'Simulator::Range'],['../classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb',1,'Simulator::range']]],
-  ['range_5ferror_1',['range_error',['../classRobot.html#a3e3294bc6bf1277bdb5fbfb44410f362',1,'Robot']]],
-  ['ranges_2',['ranges',['../structRobot_1_1Measurement.html#aa071e829eca62fa89473fcc66a532101',1,'Robot::Measurement']]],
-  ['raw_3',['raw',['../classRobot.html#a47fe1ae41e8d9ec7e33e73bd83b64b9f',1,'Robot']]],
-  ['readbarcodes_4',['readBarcodes',['../classDataHandler.html#aa14208d969d119de417608388169ed58',1,'DataHandler']]],
-  ['readgroundtruth_5',['readGroundTruth',['../classDataHandler.html#a053359b5ac1ae982c471228ceb60adae',1,'DataHandler']]],
-  ['readlandmarks_6',['readLandmarks',['../classDataHandler.html#adaffb621609a97ecd82da0820c897cad',1,'DataHandler']]],
-  ['readme_2emd_7',['README.md',['../README_8md.html',1,'']]],
-  ['readmeasurements_8',['readMeasurements',['../classDataHandler.html#a7fa0e569a5642ca0ea5b1ce84d89b11c',1,'DataHandler']]],
-  ['readodometry_9',['readOdometry',['../classDataHandler.html#af02dfeca8e73dccc3d0288d358edb9fc',1,'DataHandler']]],
-  ['relativelandmarkdistance_10',['relativeLandmarkDistance',['../classDataHandler.html#acc8d74867aa39b8095a52bac985065c9',1,'DataHandler']]],
-  ['relativerobotdistance_11',['relativeRobotDistance',['../classDataHandler.html#aceeae17f8c300f0c82f55de7567bb583',1,'DataHandler']]],
-  ['removeoutliers_12',['removeOutliers',['../classRobot.html#a6dc831e2b692655ee088831a46aba3ac',1,'Robot']]],
-  ['robot_13',['robot',['../classRobot.html#a4fc7c70ae20623f05e06f2ecb388b6c4',1,'Robot::Robot()'],['../classRobot.html#a47aec46e3bb5782500d1d268f0d8c406',1,'Robot::Robot(Robot &amp;&amp;)=default'],['../classRobot.html#a4fd835c7c44337d31d9fd09921d29908',1,'Robot::Robot(const Robot &amp;)=default'],['../classRobot.html',1,'Robot']]],
-  ['robot_20data_20extractor_14',['C++ UTIAS Multi-Robot Data Extractor',['../index.html',1,'']]],
-  ['robot_2ecpp_15',['Robot.cpp',['../Robot_8cpp.html',1,'']]],
-  ['robot_2eh_16',['Robot.h',['../Robot_8h.html',1,'']]],
-  ['robotdata_17',['RobotData',['../structRobot_1_1RobotData.html',1,'Robot']]],
-  ['robots_5f_18',['robots_',['../classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff',1,'DataHandler::robots_'],['../classSimulator.html#a6504b73695a99ac0af2f2e164e10ae70',1,'Simulator::robots_']]]
+  ['odometry_0',['odometry',['../structData_1_1Plotter_1_1RobotData.html#aa70446f71f5d79af08e64266e4328e76',1,'Data::Plotter::RobotData::odometry'],['../structData_1_1Robot_1_1RobotData.html#a0f0557bded7ffd9e6e9e2e9cdf5f6b4e',1,'Data::Robot::RobotData::odometry'],['../structData_1_1Robot_1_1Odometry.html#a0a22587ca155ac4cb25c7c4e4aefb6f7',1,'Data::Robot::Odometry::Odometry()'],['../structData_1_1Robot_1_1Odometry.html#aeba4c70664c40563008d7d21bf356182',1,'Data::Robot::Odometry::Odometry(double time_, double forward_velocity_, double angular_velocity_)'],['../structData_1_1Robot_1_1Odometry.html',1,'Data::Robot::Odometry']]],
+  ['odometry_5ftuple_1',['odometry_tuple',['../classData_1_1Plotter.html#a3eec0bb2e08f9539cf7c6d7ec8f1f8a3',1,'Data::Plotter']]],
+  ['open_5fcmdline_2',['open_cmdline',['../classgnuplotio_1_1Gnuplot.html#a84c5911c1a5d3eb93a6f3bd0b86ef338',1,'gnuplotio::Gnuplot']]],
+  ['operator_3c_3c_3',['operator&lt;&lt;',['../namespacegnuplotio.html#a7aefa2bc8ef2eabd5c292e59b6b6e5fd',1,'gnuplotio::operator&lt;&lt;(Gnuplot &amp;gp, PlotGroup &amp;&amp;sp)'],['../namespacegnuplotio.html#ac7d54375b52ec95b3fac5af7444a662e',1,'gnuplotio::operator&lt;&lt;(Gnuplot &amp;gp, PlotGroup &amp;sp)']]],
+  ['operator_3d_4',['operator=',['../classData_1_1Plotter.html#a824f02681dc2a63cbb3e762f0cadd8b9',1,'Data::Plotter::operator=(Plotter &amp;&amp;)=delete'],['../classData_1_1Plotter.html#a3239c2e21de6f248d64ec1a7a17cd2b3',1,'Data::Plotter::operator=(const Plotter &amp;)=delete'],['../classData_1_1Robot.html#a6ebb18e1bf0392c1519f78cfa9338cc5',1,'Data::Robot::operator=(Robot &amp;&amp;)=default'],['../classData_1_1Robot.html#a3bd3c8b903b95114c6b0f5516923e379',1,'Data::Robot::operator=(const Robot &amp;)=default'],['../classgnuplotio_1_1Gnuplot.html#a045663dd9f5d85984eb96b60f11db52e',1,'gnuplotio::Gnuplot::operator=()'],['../classgnuplotio_1_1GnuplotFeedback.html#a2ab5a5b7daf88f90b76cae8339f75423',1,'gnuplotio::GnuplotFeedback::operator=()']]],
+  ['orientation_5',['orientation',['../structData_1_1Robot_1_1State.html#abef3b54cf90e270a11c78b63886194aa',1,'Data::Robot::State::orientation'],['../classData_1_1Plotter.html#a2a9e068c1d2852af363e341fb989c5ceae41fcb119c0c7b16186bd36092fed6f4',1,'Data::Plotter::ORIENTATION']]],
+  ['output_5fdirectory_5f_6',['output_directory_',['../classData_1_1Handler.html#acdfc160dca5594589c9572b0f282146b',1,'Data::Handler']]]
 ];

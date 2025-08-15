@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['measurement_0',['Measurement',['../structRobot_1_1Measurement.html',1,'Robot']]]
+  ['datahandlerdefaults_0',['DataHandlerDefaults',['../structDataHandlerDefaults.html',1,'']]]
 ];

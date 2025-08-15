@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['_7erobot_0',['~Robot',['../classRobot.html#a924320124b09c2f2ac1621aa210d5f38',1,'Robot']]],
-  ['_7esimulator_1',['~Simulator',['../classSimulator.html#a0f49aa04f42060a785adf77346b9de9f',1,'Simulator']]]
+  ['odometry_0',['odometry',['../structData_1_1Robot_1_1Odometry.html#a0a22587ca155ac4cb25c7c4e4aefb6f7',1,'Data::Robot::Odometry::Odometry()'],['../structData_1_1Robot_1_1Odometry.html#aeba4c70664c40563008d7d21bf356182',1,'Data::Robot::Odometry::Odometry(double time_, double forward_velocity_, double angular_velocity_)']]],
+  ['open_5fcmdline_1',['open_cmdline',['../classgnuplotio_1_1Gnuplot.html#a84c5911c1a5d3eb93a6f3bd0b86ef338',1,'gnuplotio::Gnuplot']]],
+  ['operator_3c_3c_2',['operator&lt;&lt;',['../namespacegnuplotio.html#ac7d54375b52ec95b3fac5af7444a662e',1,'gnuplotio::operator&lt;&lt;(Gnuplot &amp;gp, PlotGroup &amp;sp)'],['../namespacegnuplotio.html#a7aefa2bc8ef2eabd5c292e59b6b6e5fd',1,'gnuplotio::operator&lt;&lt;(Gnuplot &amp;gp, PlotGroup &amp;&amp;sp)']]],
+  ['operator_3d_3',['operator=',['../classgnuplotio_1_1GnuplotFeedback.html#a2ab5a5b7daf88f90b76cae8339f75423',1,'gnuplotio::GnuplotFeedback::operator=()'],['../classgnuplotio_1_1Gnuplot.html#a045663dd9f5d85984eb96b60f11db52e',1,'gnuplotio::Gnuplot::operator=()'],['../classData_1_1Plotter.html#a824f02681dc2a63cbb3e762f0cadd8b9',1,'Data::Plotter::operator=(Plotter &amp;&amp;)=delete'],['../classData_1_1Plotter.html#a3239c2e21de6f248d64ec1a7a17cd2b3',1,'Data::Plotter::operator=(const Plotter &amp;)=delete'],['../classData_1_1Robot.html#a6ebb18e1bf0392c1519f78cfa9338cc5',1,'Data::Robot::operator=(Robot &amp;&amp;)=default'],['../classData_1_1Robot.html#a3bd3c8b903b95114c6b0f5516923e379',1,'Data::Robot::operator=(const Robot &amp;)=default']]]
 ];

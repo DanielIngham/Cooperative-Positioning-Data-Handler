@@ -1,8 +1,11 @@
 var searchData=
 [
-  ['range_0',['range',['../classSimulator.html#ae1db02b54a5ee2575b6ba164292cd9eb',1,'Simulator']]],
-  ['range_5ferror_1',['range_error',['../classRobot.html#a3e3294bc6bf1277bdb5fbfb44410f362',1,'Robot']]],
-  ['ranges_2',['ranges',['../structRobot_1_1Measurement.html#aa071e829eca62fa89473fcc66a532101',1,'Robot::Measurement']]],
-  ['raw_3',['raw',['../classRobot.html#a47fe1ae41e8d9ec7e33e73bd83b64b9f',1,'Robot']]],
-  ['robots_5f_4',['robots_',['../classDataHandler.html#a0898e8accf765b32e71b74eaee96a2ff',1,'DataHandler::robots_'],['../classSimulator.html#a6504b73695a99ac0af2f2e164e10ae70',1,'Simulator::robots_']]]
+  ['plot_5fstring_0',['plot_string',['../structData_1_1Plotter_1_1Plot.html#a6820e80408a5e719284df9230b3ecf66',1,'Data::Plotter::Plot']]],
+  ['plot_5ftype_1',['plot_type',['../classgnuplotio_1_1PlotGroup.html#a640e4529192e2d70e3182d58d3abdc6e',1,'gnuplotio::PlotGroup']]],
+  ['plots_2',['plots',['../classgnuplotio_1_1PlotGroup.html#a16716391c9b265ed7f1ec9276e597bfc',1,'gnuplotio::PlotGroup']]],
+  ['plotspec_3',['plotspec',['../classgnuplotio_1_1PlotData.html#a5e73bc08fd344ab009a33b80a1d91d73',1,'gnuplotio::PlotData']]],
+  ['pointsize_4',['pointsize',['../structgnuplot_1_1PlotSettings.html#a1ac76783d68b43c4841fe39c663177db',1,'gnuplot::PlotSettings']]],
+  ['pointtype_5',['pointtype',['../structgnuplot_1_1PlotSettings.html#a4d9759d211d6797b9a48c95a23f83550',1,'gnuplot::PlotSettings']]],
+  ['pose_6',['pose',['../structData_1_1Plotter_1_1RobotData.html#a26553cd8238061a2365f3fb0888c98c1',1,'Data::Plotter::RobotData']]],
+  ['preamble_5flines_7',['preamble_lines',['../classgnuplotio_1_1PlotGroup.html#ae361803ce0f09db1344532d3153db572',1,'gnuplotio::PlotGroup']]]
 ];

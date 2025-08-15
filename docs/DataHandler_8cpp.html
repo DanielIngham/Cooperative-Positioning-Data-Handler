@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>UTIAS Multi-Robot Data Extractor: /home/dan/Code/UTIAS-Multi-Robot/Filters/lib/DataHandler/src/DataHandler.cpp File Reference</title>
+<title>UTIAS Multi-Robot Data Extractor: /home/dan/Code/UTIAS-Multi-Robot/Data-Handler/src/DataHandler.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -80,6 +80,8 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">DataHandler.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -89,6 +91,7 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="el" href="DataHandler_8h_source.html">DataHandler.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Simulator_8h_source.html">Simulator.h</a>&quot;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
@@ -98,58 +101,68 @@ $(function() {
 <code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for DataHandler.cpp:</div>
 <div class="dyncontent">
-<div class="center"><img src="DataHandler_8cpp__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2src_2DataHandler_8cpp" alt=""/></div>
-<map name="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2src_2DataHandler_8cpp" id="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Filters_2lib_2DataHandler_2src_2DataHandler_8cpp">
-<area shape="rect" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="644,5,906,60"/>
-<area shape="rect" href="DataHandler_8h.html" title="Header file of the DataHandler class,." alt="" coords="328,108,443,133"/>
-<area shape="poly" title=" " alt="" coords="657,63,451,108,450,102,656,57"/>
-<area shape="rect" title=" " alt="" coords="468,181,533,207"/>
-<area shape="poly" title=" " alt="" coords="653,63,603,83,558,110,532,139,513,170,509,167,527,136,555,106,601,78,651,58"/>
-<area shape="rect" title=" " alt="" coords="558,181,616,207"/>
-<area shape="poly" title=" " alt="" coords="645,57,604,78,587,93,572,109,566,123,566,138,576,168,571,170,561,139,561,122,567,107,583,89,601,74,642,53"/>
-<area shape="rect" href="Simulator_8h.html" title="Header file of the Simulator class,." alt="" coords="195,181,291,207"/>
-<area shape="poly" title=" " alt="" coords="644,48,458,72,375,90,318,110,300,123,284,139,259,171,255,168,280,135,296,119,315,106,374,84,457,67,643,43"/>
-<area shape="rect" title=" " alt="" coords="582,108,667,133"/>
-<area shape="poly" title=" " alt="" coords="730,62,658,103,655,99,728,58"/>
-<area shape="rect" title=" " alt="" coords="691,108,758,133"/>
-<area shape="poly" title=" " alt="" coords="762,61,741,97,736,95,757,59"/>
-<area shape="rect" title=" " alt="" coords="782,108,872,133"/>
-<area shape="poly" title=" " alt="" coords="793,59,815,95,811,98,789,61"/>
-<area shape="rect" title=" " alt="" coords="897,108,970,133"/>
-<area shape="poly" title=" " alt="" coords="825,58,902,99,899,104,822,62"/>
-<area shape="rect" title=" " alt="" coords="995,108,1075,133"/>
-<area shape="poly" title=" " alt="" coords="855,58,988,101,987,106,854,63"/>
-<area shape="rect" title=" " alt="" coords="1099,108,1174,133"/>
-<area shape="poly" title=" " alt="" coords="886,57,1086,105,1085,110,885,63"/>
-<area shape="rect" title=" " alt="" coords="1198,108,1285,133"/>
-<area shape="poly" title=" " alt="" coords="907,54,1185,105,1184,110,906,60"/>
-<area shape="rect" title=" " alt="" coords="1309,108,1433,133"/>
-<area shape="poly" title=" " alt="" coords="907,50,1296,105,1295,110,906,55"/>
-<area shape="rect" title=" " alt="" coords="101,328,164,353"/>
-<area shape="poly" title=" " alt="" coords="329,125,252,133,209,141,164,153,120,170,79,192,43,221,13,256,9,268,10,278,16,288,26,297,55,314,89,326,87,331,53,318,23,302,12,292,5,280,3,267,9,253,39,217,76,188,118,165,163,148,208,136,252,128,328,120"/>
-<area shape="poly" title=" " alt="" coords="406,131,472,172,469,176,403,136"/>
-<area shape="poly" title=" " alt="" coords="419,131,546,175,544,180,417,136"/>
-<area shape="rect" title=" " alt="" coords="225,328,288,353"/>
-<area shape="poly" title=" " alt="" coords="397,132,415,160,433,199,439,220,442,241,439,262,429,282,403,307,370,325,335,335,302,340,301,335,334,330,368,320,400,303,425,278,434,261,436,241,434,221,428,200,411,163,392,135"/>
-<area shape="rect" href="Landmark_8h.html" title="Header file of the Landmark struct." alt="" coords="316,255,415,280"/>
-<area shape="poly" title=" " alt="" coords="387,134,372,241,367,241,381,133"/>
-<area shape="rect" href="Robot_8h.html" title="Header file of the Robot class." alt="" coords="220,255,292,280"/>
-<area shape="poly" title=" " alt="" coords="377,136,278,246,274,243,373,132"/>
-<area shape="poly" title=" " alt="" coords="364,136,280,177,277,173,362,131"/>
-<area shape="poly" title=" " alt="" coords="238,282,166,323,163,319,235,278"/>
-<area shape="poly" title=" " alt="" coords="259,280,259,314,254,314,254,280"/>
-<area shape="poly" title=" " alt="" coords="236,209,152,318,148,315,232,205"/>
-<area shape="poly" title=" " alt="" coords="235,208,214,240,209,260,211,279,221,299,235,316,231,319,217,302,206,281,204,259,210,238,231,205"/>
-<area shape="poly" title=" " alt="" coords="264,204,335,245,333,250,261,209"/>
-<area shape="poly" title=" " alt="" coords="248,207,254,241,249,242,243,207"/>
-<area shape="rect" title=" " alt="" coords="23,255,95,280"/>
-<area shape="poly" title=" " alt="" coords="214,209,103,252,101,247,213,204"/>
+<div class="center"><img src="DataHandler_8cpp__incl.png" border="0" usemap="#a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2src_2DataHandler_8cpp" alt=""/></div>
+<map name="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2src_2DataHandler_8cpp" id="a_2home_2dan_2Code_2UTIAS-Multi-Robot_2Data-Handler_2src_2DataHandler_8cpp">
+<area shape="rect" title="Class implementation file responsible for exracting the ground&#45;truth, odometry and measurement data f..." alt="" coords="650,5,844,60"/>
+<area shape="rect" href="DataHandler_8h.html" title="Header file of the Handler class,." alt="" coords="318,108,432,133"/>
+<area shape="poly" title=" " alt="" coords="650,59,439,107,438,102,649,54"/>
+<area shape="rect" title=" " alt="" coords="464,181,529,207"/>
+<area shape="poly" title=" " alt="" coords="650,53,590,74,561,90,536,110,516,138,504,169,499,167,511,135,532,106,558,86,587,70,649,48"/>
+<area shape="rect" title=" " alt="" coords="554,181,612,207"/>
+<area shape="poly" title=" " alt="" coords="650,48,621,57,593,70,568,87,548,109,543,124,545,139,564,170,559,172,540,141,538,123,543,107,565,83,590,66,619,52,648,43"/>
+<area shape="rect" title=" " alt="" coords="37,328,100,353"/>
+<area shape="poly" title=" " alt="" coords="650,48,501,68,330,98,247,116,172,137,110,159,66,184,38,205,18,226,8,250,9,263,13,279,26,300,43,318,39,321,22,303,9,281,4,264,3,249,13,223,35,201,63,179,108,154,170,131,245,111,329,93,501,63,649,42"/>
+<area shape="rect" href="Simulator_8h.html" title="Header file of the Simulator class,." alt="" coords="191,181,287,207"/>
+<area shape="poly" title=" " alt="" coords="650,45,557,55,457,69,368,88,333,98,307,110,290,123,276,138,253,170,249,167,271,135,287,119,304,106,331,93,367,82,456,64,556,50,649,39"/>
+<area shape="rect" title=" " alt="" coords="558,108,643,133"/>
+<area shape="poly" title=" " alt="" coords="704,62,633,103,631,99,701,58"/>
+<area shape="rect" title=" " alt="" coords="667,108,736,133"/>
+<area shape="poly" title=" " alt="" coords="736,61,716,97,712,95,731,59"/>
+<area shape="rect" title=" " alt="" coords="760,108,827,133"/>
+<area shape="poly" title=" " alt="" coords="764,59,783,95,778,97,759,61"/>
+<area shape="rect" title=" " alt="" coords="851,108,942,133"/>
+<area shape="poly" title=" " alt="" coords="794,58,866,99,863,103,791,62"/>
+<area shape="rect" title=" " alt="" coords="966,108,1040,133"/>
+<area shape="poly" title=" " alt="" coords="826,58,957,101,955,106,824,63"/>
+<area shape="rect" title=" " alt="" coords="1064,108,1144,133"/>
+<area shape="poly" title=" " alt="" coords="845,55,1052,104,1050,109,844,60"/>
+<area shape="rect" title=" " alt="" coords="1168,108,1243,133"/>
+<area shape="poly" title=" " alt="" coords="845,48,1155,105,1154,110,844,53"/>
+<area shape="rect" title=" " alt="" coords="1268,108,1354,133"/>
+<area shape="poly" title=" " alt="" coords="845,44,1031,70,1255,105,1254,111,1030,75,844,49"/>
+<area shape="rect" title=" " alt="" coords="1378,108,1502,133"/>
+<area shape="poly" title=" " alt="" coords="845,42,1078,69,1365,105,1364,110,1077,74,845,47"/>
+<area shape="rect" title=" " alt="" coords="257,328,320,353"/>
+<area shape="poly" title=" " alt="" coords="389,132,412,159,436,197,445,218,449,240,447,261,439,281,417,304,391,320,362,331,334,337,333,332,360,326,388,315,414,300,434,279,442,260,444,240,439,220,431,200,408,163,384,135"/>
+<area shape="poly" title=" " alt="" coords="396,131,466,172,464,177,393,136"/>
+<area shape="poly" title=" " alt="" coords="409,131,541,176,539,181,408,136"/>
+<area shape="poly" title=" " alt="" coords="318,126,245,135,163,156,122,173,84,195,50,222,23,256,18,271,22,287,45,317,41,320,18,289,13,271,18,253,46,219,81,191,119,168,161,151,244,130,317,121"/>
+<area shape="rect" href="Landmark_8h.html" title="Header file of the Landmark struct." alt="" coords="326,255,424,280"/>
+<area shape="poly" title=" " alt="" coords="378,134,378,241,372,241,372,134"/>
+<area shape="rect" href="Robot_8h.html" title="Header file of the Robot class." alt="" coords="179,255,251,280"/>
+<area shape="poly" title=" " alt="" coords="368,135,339,170,301,209,246,249,243,245,297,205,335,166,364,132"/>
+<area shape="poly" title=" " alt="" coords="354,136,274,177,272,173,352,131"/>
+<area shape="poly" title=" " alt="" coords="229,278,268,316,265,320,225,282"/>
+<area shape="poly" title=" " alt="" coords="193,282,106,324,103,320,190,278"/>
+<area shape="poly" title=" " alt="" coords="247,206,266,254,284,314,279,315,260,256,242,208"/>
+<area shape="poly" title=" " alt="" coords="226,209,169,257,94,321,90,317,165,253,223,205"/>
+<area shape="poly" title=" " alt="" coords="262,204,342,246,340,251,260,209"/>
+<area shape="poly" title=" " alt="" coords="238,208,226,242,221,241,233,206"/>
+<area shape="rect" title=" " alt="" coords="32,255,104,280"/>
+<area shape="poly" title=" " alt="" coords="213,209,110,252,108,247,211,204"/>
 </map>
 </div>
-</div><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceData" id="r_namespaceData"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceData.html">Data</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class implementation file responsible for exracting the ground-truth, odometry and measurement data from the UTIAS multi-robot localisation dataset. </p>
 <p>The class extracts the data from the groundtruth states, measured range and bearings, and odometry. These values are used to populate three main data structs: Barcodes, Landmarks, and Robots.</p>
 <dl class="section author"><dt>Author</dt><dd>Daniel Ingham </dd></dl>
