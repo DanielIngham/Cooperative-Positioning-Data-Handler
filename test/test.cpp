@@ -868,8 +868,16 @@ void checkPlotting() {
   data.setDataSet(dataset);
 
   Data::Plotter plot(data);
-  // plot.plotGroundruthStates(1);
-  plot.plotGroundruthTrajectory();
+  plot.plotGroundruthStates({Data::Plotter::RAW, Data::Plotter::GROUNDTRUTH},
+                            1);
+  // plot.plotGroundruthTrajectory(1);
+  // plot.plotOdometry({Data::Plotter::SYNCED}, 1);
+  // plot.plotMeasurements(
+  //     {Data::Plotter::SYNCED, Data::Plotter::GROUNDTRUTH,
+  //     Data::Plotter::RAW});
+  // plot.plotMeasurements({Data::Plotter::ERROR});
+  // plot.plotOdometryPDFs();
+  // plot.plotMeasurementPDFs();
 }
 
 int main() {
