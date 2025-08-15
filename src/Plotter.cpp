@@ -877,6 +877,7 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
  */
 void Plotter::plotMeasurementPDFs(unsigned short robot_id,
                                   const double bin_size) {
+
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
@@ -1124,8 +1125,11 @@ void Plotter::write_binary(std::string &filename,
 }
 
 /**
- * TODO: Add documentation.
  * Sends plot commands to gnuplot.
+ * @param plots list of plots that gnuplot should plot on a SINGLE axis.
+ * @param axis_settings axis settings for the plot.
+ * @note this function plots all plots on a single axis. For multiplots, the
+ * function needs to be wrapped in a multiplot and called multiple times.
  */
 void Plotter::plot(const PlotList &plots,
                    const gnuplot::AxisSettings &axis_settings) {

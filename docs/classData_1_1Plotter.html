@@ -924,7 +924,14 @@ Static Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>TODO: Add documentation. Sends plot commands to gnuplot. </p>
+<p>Sends plot commands to gnuplot. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">plots</td><td>list of plots that gnuplot should plot on a SINGLE axis. </td></tr>
+    <tr><td class="paramname">axis_settings</td><td>axis settings for the plot. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>this function plots all plots on a single axis. For multiplots, the function needs to be wrapped in a multiplot and called multiple times. </dd></dl>
 
 </div>
 </div>
