@@ -7,6 +7,7 @@
 
 #include "DataHandler.h"
 #include "Landmark.h"
+#include "Robot.h"
 
 #include <cmath>
 #include <initializer_list>
@@ -46,12 +47,35 @@ public:
   void plotMeasurements(std::initializer_list<PlotType> plots,
                         unsigned short robot_id = 0);
 
-  void plotOdometryPDFs(unsigned short, const double bin_size = 0.001);
-  void plotMeasurementPDFs(unsigned short robot_id,
+  void plotOdometryPDFs(unsigned short robot_id = 0,
+                        const double bin_size = 0.001);
+
+  void plotMeasurementPDFs(unsigned short robot_id = 0,
                            const double bin_size = 0.001);
 
 private:
-  class Plot;
+  struct Plot {
+    bool using_binary_file = false;
+    std::string binary_name;
+    std::string binary_format;
+
+    gnuplot::PlotSettings settings;
+
+    std::string plot_string;
+
+    Plot(const std::string binary_name, std::string binary_format)
+        : binary_name(binary_name), binary_format(binary_format) {
+      using_binary_file = true;
+    }
+
+    Plot(const std::string plot_string) : plot_string(plot_string) {
+      using_binary_file = false;
+    }
+  };
+
+  static size_t terminal_number_;
+
+  gnuplot::TerminalSettings terminal_;
 
   /** Reference to a data handler instance */
   Handler &data_;
@@ -192,16 +216,6 @@ private:
   /** Vector containing the serialised data extracted into the RobotData struct.
    */
   std::vector<RobotData> binary_robot_data_;
-
-  struct Plot {
-    std::string binary_name;
-    std::string binary_format;
-
-    gnuplot::PlotSettings settings;
-
-    Plot(const std::string binary_name, std::string binary_format)
-        : binary_name(binary_name), binary_format(binary_format) {}
-  };
 
   void plot(const PlotList &, const gnuplot::AxisSettings &);
 
