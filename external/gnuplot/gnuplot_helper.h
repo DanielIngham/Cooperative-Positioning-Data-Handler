@@ -301,19 +301,72 @@ inline std::string setAxisSettings(AxisSettings settings) {
   return oss.str();
 }
 
+enum TerminalType {
+  X11,
+  QT,
+  WXT,
+  PNG,
+  JPEG,
+  GIF,
+  PDF,
+  SVG,
+  TIKZ,
+  EPSLATEX,
+  DUMB,
+  CANVAS
+};
+
+inline std::string to_string(TerminalType type) {
+  switch (type) {
+  case X11:
+    return "x11";
+  case QT:
+    return "qt";
+  case WXT:
+    return "wxt";
+  case PNG:
+    return "pngcairo";
+  case JPEG:
+    return "jpeg";
+  case GIF:
+    return "gif";
+  case PDF:
+    return "pdfcairo";
+  case SVG:
+    return "svg";
+  case TIKZ:
+    return "tikz";
+  case EPSLATEX:
+    return "epslatex";
+  case DUMB:
+    return "dumb";
+  case CANVAS:
+    return "canvas";
+  default:
+    return "x11";
+  }
+}
+
+struct TerminalSettings {
+  struct Resolution {
+    unsigned int x, y;
+  };
+
+  TerminalType type = X11;
+  size_t samples = 1000;
+  Resolution resolution = {.x = 1920, .y = 1080};
+  bool interactive = false;
+  unsigned short number = 0;
+};
+
 /**
  * Sets the settings regarding gnuplot terminal output.
  * @note At the moment this is just for the qt terminal and all settings are
  * hardcoded.
- * @param terminal_number the number of the terminal instance.
+ * @param terminal datastructure containing all terminal settings.
  */
-inline std::string setTerminal(unsigned short terminal_number) {
+inline std::string setTerminal(const TerminalSettings &terminal) {
   /* TODO: add more terminal settings functionality. */
-  // std::string terminal_type = " qt ";
-  std::string terminal_type = " x11 ";
-  std::string terminal_size = "  1336,768 ";
-
-  size_t total_samples = 1000U;
 
   std::ostringstream oss;
 
@@ -321,13 +374,14 @@ inline std::string setTerminal(unsigned short terminal_number) {
   oss << " set mouse\n";
 
   /* Set the number of samples that should represent a plot. */
-  oss << "set samples " << total_samples << "\n";
+  oss << "set samples " << terminal.samples << "\n";
 
   /* Set the terminal type and instance number. */
-  oss << " set term " << terminal_type << terminal_number;
+  oss << " set term " << to_string(terminal.type) << " enhanced "
+      << terminal.number;
 
   /* Set the terminal size. */
-  oss << " size " << terminal_size;
+  oss << " size " << terminal.resolution.x << "," << terminal.resolution.y;
 
   /* When replotting or updating the graph, do not automatically bring the plot
    * window to the front (raise it above other windows)*/
