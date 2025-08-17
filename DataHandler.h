@@ -78,6 +78,8 @@ public:
       const unsigned long seed = SimulationDefaults::kSeed);
 
   std::string getDatasetName();
+  std::string getDataExtractionDirectory();
+  std::string getDataInferenceDirectory();
 
   std::vector<Robot> &getRobots();
   const std::vector<Landmark> &getLandmarks() const;
