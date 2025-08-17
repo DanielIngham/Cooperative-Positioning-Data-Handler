@@ -4,6 +4,8 @@
  * @author Daniel Ingham
  * @date 2025-08-08
  */
+#include <filesystem>
+#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -350,12 +352,35 @@ inline std::string to_string(TerminalType type) {
   }
 }
 
+inline std::string getExtension(TerminalType type) {
+  switch (type) {
+  case PNG:
+    return ".png";
+  case JPEG:
+    return ".jpeg";
+  case GIF:
+    return ".gif";
+  case PDF:
+    return ".pdf";
+  case SVG:
+    return ".svg";
+  case TIKZ:
+    return ".tex";
+  case EPSLATEX:
+    return ".eps";
+  default:
+    std::cerr << "\033[1;32m" << "[ERROR]" << "\033[0m "
+              << " File type does not exist" << std::endl;
+    return "";
+  }
+}
+
 struct TerminalSettings {
   struct Resolution {
     unsigned int x, y;
   };
 
-  TerminalType type = X11;
+  TerminalType type = WXT;
   size_t samples = 1000;
   Resolution resolution = {.x = 1920, .y = 1080};
   bool interactive = false;
@@ -380,15 +405,23 @@ inline std::string setTerminal(const TerminalSettings &terminal) {
   oss << "set samples " << terminal.samples << "\n";
 
   /* Set the terminal type and instance number. */
-  oss << " set term " << to_string(terminal.type) << " enhanced "
-      << terminal.number;
+  oss << " set term " << to_string(terminal.type) << " enhanced ";
 
   /* Set the terminal size. */
   oss << " size " << terminal.resolution.x << "," << terminal.resolution.y;
 
-  /* When replotting or updating the graph, do not automatically bring the plot
-   * window to the front (raise it above other windows)*/
-  oss << " noraise\n";
+  /* The terminal number is only required if a terminal is being used and not if
+   * the plot is being saved to a file format (i.e. png or pdf).  */
+  switch (terminal.type) {
+  case X11:
+  case QT:
+  case WXT:
+    /* When replotting or updating the graph, do not automatically bring the
+     * plot window to the front (raise it above other windows)*/
+    oss << " " << terminal.number << " noraise\n";
+  default:
+    break;
+  }
 
   oss << '\n';
 
@@ -442,5 +475,43 @@ inline std::string setTitle(const std::string title) {
 }
 
 inline std::string unsetTitle() { return "unset title\n"; }
+
+/**
+ * Sets the output for gnuplot to save plots.
+ * @param filename The full path the directory where the file should be saved.
+ * @param terminal The gnuplot terminal settings.
+ */
+inline std::string setOutput(std::string filename, TerminalSettings terminal) {
+  switch (terminal.type) {
+  case X11:
+  case QT:
+  case WXT:
+    return "";
+  default:
+    break;
+  }
+
+  /* Check for the existence of the parent directory for the file name, and
+   * create it it does not exists */
+  std::filesystem::path output_file_path = filename;
+
+  std::string parent_directory = output_file_path.parent_path().string();
+
+  if (!std::filesystem::exists(parent_directory)) {
+    std::filesystem::create_directories(parent_directory);
+  }
+
+  /* Set the output of for gnuplot. */
+  std::ostringstream oss;
+  oss << "set output ";
+
+  oss << "'" << filename;
+
+  oss << getExtension(terminal.type);
+
+  oss << "'\n";
+
+  return oss.str();
+}
 
 } // namespace gnuplot
