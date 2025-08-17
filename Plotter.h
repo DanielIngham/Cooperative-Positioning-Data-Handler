@@ -43,6 +43,7 @@ public:
 
   void demo_animation();
 
+  void setTerminal(gnuplot::TerminalSettings);
   void plotGroundruthStates(std::initializer_list<PlotType> plots,
                             unsigned short robot_id = 0);
   void plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
@@ -86,7 +87,14 @@ private:
   /** Reference to a data handler instance */
   Handler &data_;
 
+  /** Name of the dataset that the datahandler is using. */
   std::string dataset_name_;
+
+  /** Directory where the data extraction plots are saved. */
+  std::string data_extraction_directory_;
+
+  /** Directory where the data inference plots are saved. */
+  std::string data_infernce_directory_;
 
   /** Total number of synced data points in the dataset. */
   size_t data_points_;

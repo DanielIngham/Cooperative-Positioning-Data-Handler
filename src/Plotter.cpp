@@ -35,15 +35,25 @@ Plotter::Plotter(Handler &data)
          "Data set not set. Set the dataset in the Handler before attempting "
          "to create an instance of the plotter.");
 
-  std::vector<Robot> &input_robot_data = data_.getRobots();
-  terminal_.type = gnuplot::TerminalType::WXT;
   binary_robot_data_.resize(total_robots_);
+
+  data_extraction_directory_ = data_.getDataExtractionDirectory();
+  data_infernce_directory_ = data_.getDataInferenceDirectory();
 }
 
 /**
  * Default destructor.
  */
 Plotter::~Plotter() {}
+
+/**
+ * Sets the terminal to be used by gnuplot.
+ * @param terminal gnuplot terminal structure containing all gnuplot terminal
+ * settings.
+ */
+void Plotter::setTerminal(gnuplot::TerminalSettings terminal) {
+  terminal_ = terminal;
+}
 
 /**
  * Converts the robots Pose data extracted by the Handler into the binary format
@@ -435,6 +445,9 @@ void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
 
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
+
+    std::string output_file = data_extraction_directory_ + title;
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
     gnuplot_ << gnuplot::grid();
 
     PlotList plots;
@@ -491,6 +504,9 @@ void Plotter::plotGroundruthStates(std::initializer_list<PlotType> plots,
 
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
+
+    std::string output_file = data_extraction_directory_ + title;
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
     gnuplot_ << gnuplot::grid();
     gnuplot_ << gnuplot::setMultiplot(3, 1);
@@ -601,6 +617,9 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
 
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
+
+    std::string output_file = data_extraction_directory_ + title;
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
     gnuplot_ << gnuplot::setMultiplot(2, 1);
     gnuplot_ << gnuplot::grid();
@@ -713,6 +732,9 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
 
+    std::string output_file = data_extraction_directory_ + title;
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
     gnuplot_ << gnuplot::setMultiplot(2, 1);
     gnuplot_ << gnuplot::grid();
 
@@ -797,6 +819,9 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
 
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
+
+    std::string output_file = data_extraction_directory_ + title;
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
     gnuplot_ << gnuplot::setMultiplot(2, 1);
     gnuplot_ << gnuplot::grid();
@@ -904,6 +929,9 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
 
+    std::string output_file = data_extraction_directory_ + title;
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
     gnuplot_ << gnuplot::setTitle(title);
 
     gnuplot_ << gnuplot::setMultiplot(2, 1);
@@ -927,6 +955,7 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
                         << std::pow(sigma, 2) << "))";
 
     range_pdf.emplace_back(range_gaussian_plot.str());
+    range_pdf.back().settings.math_expression = true;
 
     PlotList bearing_pdf;
 
@@ -946,6 +975,7 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
                           << std::pow(sigma, 2) << "))";
 
     bearing_pdf.emplace_back(bearing_gaussian_plot.str());
+    bearing_pdf.back().settings.math_expression = true;
 
     plot(range_pdf, range_axis);
     plot(bearing_pdf, bearing_axis);
