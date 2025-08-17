@@ -2076,6 +2076,22 @@ std::string Handler::getDatasetName() {
   return dataset_path.filename().string();
 }
 
+std::string Handler::getDataExtractionDirectory() {
+  assert(data_extraction_directory_ != "" &&
+         "Data extraction directory not set by Data "
+         "handler.");
+
+  return data_extraction_directory_;
+}
+
+std::string Handler::getDataInferenceDirectory() {
+  assert(data_inference_directory_ != "" &&
+         "Data inference directory not set by Data "
+         "handler.");
+
+  return data_inference_directory_;
+}
+
 /**
  * @brief Searches trough the list of barcodes to find the index ID of the
  * robot or landmark.
