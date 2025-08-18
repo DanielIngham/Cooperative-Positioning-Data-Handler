@@ -44,10 +44,15 @@ public:
   void demo_animation();
 
   void setTerminal(gnuplot::TerminalSettings);
-  void plotGroundruthStates(std::initializer_list<PlotType> plots,
-                            unsigned short robot_id = 0);
+
+  void plotPoses(std::initializer_list<PlotType> plots,
+                 unsigned short robot_id = 0);
+
+  void plotPoseRMSE(unsigned short robot_id = 0);
+
   void plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
                                 unsigned short robot_id = 0);
+
   void plotOdometry(std::initializer_list<PlotType> plots,
                     unsigned short robot_id = 0);
 

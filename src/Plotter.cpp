@@ -486,8 +486,9 @@ void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
  * @note If the parameter is left empty or set to 0, then all robots data will
  * be plotted in individual terminals.
  */
-void Plotter::plotGroundruthStates(std::initializer_list<PlotType> plots,
-                                   unsigned short robot_id) {
+void Plotter::plotPoses(std::initializer_list<PlotType> plots,
+                        unsigned short robot_id) {
+
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
@@ -540,6 +541,7 @@ void Plotter::plotGroundruthStates(std::initializer_list<PlotType> plots,
         break;
 
       case SYNCED:
+        binariseRobotInferenceData(id);
         plot_type = binary_robot_data_[id].pose.synced;
         plot_title = "Synced";
         break;
@@ -588,6 +590,10 @@ void Plotter::plotGroundruthStates(std::initializer_list<PlotType> plots,
     gnuplot_.flush();
   }
 }
+/**
+ *
+ */
+void plotPoseRMSE(unsigned short robot_id = 0) {}
 
 /**
  * Plots the odometry inputs that each vehicle recieved through a run in the
@@ -957,6 +963,7 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
     range_pdf.emplace_back(range_gaussian_plot.str());
     range_pdf.back().settings.math_expression = true;
 
+    /* Add bearing PDF */
     PlotList bearing_pdf;
 
     bearing_pdf.emplace_back(binary_robot_data_[id].bearing_pdf.filename,
@@ -966,6 +973,7 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
     bearing_pdf.back().settings.box_width = 2;
     bearing_pdf.back().settings.style = gnuplot::BOXES;
 
+    /* Plot Gaussian distribution over top of PDF. */
     sigma = std::sqrt(robots[id].bearing_error.variance);
     mu = robots[id].bearing_error.mean;
 
@@ -979,6 +987,7 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
 
     plot(range_pdf, range_axis);
     plot(bearing_pdf, bearing_axis);
+
     gnuplot_ << gnuplot::unsetMultiplot();
     gnuplot_.flush();
   }
