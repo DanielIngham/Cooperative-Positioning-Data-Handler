@@ -50,8 +50,8 @@ public:
 
   void plotPoseRMSE(unsigned short robot_id = 0);
 
-  void plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
-                                unsigned short robot_id = 0);
+  void plotTrajectory(std::initializer_list<PlotType> plots,
+                      unsigned short robot_id = 0);
 
   void plotOdometry(std::initializer_list<PlotType> plots,
                     unsigned short robot_id = 0);

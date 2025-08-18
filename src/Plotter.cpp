@@ -103,9 +103,9 @@ void Plotter::binariseRobotPoseData(std::initializer_list<PlotType> plots,
         break;
 
       case ERROR:
-        poses = &input_robot_data[id].synced.states;
-        filename = &binary_robot_data_[id].pose.synced;
-        *filename = "Synced_";
+        poses = &input_robot_data[id].error.states;
+        filename = &binary_robot_data_[id].pose.error;
+        *filename = "Error_";
         break;
 
       default:
@@ -406,8 +406,8 @@ void Plotter::demo_animation() {
  * @param robot_id Identifier of the robot whose data you want to plot. If the
  * value is 0, then all robots data is plotted.
  */
-void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
-                                       unsigned short robot_id) {
+void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
+                             unsigned short robot_id) {
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
