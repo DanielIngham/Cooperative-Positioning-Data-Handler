@@ -238,11 +238,11 @@ private:
 
   void plot(const PlotList &, const gnuplot::AxisSettings &);
 
-  void binariseRobotPoseData(unsigned short);
-  void binariseRobotInferenceData(unsigned short);
+  void binariseRobotPoseData(std::initializer_list<PlotType>, unsigned short);
   void binariseLandmarkData();
-  void binariseOdometryData(unsigned short);
-  void binariseMeasurementData(unsigned short);
+  void binariseOdometryData(std::initializer_list<PlotType>, unsigned short);
+  void binariseMeasurementData(std::initializer_list<PlotType>, unsigned short);
+
   void binariseOdometryPDF(unsigned short, const double);
   void binariseMeasurementPDF(unsigned short, const double);
 

@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <initializer_list>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -62,7 +63,9 @@ void Plotter::setTerminal(gnuplot::TerminalSettings terminal) {
  * @param robot_id ID number of the robot whose plot the user wants to see.
  * @note If the ID number is 0, all robot plots will be shown.
  */
-void Plotter::binariseRobotPoseData(unsigned short robot_id) {
+void Plotter::binariseRobotPoseData(std::initializer_list<PlotType> plots,
+                                    unsigned short robot_id) {
+
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Robot ID provided is not valid: " +
                              std::to_string(robot_id));
@@ -75,28 +78,45 @@ void Plotter::binariseRobotPoseData(unsigned short robot_id) {
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   for (; id < end_point; ++id) {
+    for (const PlotType &plot : plots) {
+      const std::vector<Robot::State> *poses;
+      std::string *filename;
+      switch (plot) {
 
-    /* Groundtruth State Data. */
-    const std::vector<Robot::State> &groundtruth_states =
-        input_robot_data[id].groundtruth.states;
+      case GROUNDTRUTH:
+        poses = &input_robot_data[id].groundtruth.states;
+        filename = &binary_robot_data_[id].pose.groundtruth;
+        *filename = "Groundtruth_";
+        break;
 
-    std::string &filename = binary_robot_data_[id].pose.groundtruth;
+      case RAW:
+        poses = &input_robot_data[id].raw.states;
+        filename = &binary_robot_data_[id].pose.raw;
+        *filename = "Raw_";
+        break;
 
-    filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) +
-               "_groundtruth" + "_pose";
+        /* NOTE: The synced data corresponds to the inference data. */
+      case SYNCED:
+        poses = &input_robot_data[id].synced.states;
+        filename = &binary_robot_data_[id].pose.synced;
+        *filename = "Synced_";
+        break;
 
-    write_binary(filename, groundtruth_states);
+      case ERROR:
+        poses = &input_robot_data[id].synced.states;
+        filename = &binary_robot_data_[id].pose.synced;
+        *filename = "Synced_";
+        break;
 
-    /* Add Raw . */
-    const std::vector<Robot::State> &raw_states =
-        input_robot_data[id].raw.states;
+      default:
+        throw std::runtime_error("Plot type not known");
+      }
 
-    std::string &raw_filename = binary_robot_data_[id].pose.raw;
+      *filename +=
+          dataset_name_ + "_Robot_" + std::to_string(id + 1) + +"_poses";
 
-    raw_filename =
-        dataset_name_ + "_Robot_" + std::to_string(id + 1) + "_raw" + "_pose";
-
-    write_binary(raw_filename, raw_states);
+      write_binary(*filename, *poses);
+    }
   }
 }
 
@@ -105,7 +125,8 @@ void Plotter::binariseRobotPoseData(unsigned short robot_id) {
  * @param robot_id ID number of the robot whose plot the user wants to see.
  * @note If the ID number is 0, all robot plots will be shown.
  */
-void Plotter::binariseOdometryData(unsigned short robot_id) {
+void Plotter::binariseOdometryData(std::initializer_list<PlotType> plots,
+                                   unsigned short robot_id) {
 
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Robot ID provided is not valid: " +
@@ -118,47 +139,44 @@ void Plotter::binariseOdometryData(unsigned short robot_id) {
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   for (; id < end_point; ++id) {
+    const std::vector<Robot::Odometry> *odometry;
+    std::string *filename;
+    for (const PlotType &plot : plots) {
 
-    /* Binarise synced odometry. */
-    const std::vector<Robot::Odometry> &synced_odometry =
-        input_robot_data[id].synced.odometry;
+      switch (plot) {
+      case GROUNDTRUTH:
+        odometry = &input_robot_data[id].groundtruth.odometry;
+        filename = &binary_robot_data_[id].odometry.groundtruth;
+        *filename = "Groundtruth_";
+        break;
 
-    binary_robot_data_[id].odometry.synced = dataset_name_ + "_Robot_" +
-                                             std::to_string(id + 1) +
-                                             "_synced" + "_odometry";
+      case RAW:
+        odometry = &input_robot_data[id].raw.odometry;
+        filename = &binary_robot_data_[id].odometry.raw;
+        *filename = "Raw_";
+        break;
 
-    write_binary(binary_robot_data_[id].odometry.synced, synced_odometry);
+      case SYNCED:
+        odometry = &input_robot_data[id].synced.odometry;
+        filename = &binary_robot_data_[id].odometry.synced;
+        *filename = "Synced_";
+        break;
 
-    /* Binarise groundtruth odometry. */
-    const std::vector<Robot::Odometry> &groundtruth_odometry =
-        input_robot_data[id].groundtruth.odometry;
+      case ERROR:
+        odometry = &input_robot_data[id].error.odometry;
+        filename = &binary_robot_data_[id].odometry.error;
+        *filename = "Error_";
+        break;
 
-    binary_robot_data_[id].odometry.groundtruth = dataset_name_ + "_Robot_" +
-                                                  std::to_string(id + 1) +
-                                                  "_groundtruth" + "_odometry";
+      default:
+        throw std::runtime_error("Plot type unknown");
+      }
 
-    write_binary(binary_robot_data_[id].odometry.groundtruth,
-                 groundtruth_odometry);
+      *filename +=
+          dataset_name_ + "_Robot_" + std::to_string(id + 1) + +"_odometry";
 
-    /* Binarise raw odometry. */
-    const std::vector<Robot::Odometry> &raw_odometry =
-        input_robot_data[id].raw.odometry;
-
-    binary_robot_data_[id].odometry.raw = dataset_name_ + "_Robot_" +
-                                          std::to_string(id + 1) + "_raw" +
-                                          "_odometry";
-
-    write_binary(binary_robot_data_[id].odometry.raw, raw_odometry);
-
-    /* Binarise error odometry. */
-    const std::vector<Robot::Odometry> &error_odometry =
-        input_robot_data[id].error.odometry;
-
-    binary_robot_data_[id].odometry.error = dataset_name_ + "_Robot_" +
-                                            std::to_string(id + 1) + "_error" +
-                                            "_odometry";
-
-    write_binary(binary_robot_data_[id].odometry.error, error_odometry);
+      write_binary(*filename, *odometry);
+    }
   }
 }
 
@@ -167,7 +185,9 @@ void Plotter::binariseOdometryData(unsigned short robot_id) {
  * @param robot_id ID number of the robot whose plot the user wants to see.
  * @note If the ID number is 0, all robot plots will be shown.
  */
-void Plotter::binariseMeasurementData(unsigned short robot_id) {
+void Plotter::binariseMeasurementData(std::initializer_list<PlotType> plots,
+                                      unsigned short robot_id) {
+
   std::vector<Robot> &output_robot_data = data_.getRobots();
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
@@ -175,50 +195,47 @@ void Plotter::binariseMeasurementData(unsigned short robot_id) {
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   for (; id < end_point; ++id) {
-    /* Synced measurements. */
-    const std::vector<Robot::Measurement> &synced_measurements =
-        output_robot_data[id].synced.measurements;
 
-    std::string &synced_filename = binary_robot_data_[id].measurement.synced;
+    for (const PlotType &plot : plots) {
 
-    synced_filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) +
-                      "_synced" + "_measurement";
+      const std::vector<Robot::Measurement> *measurements;
+      std::string *filename;
 
-    write_binary(synced_filename, synced_measurements);
+      switch (plot) {
+      case GROUNDTRUTH:
+        measurements = &output_robot_data[id].groundtruth.measurements;
+        filename = &binary_robot_data_[id].measurement.groundtruth;
+        *filename = "Groundtruth_";
+        break;
 
-    /* Groundtruth measurements. */
-    const std::vector<Robot::Measurement> &groundtruth_measurements =
-        output_robot_data[id].groundtruth.measurements;
+      case RAW:
+        measurements = &output_robot_data[id].raw.measurements;
+        filename = &binary_robot_data_[id].measurement.raw;
+        *filename = "Raw_";
+        break;
 
-    std::string &groundtruth_filename =
-        binary_robot_data_[id].measurement.groundtruth;
+      case SYNCED:
+        measurements = &output_robot_data[id].synced.measurements;
+        filename = &binary_robot_data_[id].measurement.synced;
+        *filename = "Synced_";
+        break;
 
-    groundtruth_filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) +
-                           "_groundtruth" + "_measurement";
+      case ERROR:
+        measurements = &output_robot_data[id].error.measurements;
+        filename = &binary_robot_data_[id].measurement.error;
+        *filename = "Error_";
+        break;
 
-    write_binary(groundtruth_filename, groundtruth_measurements);
+      default:
 
-    /* Raw measurement */
-    const std::vector<Robot::Measurement> &raw_measurements =
-        output_robot_data[id].raw.measurements;
+        break;
+      }
 
-    std::string &raw_filename = binary_robot_data_[id].measurement.raw;
+      *filename +=
+          dataset_name_ + "_Robot_" + std::to_string(id + 1) + "_measurement";
 
-    raw_filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) + "_raw" +
-                   "_measurement";
-
-    write_binary(raw_filename, raw_measurements);
-
-    /* Error measurement */
-    const std::vector<Robot::Measurement> &error_measurements =
-        output_robot_data[id].error.measurements;
-
-    std::string &error_filename = binary_robot_data_[id].measurement.error;
-
-    error_filename = dataset_name_ + "_Robot_" + std::to_string(id + 1) +
-                     "_error" + "_measurement";
-
-    write_binary(error_filename, error_measurements);
+      write_binary(*filename, *measurements);
+    }
   }
 }
 
@@ -340,43 +357,6 @@ void Plotter::binariseOdometryPDF(unsigned short robot_id,
 }
 
 /**
- * Converts the robot infered pose data into binary files for gnuplot.
- * @param robot_id ID number of the robot whose plot the user wants to see.
- * @note If the ID number is 0, all robot plots will be shown.
- */
-void Plotter::binariseRobotInferenceData(unsigned short robot_id) {
-
-  std::vector<Robot> &output_robot_data = data_.getRobots();
-
-  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
-
-  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
-
-  for (; id < end_point; ++id) {
-
-    /* Inference Data */
-    const std::vector<Robot::State> &estimated_states =
-        output_robot_data[id].synced.states;
-
-    binary_robot_data_[id].pose.synced = dataset_name_ + "_Robot_" +
-                                         std::to_string(id + 1) + "_estimated" +
-                                         "_odometry";
-
-    write_binary(binary_robot_data_[id].pose.synced, estimated_states);
-
-    /* Error Data */
-    const std::vector<Robot::State> &error_states =
-        output_robot_data[id].error.states;
-
-    binary_robot_data_[id].pose.error = dataset_name_ + "_Robot_" +
-                                        std::to_string(id + 1) + "_error" +
-                                        "_odometry";
-
-    write_binary(binary_robot_data_[id].pose.error, error_states);
-  }
-}
-
-/**
  * Converts the landmark position data structure into a binary file for gnuplt.
  */
 void Plotter::binariseLandmarkData() {
@@ -433,7 +413,7 @@ void Plotter::plotGroundruthTrajectory(std::initializer_list<PlotType> plots,
   }
 
   binariseLandmarkData();
-  binariseRobotPoseData(robot_id);
+  binariseRobotPoseData(plots, robot_id);
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
@@ -493,7 +473,7 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
-  binariseRobotPoseData(robot_id);
+  binariseRobotPoseData(plots, robot_id);
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
@@ -541,7 +521,6 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
         break;
 
       case SYNCED:
-        binariseRobotInferenceData(id);
         plot_type = binary_robot_data_[id].pose.synced;
         plot_title = "Synced";
         break;
@@ -610,7 +589,7 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
-  binariseOdometryData(robot_id);
+  binariseOdometryData(plots, robot_id);
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
@@ -813,7 +792,7 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
-  binariseMeasurementData(robot_id);
+  binariseMeasurementData(plots, robot_id);
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
