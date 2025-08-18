@@ -99,14 +99,6 @@ public:
   void saveExtractedData();
   void saveInferenceData();
 
-  void plotExtractedData(std::string file_type = "");
-  void plotPDFs(std::string file_type = "");
-  void plotError(std::string file_type = "");
-  void plotMeasurements(std::string file_type = "");
-  void plotStates(std::string file_type = "");
-
-  void plotInferenceData(std::string file_type = "");
-
 private:
   /**
    * @brief Folder location for the dataset.
