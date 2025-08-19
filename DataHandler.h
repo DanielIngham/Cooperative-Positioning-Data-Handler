@@ -99,6 +99,7 @@ public:
   void saveInferenceData();
 
   void calculateStateError();
+  Robot::State getAverageRMSE();
 
 private:
   /**

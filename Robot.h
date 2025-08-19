@@ -147,8 +147,11 @@ public:
   /** @brief The difference between the ground truth and the synced data */
   RobotData error;
 
+  /** Vector containing the absolute difference between the infered states in
+   * the synced.states vector and the groundtruth.states vector. */
   std::vector<State> absolute_state_error;
 
+  /** Holds the Root Mean Squared Error (RMSE) of each state. */
   State rmse;
 
   /**
@@ -180,6 +183,8 @@ public:
   void calculateSensorErrror(const bool simulation = false);
   void calculateSampleErrorStats();
   void calculateStateError();
+
+  State getRMSE() const;
 
 private:
   unsigned long int calculateMedian(const unsigned long int,

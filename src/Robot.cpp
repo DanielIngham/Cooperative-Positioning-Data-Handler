@@ -10,6 +10,7 @@
 #include <algorithm> // std::sort
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
 #include <iterator>  // std::iterator
 #include <numeric>   // std::accumulate
 #include <stdexcept> // std::runtime_error
@@ -498,4 +499,20 @@ void Robot::calculateStateError() {
   rmse.y = std::sqrt(rmse.y);
   rmse.orientation = std::sqrt(rmse.orientation);
 }
+
+/**
+ * Get the Root Mean Squared Error of the robot.
+ * @returns The calculated Root Mean Squared Error of the robot.
+ * @note The method Robot::calculateStateError needs to be called before this
+ * function.
+ */
+Robot::State Robot::getRMSE() const {
+  if (rmse.x == 0.0 && rmse.y == 0.0 && rmse.orientation == 0.0) {
+    std::cout << "\033[1;33m" << "[WARNING]" << "\033[0m "
+              << "The RMSE of Robot " << id << " does not seem to be set.";
+  }
+
+  return rmse;
+}
+
 } // namespace Data

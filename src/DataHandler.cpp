@@ -1808,6 +1808,13 @@ const std::vector<unsigned short int> &Handler::getBarcodes() const {
   return barcodes_;
 }
 
+/**
+ * This function calculates the difference between the values of the synced
+ * state vector and the groundtruth vector. Additionally, it also calculates the
+ * absolute value of the difference as well as the Root Mean Squared Error
+ * (RMSE).
+ * @brief Calculates the state error for the inferened robot poses.
+ */
 void Handler::calculateStateError() {
   /* Check if the synced data has been set for the robot */
   for (Robot &robot : robots_) {
@@ -1828,6 +1835,27 @@ void Handler::calculateStateError() {
 
     robot.calculateStateError();
   }
+}
+
+/**
+ * Returns the average RMSE of all the robots in the data set.
+ */
+Robot::State Handler::getAverageRMSE() {
+  Robot::State average_RMSE;
+
+  for (const Robot &robot : robots_) {
+    const Robot::State &robot_RMSE = robot.getRMSE();
+
+    average_RMSE.x += robot_RMSE.x;
+    average_RMSE.y += robot_RMSE.y;
+    average_RMSE.orientation += robot_RMSE.orientation;
+  }
+
+  average_RMSE.x *= 1.0 / total_robots_;
+  average_RMSE.y *= 1.0 / total_robots_;
+  average_RMSE.orientation *= 1.0 / total_robots_;
+
+  return average_RMSE;
 }
 
 /**
