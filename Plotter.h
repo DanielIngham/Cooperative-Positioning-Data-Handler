@@ -39,6 +39,7 @@ public:
     RAW,         ///< Raw data extracted from the dataset.
     GROUNDTRUTH, ///< Groundtruth data extracted or calculated from the dataset.
     ERROR,       ///< Difference between the groundtruth and the synced data.
+    ABSOLUTE_ERROR ///< Absolute value of the error.
   };
 
   void demo_animation();
@@ -231,6 +232,8 @@ private:
     // Types measurement{.binary_format = "'%double%double%double'"};
 
     Types pose{.binary_format = "%double%double%double%double"};
+
+    std::string absolute_state_error; ///< Absolute value of error data.
   };
 
   /** Filename of the binary landmark data. */

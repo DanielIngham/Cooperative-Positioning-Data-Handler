@@ -110,6 +110,12 @@ void Plotter::binariseRobotPoseData(std::initializer_list<PlotType> plots,
         *filename = "Error_";
         break;
 
+      case ABSOLUTE_ERROR:
+        poses = &input_robot_data[id].absolute_state_error;
+        filename = &binary_robot_data_[id].absolute_state_error;
+        *filename = "Absolute_Error_";
+        break;
+
       default:
         throw std::runtime_error("Plot type not known");
       }
@@ -673,6 +679,11 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
 
       case ERROR:
         plot_type = binary_robot_data_[id].pose.error;
+        plot_title = "Error";
+        break;
+
+      case ABSOLUTE_ERROR:
+        plot_type = binary_robot_data_[id].absolute_state_error;
         plot_title = "Error";
         break;
 
