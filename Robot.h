@@ -147,6 +147,10 @@ public:
   /** @brief The difference between the ground truth and the synced data */
   RobotData error;
 
+  std::vector<State> absolute_state_error;
+
+  State rmse;
+
   /**
    * @brief Error statistics used by filters for inference.
    * @details It is often assumed that all errors are caussed by white Gaussian

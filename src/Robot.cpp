@@ -8,6 +8,8 @@
  */
 #include "Robot.h"
 #include <algorithm> // std::sort
+#include <cmath>
+#include <cstdlib>
 #include <iterator>  // std::iterator
 #include <numeric>   // std::accumulate
 #include <stdexcept> // std::runtime_error
@@ -452,10 +454,24 @@ void Robot::calculateStateError() {
    * recalculate them. */
   if (!this->error.states.empty()) {
     this->error.states.clear();
+    this->absolute_state_error.clear();
   }
 
+  const size_t total_data_points = this->synced.states.size();
+
+  this->error.states.reserve(total_data_points);
+  this->absolute_state_error.reserve(total_data_points);
+
   /* Calculate the error between the groundtruth and the states. */
-  for (unsigned long k = 0; k < this->synced.states.size(); k++) {
+  for (unsigned long k = 0; k < total_data_points; k++) {
+    const double &time = this->groundtruth.states[k].time;
+
+    const double x_error =
+        this->groundtruth.states[k].x - this->synced.states[k].x;
+
+    const double y_error =
+        this->groundtruth.states[k].y - this->synced.states[k].y;
+
     double orientation_error = this->groundtruth.states[k].orientation -
                                this->synced.states[k].orientation;
 
@@ -463,11 +479,23 @@ void Robot::calculateStateError() {
     orientation_error -=
         2.0 * M_PI * floor((orientation_error + M_PI) / (2.0 * M_PI));
 
-    this->error.states.push_back(
-        State(this->groundtruth.states[k].time,
-              this->groundtruth.states[k].x - this->synced.states[k].x,
-              this->groundtruth.states[k].y - this->synced.states[k].y,
-              orientation_error));
+    rmse.x += x_error * x_error;
+    rmse.y += y_error * y_error;
+    rmse.orientation += orientation_error * orientation_error;
+
+    this->error.states.emplace_back(time, x_error, y_error, orientation_error);
+
+    this->absolute_state_error.emplace_back(time, std::abs(x_error),
+                                            std::abs(y_error),
+                                            std::abs(orientation_error));
   }
+
+  rmse.x *= 1.0 / total_data_points;
+  rmse.y *= 1.0 / total_data_points;
+  rmse.orientation *= 1.0 / total_data_points;
+
+  rmse.x = std::sqrt(rmse.x);
+  rmse.y = std::sqrt(rmse.y);
+  rmse.orientation = std::sqrt(rmse.orientation);
 }
 } // namespace Data
