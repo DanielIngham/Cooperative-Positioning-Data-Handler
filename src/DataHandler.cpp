@@ -1813,16 +1813,17 @@ void Handler::calculateStateError() {
   for (Robot &robot : robots_) {
     bool pose_set = false;
 
-    // for (const Robot::State &pose : robot.synced.states) {
-    //   if (pose.x != 0.0 || pose.y != 0.0 && pose.orientation != 0.0) {
-    //     pose_set = true;
-    //     break;
-    //   }
-    // }
+    for (const Robot::State &pose : robot.synced.states) {
+      if (pose.x != 0.0 || pose.y != 0.0 && pose.orientation != 0.0) {
+        pose_set = true;
+        break;
+      }
+    }
 
     if (!pose_set) {
-      throw std::runtime_error("Synced poses for Robot " +
-                               std::to_string(robot.id) + " not set");
+      std::cout << "\033[1;33m" << "[WARNING]" << "\033[0m "
+                << "The synced states of " << "Robot " << robot.id
+                << " do not seem to be set." << std::endl;
     }
 
     robot.calculateStateError();
