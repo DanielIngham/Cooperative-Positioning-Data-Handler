@@ -1,7 +1,9 @@
 #include "Plotter.h"
 
+#include <boost/current_function.hpp>
 #include <cassert>
 #include <chrono>
+#include <cmath>
 #include <initializer_list>
 #include <iostream>
 #include <sstream>
@@ -239,6 +241,74 @@ void Plotter::binariseMeasurementData(std::initializer_list<PlotType> plots,
   }
 }
 
+void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
+                                         unsigned short robot_id) {
+
+  std::vector<Robot> &output_robot_data = data_.getRobots();
+
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  size_t total_datapoints = data_.getNumberOfSyncedDatapoints();
+
+  for (; id < end_point; ++id) {
+
+    /* Prepend temporary directory to filename. */
+    std::string *filename = &binary_robot_data_[id].measurement_vector.filename;
+
+    *filename =
+        "/tmp/Robot_" + std::to_string(id) + "measurment_vectors" + ".bin";
+
+    std::ofstream fout(*filename, std::ios::binary);
+
+    if (!fout) {
+      throw std::runtime_error("Could not open temporary file");
+    }
+
+    /* Loop through each measurement. */
+    for (const Robot::Measurement &measurement :
+         output_robot_data[id].groundtruth.measurements) {
+
+      const Robot::State *pose;
+
+      /* Find the index in the ground truth that corresponds to the measurement
+       * time. */
+      size_t k = 0;
+      for (; k < total_datapoints; ++k) {
+        pose = &output_robot_data[id].groundtruth.states[k];
+
+        if (std::round((pose->time - measurement.time) * 10000) / 10000 ==
+            0.0) {
+          break;
+        }
+      }
+
+      for (unsigned int i = 0; i < measurement.subjects.size(); i++) {
+
+        /* NOTE: Compass coordinates. Sin and cos are switch on purpose. */
+        double y = measurement.ranges[i] *
+                   std::sin(measurement.bearings[i] + pose->orientation);
+        double x = measurement.ranges[i] *
+                   std::cos(measurement.bearings[i] + pose->orientation);
+
+        /* Convert odometry data to binary. */
+
+        fout.write(reinterpret_cast<const char *>(&pose->x), sizeof(double));
+        fout.write(reinterpret_cast<const char *>(&pose->y), sizeof(double));
+        fout.write(reinterpret_cast<const char *>(&x), sizeof(double));
+        fout.write(reinterpret_cast<const char *>(&y), sizeof(double));
+      }
+    }
+    fout.close();
+  }
+
+  // gnuplot_
+  //     << "plot '/tmp/test.bin' binary format='%double%double%double%double' "
+  //        "using 1:2:3:4 with vectors nohead,'/tmp/test.bin'  binary "
+  //        "format='%double%double%double%double' using 1:2\n";
+}
+
 /**
  * Groups the robots measurement error for its range and bearing sensing, and
  * creates a quasi PDF (scaled PMF).
@@ -408,6 +478,7 @@ void Plotter::demo_animation() {
  */
 void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
                              unsigned short robot_id) {
+
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
@@ -445,6 +516,76 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
     plots.back().settings.y = Y_POSITION;
     plots.back().settings.style = gnuplot::PlotStyle::LINES;
     plots.back().settings.title = "Robot Trajectory";
+
+    gnuplot::AxisSettings axis;
+
+    axis.x_label = "x position [m]";
+    axis.y_label = "y position [m]";
+
+    plot(plots, axis);
+
+    gnuplot_ << gnuplot::unsetMultiplot();
+    gnuplot_.flush();
+  }
+}
+
+void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
+                                     unsigned short robot_id) {
+
+  if (robot_id > total_robots_ || robot_id < 0) {
+    throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
+  }
+
+  binariseLandmarkData();
+  binariseRobotPoseData({GROUNDTRUTH}, robot_id);
+  binariseMeasurementVectors(plots, robot_id);
+
+  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+
+  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+
+  for (; id < end_point; ++id) {
+    std::string title =
+        "Robot " + std::to_string(id + 1) + " Measurement Vectors";
+
+    gnuplot_ << gnuplot::setTitle(title);
+
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+
+    std::string output_file = data_extraction_directory_ + title;
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+    gnuplot_ << gnuplot::grid();
+
+    PlotList plots;
+    /* Create the plot for the trajectory of the robots. */
+    plots.emplace_back(binary_robot_data_[id].measurement_vector.filename,
+                       binary_robot_data_[id].measurement_vector.binary_format);
+
+    plots.back().settings.title = "Measurement Vectors";
+    plots.back().settings.style = gnuplot::PlotStyle::VECTORS;
+    plots.back().settings.linecolor = gnuplot::Colour::LIGHT_RED;
+
+    plots.emplace_back(binary_landmark_data_.filename,
+                       binary_landmark_data_.binary_format);
+
+    plots.back().settings.title = "Landmarks";
+    plots.back().settings.style = gnuplot::PlotStyle::POINTS;
+    plots.back().settings.pointtype = gnuplot::PointType::FILLED_PENTAGON;
+    plots.back().settings.pointsize = 4;
+    plots.back().settings.linecolor = gnuplot::Colour::BLACK;
+
+    plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
+                       binary_robot_data_[id].pose.binary_format);
+    plots.back().settings.style = gnuplot::LINES;
+    plots.back().settings.x = X_POSITION;
+    plots.back().settings.y = Y_POSITION;
+    plots.back().settings.linewidth = 2;
+    plots.back().settings.linecolor = gnuplot::Colour::BLACK;
+
+    plots.emplace_back(binary_robot_data_[id].measurement_vector.filename,
+                       binary_robot_data_[id].measurement_vector.binary_format);
+    plots.back().settings.title = "Trajectory";
 
     gnuplot::AxisSettings axis;
 

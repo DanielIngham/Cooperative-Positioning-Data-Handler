@@ -38,26 +38,28 @@ public:
     SYNCED,      ///< Synced data after linear interpolation.
     RAW,         ///< Raw data extracted from the dataset.
     GROUNDTRUTH, ///< Groundtruth data extracted or calculated from the dataset.
-    ERROR        ///< Difference between the groundtruth and the synced data.
+    ERROR,       ///< Difference between the groundtruth and the synced data.
   };
 
   void demo_animation();
 
   void setTerminal(gnuplot::TerminalSettings);
 
-  void plotPoses(std::initializer_list<PlotType> plots,
-                 unsigned short robot_id = 0);
+  void plotPoses(std::initializer_list<PlotType>, unsigned short robot_id = 0);
 
   void plotPoseRMSE(unsigned short robot_id = 0);
 
-  void plotTrajectory(std::initializer_list<PlotType> plots,
+  void plotTrajectory(std::initializer_list<PlotType>,
                       unsigned short robot_id = 0);
 
-  void plotOdometry(std::initializer_list<PlotType> plots,
+  void plotOdometry(std::initializer_list<PlotType>,
                     unsigned short robot_id = 0);
 
-  void plotMeasurements(std::initializer_list<PlotType> plots,
+  void plotMeasurements(std::initializer_list<PlotType>,
                         unsigned short robot_id = 0);
+
+  void plotMeasurementsVector(std::initializer_list<PlotType>,
+                              unsigned short robot_id = 0);
 
   void plotOdometryPDFs(unsigned short robot_id = 0,
                         const double bin_size = 0.001);
@@ -197,7 +199,7 @@ private:
   struct RobotData {
 
     /**
-     * @class PDF
+     * @struct PDF
      * Contains the name and binary format of data file.
      */
     struct PDF {
@@ -205,8 +207,13 @@ private:
       const std::string binary_format = "%double%double%double";
     } forward_velocity_pdf, angular_velocity_pdf, range_pdf, bearing_pdf;
 
+    struct MeasurementVector {
+      std::string filename;
+      const std::string binary_format = "%double%double%double%double";
+    } measurement_vector;
+
     /**
-     * @class PDF
+     * @struct Types
      * Contains the names and binary format of data files associated with the
      * different types of data structures.
      */
@@ -242,6 +249,8 @@ private:
   void binariseLandmarkData();
   void binariseOdometryData(std::initializer_list<PlotType>, unsigned short);
   void binariseMeasurementData(std::initializer_list<PlotType>, unsigned short);
+  void binariseMeasurementVectors(std::initializer_list<PlotType>,
+                                  unsigned short);
 
   void binariseOdometryPDF(unsigned short, const double);
   void binariseMeasurementPDF(unsigned short, const double);
