@@ -27,7 +27,8 @@ enum PlotStyle {
   BOXES,
   ERRORBARS,
   XERRORBARS,
-  YERRORBARS
+  YERRORBARS,
+  VECTORS
 };
 
 /**
@@ -91,6 +92,14 @@ struct PlotSettings {
 
   /** Element in the tuple that correponds to the y axis data point. */
   unsigned short y = 2;
+
+  /** Element in the tuple that correponds to the second x coordinate when
+   * plotting vectors. */
+  unsigned short x2 = 3;
+
+  /** Element in the tuple that correponds to the second y coordinate when
+   * plotting vectors. */
+  unsigned short y2 = 4;
 
   /** Element in the tuple corresponding to the width of bar type plots. */
   unsigned short box_width = 3;
@@ -160,6 +169,8 @@ inline std::string to_string(PlotStyle style) {
     return "xerrorbars";
   case YERRORBARS:
     return "yerrorbars";
+  case VECTORS:
+    return "vectors";
 
   default:
     return "points";
@@ -237,11 +248,18 @@ inline std::string to_string(PointType type) {
 inline std::string setPlotSettings(const PlotSettings &settings) {
   std::ostringstream oss;
 
-  if (settings.style == BOXES) {
+  switch (settings.style) {
+  case BOXES:
     oss << " using " << settings.x << ":" << settings.y << ":"
         << settings.box_width << " ";
-  } else if (!settings.math_expression) {
-    oss << " using " << settings.x << ":" << settings.y << " ";
+    break;
+  case VECTORS:
+    oss << " using " << settings.x << ":" << settings.y << ":" << settings.x2
+        << ":" << settings.y2 << " ";
+    break;
+  default:
+    if (!settings.math_expression)
+      oss << " using " << settings.x << ":" << settings.y << " ";
   }
 
   oss << "title \"" << settings.title << "\" "
