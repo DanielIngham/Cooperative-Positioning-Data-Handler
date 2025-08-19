@@ -1808,84 +1808,24 @@ const std::vector<unsigned short int> &Handler::getBarcodes() const {
   return barcodes_;
 }
 
-/**
- * @brief Create the directory for the state plots.
- */
-void Handler::createStatePlotDirectory() {
+void Handler::calculateStateError() {
+  /* Check if the synced data has been set for the robot */
+  for (Robot &robot : robots_) {
+    bool pose_set = false;
 
-  std::string plots_directory = data_extraction_directory_ + "plots/";
+    // for (const Robot::State &pose : robot.synced.states) {
+    //   if (pose.x != 0.0 || pose.y != 0.0 && pose.orientation != 0.0) {
+    //     pose_set = true;
+    //     break;
+    //   }
+    // }
 
-  /* Check if the data extraction directory exists */
-  if (!std::filesystem::exists(data_extraction_directory_)) {
-    saveExtractedData();
-  }
-  /* Create the plots directory (if it doesn't exist) */
-  if (!std::filesystem::exists(plots_directory)) {
-    if (!std::filesystem::create_directory(plots_directory)) {
-      throw std::runtime_error("Failed to create directory: " +
-                               plots_directory);
+    if (!pose_set) {
+      throw std::runtime_error("Synced poses for Robot " +
+                               std::to_string(robot.id) + " not set");
     }
-  }
-  /* Create the directory for the state plots. */
-  std::string state_directory = plots_directory + "State";
-  if (!std::filesystem::exists(state_directory)) {
-    if (!std::filesystem::create_directory(state_directory)) {
-      throw("Failed to create directory: " + state_directory);
-    }
-  }
-}
 
-/**
- * @brief Checks Create the directories required for the measurement plots.
- */
-void Handler::createMeasurementPlotDirectories() {
-  std::string plots_directory = data_extraction_directory_ + "plots/";
-
-  /* Check if the data extraction directory exists */
-  if (!std::filesystem::exists(data_extraction_directory_)) {
-    saveExtractedData();
-  }
-  /* Create the plots directory (if it doesn't exist) */
-  if (!std::filesystem::exists(plots_directory)) {
-    if (!std::filesystem::create_directory(plots_directory)) {
-      throw std::runtime_error("Failed to create directory: " +
-                               plots_directory);
-    }
-  }
-  /* Create the Range Error sub-directory (if it doesn't exist) */
-  std::string range_directory = plots_directory + "Range";
-  if (!std::filesystem::exists(range_directory)) {
-    if (!std::filesystem::create_directory(range_directory)) {
-      throw std::runtime_error("Failed to create directory: " +
-                               range_directory);
-    }
-  }
-
-  /* Create the Bearing Error subdirectory (if it doesn't exist) */
-  std::string bearing_directory = plots_directory + "Bearing";
-  if (!std::filesystem::exists(bearing_directory)) {
-    if (!std::filesystem::create_directory(bearing_directory)) {
-      throw std::runtime_error("Failed to create directory: " +
-                               bearing_directory);
-    }
-  }
-
-  /* Create the Forward-Velocity Error subdirectory (if it doesn't exist) */
-  std::string forward_velocity_directory = plots_directory + "Forward-Velocity";
-  if (!std::filesystem::exists(forward_velocity_directory)) {
-    if (!std::filesystem::create_directory(forward_velocity_directory)) {
-      throw std::runtime_error("Failed to create directory: " +
-                               forward_velocity_directory);
-    }
-  }
-
-  /* Create the Forward-Velocity Error subdirectory (if it doesn't exist) */
-  std::string angular_velocity_directory = plots_directory + "Angular-Velocity";
-  if (!std::filesystem::exists(angular_velocity_directory)) {
-    if (!std::filesystem::create_directory(angular_velocity_directory)) {
-      throw std::runtime_error("Failed to create directory: " +
-                               angular_velocity_directory);
-    }
+    robot.calculateStateError();
   }
 }
 

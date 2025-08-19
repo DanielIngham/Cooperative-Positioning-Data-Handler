@@ -95,9 +95,10 @@ public:
 
   const int getID(const unsigned short int) const;
 
-  /* Output of Extracted Data */
   void saveExtractedData();
   void saveInferenceData();
+
+  void calculateStateError();
 
 private:
   /**
@@ -208,9 +209,6 @@ private:
   void calculateGroundtruthMeasurement();
 
   void setNumberOfSyncedMeasurements();
-
-  void createStatePlotDirectory();
-  void createMeasurementPlotDirectories();
 
   /* Save Dataset Extraction Data */
   void saveStateData();
