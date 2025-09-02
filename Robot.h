@@ -28,6 +28,8 @@ public:
 
   /**
    * @brief Numerical identifier for the robot.
+   * @note The handler starts this index at 1. Therefore the first robot has an
+   * ID of 1.
    */
   unsigned short id;
 
