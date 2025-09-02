@@ -4,14 +4,12 @@
 #include <algorithm>
 #include <boost/current_function.hpp>
 #include <cassert>
-#include <chrono>
 #include <cmath>
 #include <initializer_list>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <thread>
 #include <unistd.h>
 #include <vector>
 
@@ -20,7 +18,7 @@
 #endif // REUSE
 
 namespace Data {
-size_t Plotter::terminal_number_ = 0;
+size_t Plotter::terminal_number_{};
 
 /**
  * Constructor for instance of the Plotter which sets its fields using the data
@@ -283,23 +281,21 @@ void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
 
       /* Find the index in the ground truth that corresponds to the measurement
        * time. */
-      size_t k = 0;
-      for (; k < total_datapoints; ++k) {
+      for (size_t k{}; k < total_datapoints; ++k) {
         pose = &output_robot_data[id].groundtruth.states[k];
 
-        if (std::round((pose->time - measurement.time) * 10000) / 10000 ==
-            0.0) {
+        /* Round to 4 decimal places */
+        if (std::round((pose->time - measurement.time) * 1e4) / 1e4 == 0.0) {
           break;
         }
       }
 
-      for (unsigned int i = 0; i < measurement.subjects.size(); i++) {
+      for (unsigned int i{}; i < measurement.subjects.size(); i++) {
 
-        /* NOTE: Compass coordinates. Sin and cos are switch on purpose. */
-        double y = measurement.ranges[i] *
-                   std::sin(measurement.bearings[i] + pose->orientation);
-        double x = measurement.ranges[i] *
-                   std::cos(measurement.bearings[i] + pose->orientation);
+        double y{measurement.ranges[i] *
+                 std::sin(measurement.bearings[i] + pose->orientation)};
+        double x{measurement.ranges[i] *
+                 std::cos(measurement.bearings[i] + pose->orientation)};
 
         /* Convert odometry data to binary. */
 
@@ -311,11 +307,6 @@ void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
     }
     fout.close();
   }
-
-  // gnuplot_
-  //     << "plot '/tmp/test.bin' binary format='%double%double%double%double' "
-  //        "using 1:2:3:4 with vectors nohead,'/tmp/test.bin'  binary "
-  //        "format='%double%double%double%double' using 1:2\n";
 }
 
 /**
@@ -342,13 +333,13 @@ void Plotter::binariseMeasurementPDF(unsigned short robot_id,
     double number_of_measurements = total_measurements_[id];
 
     for (const auto &measurement : robots[id].error.measurements) {
-      for (unsigned short i = 0; i < measurement.subjects.size(); ++i) {
+      for (unsigned short i{}; i < measurement.subjects.size(); ++i) {
 
-        int range_bin_index =
-            static_cast<int>(std::floor(measurement.ranges[i] / bin_size));
+        int range_bin_index{
+            static_cast<int>(std::floor(measurement.ranges[i] / bin_size))};
 
-        int bearing_bin_index =
-            static_cast<int>(std::floor(measurement.bearings[i] / bin_size));
+        int bearing_bin_index{
+            static_cast<int>(std::floor(measurement.bearings[i] / bin_size))};
 
         range_bin_counts[range_bin_index] +=
             1.0 / (number_of_measurements * bin_size);
@@ -530,13 +521,10 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
     };
 
     PlotList plots;
-    PlotList::reverse_iterator current_plot;
 
     plots.emplace_back(binary_landmark_data_.filename,
                        binary_landmark_data_.binary_format);
-
-    current_plot = plots.rbegin();
-    current_plot->settings = {
+    plots.back().settings = {
         .key_label = "Landmarks",
         .style = gnuplot::PlotStyle::POINTS,
     };
@@ -544,9 +532,7 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
     /* Create the plot for the trajectory of the robots. */
     plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
                        binary_robot_data_[id].pose.binary_format());
-
-    current_plot = plots.rbegin();
-    current_plot->settings = {
+    plots.back().settings = {
         .key_label = "Robot Trajectory",
         .x = X_POSITION,
         .y = Y_POSITION,
@@ -588,39 +574,48 @@ void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
     gnuplot_ << gnuplot::grid();
 
     PlotList plots;
-    /* Create the plot for the trajectory of the robots. */
+
     plots.emplace_back(binary_robot_data_[id].measurement_vector.filename,
                        binary_robot_data_[id].measurement_vector.binary_format);
-
-    plots.back().settings.key_label = "Measurement Vectors";
-    plots.back().settings.style = gnuplot::PlotStyle::VECTORS;
-    plots.back().settings.linecolor = gnuplot::Colour::LIGHT_RED;
+    plots.back().settings = {
+        .key_label = "Measurement Vectors",
+        .style = gnuplot::PlotStyle::VECTORS,
+        .linecolor = gnuplot::Colour::LIGHT_RED,
+    };
 
     plots.emplace_back(binary_landmark_data_.filename,
                        binary_landmark_data_.binary_format);
-
-    plots.back().settings.key_label = "Landmarks";
-    plots.back().settings.style = gnuplot::PlotStyle::POINTS;
-    plots.back().settings.pointtype = gnuplot::PointType::FILLED_PENTAGON;
-    plots.back().settings.pointsize = 4;
-    plots.back().settings.linecolor = gnuplot::Colour::BLACK;
+    plots.back().settings = {
+        .key_label = "Landmarks",
+        .style = gnuplot::PlotStyle::POINTS,
+        .pointtype = gnuplot::PointType::FILLED_PENTAGON,
+        .pointsize = 4,
+        .linecolor = gnuplot::Colour::BLACK,
+    };
 
     plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
                        binary_robot_data_[id].pose.binary_format());
-    plots.back().settings.style = gnuplot::LINES;
-    plots.back().settings.x = X_POSITION;
-    plots.back().settings.y = Y_POSITION;
-    plots.back().settings.linewidth = 2;
-    plots.back().settings.linecolor = gnuplot::Colour::BLACK;
+    plots.back().settings = {
+        .x = X_POSITION,
+        .y = Y_POSITION,
+        .style = gnuplot::LINES,
+        .linecolor = gnuplot::Colour::BLACK,
+        .linewidth = 2,
+    };
 
+    /* NOTE: the first two coordinates of the measurement vector correspond to
+     * the instances of the groundtruth trajectory where a measurement was
+     * taken.*/
     plots.emplace_back(binary_robot_data_[id].measurement_vector.filename,
                        binary_robot_data_[id].measurement_vector.binary_format);
-    plots.back().settings.key_label = "Trajectory";
+    plots.back().settings = {
+        .key_label = "Trajectory",
+    };
 
-    gnuplot::AxisSettings axis;
-
-    axis.x_label = "x position [m]";
-    axis.y_label = "y position [m]";
+    gnuplot::AxisSettings axis{
+        .x_label = "x position [m]",
+        .y_label = "y position [m]",
+    };
 
     plot(plots, axis);
 
@@ -645,7 +640,7 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
 
   binariseRobotPoseData(plots, robot_id);
 
-  unsigned short end_point = (robot_id == 0U) ? total_robots_ : robot_id;
+  const unsigned short end_point = (robot_id == 0U) ? total_robots_ : robot_id;
 
   unsigned short id = (robot_id == 0U) ? 0U : robot_id - 1U;
 
@@ -771,7 +766,7 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
 
   binariseOdometryData(plots, robot_id);
 
-  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+  const unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
@@ -879,17 +874,19 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
 
   binariseOdometryPDF(robot_id, bin_size);
 
-  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+  const unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
-  gnuplot::AxisSettings forward_velocity_axis;
-  forward_velocity_axis.x_label = "Error [m/s]";
-  forward_velocity_axis.y_label = "Probability Density [s/m]";
+  gnuplot::AxisSettings forward_velocity_axis{
+      .x_label = "Error [m/s]",
+      .y_label = "Probability Density [s/m]",
+  };
 
-  gnuplot::AxisSettings angular_velocity_axis;
-  angular_velocity_axis.x_label = "Error [rad/s]";
-  angular_velocity_axis.y_label = "Probability Density [s/rad]";
+  gnuplot::AxisSettings angular_velocity_axis{
+      .x_label = "Error [rad/s]",
+      .y_label = "Probability Density [s/rad]",
+  };
 
   for (; id < end_point; ++id) {
     std::string title = "Odometry PDF";
@@ -902,7 +899,8 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
     std::string output_file = data_extraction_directory_ + title;
     gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
-    gnuplot_ << gnuplot::setMultiplot(2, 1);
+    const unsigned short rows{2U}, columns{1U};
+    gnuplot_ << gnuplot::setMultiplot(rows, columns);
     gnuplot_ << gnuplot::grid();
 
     PlotList forward_velocity_pdf;
@@ -910,10 +908,13 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
     forward_velocity_pdf.emplace_back(
         binary_robot_data_[id].forward_velocity_pdf.filename,
         binary_robot_data_[id].forward_velocity_pdf.binary_format);
-    forward_velocity_pdf.back().settings.x = 1;
-    forward_velocity_pdf.back().settings.y = 3;
-    forward_velocity_pdf.back().settings.box_width = 2;
-    forward_velocity_pdf.back().settings.style = gnuplot::BOXES;
+
+    forward_velocity_pdf.back().settings = {
+        .x = 1,
+        .y = 3,
+        .box_width = 2,
+        .style = gnuplot::BOXES,
+    };
 
     double sigma = std::sqrt(robots[id].forward_velocity_error.variance);
     double mu = robots[id].forward_velocity_error.mean;
@@ -925,18 +926,24 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
         << "))";
 
     forward_velocity_pdf.emplace_back(forward_velocity_gaussian_plot.str());
-    forward_velocity_pdf.back().settings.math_expression = true;
-    forward_velocity_pdf.back().settings.style = gnuplot::LINES;
+
+    forward_velocity_pdf.back().settings = {
+        .style = gnuplot::LINES,
+        .math_expression = true,
+    };
 
     PlotList angular_velocity_pdf;
 
     angular_velocity_pdf.emplace_back(
         binary_robot_data_[id].angular_velocity_pdf.filename,
         binary_robot_data_[id].angular_velocity_pdf.binary_format);
-    angular_velocity_pdf.back().settings.x = 1;
-    angular_velocity_pdf.back().settings.y = 3;
-    angular_velocity_pdf.back().settings.box_width = 2;
-    angular_velocity_pdf.back().settings.style = gnuplot::BOXES;
+
+    angular_velocity_pdf.back().settings = {
+        .x = 1,
+        .y = 3,
+        .box_width = 2,
+        .style = gnuplot::BOXES,
+    };
 
     sigma = std::sqrt(robots[id].angular_velocity_error.variance);
     mu = robots[id].angular_velocity_error.mean;
@@ -948,8 +955,10 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
         << "))";
 
     angular_velocity_pdf.emplace_back(forward_velocity_gaussian_plot.str());
-    angular_velocity_pdf.back().settings.math_expression = true;
-    angular_velocity_pdf.back().settings.style = gnuplot::LINES;
+    angular_velocity_pdf.back().settings = {
+        .style = gnuplot::LINES,
+        .math_expression = true,
+    };
 
     plot(forward_velocity_pdf, forward_velocity_axis);
     plot(angular_velocity_pdf, angular_velocity_axis);
@@ -970,6 +979,7 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
  */
 void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
                                unsigned short robot_id) {
+
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
@@ -990,23 +1000,23 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
     std::string output_file = data_extraction_directory_ + title;
     gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
-    gnuplot_ << gnuplot::setMultiplot(2, 1);
+    const unsigned short rows{2U}, columns{2U};
+    gnuplot_ << gnuplot::setMultiplot(rows, columns);
+
     gnuplot_ << gnuplot::grid();
 
-    /* Range Plot */
-    PlotList range_plots;
-
-    /* Angular Plot */
-    PlotList bearing_plots;
+    PlotList range_plots, bearing_plots;
 
     /* Set forward velocity axis labels */
-    gnuplot::AxisSettings range_axis;
-    range_axis.y_label = "Range [m]";
-    range_axis.x_label = "Time [s]";
+    gnuplot::AxisSettings range_axis{
+        .x_label = "Time [s]",
+        .y_label = "Range [m]",
+    };
 
-    gnuplot::AxisSettings bearing_axis;
-    bearing_axis.y_label = "Bearing [rad]";
-    bearing_axis.x_label = "Time [s]";
+    gnuplot::AxisSettings bearing_axis{
+        .x_label = "Time [s]",
+        .y_label = "Bearing [rad]",
+    };
 
     std::string binary_format =
         binary_robot_data_[id].measurement.binary_format();
@@ -1041,14 +1051,18 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
 
       /* Range plot */
       range_plots.emplace_back(plot_type, binary_format);
-      range_plots.back().settings.key_label = plot_title;
-      range_plots.back().settings.x = TIME;
-      range_plots.back().settings.y = RANGE;
+      range_plots.back().settings = {
+          .key_label = plot_title,
+          .x = TIME,
+          .y = RANGE,
+      };
 
       bearing_plots.emplace_back(plot_type, binary_format);
-      bearing_plots.back().settings.key_label = plot_title;
-      bearing_plots.back().settings.x = TIME;
-      bearing_plots.back().settings.y = BEARING;
+      bearing_plots.back().settings = {
+          .key_label = plot_title,
+          .x = TIME,
+          .y = BEARING,
+      };
     }
 
     plot(range_plots, range_axis);
@@ -1080,13 +1094,15 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
 
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
-  gnuplot::AxisSettings range_axis;
-  range_axis.x_label = "Error [m]";
-  range_axis.y_label = "Probability Density [1/m]";
+  gnuplot::AxisSettings range_axis{
+      .x_label = "Error [m]",
+      .y_label = "Probability Density [1/m]",
+  };
 
-  gnuplot::AxisSettings bearing_axis;
-  bearing_axis.x_label = "Error [rad]";
-  bearing_axis.y_label = "Probability Density [1/rad]";
+  gnuplot::AxisSettings bearing_axis{
+      .x_label = "Error [rad]",
+      .y_label = "Probability Density [1/rad]",
+  };
 
   std::vector<Data::Robot> &robots = data_.getRobots();
 
@@ -1101,17 +1117,21 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
 
     gnuplot_ << gnuplot::setTitle(title);
 
-    gnuplot_ << gnuplot::setMultiplot(2, 1);
+    const unsigned short rows{2U}, columns{1U};
+    gnuplot_ << gnuplot::setMultiplot(rows, columns);
+
     gnuplot_ << gnuplot::grid();
 
     PlotList range_pdf;
 
     range_pdf.emplace_back(binary_robot_data_[id].range_pdf.filename,
                            binary_robot_data_[id].range_pdf.binary_format);
-    range_pdf.back().settings.x = 1;
-    range_pdf.back().settings.y = 3;
-    range_pdf.back().settings.box_width = 2;
-    range_pdf.back().settings.style = gnuplot::BOXES;
+    range_pdf.back().settings = {
+        .x = BIN_INDEX,
+        .y = BIN_COUNT,
+        .box_width = BIN_WIDTH,
+        .style = gnuplot::BOXES,
+    };
 
     double sigma = std::sqrt(robots[id].range_error.variance);
     double mu = robots[id].range_error.mean;
@@ -1122,17 +1142,22 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
                         << std::pow(sigma, 2) << "))";
 
     range_pdf.emplace_back(range_gaussian_plot.str());
-    range_pdf.back().settings.math_expression = true;
+    range_pdf.back().settings = {
+        .style = gnuplot::LINES,
+        .math_expression = true,
+    };
 
     /* Add bearing PDF */
     PlotList bearing_pdf;
 
     bearing_pdf.emplace_back(binary_robot_data_[id].bearing_pdf.filename,
                              binary_robot_data_[id].bearing_pdf.binary_format);
-    bearing_pdf.back().settings.x = 1;
-    bearing_pdf.back().settings.y = 3;
-    bearing_pdf.back().settings.box_width = 2;
-    bearing_pdf.back().settings.style = gnuplot::BOXES;
+    bearing_pdf.back().settings = {
+        .x = BIN_INDEX,
+        .y = BIN_COUNT,
+        .box_width = BIN_WIDTH,
+        .style = gnuplot::BOXES,
+    };
 
     /* Plot Gaussian distribution over top of PDF. */
     sigma = std::sqrt(robots[id].bearing_error.variance);
@@ -1144,7 +1169,10 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
                           << std::pow(sigma, 2) << "))";
 
     bearing_pdf.emplace_back(bearing_gaussian_plot.str());
-    bearing_pdf.back().settings.math_expression = true;
+    bearing_pdf.back().settings = {
+        .style = gnuplot::LINES,
+        .math_expression = true,
+    };
 
     plot(range_pdf, range_axis);
     plot(bearing_pdf, bearing_axis);
@@ -1163,6 +1191,7 @@ void Plotter::addInferenceIteration() {
   for (const auto &plot : plots) {
     for (const Robot &robot : robots) {
 
+      /* NOTE: The robot ID's are 1 indexed. */
       unsigned short id{static_cast<unsigned short>(robot.id - 1U)};
 
       std::string *inference_file;
@@ -1291,9 +1320,7 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
     const unsigned short bits_per_item{32U};
 
     x_plots.emplace_back(*inference_file, RobotData::Pose::binary_format());
-    PlotList::reverse_iterator current_plot = x_plots.rbegin();
-
-    current_plot->settings = {
+    x_plots.back().settings = {
         .key_label = std::to_string(i),
         .x = TIME,
         .y = X_POSITION,
@@ -1304,9 +1331,7 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
     };
 
     y_plots.emplace_back(*inference_file, RobotData::Pose::binary_format());
-    current_plot = y_plots.rbegin();
-
-    current_plot->settings = {
+    y_plots.back().settings = {
         .key_label = std::to_string(i),
         .x = TIME,
         .y = Y_POSITION,
@@ -1318,8 +1343,7 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
 
     heading_plots.emplace_back(*inference_file,
                                RobotData::Pose::binary_format());
-    current_plot = heading_plots.rbegin();
-    current_plot->settings = {
+    heading_plots.back().settings = {
         .key_label = std::to_string(i),
         .x = TIME,
         .y = ORIENTATION,
@@ -1327,7 +1351,6 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
         .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
         .record = data_points_,
         .skip = i * data_points_ * bits_per_item,
-
     };
   }
 
