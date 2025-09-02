@@ -126,8 +126,8 @@ void Handler::setSimulation(const unsigned long int data_points,
 
   try {
     /* Calculate odometry and measurement errors. */
-    for (int i{}; i < total_robots_; ++i) {
-      robots_[i].calculateSensorErrror(simulation);
+    for (auto &robot : robots_) {
+      robot.calculateSensorErrror(simulation);
     }
 
     /* Stop timer after extraction. */
@@ -202,7 +202,7 @@ void Handler::setDataSet(const std::string &dataset,
   this->barcodes_.resize(total_barcodes_, 0);
 
   /* Set the robot ID */
-  for (unsigned short int id{}; id < total_robots_; id++) {
+  for (unsigned short id{}; id < total_robots_; id++) {
     robots_[id].id = id + 1U;
   }
 
