@@ -15,7 +15,8 @@
 
 #include <algorithm> // std::remove_if and std::find
 #include <cassert>
-#include <chrono>     // std::chrono
+#include <chrono> // std::chrono
+#include <cstddef>
 #include <cstdlib>    // std::getenv
 #include <filesystem> // std::filesystem
 #include <fstream>    // std::ifstream
@@ -121,11 +122,11 @@ void Handler::setSimulation(const unsigned long int data_points,
 
   setNumberOfSyncedMeasurements();
 
-  const bool simulation = true;
+  const bool simulation{true};
 
   try {
     /* Calculate odometry and measurement errors. */
-    for (int i = 0; i < total_robots_; i++) {
+    for (int i{}; i < total_robots_; ++i) {
       robots_[i].calculateSensorErrror(simulation);
     }
 
@@ -744,11 +745,11 @@ void Handler::syncData(const double &sample_period) {
         /* Interpolate the Groundtruth values */
         auto previous_groundtruth = (current_groundtruth - 1);
 
-        double interpolation_factor =
+        double interpolation_factor{
             (synced_timestamp - previous_groundtruth->time) /
-            (current_groundtruth->time - previous_groundtruth->time);
+            (current_groundtruth->time - previous_groundtruth->time)};
 
-        double interpolated_orientation = current_groundtruth->orientation;
+        double interpolated_orientation{current_groundtruth->orientation};
 
         /* The linear interpolation does not take into account angle wrapping
          * (i.e. the angle -180 and 180 are the same in the robots coordinate
@@ -779,19 +780,19 @@ void Handler::syncData(const double &sample_period) {
         while (interpolated_orientation < -M_PI)
           interpolated_orientation += 2.0 * M_PI;
 
-        double interpolated_x_position =
+        double interpolated_x_position{
             interpolation_factor *
                 (current_groundtruth->x - previous_groundtruth->x) +
-            previous_groundtruth->x;
+            previous_groundtruth->x};
 
-        double interpolated_y_position =
+        double interpolated_y_position{
             interpolation_factor *
                 (current_groundtruth->y - previous_groundtruth->y) +
-            previous_groundtruth->y;
+            previous_groundtruth->y};
 
-        robots_[id].groundtruth.states.push_back(
-            Robot::State(synced_timestamp, interpolated_x_position,
-                         interpolated_y_position, interpolated_orientation));
+        robots_[id].groundtruth.states.emplace_back(
+            synced_timestamp, interpolated_x_position, interpolated_y_position,
+            interpolated_orientation);
       }
 
       /* The same process as above is repeated for the odometry, except assume
@@ -812,22 +813,22 @@ void Handler::syncData(const double &sample_period) {
       auto previous_odometry = (current_odometry - 1);
 
       /* Calculating Odometry Interpolation */
-      double interpolation_factor =
+      double interpolation_factor{
           (synced_timestamp - previous_odometry->time) /
-          (current_odometry->time - previous_odometry->time);
+          (current_odometry->time - previous_odometry->time)};
 
-      double interpolated_forward_velocity =
+      double interpolated_forward_velocity{
           interpolation_factor * (current_odometry->forward_velocity -
                                   previous_odometry->forward_velocity) +
-          previous_odometry->forward_velocity;
+          previous_odometry->forward_velocity};
 
-      double interpolated_angular_velocity =
+      double interpolated_angular_velocity{
           interpolation_factor * (current_odometry->angular_velocity -
                                   previous_odometry->angular_velocity) +
-          previous_odometry->angular_velocity;
+          previous_odometry->angular_velocity};
 
       /* To prevent issues with finite word length. */
-      const double decimal_threshold = 1e-4;
+      const double decimal_threshold{1e-4};
 
       if (interpolated_forward_velocity < decimal_threshold) {
         interpolated_forward_velocity = 0.0;
@@ -837,40 +838,43 @@ void Handler::syncData(const double &sample_period) {
         interpolated_angular_velocity = 0.0;
       }
 
-      robots_[id].synced.odometry.push_back(
-          Robot::Odometry(synced_timestamp, interpolated_forward_velocity,
-                          interpolated_angular_velocity));
+      robots_[id].synced.odometry.emplace_back(synced_timestamp,
+                                               interpolated_forward_velocity,
+                                               interpolated_angular_velocity);
     }
 
     /* The orginal UTIAS data extractor did NOT perform any linear interpolation
      * on the meaurement values. The only action that was performed on the
      * measurements was time stamp realignment according to the new timestamps.
      */
-    robots_[id].synced.measurements.push_back(Robot::Measurement(
-        std::floor(robots_[id].raw.measurements[0].time / sample_period + 0.5) *
+    robots_[id].synced.measurements.emplace_back(
+        std::floor(robots_[id].raw.measurements.front().time / sample_period +
+                   0.5) *
             sample_period,
-        robots_[id].raw.measurements[0].subjects,
-        robots_[id].raw.measurements[0].ranges,
-        robots_[id].raw.measurements[0].bearings));
+        robots_[id].raw.measurements.front().subjects,
+        robots_[id].raw.measurements.front().ranges,
+        robots_[id].raw.measurements.front().bearings);
 
     std::vector<Robot::Measurement>::iterator iterator =
         robots_[id].synced.measurements.end() - 1;
 
     /* Time stamp grouping: measurements with the same timestamps are grouped
      * together to improve accessability. */
-    for (std::size_t j = 1; j < robots_[id].raw.measurements.size(); j++) {
-      double synced_time =
+    for (size_t j{1}; j < robots_[id].raw.measurements.size(); j++) {
+      double synced_time{
           std::floor(robots_[id].raw.measurements[j].time / sample_period +
                      0.5) *
-          sample_period;
+          sample_period};
+
       /* If the current measurment has the same time stamp the previous
        * measurment, join them. */
       if (synced_time == iterator->time) {
         iterator->subjects.push_back(
-            robots_[id].raw.measurements[j].subjects[0]);
-        iterator->ranges.push_back(robots_[id].raw.measurements[j].ranges[0]);
+            robots_[id].raw.measurements[j].subjects.front());
+        iterator->ranges.push_back(
+            robots_[id].raw.measurements[j].ranges.front());
         iterator->bearings.push_back(
-            robots_[id].raw.measurements[j].bearings[0]);
+            robots_[id].raw.measurements[j].bearings.front());
       } else {
         robots_[id].synced.measurements.push_back(Robot::Measurement(
             std::floor(robots_[id].raw.measurements[j].time / sample_period +
@@ -902,44 +906,43 @@ void Handler::syncData(const double &sample_period) {
  * respectively.
  */
 void Handler::calculateGroundtruthOdometry() {
-  for (int id = 0; id < total_robots_; id++) {
+  for (unsigned int id{}; id < total_robots_; id++) {
     robots_[id].groundtruth.odometry.clear();
 
-    for (std::size_t k = 0; k < robots_[id].groundtruth.states.size() - 1;
-         k++) {
+    for (size_t k{}; k < robots_[id].groundtruth.states.size() - 1; k++) {
 
       /* x and y position difference between consecutive time steps. */
-      double x_difference = (robots_[id].groundtruth.states[k + 1].x -
-                             robots_[id].groundtruth.states[k].x);
+      double x_difference{robots_[id].groundtruth.states[k + 1].x -
+                          robots_[id].groundtruth.states[k].x};
 
-      double y_difference = (robots_[id].groundtruth.states[k + 1].y -
-                             robots_[id].groundtruth.states[k].y);
+      double y_difference{robots_[id].groundtruth.states[k + 1].y -
+                          robots_[id].groundtruth.states[k].y};
 
-      double odometry_timestamp = robots_[id].groundtruth.states[k].time;
+      double odometry_timestamp{robots_[id].groundtruth.states[k].time};
 
       /* Calculate the inputs that would result in the ground truth states. */
-      double forward_velocity_input =
+      double forward_velocity_input{
           std::sqrt(x_difference * x_difference + y_difference * y_difference) /
-          this->sampling_period_;
+          this->sampling_period_};
 
-      double angular_velocity_input =
+      double angular_velocity_input{
           std::atan2(
               std::sin(robots_[id].groundtruth.states[k + 1].orientation -
                        robots_[id].groundtruth.states[k].orientation),
               std::cos(robots_[id].groundtruth.states[k + 1].orientation -
                        robots_[id].groundtruth.states[k].orientation)) /
-          this->sampling_period_;
+          this->sampling_period_};
 
-      robots_[id].groundtruth.odometry.push_back(Robot::Odometry(
-          odometry_timestamp, forward_velocity_input, angular_velocity_input));
+      robots_[id].groundtruth.odometry.emplace_back(
+          odometry_timestamp, forward_velocity_input, angular_velocity_input);
     }
 
     /* NOTE: Since the last groundtruth odometry value can not be calculated, it
      * is set equal to the synced measured value */
-    robots_[id].groundtruth.odometry.push_back(
-        Robot::Odometry(robots_[id].synced.odometry.back().time,
-                        robots_[id].synced.odometry.back().forward_velocity,
-                        robots_[id].synced.odometry.back().angular_velocity));
+    robots_[id].groundtruth.odometry.emplace_back(
+        robots_[id].synced.odometry.back().time,
+        robots_[id].synced.odometry.back().forward_velocity,
+        robots_[id].synced.odometry.back().angular_velocity);
   }
 }
 
@@ -958,7 +961,7 @@ void Handler::calculateGroundtruthOdometry() {
  * denotes the robot's y-coordinate.
  */
 void Handler::calculateGroundtruthMeasurement() {
-  for (int id = 0; id < total_robots_; id++) {
+  for (int id{}; id < total_robots_; id++) {
 
     robots_[id].groundtruth.measurements.clear();
     auto iterator = robots_[id].groundtruth.measurements.begin();
@@ -966,16 +969,16 @@ void Handler::calculateGroundtruthMeasurement() {
     /* For loop iterator. Since the extracted data values ordered by time in
      * ascending order, once a time value is found, prior time values do not
      * need to be checked for newer time stamps. */
-    size_t t = 0;
+    size_t t{};
 
-    for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
+    for (size_t k{}; k < robots_[id].synced.measurements.size(); k++) {
       /* Find the value of the ground truth with the same time stamp as the
        * measurement */
       for (; t < robots_[id].groundtruth.states.size(); t++) {
         if (std::round((robots_[id].groundtruth.states[t].time -
                         robots_[id].synced.measurements[k].time) *
-                       1000.0) /
-                1000.0 ==
+                       1e3) /
+                1e3 ==
             0.0) {
           break;
         }
@@ -983,18 +986,18 @@ void Handler::calculateGroundtruthMeasurement() {
 
       /* Loop through each of the subjects and in the measurements and extract
        * the landmarks */
-      for (std::size_t s = 0;
-           s < robots_[id].synced.measurements[k].subjects.size(); s++) {
+      for (size_t s{}; s < robots_[id].synced.measurements[k].subjects.size();
+           s++) {
         /* Get the subjects ID from its barcode. */
-        int subject_ID = getID(robots_[id].synced.measurements[k].subjects[s]);
+        int subject_ID{getID(robots_[id].synced.measurements[k].subjects[s])};
 
         /* If the subjects barcode extracted does not correspond to any of the
          * barcodes extracted, then don't add the measurement. Then the ground
          * truth range and bearing measurments are set to zero. This is used by
          * the error calculator to determine if the measurement has a
          * corresponding groundtruth or not.*/
-        double range = -1.0;         // Invalid range
-        double bearing = 2.0 * M_PI; // Invalid Bearing
+        double range{-1.0};         // Invalid range
+        double bearing{2.0 * M_PI}; // Invalid Bearing
 
         if (-1 != subject_ID) {
 
@@ -1054,7 +1057,7 @@ void Handler::calculateGroundtruthMeasurement() {
 void Handler::setNumberOfSyncedMeasurements() {
   total_synced_measurements_.assign(total_robots_, 0U);
 
-  for (unsigned short id = 0; id < total_robots_; ++id) {
+  for (unsigned short id{}; id < total_robots_; ++id) {
 
     const std::vector<Robot::Measurement> &measurements =
         robots_[id].synced.measurements;
@@ -1088,14 +1091,18 @@ void Handler::relativeRobotDistance() {
   }
 
   robot_file << "# Time [s]	Robot	Ranges [m]	Robot ID\n";
-  for (std::size_t k = 0; k < robots_[0].groundtruth.states.size(); k++) {
-    for (int id = 0; id < total_robots_; id++) {
-      double x = robots_[0].groundtruth.states[k].x -
-                 robots_[id].groundtruth.states[k].x;
-      double y = robots_[0].groundtruth.states[k].y -
-                 robots_[id].groundtruth.states[k].y;
-      double range = std::sqrt(x * x + y * y);
-      robot_file << robots_[0].groundtruth.states[k].time << '\t' << id + 1
+  for (std::size_t k{}; k < robots_.front().groundtruth.states.size(); k++) {
+
+    for (unsigned int id = 0; id < total_robots_; id++) {
+      double x{robots_.front().groundtruth.states[k].x -
+               robots_[id].groundtruth.states[k].x};
+
+      double y{robots_.front().groundtruth.states[k].y -
+               robots_[id].groundtruth.states[k].y};
+
+      double range{std::sqrt(x * x + y * y)};
+
+      robot_file << robots_.front().groundtruth.states[k].time << '\t' << id + 1
                  << '\t' << range << '\t' << 1 << '\n';
     }
   }
@@ -1121,21 +1128,26 @@ void Handler::relativeLandmarkDistance() {
   }
 
   robot_file << "# Time [s]	Landmark	Ranges [m]	Robot ID\n";
-  for (std::size_t k = 0; k < robots_[0].groundtruth.states.size(); k++) {
-    for (int l = 0; l < total_landmarks_; l++) {
-      double x = robots_[0].groundtruth.states[k].x - landmarks_[l].x;
-      double y = robots_[0].groundtruth.states[k].y - landmarks_[l].y;
+  for (std::size_t k{}; k < robots_.front().groundtruth.states.size(); k++) {
+
+    for (int l{}; l < total_landmarks_; l++) {
+      double x{robots_.front().groundtruth.states[k].x - landmarks_[l].x};
+      double y{robots_.front().groundtruth.states[k].y - landmarks_[l].y};
       double range = std::sqrt(x * x + y * y);
-      robot_file << robots_[0].groundtruth.states[k].time << '\t' << l + 6
-                 << '\t' << range << '\t' << 1 << '\n';
+      const unsigned short landmark_id_offset{
+          static_cast<unsigned short>(total_robots_ + 1U)};
+      robot_file << robots_[0].groundtruth.states[k].time << '\t'
+                 << l + landmark_id_offset << '\t' << range << '\t' << 1
+                 << '\n';
     }
   }
+
   robot_file.close();
 }
 
 /**
- * @brief Saves all the extracted and processed data in the Data::Handler class
- * after data extraction and processing.
+ * @brief Saves all the extracted and processed data in the Data::Handler
+ * class after data extraction and processing.
  */
 void Handler::saveExtractedData() {
   auto start = std::chrono::high_resolution_clock::now();
@@ -1145,7 +1157,9 @@ void Handler::saveExtractedData() {
   }
 
   try {
-    double bin_size = 0.001;
+    /* TODO: This magic number needs to fixed.
+     0.01 was choosen since it gave good results for the plot.  */
+    double bin_size{0.001};
 
     saveStateData();
     saveOdometryData();
@@ -1163,9 +1177,9 @@ void Handler::saveExtractedData() {
     // relativeLandmarkDistance();
     // relativeRobotDistance();
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    auto end{std::chrono::high_resolution_clock::now()};
+    auto duration{
+        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)};
 
     std::cout << "\033[1;32mSaving Extracted Data Complete:\033[0m "
               << data_extraction_directory_ << "\033[0m [" << duration.count()
@@ -1179,8 +1193,8 @@ void Handler::saveExtractedData() {
 
 /**
  * @brief Writes the synced (performed by Data::Handler::syncData) and raw
- * groundtruth robot state data extracted from the dataset after, which includes
- * its x-coordinate, y-coordinate and heading.
+ * groundtruth robot state data extracted from the dataset after, which
+ * includes its x-coordinate, y-coordinate and heading.
  */
 void Handler::saveStateData() {
 
@@ -1199,12 +1213,13 @@ void Handler::saveStateData() {
                 "(r) / Synced (s)	Robot ID\n";
 
   /* Loop through the data structures for each robot */
-  for (int id = 0; id < total_robots_; id++) {
+  for (int id{}; id < total_robots_; id++) {
     /* Determine which dataset is larger and set that as the loop iterations
      */
     std::size_t largest_vector_size = std::max(
         {robots_[id].raw.states.size(), robots_[id].groundtruth.states.size()});
-    for (std::size_t k = 0; k < largest_vector_size; k++) {
+
+    for (std::size_t k{}; k < largest_vector_size; k++) {
       /* Write the raw ground truth file for the current timestep 'r'  */
       if (k < robots_[id].raw.states.size()) {
         robot_file << robots_[id].raw.states[k].time << '\t'
@@ -1232,10 +1247,11 @@ void Handler::saveStateData() {
 }
 
 /**
- * @brief Saves the extracted measurement and calculated groundtruth measurement
- * data from the Data::Handler class into .dat files to be plotted by gnuplot.
- * @details Saves both the measurement data (as extracted from the dataset) and
- * the calculated groundtruth measurement values (calculated by
+ * @brief Saves the extracted measurement and calculated groundtruth
+ * measurement data from the Data::Handler class into .dat files to be plotted
+ * by gnuplot.
+ * @details Saves both the measurement data (as extracted from the dataset)
+ * and the calculated groundtruth measurement values (calculated by
  * Data::Handler::calculateGroundtruthMeasurement) into Measurement.dat and
  * Groundtruth-Measurement.dat respectively.
  */
@@ -1243,7 +1259,8 @@ void Handler::saveMeasurementData() {
 
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Measurement.dat";
-  /* If the file already exists, there is no need to rewrite the data again. */
+  /* If the file already exists, there is no need to rewrite the data again.
+   */
   robot_file.open(filename);
 
   if (!robot_file.is_open()) {
@@ -1259,16 +1276,17 @@ void Handler::saveMeasurementData() {
   /* Save the values of the raw and synced measurment values of a given robot
    * into the same file with the last row indicating 'g' for raw  and 'i' for
    * synced.*/
-  for (int id = 0; id < total_robots_; id++) {
+  for (unsigned short id{}; id < total_robots_; id++) {
 
     /* NOTE: when the "raw" measurement data structure is populated, it only
      * adds one element to the members for each time stamp. After
      * interpolation, these values are combined if they have the same time
      * stamp.*/
-    for (std::size_t k = 0; k < robots_[id].raw.measurements.size(); k++) {
+    for (std::size_t k{}; k < robots_[id].raw.measurements.size(); k++) {
+
       /* NOTE: that time stamp grouping is not performed for raw measurements,
        * therefore each subject vector has only one element. */
-      int subject_ID = getID(robots_[id].raw.measurements[k].subjects[0]);
+      int subject_ID{getID(robots_[id].raw.measurements[k].subjects.front())};
       char measurement_type;
       /* Robots from the UTIAS dataset have ID's from [1,5]. */
       if (subject_ID < 6) {
@@ -1279,18 +1297,21 @@ void Handler::saveMeasurementData() {
         measurement_type = 'l';
       }
       robot_file << robots_[id].raw.measurements[k].time << '\t'
-                 << robots_[id].raw.measurements[k].subjects[0] << '\t'
-                 << robots_[id].raw.measurements[k].ranges[0] << '\t'
-                 << robots_[id].raw.measurements[k].bearings[0] << '\t' << 'r'
-                 << '\t' << id + 1 << '\t' << measurement_type << '\n';
+                 << robots_[id].raw.measurements[k].subjects.front() << '\t'
+                 << robots_[id].raw.measurements[k].ranges.front() << '\t'
+                 << robots_[id].raw.measurements[k].bearings.front() << '\t'
+                 << 'r' << '\t' << id + 1 << '\t' << measurement_type << '\n';
     }
 
     /* Save both the synced and the calculated groundtruth */
-    for (std::size_t k = 0; k < robots_[id].synced.measurements.size(); k++) {
-      for (std::size_t s = 0;
+    for (std::size_t k{}; k < robots_[id].synced.measurements.size(); k++) {
+
+      for (std::size_t s{};
            s < robots_[id].synced.measurements[k].subjects.size(); s++) {
-        int subject_ID =
-            getID(robots_[id].groundtruth.measurements[k].subjects[s]);
+
+        int subject_ID{
+            getID(robots_[id].groundtruth.measurements[k].subjects[s])};
+
         char measurement_type;
         if (subject_ID < 6) {
           measurement_type = 'r';
@@ -1332,7 +1353,8 @@ void Handler::saveOdometryData() {
 
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Odometry.dat";
-  /* If the file already exists, there is no need to rewrite the data again. */
+  /* If the file already exists, there is no need to rewrite the data again.
+   */
 
   robot_file.open(filename);
 
@@ -1346,11 +1368,13 @@ void Handler::saveOdometryData() {
       << "# Time [s]	Forward Velocity [m/s]	Angular Velocity "
          "[rad/s]	Raw (r)/Synced(s)/Groundtruth(g)	Robot ID\n";
 
-  for (int id = 0; id < total_robots_; id++) {
+  for (int id{}; id < total_robots_; id++) {
+
     std::size_t largest_vector_size = std::max(
         {robots_[id].raw.odometry.size(), robots_[id].synced.odometry.size()});
 
-    for (std::size_t k = 0; k < largest_vector_size; k++) {
+    for (std::size_t k{}; k < largest_vector_size; k++) {
+
       if (k < robots_[id].raw.odometry.size()) {
         robot_file << robots_[id].raw.odometry[k].time << '\t'
                    << robots_[id].raw.odometry[k].forward_velocity << '\t'
@@ -1384,16 +1408,17 @@ void Handler::saveOdometryData() {
  * @brief Saves calculated error between the measured data (as extracted form
  * the dataset) and the calculated groundtruth values.
  * @details The error between the measured odometry and the calculated
- * groundtruth odometry produced by Robot::calculateOdometryError and the error
- * between the measured measurements and the groundtruth measurements produced
- * bye Robot::calculateMeasurementError is saved into their respective .dat
- * files.
+ * groundtruth odometry produced by Robot::calculateOdometryError and the
+ * error between the measured measurements and the groundtruth measurements
+ * produced bye Robot::calculateMeasurementError is saved into their
+ * respective .dat files.
  */
 void Handler::saveErrorData() {
 
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Odometry-Error.dat";
-  /* If the file already exists, there is no need to rewrite the data again. */
+  /* If the file already exists, there is no need to rewrite the data again.
+   */
 
   robot_file.open(filename);
 
@@ -1407,17 +1432,18 @@ void Handler::saveErrorData() {
                 "[rad/s]	Robot ID\n";
 
   /* Save the error values of the odometry.*/
-  for (int id = 0; id < total_robots_; id++) {
-    for (std::size_t k = 0; k < robots_[id].error.odometry.size(); k++) {
-      robot_file << robots_[id].error.odometry[k].time << '\t'
-                 << robots_[id].error.odometry[k].forward_velocity << '\t'
-                 << robots_[id].error.odometry[k].angular_velocity << '\t'
-                 << id + 1 << '\n';
+  for (const auto &robot : robots_) {
+
+    for (const auto odometry : robot.error.odometry) {
+      robot_file << odometry.time << '\t' << odometry.forward_velocity << '\t'
+                 << odometry.angular_velocity << '\t' << robot.id << '\n';
     }
+
     /* Add two empty lines after robot entires for gnuplot */
     robot_file << '\n';
     robot_file << '\n';
   }
+
   robot_file.close();
 
   filename = data_extraction_directory_ + "Measurement-Error.dat";
@@ -1434,18 +1460,17 @@ void Handler::saveErrorData() {
       << "# Time [s]	Subject	Range [m]	Bearing[rad]	Robot ID\n";
 
   /* Save the error values of the odometry.*/
-  for (int id = 0; id < total_robots_; id++) {
+  for (const auto &robot : robots_) {
 
-    for (std::size_t k = 0; k < robots_[id].error.measurements.size(); k++) {
-      for (std::size_t s = 0;
-           s < robots_[id].error.measurements[k].subjects.size(); s++) {
-        robot_file << robots_[id].error.measurements[k].time << '\t'
-                   << robots_[id].error.measurements[k].subjects[s] << '\t'
-                   << robots_[id].error.measurements[k].ranges[s] << '\t'
-                   << robots_[id].error.measurements[k].bearings[s] << '\t'
-                   << id + 1 << '\n';
+    for (const auto &measurements : robot.error.measurements) {
+
+      for (std::size_t s{}; s < measurements.subjects.size(); s++) {
+        robot_file << measurements.time << '\t' << measurements.subjects[s]
+                   << '\t' << measurements.ranges[s] << '\t'
+                   << measurements.bearings[s] << '\t' << robot.id << '\n';
       }
     }
+
     /* Add two empty lines after robot entires for gnuplot */
     robot_file << '\n';
     robot_file << '\n';
@@ -1457,12 +1482,13 @@ void Handler::saveErrorData() {
  * @brief Performs binning on the odometry error for the determination of a
  * discretized Probability Density Function (PDF).
  * succesfull.
- * @param[in] bin_size the size of the bins (denoting the range of values) that
- * odometry measurement values gets grouped into.
+ * @param[in] bin_size the size of the bins (denoting the range of values)
+ * that odometry measurement values gets grouped into.
  * @note The bin count is actually the area contribution of the odometry error
- * for a given odometry measurement. This means that the output is a discretized
- * pdf, where the sum of the area of all the bins should equal 1. This is done
- * for better visualisation when fitting a Gaussian curve to the data.
+ * for a given odometry measurement. This means that the output is a
+ * discretized pdf, where the sum of the area of all the bins should equal 1.
+ * This is done for better visualisation when fitting a Gaussian curve to the
+ * data.
  */
 void Handler::saveOdometryErrorPDF(double bin_size) {
   std::ofstream robot_file;
@@ -1482,13 +1508,13 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
   robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
 
   /* Save the plot data for the Forward Velocity Error  */
-  for (int id = 0; id < total_robots_; id++) {
+  for (const auto &robot : robots_) {
     std::unordered_map<int, double> forward_velocity_bin_counts;
 
     /* Create PDF. */
-    for (const auto &odometry : robots_[id].error.odometry) {
-      int bin_index =
-          static_cast<int>(std::floor(odometry.forward_velocity / bin_size));
+    for (const auto &odometry : robot.error.odometry) {
+      int bin_index{
+          static_cast<int>(std::floor(odometry.forward_velocity / bin_size))};
 
       /* NOTE: The bin count is actually the area contribution of the odometry
        * error for the given measurement. This means that the output is a
@@ -1496,16 +1522,16 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
        * equal 1. This is done for better visualisation when fitting a
        * Gaussian curve to the data. */
       forward_velocity_bin_counts[bin_index] +=
-          1.0 / (robots_[id].error.odometry.size() * bin_size);
+          1.0 / (robot.error.odometry.size() * bin_size);
     }
 
     /* Save PDF to file. */
     for (const auto &[bin_index, count] : forward_velocity_bin_counts) {
-      double bin_start = bin_index * bin_size;
-      double bin_end = bin_start + bin_size;
+      double bin_start{bin_index * bin_size};
+      double bin_end{bin_start + bin_size};
 
       robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                 << count << '\t' << id + 1 << '\n';
+                 << count << '\t' << robot.id << '\n';
     }
     /* Add two empty lines after robot entires for gnuplot */
     robot_file << '\n';
@@ -1525,25 +1551,27 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
 
   robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
 
-  for (int id = 0; id < total_robots_; id++) {
+  for (const auto &robot : robots_) {
     /* Save the plot data for the Angular Velocity Error  */
 
     std::unordered_map<int, double> angular_velocity_bin_counts;
 
-    for (const auto &odometry : robots_[id].error.odometry) {
+    for (const auto &odometry : robot.error.odometry) {
       int bin_index =
           static_cast<int>(std::floor(odometry.angular_velocity / bin_size));
       angular_velocity_bin_counts[bin_index] +=
-          1.0 / (robots_[id].error.odometry.size() * bin_size);
+          1.0 / (robot.error.odometry.size() * bin_size);
     }
 
     for (const auto &[bin_index, count] : angular_velocity_bin_counts) {
-      double bin_start = bin_index * bin_size;
-      double bin_end = bin_start + bin_size;
+
+      double bin_start{bin_index * bin_size};
+      double bin_end{bin_start + bin_size};
 
       robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                 << count << '\t' << id + 1 << '\n';
+                 << count << '\t' << robot.id << '\n';
     }
+
     /* Add two empty lines after robot entires for gnuplot */
     robot_file << '\n';
     robot_file << '\n';
@@ -1554,12 +1582,13 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
 /**
  * @brief Performs binning on the measurement error for the determination of a
  * discretized Probability Density Function (PDF).
- * @param[in] bin_size the size of the bins (denoting the range of values) that
- * measurement values gets grouped into.
+ * @param[in] bin_size the size of the bins (denoting the range of values)
+ * that measurement values gets grouped into.
  * @note The bin count is actually the area contribution of the odometry error
- * for a given odometry measurement. This means that the output is a discretized
- * pdf, where the sum of the area of all the bins should equal 1. This is done
- * for better visualisation when fitting a Gaussian curve to the data.
+ * for a given odometry measurement. This means that the output is a
+ * discretized pdf, where the sum of the area of all the bins should equal 1.
+ * This is done for better visualisation when fitting a Gaussian curve to the
+ * data.
  */
 void Handler::saveMeasurementErrorPDF(double bin_size) {
   std::ofstream robot_file;
@@ -1577,9 +1606,9 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
   robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
 
   /* Save the plot data for the Range Error  */
-  for (int id = 0; id < total_robots_; id++) {
+  for (int id{}; id < total_robots_; id++) {
 
-    double number_of_measurements = total_synced_measurements_[id];
+    size_t number_of_measurements{total_synced_measurements_[id]};
 
     std::unordered_map<int, double> range_bin_counts;
 
@@ -1592,8 +1621,8 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
     }
 
     for (const auto &[bin_index, count] : range_bin_counts) {
-      double bin_start = bin_index * bin_size;
-      double bin_end = bin_start + bin_size;
+      double bin_start{bin_index * bin_size};
+      double bin_end{bin_start + bin_size};
 
       robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
                  << count << '\t' << id + 1 << '\n';
@@ -1616,27 +1645,28 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
 
   robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
 
-  for (int id = 0; id < total_robots_; id++) {
+  for (int id{}; id < total_robots_; id++) {
     /* Save the plot data for the Bearing Error  */
-    double number_of_measurements = total_synced_measurements_[id];
+    size_t number_of_measurements{total_synced_measurements_[id]};
 
     std::unordered_map<int, double> bearing_bin_counts;
 
     for (const auto &measurement : robots_[id].error.measurements) {
       for (auto bearing : measurement.bearings) {
-        int bin_index = static_cast<int>(std::floor(bearing / bin_size));
+        int bin_index{static_cast<int>(std::floor(bearing / bin_size))};
         bearing_bin_counts[bin_index] +=
             1.0 / (number_of_measurements * bin_size);
       }
     }
 
     for (const auto &[bin_index, count] : bearing_bin_counts) {
-      double bin_start = bin_index * bin_size;
-      double bin_end = bin_start + bin_size;
+      double bin_start{bin_index * bin_size};
+      double bin_end{bin_start + bin_size};
 
       robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
                  << count << '\t' << id + 1 << '\n';
     }
+
     /* Add two empty lines after robot entires for gnuplot */
     robot_file << '\n';
     robot_file << '\n';
@@ -1645,8 +1675,8 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
 }
 
 /**
- * @brief Saves the sample mean and sample variance of the measured odometry and
- * tracking data for each robot.
+ * @brief Saves the sample mean and sample variance of the measured odometry
+ * and tracking data for each robot.
  */
 void Handler::saveRobotErrorStatistics() {
   std::string filename =
@@ -1664,15 +1694,14 @@ void Handler::saveRobotErrorStatistics() {
           "Veolcity [rad^2]	Range Mean [m]	Range Variance [m^2]	"
           "Bearing Mean [rad]	Bearing Variance [rad^2]\n";
 
-  for (unsigned short int id = 0; id < total_robots_; id++) {
-    file << id + 1 << '\t' << robots_[id].forward_velocity_error.mean << '\t'
-         << robots_[id].forward_velocity_error.variance << '\t'
-         << robots_[id].angular_velocity_error.mean << '\t'
-         << robots_[id].angular_velocity_error.variance << '\t'
-         << robots_[id].range_error.mean << '\t'
-         << robots_[id].range_error.variance << '\t'
-         << robots_[id].bearing_error.mean << '\t'
-         << robots_[id].bearing_error.variance << '\n';
+  for (const auto &robot : robots_) {
+    file << robot.id << '\t' << robot.forward_velocity_error.mean << '\t'
+         << robot.forward_velocity_error.variance << '\t'
+         << robot.angular_velocity_error.mean << '\t'
+         << robot.angular_velocity_error.variance << '\t'
+         << robot.range_error.mean << '\t' << robot.range_error.variance << '\t'
+         << robot.bearing_error.mean << '\t' << robot.bearing_error.variance
+         << '\n';
 
     /* Two blank line for gnuplot to be able to automatically seperate data
      * from different robots */
@@ -1694,11 +1723,10 @@ void Handler::saveLandmarks() {
 
   file << "# ID	Barcode	x-coordinate [m]	y-coordinate "
           "[m]	x std-dev [m]	y std-dev [m]\n";
-  for (unsigned short int id = 0; id < total_landmarks_; id++) {
-    file << landmarks_[id].id << '\t' << landmarks_[id].barcode << '\t'
-         << landmarks_[id].x << '\t' << landmarks_[id].y << '\t'
-         << landmarks_[id].x_std_dev << '\t' << landmarks_[id].y_std_dev
-         << '\n';
+  for (const auto &landmark : landmarks_) {
+    file << landmark.id << '\t' << landmark.barcode << '\t' << landmark.x
+         << '\t' << landmark.y << '\t' << landmark.x_std_dev << '\t'
+         << landmark.y_std_dev << '\n';
   }
 
   file.close();
@@ -1709,6 +1737,7 @@ void Handler::saveLandmarks() {
  * state and the groudtruth state.
  */
 void Handler::saveInferenceData() {
+
   if (!std::filesystem::exists(data_inference_directory_)) {
     std::filesystem::create_directories(data_inference_directory_);
   }
@@ -1725,23 +1754,20 @@ void Handler::saveInferenceData() {
   file << "#Time [s]  x Error [m] y error [m] orienation error [rad]  Robot "
           "ID\n";
 
-  for (unsigned short id = 0; id < total_robots_; id++) {
+  for (auto &robot : robots_) {
     /* Populate the error state if it has not yet been done. */
-    if (robots_[id].error.states.empty()) {
-      robots_[id].calculateStateError();
+    if (robot.error.states.empty()) {
+      robot.calculateStateError();
     }
-    if (total_synced_datapoints_ > robots_[id].error.states.size()) {
-      throw std::runtime_error("Robot " + std::to_string(id) +
+    if (total_synced_datapoints_ > robot.error.states.size()) {
+      throw std::runtime_error("Robot " + std::to_string(robot.id) +
                                " has less synced datapoints than groundtruth "
                                "points. Check your filter implementation.");
     }
 
-    for (unsigned long k = 0; k < total_synced_datapoints_; k++) {
-      file << robots_[id].error.states[k].time << '\t'
-           << robots_[id].error.states[k].x << '\t'
-           << robots_[id].error.states[k].y << '\t'
-           << robots_[id].error.states[k].orientation << '\t' << robots_[id].id
-           << '\n';
+    for (const auto &pose : robot.error.states) {
+      file << pose.time << '\t' << pose.x << '\t' << pose.y << '\t'
+           << pose.orientation << '\t' << robot.id << '\n';
     }
 
     file << '\n';
@@ -1762,24 +1788,21 @@ void Handler::saveInferenceData() {
   file << "#Time [s]  x Position [m] y Position [m] orienation [rad]  Robot "
           "ID\n";
 
-  for (unsigned short id = 0; id < total_robots_; id++) {
+  for (const auto &robot : robots_) {
     /* Populate the error state if it has not yet been done. */
-    if (robots_[id].synced.states.empty()) {
+    if (robot.synced.states.empty()) {
       throw std::runtime_error("Synced robots not set");
     }
 
-    if (total_synced_datapoints_ > robots_[id].error.states.size()) {
-      throw std::runtime_error("Robot " + std::to_string(id) +
+    if (total_synced_datapoints_ > robot.error.states.size()) {
+      throw std::runtime_error("Robot " + std::to_string(robot.id) +
                                " has less synced datapoints than groundtruth "
                                "points. Check your filter implementation.");
     }
 
-    for (unsigned long k = 0; k < total_synced_datapoints_; k++) {
-      file << robots_[id].synced.states[k].time << '\t'
-           << robots_[id].synced.states[k].x << '\t'
-           << robots_[id].synced.states[k].y << '\t'
-           << robots_[id].synced.states[k].orientation << '\t' << robots_[id].id
-           << '\n';
+    for (const auto &pose : robot.synced.states) {
+      file << pose.time << '\t' << pose.x << '\t' << pose.y << '\t'
+           << pose.orientation << '\t' << robot.id << '\n';
     }
 
     file << '\n';
@@ -1800,7 +1823,8 @@ const std::vector<unsigned short int> &Handler::getBarcodes() const {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
-        "ensure you call void setDataSet(std::string) before attempting to get "
+        "ensure you call void setDataSet(std::string) before attempting to "
+        "get "
         "data.");
   }
 
@@ -1809,15 +1833,15 @@ const std::vector<unsigned short int> &Handler::getBarcodes() const {
 
 /**
  * This function calculates the difference between the values of the synced
- * state vector and the groundtruth vector. Additionally, it also calculates the
- * absolute value of the difference as well as the Root Mean Squared Error
+ * state vector and the groundtruth vector. Additionally, it also calculates
+ * the absolute value of the difference as well as the Root Mean Squared Error
  * (RMSE).
  * @brief Calculates the state error for the inferened robot poses.
  */
 void Handler::calculateStateError() {
   /* Check if the synced data has been set for the robot */
   for (Robot &robot : robots_) {
-    bool pose_set = false;
+    bool pose_set{};
 
     for (const Robot::State &pose : robot.synced.states) {
       if (pose.x != 0.0 || pose.y != 0.0 && pose.orientation != 0.0) {
@@ -1894,7 +1918,7 @@ std::string Handler::getDataInferenceDirectory() {
  * std::runtime_error.
  */
 const int Handler::getID(unsigned short int barcode) const {
-  for (int i = 0; i < total_barcodes_; i++) {
+  for (int i{}; i < total_barcodes_; i++) {
     if (barcodes_[i] == barcode) {
       return (i + 1);
     }
@@ -1911,7 +1935,8 @@ const std::vector<Landmark> &Handler::getLandmarks() const {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
-        "ensure you call void setDataSet(std::string) before attempting to get "
+        "ensure you call void setDataSet(std::string) before attempting to "
+        "get "
         "data.");
   }
   return landmarks_;
@@ -1929,7 +1954,8 @@ std::vector<Robot> &Handler::getRobots() {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
-        "ensure you call void setDataSet(std::string) before attempting to get "
+        "ensure you call void setDataSet(std::string) before attempting to "
+        "get "
         "data.");
   }
 
