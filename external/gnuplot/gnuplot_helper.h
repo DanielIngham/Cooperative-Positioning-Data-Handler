@@ -85,57 +85,65 @@ enum Colour {
  * @struct PlotSettings
  */
 struct PlotSettings {
-  std::string title = "";
+  std::string key_label{};
 
   /** Element in the tuple that correponds to the x axis data point. */
-  unsigned short x = 1;
+  unsigned short x{1U};
 
   /** Element in the tuple that correponds to the y axis data point. */
-  unsigned short y = 2;
+  unsigned short y{2U};
 
   /** Element in the tuple that correponds to the second x coordinate when
    * plotting vectors. */
-  unsigned short x2 = 3;
+  unsigned short x2{3U};
 
   /** Element in the tuple that correponds to the second y coordinate when
    * plotting vectors. */
-  unsigned short y2 = 4;
+  unsigned short y2{4U};
 
   /** Element in the tuple corresponding to the width of bar type plots. */
-  unsigned short box_width = 3;
+  unsigned short box_width{3U};
 
-  /* The type of plot. */
-  PlotStyle style = POINTS;
+  /** The type of plot. */
+  PlotStyle style{POINTS};
 
-  /* The style of the symbols that represent the points in the point plot. */
-  PointType pointtype = CIRCLE;
-  /* Size of the points. */
-  double pointsize = 1.0;
+  /** The style of the symbols that represent the points in the point plot. */
+  PointType pointtype{CIRCLE};
 
-  /* Colour of the plot line. Note that NONE means gnuplot automatically assigns
-   * it. */
-  Colour linecolor = NONE;
+  /** Size of the points. */
+  double pointsize{1.0};
 
-  /* Width of the plot line. */
-  double linewidth = 1.0;
+  /** Colour of the plot line. Note that NONE means gnuplot automatically
+   * assigns it. */
+  Colour linecolor{NONE};
 
-  /* Plot created from a mathematical expression and NOT datapoints. */
-  bool math_expression = false;
+  /** Width of the plot line. */
+  double linewidth{1.0};
+
+  /** Plot created from a mathematical expression and NOT datapoints. */
+  bool math_expression{};
+
+  /** The number of datapoints to plot form the binary file. */
+  size_t record{};
+
+  /** The number of datapoints to skip in the binary file. */
+  size_t skip{};
 };
 
 struct AxisSettings {
   struct {
-    double min = 0.0;
-    double max = 0.0;
+    double min{};
+    double max{};
   } x_range;
 
   struct {
-    double min = 0.0;
-    double max = 0.0;
+    double min{};
+    double max{};
   } y_range;
 
-  std::string x_label = "";
-  std::string y_label = "";
+  std::string title{};
+  std::string x_label{};
+  std::string y_label{};
 };
 
 /**
@@ -248,6 +256,14 @@ inline std::string to_string(PointType type) {
 inline std::string setPlotSettings(const PlotSettings &settings) {
   std::ostringstream oss;
 
+  if (settings.record != 0) {
+    oss << " record=" << settings.record;
+  }
+
+  if (settings.skip != 0) {
+    oss << " skip=" << settings.skip;
+  }
+
   switch (settings.style) {
   case BOXES:
     oss << " using " << settings.x << ":" << settings.y << ":"
@@ -262,7 +278,7 @@ inline std::string setPlotSettings(const PlotSettings &settings) {
       oss << " using " << settings.x << ":" << settings.y << " ";
   }
 
-  oss << "title \"" << settings.title << "\" "
+  oss << "title \"" << settings.key_label << "\" "
       << "with " << to_string(settings.style);
 
   if (settings.style == POINTS || settings.style == LINESPOINTS) {
@@ -342,17 +358,17 @@ enum TerminalType {
 inline std::string to_string(TerminalType type) {
   switch (type) {
   case X11:
-    return "x11";
+    return "x11 persist";
   case QT:
-    return "qt";
+    return "qt persist";
   case WXT:
-    return "wxt";
+    return "wxt persist";
   case PNG:
     return "pngcairo";
   case JPEG:
     return "jpeg";
   case GIF:
-    return "gif";
+    return "gif animate delay 50 loop 0";
   case PDF:
     return "pdfcairo";
   case SVG:
