@@ -42,8 +42,6 @@ public:
     ABSOLUTE_ERROR ///< Absolute value of the error.
   };
 
-  void demo_animation();
-
   void setTerminal(gnuplot::TerminalSettings);
 
   void plotPoses(std::initializer_list<PlotType>, unsigned short robot_id = 0);
@@ -68,9 +66,16 @@ public:
   void plotMeasurementPDFs(unsigned short robot_id = 0,
                            const double bin_size = 0.001);
 
+  void addInferenceIteration();
+
+  void inference_error_animation(std::initializer_list<PlotType>);
+
+  void plotInferenceIterations(std::initializer_list<PlotType>,
+                               std::vector<unsigned int> iterations = {});
+
 private:
   struct Plot {
-    bool using_binary_file = false;
+    bool using_binary_file{};
     std::string binary_name;
     std::string binary_format;
 
@@ -83,14 +88,17 @@ private:
       using_binary_file = true;
     }
 
-    Plot(const std::string plot_string) : plot_string(plot_string) {
-      using_binary_file = false;
-    }
+    Plot(const std::string plot_string) : plot_string(plot_string) {}
   };
 
+  /** Data structure containing the settings of a gnuplot terminal. */
+  gnuplot::TerminalSettings terminal_;
+
+  /** The number of terminals that have been spawned by the
+   * plotter. */
   static size_t terminal_number_;
 
-  gnuplot::TerminalSettings terminal_;
+  unsigned int total_inference_iterations_{};
 
   /** Reference to a data handler instance */
   Handler &data_;
@@ -201,16 +209,24 @@ private:
 
     /**
      * @struct PDF
-     * Contains the name and binary format of data file.
+     * Contains the name and binary format of data file containing the bins of
+     * the Probability Density Function .
      */
     struct PDF {
       std::string filename;
-      const std::string binary_format = "%double%double%double";
+      static constexpr const char *binary_format = "%double%double%double";
     } forward_velocity_pdf, angular_velocity_pdf, range_pdf, bearing_pdf;
 
+    /**
+     * @struct MeasurementVector
+     * Contains the vectors of measurements taken by the robot. For example,
+     * given the range and bearing, a vector can be drawn from the robots
+     * current position to a given item measured.
+     */
     struct MeasurementVector {
       std::string filename;
-      const std::string binary_format = "%double%double%double%double";
+      static constexpr const char *binary_format =
+          "%double%double%double%double";
     } measurement_vector;
 
     /**
@@ -218,22 +234,41 @@ private:
      * Contains the names and binary format of data files associated with the
      * different types of data structures.
      */
-    struct Types {
-      std::string raw;                 ///< Raw data.
-      std::string synced;              ///< Data synced by linear interpolation.
-      std::string groundtruth;         ///< Groundtruth data.
-      std::string error;               ///< Error data (synced - groundtruth)
-      const std::string binary_format; ///< Format of the binary file.
+    struct DataVariants {
+      std::string raw;         ///< Raw data.
+      std::string synced;      ///< Data synced by linear interpolation.
+      std::string groundtruth; ///< Groundtruth data.
+      std::string error;       ///< Error data (synced - groundtruth)
+
+      virtual ~DataVariants() = default;
     };
 
-    Types odometry{.binary_format = "%double%double%double"};
+    /** Contains the filenames of the variants of extracted odometry data. */
+    struct Odometry : DataVariants {
+      static std::string binary_format() { return "%double%double%double"; };
+    } odometry;
 
-    Types measurement{.binary_format = "%double%ushort%double%double"};
-    // Types measurement{.binary_format = "'%double%double%double'"};
+    /** Contains the filenames of the variants of extracted measurement data. */
+    struct Measurement : DataVariants {
+      static std::string binary_format() {
+        return "%double%ushort%double%double";
+      }
+    } measurement;
 
-    Types pose{.binary_format = "%double%double%double%double"};
+    /** Contains the filenames of the variants of extracted Pose data. */
+    struct Pose : DataVariants {
+      static std::string binary_format() {
+        return "%double%double%double%double";
+      }
+    } pose;
 
-    std::string absolute_state_error; ///< Absolute value of error data.
+    std::string absolute_pose_error; ///< Absolute value of error data.
+
+    struct Iterations {
+      std::string pose;
+      std::string error;
+      std::string absolute_error;
+    } iterations;
   };
 
   /** Filename of the binary landmark data. */
@@ -242,11 +277,14 @@ private:
     const std::string binary_format = "%double%double";
   } binary_landmark_data_;
 
+  void plot(const PlotList &, const gnuplot::AxisSettings &);
+
   /** Vector containing the serialised data extracted into the RobotData struct.
    */
   std::vector<RobotData> binary_robot_data_;
 
-  void plot(const PlotList &, const gnuplot::AxisSettings &);
+  void inferenceIterationsPlotter(PlotType,
+                                  std::vector<unsigned int> iteration_numbers);
 
   void binariseRobotPoseData(std::initializer_list<PlotType>, unsigned short);
   void binariseLandmarkData();
@@ -259,7 +297,8 @@ private:
   void binariseMeasurementPDF(unsigned short, const double);
 
   void write_binary(std::string &, const std::vector<Robot::Odometry> &);
-  void write_binary(std::string &, const std::vector<Robot::State> &);
+  void write_binary(std::string &, const std::vector<Robot::State> &,
+                    bool append = false);
   void write_binary(std::string &, const std::vector<Robot::Measurement> &);
   void write_binary(std::string &, const std::vector<Landmark> &);
   void write_binary(std::string &, const std::unordered_map<int, double> &,

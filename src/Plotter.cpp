@@ -1,5 +1,7 @@
 #include "Plotter.h"
+#include "Robot.h"
 
+#include <algorithm>
 #include <boost/current_function.hpp>
 #include <cassert>
 #include <chrono>
@@ -62,6 +64,7 @@ void Plotter::setTerminal(gnuplot::TerminalSettings terminal) {
  * Converts the robots Pose data extracted by the Handler into the binary format
  * and saves it to a binary file in the termporary directory that gnuplot can
  * use for plotting.
+ * @param plots The types of plots whose data should be binarised.
  * @param robot_id ID number of the robot whose plot the user wants to see.
  * @note If the ID number is 0, all robot plots will be shown.
  */
@@ -112,7 +115,7 @@ void Plotter::binariseRobotPoseData(std::initializer_list<PlotType> plots,
 
       case ABSOLUTE_ERROR:
         poses = &input_robot_data[id].absolute_state_error;
-        filename = &binary_robot_data_[id].absolute_state_error;
+        filename = &binary_robot_data_[id].absolute_pose_error;
         *filename = "Absolute_Error_";
         break;
 
@@ -447,30 +450,43 @@ void Plotter::binariseLandmarkData() {
 /**
  * TODO: Replace this with "live" (or maybe animated?) inference plot.
  */
-void Plotter::demo_animation() {
+void Plotter::inference_error_animation(std::initializer_list<PlotType> plots) {
+  static const unsigned short first_iteration{};
 
-  std::cout << "Press Ctrl-C to quit (closing gnuplot window doesn't quit)."
-            << std::endl;
+  const unsigned short rows{3}, columns{1};
 
-  gnuplot_ << "set yrange [-1:1]\n";
+  for (const auto &plot : plots) {
+    gnuplot_ << gnuplot::grid();
+    terminal_.type = gnuplot::GIF;
 
-  const int N = 1000;
-  std::vector<double> pts(N);
+    std::string output_file{data_extraction_directory_ + "/animation/"};
 
-  double theta = 0;
-  while (1) {
-    for (int i = 0; i < N; i++) {
-      double alpha = (static_cast<double>(i) / N - 0.5) * 10;
-      pts[i] = sin(alpha * 8.0 + theta) * exp(-alpha * alpha / 2.0);
+    switch (plot) {
+    case SYNCED:
+      output_file += "synced_iterations";
+      break;
+
+    case ERROR:
+      output_file += "error_iterations";
+      break;
+
+    case ABSOLUTE_ERROR:
+      output_file += "absolute_error_iterations";
+      break;
+
+    default:
+      throw std::runtime_error("The plot type provide is not accepted by the "
+                               "inference animation function.");
     }
 
-    gnuplot_ << "plot '-' binary" << gnuplot_.binFmt1d(pts, "array")
-             << "with lines notitle\n";
-    gnuplot_.sendBinary1d(pts);
-    gnuplot_.flush();
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+    gnuplot_ << gnuplot::setTerminal(terminal_);
 
-    theta += 0.2;
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    for (unsigned short i{}; i < total_inference_iterations_; ++i) {
+      gnuplot_ << gnuplot::setMultiplot(rows, columns);
+      inferenceIterationsPlotter(plot, {first_iteration, i});
+      gnuplot_ << gnuplot::unsetMultiplot();
+    }
   }
 }
 
@@ -497,40 +513,48 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   for (; id < end_point; ++id) {
-    std::string title = "Robot " + std::to_string(id + 1) + " Trajectory";
-    gnuplot_ << gnuplot::setTitle(title);
 
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
 
+    std::string title = "Robot " + std::to_string(id + 1) + " Trajectory";
     std::string output_file = data_extraction_directory_ + title;
+
     gnuplot_ << gnuplot::setOutput(output_file, terminal_);
     gnuplot_ << gnuplot::grid();
 
+    gnuplot::AxisSettings axis{
+        .title = title,
+        .x_label = "x position [m]",
+        .y_label = "y position [m]",
+    };
+
     PlotList plots;
+    PlotList::reverse_iterator current_plot;
+
     plots.emplace_back(binary_landmark_data_.filename,
                        binary_landmark_data_.binary_format);
 
-    plots.back().settings.style = gnuplot::PlotStyle::POINTS;
-    plots.back().settings.title = "Landmarks";
+    current_plot = plots.rbegin();
+    current_plot->settings = {
+        .key_label = "Landmarks",
+        .style = gnuplot::PlotStyle::POINTS,
+    };
 
     /* Create the plot for the trajectory of the robots. */
     plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
-                       binary_robot_data_[id].pose.binary_format);
+                       binary_robot_data_[id].pose.binary_format());
 
-    plots.back().settings.x = X_POSITION;
-    plots.back().settings.y = Y_POSITION;
-    plots.back().settings.style = gnuplot::PlotStyle::LINES;
-    plots.back().settings.title = "Robot Trajectory";
-
-    gnuplot::AxisSettings axis;
-
-    axis.x_label = "x position [m]";
-    axis.y_label = "y position [m]";
+    current_plot = plots.rbegin();
+    current_plot->settings = {
+        .key_label = "Robot Trajectory",
+        .x = X_POSITION,
+        .y = Y_POSITION,
+        .style = gnuplot::PlotStyle::LINES,
+    };
 
     plot(plots, axis);
 
-    gnuplot_ << gnuplot::unsetMultiplot();
     gnuplot_.flush();
   }
 }
@@ -568,21 +592,21 @@ void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
     plots.emplace_back(binary_robot_data_[id].measurement_vector.filename,
                        binary_robot_data_[id].measurement_vector.binary_format);
 
-    plots.back().settings.title = "Measurement Vectors";
+    plots.back().settings.key_label = "Measurement Vectors";
     plots.back().settings.style = gnuplot::PlotStyle::VECTORS;
     plots.back().settings.linecolor = gnuplot::Colour::LIGHT_RED;
 
     plots.emplace_back(binary_landmark_data_.filename,
                        binary_landmark_data_.binary_format);
 
-    plots.back().settings.title = "Landmarks";
+    plots.back().settings.key_label = "Landmarks";
     plots.back().settings.style = gnuplot::PlotStyle::POINTS;
     plots.back().settings.pointtype = gnuplot::PointType::FILLED_PENTAGON;
     plots.back().settings.pointsize = 4;
     plots.back().settings.linecolor = gnuplot::Colour::BLACK;
 
     plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
-                       binary_robot_data_[id].pose.binary_format);
+                       binary_robot_data_[id].pose.binary_format());
     plots.back().settings.style = gnuplot::LINES;
     plots.back().settings.x = X_POSITION;
     plots.back().settings.y = Y_POSITION;
@@ -591,7 +615,7 @@ void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
 
     plots.emplace_back(binary_robot_data_[id].measurement_vector.filename,
                        binary_robot_data_[id].measurement_vector.binary_format);
-    plots.back().settings.title = "Trajectory";
+    plots.back().settings.key_label = "Trajectory";
 
     gnuplot::AxisSettings axis;
 
@@ -600,7 +624,6 @@ void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
 
     plot(plots, axis);
 
-    gnuplot_ << gnuplot::unsetMultiplot();
     gnuplot_.flush();
   }
 }
@@ -616,46 +639,50 @@ void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
 void Plotter::plotPoses(std::initializer_list<PlotType> plots,
                         unsigned short robot_id) {
 
-  if (robot_id > total_robots_ || robot_id < 0) {
+  if (robot_id > total_robots_ || robot_id < 0U) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
 
   binariseRobotPoseData(plots, robot_id);
 
-  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+  unsigned short end_point = (robot_id == 0U) ? total_robots_ : robot_id;
 
-  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+  unsigned short id = (robot_id == 0U) ? 0U : robot_id - 1U;
+
+  std::string title = "Robot " + std::to_string(id + 1U) + " Groundtruth";
+  gnuplot_ << gnuplot::setTitle(title);
+
+  terminal_.number = ++terminal_number_;
+  gnuplot_ << gnuplot::setTerminal(terminal_);
+
+  std::string output_file = data_extraction_directory_ + title;
+  gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
+  gnuplot_ << gnuplot::grid();
+
+  const unsigned short rows{3U}, columns{1U};
+  gnuplot_ << gnuplot::setMultiplot(rows, columns);
+
+  gnuplot::AxisSettings x_position_axis{
+      .x_label = "Time [s]",
+      .y_label = "X Position [m]",
+  };
+
+  gnuplot::AxisSettings y_position_axis{
+      .x_label = "Time [s]",
+      .y_label = "Y Position [m]",
+  };
+
+  gnuplot::AxisSettings orientation_axis{
+      .x_label = "Time [s]",
+      .y_label = "Heading [rad]",
+  };
+
+  PlotList x_plots, y_plots, orientation_plots;
 
   for (; id < end_point; ++id) {
-    std::string title = "Robot " + std::to_string(id + 1) + " Groundtruth";
-    gnuplot_ << gnuplot::setTitle(title);
 
-    terminal_.number = ++terminal_number_;
-    gnuplot_ << gnuplot::setTerminal(terminal_);
-
-    std::string output_file = data_extraction_directory_ + title;
-    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
-
-    gnuplot_ << gnuplot::grid();
-    gnuplot_ << gnuplot::setMultiplot(3, 1);
-
-    gnuplot::AxisSettings x_position_axis;
-    x_position_axis.x_label = "Time [s]";
-    x_position_axis.y_label = "X Position [m]";
-
-    gnuplot::AxisSettings y_position_axis;
-    y_position_axis.x_label = "Time [s]";
-    y_position_axis.y_label = "Y Position [m]";
-
-    gnuplot::AxisSettings orientation_axis;
-    orientation_axis.x_label = "Time [s]";
-    orientation_axis.y_label = "Heading [rad]";
-
-    PlotList x_plots;
-    PlotList y_plots;
-    PlotList orientation_plots;
-
-    std::string binary_format = binary_robot_data_[id].pose.binary_format;
+    std::string binary_format = binary_robot_data_[id].pose.binary_format();
 
     for (const PlotType &plot : plots) {
       std::string plot_type;
@@ -683,8 +710,8 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
         break;
 
       case ABSOLUTE_ERROR:
-        plot_type = binary_robot_data_[id].absolute_state_error;
-        plot_title = "Error";
+        plot_type = binary_robot_data_[id].absolute_pose_error;
+        plot_title = "Absolute Error";
         break;
 
       default:
@@ -693,38 +720,38 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
 
       /* Plot X Position */
       x_plots.emplace_back(plot_type, binary_format);
-
-      x_plots.back().settings.title = plot_title;
-      x_plots.back().settings.x = TIME;
-      x_plots.back().settings.y = X_POSITION;
+      x_plots.back().settings = {
+          .key_label = plot_title,
+          .x = TIME,
+          .y = X_POSITION,
+      };
 
       /* Plot Y Position */
       y_plots.emplace_back(plot_type, binary_format);
-
-      y_plots.back().settings.title = plot_title;
-      y_plots.back().settings.x = TIME;
-      y_plots.back().settings.y = Y_POSITION;
+      y_plots.back().settings = {
+          .key_label = plot_title,
+          .x = TIME,
+          .y = Y_POSITION,
+      };
 
       /* Plot Orientation */
       orientation_plots.emplace_back(plot_type, binary_format);
 
-      orientation_plots.back().settings.title = plot_title;
-      orientation_plots.back().settings.x = TIME;
-      orientation_plots.back().settings.y = ORIENTATION;
+      orientation_plots.back().settings = {
+          .key_label = plot_title,
+          .x = TIME,
+          .y = ORIENTATION,
+      };
     }
-
-    plot(x_plots, x_position_axis);
-    plot(y_plots, y_position_axis);
-    plot(orientation_plots, orientation_axis);
-
-    gnuplot_ << gnuplot::unsetMultiplot();
-    gnuplot_.flush();
   }
+
+  plot(x_plots, x_position_axis);
+  plot(y_plots, y_position_axis);
+  plot(orientation_plots, orientation_axis);
+
+  gnuplot_ << gnuplot::unsetMultiplot();
+  gnuplot_.flush();
 }
-/**
- *
- */
-void plotPoseRMSE(unsigned short robot_id = 0) {}
 
 /**
  * Plots the odometry inputs that each vehicle recieved through a run in the
@@ -737,6 +764,7 @@ void plotPoseRMSE(unsigned short robot_id = 0) {}
  */
 void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
                            unsigned short robot_id) {
+
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
@@ -758,30 +786,27 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
     std::string output_file = data_extraction_directory_ + title;
     gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
-    gnuplot_ << gnuplot::setMultiplot(2, 1);
+    const unsigned short rows{2U}, columns{1U};
+    gnuplot_ << gnuplot::setMultiplot(rows, columns);
     gnuplot_ << gnuplot::grid();
 
     /* Set forward velocity axis labels */
-    gnuplot::AxisSettings forward_velocity_axis;
-    forward_velocity_axis.y_label = "Forward Velocity [m/s]";
-    forward_velocity_axis.x_label = "Time [s]";
+    gnuplot::AxisSettings forward_velocity_axis{
+        .x_label = "Time [s]",
+        .y_label = "Forward Velocity [m/s]",
+    };
 
-    gnuplot::AxisSettings angular_velocity_axis;
+    gnuplot::AxisSettings angular_velocity_axis{
+        .x_label = "Time [s]",
+        .y_label = "Angular Velocity [rad/s]",
+    };
 
-    angular_velocity_axis.y_label = "Angular Velocity [rad/s]";
-    angular_velocity_axis.x_label = "Time [s]";
+    PlotList forward_velocity_plots, angular_velocity_plots;
 
-    /* Forward Velcoty Plot */
-    PlotList forward_velocity_plots;
-
-    /* Angular Velcoty Plot */
-    PlotList angular_velocity_plots;
-
-    std::string binary_format = binary_robot_data_[id].odometry.binary_format;
+    std::string binary_format = binary_robot_data_[id].odometry.binary_format();
 
     for (const PlotType &plot : plots) {
-      std::string plot_type;
-      std::string plot_title;
+      std::string plot_type, plot_title;
 
       switch (plot) {
       case GROUNDTRUTH:
@@ -811,15 +836,19 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
       /* Range plot */
       forward_velocity_plots.emplace_back(plot_type, binary_format);
 
-      forward_velocity_plots.back().settings.title = plot_title;
-      forward_velocity_plots.back().settings.x = TIME;
-      forward_velocity_plots.back().settings.y = FORWARD_VELOCITY;
+      forward_velocity_plots.back().settings = {
+          .key_label = plot_title,
+          .x = TIME,
+          .y = FORWARD_VELOCITY,
+      };
 
       angular_velocity_plots.emplace_back(plot_type, binary_format);
 
-      angular_velocity_plots.back().settings.title = plot_title;
-      angular_velocity_plots.back().settings.x = TIME;
-      angular_velocity_plots.back().settings.y = ANGULAR_VELOCITY;
+      angular_velocity_plots.back().settings = {
+          .key_label = plot_title,
+          .x = TIME,
+          .y = ANGULAR_VELOCITY,
+      };
     }
 
     plot(forward_velocity_plots, forward_velocity_axis);
@@ -840,6 +869,7 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
  * be plotted in individual terminals.
  */
 void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
+
   /* Check that the provided ID is within bounds. */
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
@@ -979,7 +1009,7 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
     bearing_axis.x_label = "Time [s]";
 
     std::string binary_format =
-        binary_robot_data_[id].measurement.binary_format;
+        binary_robot_data_[id].measurement.binary_format();
 
     for (const PlotType &plot : plots) {
       std::string plot_type;
@@ -1011,12 +1041,12 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
 
       /* Range plot */
       range_plots.emplace_back(plot_type, binary_format);
-      range_plots.back().settings.title = plot_title;
+      range_plots.back().settings.key_label = plot_title;
       range_plots.back().settings.x = TIME;
       range_plots.back().settings.y = RANGE;
 
       bearing_plots.emplace_back(plot_type, binary_format);
-      bearing_plots.back().settings.title = plot_title;
+      bearing_plots.back().settings.key_label = plot_title;
       bearing_plots.back().settings.x = TIME;
       bearing_plots.back().settings.y = BEARING;
     }
@@ -1124,6 +1154,188 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
   }
 }
 
+void Plotter::addInferenceIteration() {
+
+  std::initializer_list<PlotType> plots{SYNCED, ERROR, ABSOLUTE_ERROR};
+
+  std::vector<Robot> &robots = data_.getRobots();
+
+  for (const auto &plot : plots) {
+    for (const Robot &robot : robots) {
+
+      unsigned short id{static_cast<unsigned short>(robot.id - 1U)};
+
+      std::string *inference_file;
+      const std::vector<Robot::State> *pose_data;
+
+      switch (plot) {
+      case SYNCED:
+        inference_file = &binary_robot_data_[id].iterations.pose;
+        *inference_file =
+            "Robot" + std::to_string(robot.id) + "_synced_iterations";
+        pose_data = &robot.synced.states;
+        break;
+
+      case ERROR:
+        inference_file = &binary_robot_data_[id].iterations.error;
+        *inference_file =
+            "Robot" + std::to_string(robot.id) + "_error_iterations";
+        pose_data = &robot.error.states;
+        break;
+
+      case ABSOLUTE_ERROR:
+        inference_file = &binary_robot_data_[id].iterations.absolute_error;
+        *inference_file =
+            "Robot" + std::to_string(robot.id) + "_absolute_error_iterations";
+        pose_data = &robot.absolute_state_error;
+        break;
+
+      default:
+        throw std::runtime_error(
+            "Plot type not supported for inference iteration");
+      }
+
+      /* Delete inference file from pervious run. */
+      if (total_inference_iterations_ == 0 &&
+          std::filesystem::exists(*inference_file)) {
+        std::filesystem::remove(*inference_file);
+      }
+
+      write_binary(*inference_file, *pose_data, true);
+    }
+  }
+
+  ++total_inference_iterations_;
+}
+
+void Plotter::plotInferenceIterations(std::initializer_list<PlotType> plots,
+                                      std::vector<unsigned int> iterations) {
+  gnuplot_ << gnuplot::setTerminal(terminal_);
+  gnuplot_ << gnuplot::grid();
+
+  const unsigned short rows{3U}, columns{1U};
+
+  for (const auto &plot : plots) {
+    gnuplot_ << gnuplot::setMultiplot(rows, columns);
+    inferenceIterationsPlotter(plot, iterations);
+    gnuplot_ << gnuplot::unsetMultiplot();
+  }
+  gnuplot_.flush();
+}
+
+void Plotter::inferenceIterationsPlotter(PlotType plot_type,
+                                         std::vector<unsigned int> iterations) {
+  assert(total_inference_iterations_ > 0);
+
+  std::vector<bool> plot_iteration(total_inference_iterations_, false);
+
+  /* If the user does not provide the iterations they want to plot, then all the
+   * iterations will be plotted. */
+  if (iterations.empty()) {
+    std::fill(plot_iteration.begin(), plot_iteration.end(), true);
+  } else {
+
+    for (const auto &iteration : iterations) {
+      assert((iteration < total_inference_iterations_) && (iteration >= 0));
+      plot_iteration[iteration] = true;
+    }
+  }
+
+  gnuplot::AxisSettings x_axis{.x_label = "Time [s]",
+                               .y_label = "x position [m]"},
+      y_axis{.x_label = "Time [s]", .y_label = "y position [m]"},
+      heading_axis{.x_label = "Time [s]", .y_label = "heading [rad]"};
+
+  std::string *inference_file;
+
+  switch (plot_type) {
+  case SYNCED:
+    inference_file = &binary_robot_data_[0U].iterations.pose;
+
+    x_axis.title = "x position";
+    y_axis.title = "y position";
+    heading_axis.title = "heading";
+    break;
+  case ERROR:
+    inference_file = &binary_robot_data_[0U].iterations.error;
+    x_axis.title = "x position error";
+    y_axis.title = "y position error";
+    heading_axis.title = "heading error";
+
+    break;
+  case ABSOLUTE_ERROR:
+    inference_file = &binary_robot_data_[0U].iterations.absolute_error;
+
+    x_axis.title = "Absolute x position error";
+    y_axis.title = "Absolute y position error";
+    heading_axis.title = "Absolute heading error";
+    break;
+  default:
+
+    throw std::runtime_error("Plot type provided to the inference iterations "
+                             "plotter is not accepted");
+  }
+
+  std::vector<Robot> &robots = data_.getRobots();
+
+  PlotList x_plots, y_plots, heading_plots;
+
+  for (unsigned int i{}; i < total_inference_iterations_; ++i) {
+
+    /* Check if the current iteration of the optimiser should be plotted. */
+    if (!plot_iteration[i])
+      continue;
+
+    /* HACK: It seems like the binary data saves the double values as
+     * floating point values represented by 32 bits. */
+    const unsigned short bits_per_item{32U};
+
+    x_plots.emplace_back(*inference_file, RobotData::Pose::binary_format());
+    PlotList::reverse_iterator current_plot = x_plots.rbegin();
+
+    current_plot->settings = {
+        .key_label = std::to_string(i),
+        .x = TIME,
+        .y = X_POSITION,
+        .style = gnuplot::LINES,
+        .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
+        .record = data_points_,
+        .skip = i * data_points_ * bits_per_item,
+    };
+
+    y_plots.emplace_back(*inference_file, RobotData::Pose::binary_format());
+    current_plot = y_plots.rbegin();
+
+    current_plot->settings = {
+        .key_label = std::to_string(i),
+        .x = TIME,
+        .y = Y_POSITION,
+        .style = gnuplot::LINES,
+        .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
+        .record = data_points_,
+        .skip = i * data_points_ * bits_per_item,
+    };
+
+    heading_plots.emplace_back(*inference_file,
+                               RobotData::Pose::binary_format());
+    current_plot = heading_plots.rbegin();
+    current_plot->settings = {
+        .key_label = std::to_string(i),
+        .x = TIME,
+        .y = ORIENTATION,
+        .style = gnuplot::LINES,
+        .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
+        .record = data_points_,
+        .skip = i * data_points_ * bits_per_item,
+
+    };
+  }
+
+  plot(x_plots, x_axis);
+  plot(y_plots, y_axis);
+  plot(heading_plots, heading_axis);
+}
+
 /**
  * Writes binary file for odometry data.
  * @param filename the name of the output binary file.
@@ -1165,7 +1377,8 @@ void Plotter::write_binary(std::string &filename,
  * @param state_data Vector of measurements.
  */
 void Plotter::write_binary(std::string &filename,
-                           const std::vector<Robot::State> &state_data) {
+                           const std::vector<Robot::State> &state_data,
+                           bool append) {
 
   /* Prepend temporary directory to filename. */
   filename = "/tmp/" + filename + ".bin";
@@ -1175,9 +1388,11 @@ void Plotter::write_binary(std::string &filename,
     return;
   }
 #endif // REUSE
+  std::_Ios_Openmode open_mode =
+      append ? (std::ios::binary | std::ios::app) : std::ios::binary;
 
   /* Convert odometry data to binary. */
-  std::ofstream fout(filename, std::ios::binary);
+  std::ofstream fout(filename, open_mode);
   if (!fout) {
     throw std::runtime_error("Could not open temporary file");
   }
@@ -1306,20 +1521,21 @@ void Plotter::plot(const PlotList &plots,
 
   size_t total_plots = plots.size();
 
-  /* Set the axis settings. */
-
   gnuplot_ << gnuplot::setAxisSettings(axis_settings);
+  gnuplot_ << gnuplot::setTitle(axis_settings.title);
 
   std::ostringstream plot_command;
 
   plot_command << "plot ";
 
-  for (size_t i = 0; i < total_plots; ++i) {
+  for (size_t i{}; i < total_plots; ++i) {
+
     if (plots[i].using_binary_file) {
-      assert(plots[i].binary_name != "" && "Binary file not set.");
+      assert((plots[i].binary_name != "") && "Binary file not set.");
 
       plot_command << "'" << plots[i].binary_name << "'" << " binary "
                    << "format='" << plots[i].binary_format << "' ";
+
     } else {
       plot_command << plots[i].plot_string << " ";
     }
