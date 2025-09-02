@@ -201,8 +201,8 @@ void Handler::setDataSet(const std::string &dataset,
   this->barcodes_.resize(total_barcodes_, 0);
 
   /* Set the robot ID */
-  for (unsigned short int id = 0; id < total_robots_; id++) {
-    robots_[id].id = id + 1;
+  for (unsigned short int id{}; id < total_robots_; id++) {
+    robots_[id].id = id + 1U;
   }
 
   try {
@@ -211,7 +211,7 @@ void Handler::setDataSet(const std::string &dataset,
     readLandmarks(dataset_);
 
     /* Populate the values for each robot from the dataset */
-    for (int id = 0; id < total_robots_; id++) {
+    for (int id{}; id < total_robots_; id++) {
       readGroundTruth(dataset_, id);
       readOdometry(dataset_, id);
       readMeasurements(dataset_, id);
@@ -241,7 +241,7 @@ void Handler::setDataSet(const std::string &dataset,
 
   try {
     /* Calculate odometry and measurement errors. */
-    for (int i = 0; i < total_robots_; i++) {
+    for (int i{}; i < total_robots_; i++) {
       robots_[i].calculateSensorErrror();
       robots_[i].calculateSampleErrorStats();
     }
@@ -334,7 +334,7 @@ void Handler::readBarcodes(const std::string &dataset) {
 
   /* Iterate through file line by line.*/
   std::string line;
-  int i = 0;
+  int i{};
 
   while (std::getline(file, line)) {
     /* Ignore file comments. */
@@ -350,7 +350,7 @@ void Handler::readBarcodes(const std::string &dataset) {
                                "number of barcodes specified.");
     }
 
-    if (barcodes_.size() == 0) {
+    if (barcodes_.empty()) {
       throw std::runtime_error(
           "The total number of barcodes was not specified.");
     }
@@ -362,7 +362,7 @@ void Handler::readBarcodes(const std::string &dataset) {
     } else {
       landmarks_[i - total_robots_].barcode = barcodes_[i];
     }
-    i++;
+    ++i;
   }
 
   file.close();
@@ -384,7 +384,7 @@ void Handler::readLandmarks(const std::string &dataset) {
     throw std::runtime_error("Unable to open Landmarks file: " + filename);
   }
   /* Iterate through file line by line.*/
-  int i = 0;
+  int i{};
   std::string line;
 
   while (std::getline(file, line)) {
@@ -402,12 +402,12 @@ void Handler::readLandmarks(const std::string &dataset) {
     }
 
     /* Set the landmark's ID */
-    std::size_t start_index = 0;
+    std::size_t start_index{};
     std::size_t end_index = line.find('\t', 0);
     landmarks_[i].id = std::stoi(line.substr(start_index, end_index));
 
     /* Ensure that the barcodes have been extracted and set */
-    if (barcodes_[landmarks_[i].id - 1] == 0) {
+    if (barcodes_[landmarks_[i].id - 1U] == 0) {
       throw std::runtime_error("An error occured with barcodes extraction, "
                                "barcodes were not correctly set.");
     }
@@ -481,7 +481,7 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
 
     /* Extract Data into thier respective variables */
     /* - Time */
-    std::size_t start_index = 0;
+    std::size_t start_index{};
     std::size_t end_index = line.find('\t', 0);
     double time = std::stod(line.substr(start_index, end_index));
 
@@ -504,8 +504,8 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
         std::stod(line.substr(start_index, end_index - start_index));
 
     /* Populate robot states with exracted values. */
-    robots_[robot_id].raw.states.push_back(
-        Robot::State(time, x_coordinate, y_coordinate, orientation));
+    robots_[robot_id].raw.states.emplace_back(time, x_coordinate, y_coordinate,
+                                              orientation);
   }
 
   file.close();
@@ -547,7 +547,7 @@ void Handler::readOdometry(const std::string &dataset, int robot_id) {
 
     /* Extract Data into thier respective variables */
     /* - Time */
-    std::size_t start_index = 0;
+    std::size_t start_index{};
     std::size_t end_index = line.find('\t', 0);
     double time = std::stod(line.substr(start_index, end_index));
 
@@ -564,8 +564,8 @@ void Handler::readOdometry(const std::string &dataset, int robot_id) {
         std::stod(line.substr(start_index, end_index - start_index));
     ;
     /* Populate the robot class with the extracted values. */
-    robots_[robot_id].raw.odometry.push_back(
-        Robot::Odometry(time, forward_velocity, angular_velocity));
+    robots_[robot_id].raw.odometry.emplace_back(time, forward_velocity,
+                                                angular_velocity);
   }
 
   file.close();
@@ -610,7 +610,7 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
 
     /* Extract Data into thier respective variables.  */
     /* - Time [s]*/
-    std::size_t start_index = 0;
+    std::size_t start_index{};
     std::size_t end_index = line.find('\t', 0);
     double time = std::stod(line.substr(start_index, end_index));
 
@@ -629,8 +629,8 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
     end_index = line.find('\t', ++end_index);
     double bearing = std::stod(line.substr(start_index, end_index));
 
-    robots_[robot_id].raw.measurements.push_back(
-        Robot::Measurement(time, subject, range, bearing));
+    robots_[robot_id].raw.measurements.emplace_back(time, subject, range,
+                                                    bearing);
   }
 
   file.close();
@@ -647,10 +647,10 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
  */
 void Handler::syncData(const double &sample_period) {
   /* Find the minimum and maximimum times in the datasets */
-  double minimum_time = robots_[0].raw.states.front().time;
-  double maximum_time = robots_[0].raw.states.back().time;
+  double minimum_time = robots_.front().raw.states.front().time;
+  double maximum_time = robots_.front().raw.states.back().time;
 
-  for (int i = 1; i < total_robots_; i++) {
+  for (int i{1U}; i < total_robots_; i++) {
     double robot_minimum_time =
         std::min({robots_[i].raw.states.front().time,
                   robots_[i].raw.odometry.front().time,
@@ -669,13 +669,13 @@ void Handler::syncData(const double &sample_period) {
 
   /* Subtract the minimum time from all timesteps to make t=0 the intial time of
    * the system. */
-  for (int i = 0; i < total_robots_; i++) {
+  for (int i{}; i < total_robots_; ++i) {
     /* Set the loop length to the size of the largest vector */
     std::size_t dataset_size =
         std::max({robots_[i].raw.states.size(), robots_[i].raw.odometry.size(),
                   robots_[i].raw.measurements.size()});
 
-    for (std::size_t j = 0; j < dataset_size; j++) {
+    for (std::size_t j{}; j < dataset_size; ++j) {
       if (j < robots_[i].raw.states.size()) {
         robots_[i].raw.states[j].time -= minimum_time;
       }
@@ -694,7 +694,7 @@ void Handler::syncData(const double &sample_period) {
   /* Linear Interpolation. This section performs linear interpolation on the
    * ground truth and odometry values to ensure that all robots have syncronised
    * time steps. */
-  for (int id = 0; id < total_robots_; id++) {
+  for (int id{}; id < total_robots_; ++id) {
     /* Clear all previously interpolated values */
     robots_[id].groundtruth.states.clear();
     robots_[id].groundtruth.states.reserve(total_synced_datapoints_);
@@ -707,13 +707,12 @@ void Handler::syncData(const double &sample_period) {
     auto current_groundtruth = robots_[id].raw.states.begin();
     auto current_odometry = robots_[id].raw.odometry.begin();
 
-    for (double synced_timestamp = 0.0; synced_timestamp <= maximum_time;
+    for (double synced_timestamp{}; synced_timestamp <= maximum_time;
          synced_timestamp += sample_period) {
 
       /* Add empty items with the time stamps to the synced robot. The filters
        * will then populate the estimated values. */
-      robots_[id].synced.states.push_back(
-          Robot::State(synced_timestamp, 0, 0, 0));
+      robots_[id].synced.states.emplace_back(synced_timestamp, 0, 0, 0);
 
       /* Find the first element that is larger than the current time step */
       current_groundtruth =
@@ -726,20 +725,20 @@ void Handler::syncData(const double &sample_period) {
        * (no interpolation). This is assuming that the robot was stationary
        * before its ground truth was recorded. */
       if (current_groundtruth == robots_[id].raw.states.begin()) {
-        robots_[id].groundtruth.states.push_back(
-            Robot::State(synced_timestamp, robots_[id].raw.states.front().x,
-                         robots_[id].raw.states.front().y,
-                         robots_[id].raw.states.front().orientation));
+        robots_[id].groundtruth.states.emplace_back(
+            synced_timestamp, robots_[id].raw.states.front().x,
+            robots_[id].raw.states.front().y,
+            robots_[id].raw.states.front().orientation);
       }
 
       /* If the element is the last item in the raw values, copy the raw values
          (no interpolation). This is assuming that the robot remains stationary
          after the ground truth recording ended. */
       else if (current_groundtruth == robots_[id].raw.states.end()) {
-        robots_[id].groundtruth.states.push_back(
-            Robot::State(synced_timestamp, robots_[id].raw.states.back().x,
-                         robots_[id].raw.states.back().y,
-                         robots_[id].raw.states.back().orientation));
+        robots_[id].groundtruth.states.emplace_back(
+            synced_timestamp, robots_[id].raw.states.back().x,
+            robots_[id].raw.states.back().y,
+            robots_[id].raw.states.back().orientation);
       } else {
 
         /* Interpolate the Groundtruth values */
@@ -756,7 +755,7 @@ void Handler::syncData(const double &sample_period) {
          * frame), and therefore would assume that the robot rotated 360 degrees
          * as opposed to 0. To prevent this, a threshold is set that detects
          * this angle wrapping.  */
-        const double angle_wrap_threshold = 5.0;
+        const double angle_wrap_threshold{5.0};
 
         if (interpolated_orientation - previous_groundtruth->orientation >
             angle_wrap_threshold) {
