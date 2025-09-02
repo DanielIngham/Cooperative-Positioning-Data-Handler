@@ -196,8 +196,11 @@ private:
     /* Pose/ Point */
     X_POSITION = 2,
     Y_POSITION = 3,
-    ORIENTATION = 4
-
+    ORIENTATION = 4,
+    /* PDF */
+    BIN_INDEX = 1,
+    BIN_WIDTH = 2,
+    BIN_COUNT = 3,
   };
 
   /**
