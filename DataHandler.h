@@ -29,13 +29,13 @@ struct HandlerDefaults {
    * Time betweenn samples. Use by the linear interpolation to sync the data
    * timesteps.
    */
-  static constexpr double kSamplePeriod = 0.02;
+  static constexpr double kSamplePeriod{0.02};
 
   /**
    * The subdirectory within the "output" directory where the processed data
    * is stored.
    */
-  static const inline std::string kOutputDir = "";
+  static const inline std::string kOutputDir{""};
 };
 
 /**
@@ -105,53 +105,53 @@ private:
   /**
    * @brief Folder location for the dataset.
    */
-  std::string dataset_ = "";
+  std::string dataset_{};
 
   /**
    * @brief Folder location of the output directory inside the "./output/"
    * folder.
    */
-  std::string output_directory_ = "";
+  std::string output_directory_{};
 
   /**
    * @brief Folder location for the output data correspoding the the data
    * extraction process.
    */
-  std::string data_extraction_directory_ = "";
+  std::string data_extraction_directory_{};
 
   /**
    * @brief Folder location for the output data corresponding to the infernce
    * peformance.
    */
-  std::string data_inference_directory_ = "";
+  std::string data_inference_directory_{};
 
   /**
    * @brief the desired sample period for resampling the data to sync the
    * timesteps between the vehicles.
    */
-  double sampling_period_ = 0.2;
+  double sampling_period_{0.2};
 
   /**
    * @brief The total number of landmarks in the dataset.
    */
-  unsigned short total_landmarks_ = 0U;
+  unsigned short total_landmarks_{};
 
   /**
    * @brief The total number of robots in the dataset.
    */
-  unsigned short total_robots_ = 0U;
+  unsigned short total_robots_{};
 
   /**
    * @brief the total number of barcodes in the dataset.
    * @note the value of this variable is the summation of the
    * Data::Handler::TOTAL_LANDMARKS and Data::Handler::TOTAL_ROBOTS.
    */
-  unsigned short total_barcodes_ = 0U;
+  unsigned short total_barcodes_{};
 
   /**
    * @brief The number of datapoints after calling Robot::sync_data.
    */
-  unsigned long total_synced_datapoints_ = 0U;
+  unsigned long total_synced_datapoints_{};
 
   /**
    * @brief the total number of synced measurements for each robot.
