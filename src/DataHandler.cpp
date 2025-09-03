@@ -505,8 +505,12 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
         std::stod(line.substr(start_index, end_index - start_index));
 
     /* Populate robot states with exracted values. */
-    robots_[robot_id].raw.states.emplace_back(time, x_coordinate, y_coordinate,
-                                              orientation);
+    robots_[robot_id].raw.states.emplace_back(Robot::State{
+        .time = time,
+        .x = x_coordinate,
+        .y = y_coordinate,
+        .orientation = orientation,
+    });
   }
 
   file.close();
@@ -565,23 +569,27 @@ void Handler::readOdometry(const std::string &dataset, int robot_id) {
         std::stod(line.substr(start_index, end_index - start_index));
     ;
     /* Populate the robot class with the extracted values. */
-    robots_[robot_id].raw.odometry.emplace_back(time, forward_velocity,
-                                                angular_velocity);
+    robots_[robot_id].raw.odometry.emplace_back(Robot::Odometry{
+        .time = time,
+        .forward_velocity = forward_velocity,
+        .angular_velocity = angular_velocity,
+    });
   }
 
   file.close();
 }
 
 /**
- * @brief Extracts data from the groundtruth data file: Robotx_Measurement.dat.
+ * @brief Extracts data from the groundtruth data file:
+ * Robotx_Measurement.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement
  * will be assigned to.
  * @note The data values are tab seperated.
  * @note Grouping of measurements with the same time stamps does not occur
  * during the reading. Therfore, the each member vector of measurements
- * (subjects, ranges and bearings) are filled with only one value. The grouping
- * by time stamp occurs in the Data::Handler::syncData function.
+ * (subjects, ranges and bearings) are filled with only one value. The
+ * grouping by time stamp occurs in the Data::Handler::syncData function.
  */
 void Handler::readMeasurements(const std::string &dataset, int robot_id) {
   /* Clear all previous elements in the measurement vector. */
@@ -638,13 +646,13 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
 }
 
 /**
- * @brief Syncs the time steps for the extracted data according to the specified
- * sampling period.
- * @param[in] sample_period the desired sample period for resampling the data to
- * sync the timesteps between the vehicles.
+ * @brief Syncs the time steps for the extracted data according to the
+ * specified sampling period.
+ * @param[in] sample_period the desired sample period for resampling the data
+ * to sync the timesteps between the vehicles.
  * @note Synced values for the ground truth are saved in the
- * Data::Handler::robots_->groundtruth struct vector whereas synced odometry are
- * saved in the Data::Handler::robots_->synced struct
+ * Data::Handler::robots_->groundtruth struct vector whereas synced odometry
+ * are saved in the Data::Handler::robots_->synced struct
  */
 void Handler::syncData(const double &sample_period) {
   /* Find the minimum and maximimum times in the datasets */
@@ -668,8 +676,8 @@ void Handler::syncData(const double &sample_period) {
     }
   }
 
-  /* Subtract the minimum time from all timesteps to make t=0 the intial time of
-   * the system. */
+  /* Subtract the minimum time from all timesteps to make t=0 the intial time
+   * of the system. */
   for (int i{}; i < total_robots_; ++i) {
     /* Set the loop length to the size of the largest vector */
     std::size_t dataset_size =
@@ -693,8 +701,8 @@ void Handler::syncData(const double &sample_period) {
   total_synced_datapoints_ = std::floor(maximum_time / sample_period) + 1;
 
   /* Linear Interpolation. This section performs linear interpolation on the
-   * ground truth and odometry values to ensure that all robots have syncronised
-   * time steps. */
+   * ground truth and odometry values to ensure that all robots have
+   * syncronised time steps. */
   for (int id{}; id < total_robots_; ++id) {
     /* Clear all previously interpolated values */
     robots_[id].groundtruth.states.clear();
@@ -713,7 +721,12 @@ void Handler::syncData(const double &sample_period) {
 
       /* Add empty items with the time stamps to the synced robot. The filters
        * will then populate the estimated values. */
-      robots_[id].synced.states.emplace_back(synced_timestamp, 0, 0, 0);
+      robots_[id].synced.states.emplace_back(Robot::State{
+          .time = synced_timestamp,
+          .x = .0,
+          .y = .0,
+          .orientation = 0,
+      });
 
       /* Find the first element that is larger than the current time step */
       current_groundtruth =
@@ -722,24 +735,32 @@ void Handler::syncData(const double &sample_period) {
                          return element.time > synced_timestamp;
                        });
 
-      /* If the element is the first item in the raw values, copy the raw values
-       * (no interpolation). This is assuming that the robot was stationary
-       * before its ground truth was recorded. */
+      /* If the element is the first item in the raw values, copy the raw
+       * values (no interpolation). This is assuming that the robot was
+       * stationary before its ground truth was recorded. */
       if (current_groundtruth == robots_[id].raw.states.begin()) {
-        robots_[id].groundtruth.states.emplace_back(
-            synced_timestamp, robots_[id].raw.states.front().x,
-            robots_[id].raw.states.front().y,
-            robots_[id].raw.states.front().orientation);
+        const Robot::State &first_raw_pose = robots_[id].raw.states.front();
+
+        robots_[id].groundtruth.states.emplace_back(Robot::State{
+            .time = synced_timestamp,
+            .x = first_raw_pose.x,
+            .y = first_raw_pose.y,
+            .orientation = first_raw_pose.orientation,
+        });
       }
 
-      /* If the element is the last item in the raw values, copy the raw values
-         (no interpolation). This is assuming that the robot remains stationary
-         after the ground truth recording ended. */
+      /* If the element is the last item in the raw values, copy the raw
+         values (no interpolation). This is assuming that the robot remains
+         stationary after the ground truth recording ended. */
       else if (current_groundtruth == robots_[id].raw.states.end()) {
-        robots_[id].groundtruth.states.emplace_back(
-            synced_timestamp, robots_[id].raw.states.back().x,
-            robots_[id].raw.states.back().y,
-            robots_[id].raw.states.back().orientation);
+        const Robot::State &last_raw_pose = robots_[id].raw.states.back();
+
+        robots_[id].groundtruth.states.emplace_back(Robot::State{
+            .time = synced_timestamp,
+            .x = last_raw_pose.x,
+            .y = last_raw_pose.y,
+            .orientation = last_raw_pose.orientation,
+        });
       } else {
 
         /* Interpolate the Groundtruth values */
@@ -753,9 +774,9 @@ void Handler::syncData(const double &sample_period) {
 
         /* The linear interpolation does not take into account angle wrapping
          * (i.e. the angle -180 and 180 are the same in the robots coordinate
-         * frame), and therefore would assume that the robot rotated 360 degrees
-         * as opposed to 0. To prevent this, a threshold is set that detects
-         * this angle wrapping.  */
+         * frame), and therefore would assume that the robot rotated 360
+         * degrees as opposed to 0. To prevent this, a threshold is set that
+         * detects this angle wrapping.  */
         const double angle_wrap_threshold{5.0};
 
         if (interpolated_orientation - previous_groundtruth->orientation >
@@ -790,9 +811,12 @@ void Handler::syncData(const double &sample_period) {
                 (current_groundtruth->y - previous_groundtruth->y) +
             previous_groundtruth->y};
 
-        robots_[id].groundtruth.states.emplace_back(
-            synced_timestamp, interpolated_x_position, interpolated_y_position,
-            interpolated_orientation);
+        robots_[id].groundtruth.states.emplace_back(Robot::State{
+            .time = synced_timestamp,
+            .x = interpolated_x_position,
+            .y = interpolated_y_position,
+            .orientation = interpolated_orientation,
+        });
       }
 
       /* The same process as above is repeated for the odometry, except assume
@@ -805,8 +829,13 @@ void Handler::syncData(const double &sample_period) {
 
       if (current_odometry == robots_[id].raw.odometry.begin() ||
           current_odometry == robots_[id].raw.odometry.end() - 1) {
-        robots_[id].synced.odometry.push_back(
-            Robot::Odometry(synced_timestamp, 0, 0));
+
+        robots_[id].synced.odometry.emplace_back(Robot::Odometry{
+            .time = synced_timestamp,
+            .forward_velocity = .0,
+            .angular_velocity = .0,
+        });
+
         continue;
       }
 
@@ -838,14 +867,17 @@ void Handler::syncData(const double &sample_period) {
         interpolated_angular_velocity = 0.0;
       }
 
-      robots_[id].synced.odometry.emplace_back(synced_timestamp,
-                                               interpolated_forward_velocity,
-                                               interpolated_angular_velocity);
+      robots_[id].synced.odometry.emplace_back(Robot::Odometry{
+          .time = synced_timestamp,
+          .forward_velocity = interpolated_forward_velocity,
+          .angular_velocity = interpolated_angular_velocity,
+      });
     }
 
-    /* The orginal UTIAS data extractor did NOT perform any linear interpolation
-     * on the meaurement values. The only action that was performed on the
-     * measurements was time stamp realignment according to the new timestamps.
+    /* The orginal UTIAS data extractor did NOT perform any linear
+     * interpolation on the meaurement values. The only action that was
+     * performed on the measurements was time stamp realignment according to
+     * the new timestamps.
      */
     robots_[id].synced.measurements.emplace_back(
         std::floor(robots_[id].raw.measurements.front().time / sample_period +
@@ -890,8 +922,8 @@ void Handler::syncData(const double &sample_period) {
 }
 
 /**
- * @brief Utilises the extracted robots groundtruth position and heading values
- * to calculate their associated groundtruth odometry values.
+ * @brief Utilises the extracted robots groundtruth position and heading
+ * values to calculate their associated groundtruth odometry values.
  * @details The following expression is utilsed to calculate the groundtruth
  * odomotery values using the groundtruth states values extracted from the
  * dataset:
@@ -901,48 +933,53 @@ void Handler::syncData(const double &sample_period) {
  * \end{bmatrix}, \f]
  * where \f$k\f$ denotes the current time step;
  * \f$\theta\f$ denotes the robot's orientation; \f$ y\f$ denotes the robot's
- * y-coordinate; \f$\Delta t\f$ is the user defined sample period; \f$\omega\f$
- * and \f$v\f$ denotes the angular velocity and forward velocity of the robot
- * respectively.
+ * y-coordinate; \f$\Delta t\f$ is the user defined sample period;
+ * \f$\omega\f$ and \f$v\f$ denotes the angular velocity and forward velocity
+ * of the robot respectively.
  */
 void Handler::calculateGroundtruthOdometry() {
-  for (unsigned int id{}; id < total_robots_; id++) {
-    robots_[id].groundtruth.odometry.clear();
+  for (auto &robot : robots_) {
+    robot.groundtruth.odometry.clear();
 
-    for (size_t k{}; k < robots_[id].groundtruth.states.size() - 1; k++) {
+    for (size_t k{}; k < robot.groundtruth.states.size() - 1; k++) {
+
+      const Robot::State &previous_pose = robot.groundtruth.states[k],
+                         &current_pose = robot.groundtruth.states[k + 1];
 
       /* x and y position difference between consecutive time steps. */
-      double x_difference{robots_[id].groundtruth.states[k + 1].x -
-                          robots_[id].groundtruth.states[k].x};
+      const double x_difference{current_pose.x - previous_pose.x};
 
-      double y_difference{robots_[id].groundtruth.states[k + 1].y -
-                          robots_[id].groundtruth.states[k].y};
+      const double y_difference{current_pose.y - previous_pose.y};
 
-      double odometry_timestamp{robots_[id].groundtruth.states[k].time};
+      const double odometry_timestamp{previous_pose.time};
 
       /* Calculate the inputs that would result in the ground truth states. */
-      double forward_velocity_input{
+      const double forward_velocity_input{
           std::sqrt(x_difference * x_difference + y_difference * y_difference) /
-          this->sampling_period_};
+          sampling_period_};
 
-      double angular_velocity_input{
+      const double angular_velocity_input{
           std::atan2(
-              std::sin(robots_[id].groundtruth.states[k + 1].orientation -
-                       robots_[id].groundtruth.states[k].orientation),
-              std::cos(robots_[id].groundtruth.states[k + 1].orientation -
-                       robots_[id].groundtruth.states[k].orientation)) /
-          this->sampling_period_};
+              std::sin(current_pose.orientation - previous_pose.orientation),
+              std::cos(current_pose.orientation - previous_pose.orientation)) /
+          sampling_period_};
 
-      robots_[id].groundtruth.odometry.emplace_back(
-          odometry_timestamp, forward_velocity_input, angular_velocity_input);
+      robot.groundtruth.odometry.emplace_back(Robot::Odometry{
+          .time = odometry_timestamp,
+          .forward_velocity = forward_velocity_input,
+          .angular_velocity = angular_velocity_input,
+      });
     }
 
-    /* NOTE: Since the last groundtruth odometry value can not be calculated, it
-     * is set equal to the synced measured value */
-    robots_[id].groundtruth.odometry.emplace_back(
-        robots_[id].synced.odometry.back().time,
-        robots_[id].synced.odometry.back().forward_velocity,
-        robots_[id].synced.odometry.back().angular_velocity);
+    /* NOTE: Since the last groundtruth odometry value can not be calculated,
+     * it is set equal to the synced measured value */
+    const Robot::Odometry &last_odometry_input = robot.synced.odometry.back();
+
+    robot.groundtruth.odometry.emplace_back(Robot::Odometry{
+        .time = last_odometry_input.time,
+        .forward_velocity = last_odometry_input.forward_velocity,
+        .angular_velocity = last_odometry_input.angular_velocity,
+    });
   }
 }
 
@@ -957,8 +994,8 @@ void Handler::calculateGroundtruthOdometry() {
  * x_i^{(k)}) - \theta_i^{(k)}\end{bmatrix}, \f]
  * where \f$i\f$ denotes
  * the ego robot; \f$j\f$ denotes the measured robot; \f$k\f$ denotes the
- * current time step; \f$\theta\f$ denotes the robot's orientation; and \f$ y\f$
- * denotes the robot's y-coordinate.
+ * current time step; \f$\theta\f$ denotes the robot's orientation; and \f$
+ * y\f$ denotes the robot's y-coordinate.
  */
 void Handler::calculateGroundtruthMeasurement() {
   for (int id{}; id < total_robots_; id++) {
@@ -974,12 +1011,16 @@ void Handler::calculateGroundtruthMeasurement() {
     for (size_t k{}; k < robots_[id].synced.measurements.size(); k++) {
       /* Find the value of the ground truth with the same time stamp as the
        * measurement */
+      static const double timestamp_threshold = 1e3;
       for (; t < robots_[id].groundtruth.states.size(); t++) {
-        if (std::round((robots_[id].groundtruth.states[t].time -
+
+        const double rounded_time_difference =
+            std::round((robots_[id].groundtruth.states[t].time -
                         robots_[id].synced.measurements[k].time) *
-                       1e3) /
-                1e3 ==
-            0.0) {
+                       timestamp_threshold) /
+            timestamp_threshold;
+
+        if (rounded_time_difference == 0.0) {
           break;
         }
       }
@@ -993,8 +1034,8 @@ void Handler::calculateGroundtruthMeasurement() {
 
         /* If the subjects barcode extracted does not correspond to any of the
          * barcodes extracted, then don't add the measurement. Then the ground
-         * truth range and bearing measurments are set to zero. This is used by
-         * the error calculator to determine if the measurement has a
+         * truth range and bearing measurments are set to zero. This is used
+         * by the error calculator to determine if the measurement has a
          * corresponding groundtruth or not.*/
         double range{-1.0};         // Invalid range
         double bearing{2.0 * M_PI}; // Invalid Bearing
@@ -1005,7 +1046,9 @@ void Handler::calculateGroundtruthMeasurement() {
           double y_difference;
 
           /* All robots have ID's [1,5]. */
-          if (subject_ID < 6) {
+          static const unsigned short first_landmark_ID = 6U;
+
+          if (subject_ID < first_landmark_ID) {
             subject_ID--;
             x_difference = robots_[subject_ID].groundtruth.states[t].x -
                            robots_[id].groundtruth.states[t].x;
@@ -1014,7 +1057,7 @@ void Handler::calculateGroundtruthMeasurement() {
           }
           /* All landmarks have ID's [6,20]. */
           else {
-            subject_ID -= 6;
+            subject_ID -= first_landmark_ID;
             x_difference =
                 landmarks_[subject_ID].x - robots_[id].groundtruth.states[t].x;
             y_difference =
@@ -1024,7 +1067,8 @@ void Handler::calculateGroundtruthMeasurement() {
           /* Calculate Bearing */
           bearing = std::atan2(y_difference, x_difference) -
                     robots_[id].groundtruth.states[t].orientation;
-          /* Normalise bearing between -180 and 180 (-pi and pi respectively)*/
+          /* Normalise bearing between -180 and 180 (-pi and pi
+           * respectively)*/
           while (bearing >= M_PI)
             bearing -= 2.0 * M_PI;
           while (bearing < -M_PI)
@@ -1074,10 +1118,11 @@ void Handler::setNumberOfSyncedMeasurements() {
 }
 
 /**
- * @brief Calculates the relative distance of robots from an ego robot and saves
- * the data.
- * @details The relative distance between robots and the ego robot is calculated
- * using the groundtruth state values extracted from the dataset for each robot.
+ * @brief Calculates the relative distance of robots from an ego robot and
+ * saves the data.
+ * @details The relative distance between robots and the ego robot is
+ * calculated using the groundtruth state values extracted from the dataset
+ * for each robot.
  * @note This is only for robot 1 at this stage.
  */
 void Handler::relativeRobotDistance() {

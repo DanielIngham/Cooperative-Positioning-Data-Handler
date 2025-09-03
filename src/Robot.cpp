@@ -45,32 +45,33 @@ void Robot::calculateSensorErrror(const bool simulation) {
  */
 void Robot::calculateOdometryError() {
   /* Check if the groundtruth has been set. */
-  if (this->groundtruth.odometry.size() == 0) {
+  if (groundtruth.odometry.size() == 0) {
     throw std::runtime_error("Groundtruth odometry values for robot " +
-                             std::to_string(this->id) + " have not been set.");
+                             std::to_string(id) + " have not been set.");
   }
 
   /* Check if the synced data has been set. */
-  if (this->synced.odometry.size() == 0) {
+  if (synced.odometry.size() == 0) {
     throw std::runtime_error("Synced odometry values for robot " +
-                             std::to_string(this->id) + " have not been set.");
+                             std::to_string(id) + " have not been set.");
   }
 
   /* If the odometry error vector is not empty, empty it before calculation. */
-  if (this->error.odometry.size() > 0) {
-    this->error.odometry.clear();
+  if (error.odometry.size() > 0) {
+    error.odometry.clear();
   }
 
-  this->error.odometry.reserve(this->groundtruth.odometry.size());
+  error.odometry.reserve(groundtruth.odometry.size());
 
   /* Calculate odometry error for each measurement. */
-  for (std::size_t k = 0; k < this->groundtruth.odometry.size() - 1; k++) {
+  for (std::size_t k = 0; k < groundtruth.odometry.size() - 1; k++) {
 
-    double forward_velocity = this->groundtruth.odometry[k].forward_velocity -
-                              this->synced.odometry[k].forward_velocity;
+    double forward_velocity{groundtruth.odometry[k].forward_velocity -
+                            synced.odometry[k].forward_velocity};
 
-    double angular_velocity = this->groundtruth.odometry[k].angular_velocity -
-                              this->synced.odometry[k].angular_velocity;
+    double angular_velocity{groundtruth.odometry[k].angular_velocity -
+                            synced.odometry[k].angular_velocity};
+
     /* Normalise the error values between -pi and pi radians (-180 and 180
      * degrees respectively). */
     while (angular_velocity >= M_PI)
@@ -78,9 +79,11 @@ void Robot::calculateOdometryError() {
     while (angular_velocity < -M_PI)
       angular_velocity += 2.0 * M_PI;
 
-    this->error.odometry.push_back(Odometry(this->groundtruth.odometry[k].time,
-                                            forward_velocity,
-                                            angular_velocity));
+    error.odometry.push_back(Odometry{
+        .time = groundtruth.odometry[k].time,
+        .forward_velocity = forward_velocity,
+        .angular_velocity = angular_velocity,
+    });
   }
 }
 
@@ -484,11 +487,19 @@ void Robot::calculateStateError() {
     rmse.y += y_error * y_error;
     rmse.orientation += orientation_error * orientation_error;
 
-    this->error.states.emplace_back(time, x_error, y_error, orientation_error);
+    error.states.emplace_back(State{
+        .time = time,
+        .x = x_error,
+        .y = y_error,
+        .orientation = orientation_error,
+    });
 
-    this->absolute_state_error.emplace_back(time, std::abs(x_error),
-                                            std::abs(y_error),
-                                            std::abs(orientation_error));
+    absolute_state_error.emplace_back(State{
+        .time = time,
+        .x = std::abs(x_error),
+        .y = std::abs(y_error),
+        .orientation = std::abs(orientation_error),
+    });
   }
 
   rmse.x *= 1.0 / total_data_points;

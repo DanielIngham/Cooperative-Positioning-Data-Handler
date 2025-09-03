@@ -17,16 +17,16 @@
 namespace Data {
 
 struct SimulationDefaults {
-  static constexpr unsigned short kRobots = 5U;
-  static constexpr unsigned short kLandmarks = 15U;
-  static constexpr double kSamplePeriod = 0.02;
-  static constexpr unsigned long kSeed = 0U;
-  static const inline std::string kOutputDir = "";
+  static constexpr unsigned short kRobots{5U};
+  static constexpr unsigned short kLandmarks{15U};
+  static constexpr double kSamplePeriod{0.02};
+  static constexpr unsigned long kSeed{0U};
+  static const inline std::string kOutputDir{};
 
   /* The measurement sensor is slower than the odometry sensor, so the is used
    * to determine when a measurment should be taken. */
-  static constexpr unsigned short kmeasurement_to_odometry_ratio = 5U;
-  static constexpr double kmax_range = 4.0;
+  static constexpr unsigned short kmeasurement_to_odometry_ratio{5U};
+  static constexpr double kmax_range{4.0};
 };
 
 /**
@@ -52,62 +52,60 @@ private:
   /**
    * @ brief The total number of samples for each robot in the simulation.
    */
-  unsigned long int data_points_ = 0;
+  unsigned long int data_points_{};
 
   /**
    * @brief The period between samples for the simulated groundtruth and
    * odometry readings.
    */
-  double sample_period_ = 0.02;
+  double sample_period_{0.02};
 
-  double measurement_period_ = sample_period_ * 5;
+  double measurement_period_{sample_period_ * 5};
 
   /**
    * @brief The total number of landmarks in the dataset.
    */
-  unsigned short int total_landmarks = 0;
+  unsigned short int total_landmarks{};
 
   /**
    * @brief The total number of robots in the dataset.
    */
-  unsigned short int total_robots = 0;
+  unsigned short int total_robots{};
 
   /**
    * @brief the total number of barcodes in the dataset.
    * @note the value of this variable is the summation of the
    * DataHandler::TOTAL_LANDMARKS and DataHandler::TOTAL_ROBOTS.
    */
-  unsigned short int total_barcodes_ = 0;
+  unsigned short int total_barcodes_{};
 
   /**
    * @brief Pointer to input robot vector.
    */
-  std::vector<Robot> *robots_ = nullptr;
+  std::vector<Robot> *robots_{};
 
   /**
    * @brief Pointer to input landmark vector.
    */
-  std::vector<Landmark> *landmarks_ = nullptr;
+  std::vector<Landmark> *landmarks_{};
 
   /**
    * @brief Pointer to the input barcodes vector.
    */
-  std::vector<unsigned short int> *barcodes_ = nullptr;
+  std::vector<unsigned short int> *barcodes_{};
 
   /**
    * @brief The simulation limits for the robots.
    * @details This is taken form the paper, "The UTIAS multi-robot cooperative
    * localization and mapping dataset". DOI: 10.1177/0278364911398404
    */
-  struct {
-    double width =
-        15.0f; ///< Maximum x-coordinate (2. Data collection: page 970)
-    double height =
-        8.0f; ///< Maximum y-coordinate (2. Data collection: page 970)
-    double forward_velocity =
-        0.16f; ///< Maximum forward velocity [m/s] (2.3 Odometry: page 970)
-    double angular_velocity =
-        0.35f; ///< Maximum angular velocity [rad/s] (2.3 Odometry: page 970)
+  const struct {
+    double width{15.0}; ///< Maximum x-coordinate (2. Data collection: page 970)
+    double height{8.0}; ///< Maximum y-coordinate (2. Data collection: page 970)
+    double forward_velocity{
+        0.16}; ///< Maximum forward velocity [m/s] (2.3 Odometry: page 970)
+    double angular_velocity{
+        0.35}; ///< Maximum angular velocity [rad/s] (2.3 Odometry: page 970)
   } limits_;
 
   /**
@@ -116,13 +114,13 @@ private:
   enum Range { MIN = 0, MAX = 1 };
 
   struct {
-    double forward_velocity[2] = {0.0007, 0.0016};
-    double angular_velocity[2] = {0.0183, 0.0399};
+    double forward_velocity[2]{0.0007, 0.0016};
+    double angular_velocity[2]{0.0183, 0.0399};
 
-    double range[2] = {0.0162, 0.045};
-    double bearing[2] = {0.00062, 0.00596};
+    double range[2]{0.0162, 0.045};
+    double bearing[2]{0.00062, 0.00596};
 
-    double landmarks[2] = {0.00004964 * 0.00004964, 0.00041465 * 0.00041465};
+    double landmarks[2]{0.00004964 * 0.00004964, 0.00041465 * 0.00041465};
   } variance_;
 
   void assignVectorMemory();

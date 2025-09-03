@@ -55,16 +55,6 @@ public:
     double x;           ///< Robot Groundtruth x-coordinate [m].
     double y;           ///< Robot Groundtruth y-coordinate [m].
     double orientation; ///< Robot Groundtruth orientation [rad].
-
-    /** @brief Default constructor */
-    State() : time(0.0), x(0.0), y(0.0), orientation(0.0) {};
-
-    /**
-     * @brief Constructor for convenient population of
-     * DataExtractor::robots_.raw.ground_truth .
-     */
-    State(double time_, double x_, double y_, double orientation_)
-        : time(time_), x(x_), y(y_), orientation(orientation_) {}
   };
 
   /**
@@ -75,15 +65,6 @@ public:
     double time;             ///< Time stamp of the odometry readings [s].
     double forward_velocity; ///< The robots forward velocity [m/s].
     double angular_velocity; ///< The robots angular velocity [rad/s].
-
-    Odometry();
-    /**
-     * @brief Constructor for convenient population of
-     * DataExtractor::robots_.raw.odometry .
-     */
-    Odometry(double time_, double forward_velocity_, double angular_velocity_)
-        : time(time_), forward_velocity(forward_velocity_),
-          angular_velocity(angular_velocity_) {};
   };
 
   /**
@@ -164,13 +145,13 @@ public:
    * calculated.
    */
   struct ErrorStatistics {
-    double mean = 0.0;     ///< The sample mean of the error.
-    double variance = 0.0; ///< The sample standard deviation of the error.
+    double mean{};     ///< The sample mean of the error.
+    double variance{}; ///< The sample standard deviation of the error.
 
-    double median = 0.0; ///< The sample median of the error.
-    double q1 = 0.0;     ///< The first quartile.
-    double q3 = 0.0;     ///< The third quartile.
-    double iqr = 0.0;    ///< Inter Quartile Range.
+    double median{}; ///< The sample median of the error.
+    double q1{};     ///< The first quartile.
+    double q3{};     ///< The third quartile.
+    double iqr{};    ///< Inter Quartile Range.
   };
 
   /** @brief  Error associated with the range measurements. */

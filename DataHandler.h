@@ -35,7 +35,7 @@ struct HandlerDefaults {
    * The subdirectory within the "output" directory where the processed data
    * is stored.
    */
-  static const inline std::string kOutputDir{""};
+  static const inline std::string kOutputDir{};
 };
 
 /**
