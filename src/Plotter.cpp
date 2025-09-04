@@ -1225,9 +1225,10 @@ void Plotter::addInferenceIteration() {
       }
 
       /* Delete inference file from pervious run. */
+      std::string file_location{"/tmp/" + *inference_file + ".bin"};
       if (total_inference_iterations_ == 0 &&
-          std::filesystem::exists(*inference_file)) {
-        std::filesystem::remove(*inference_file);
+          std::filesystem::exists(file_location)) {
+        std::filesystem::remove(file_location);
       }
 
       write_binary(*inference_file, *pose_data, true);
