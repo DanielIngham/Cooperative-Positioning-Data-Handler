@@ -7,7 +7,8 @@
 #ifndef INCLUDE_INCLUDE_DATA_HANDLER_H_
 #define INCLUDE_INCLUDE_DATA_HANDLER_H_
 
-#include <cmath>   // std::floor
+#include <cmath> // std::floor
+#include <cstddef>
 #include <cstdlib> // system
 #include <string>  // std::string
 #include <vector>  // std::vector
@@ -93,13 +94,24 @@ public:
   const unsigned long getNumberOfSyncedDatapoints() const;
   const std::vector<size_t> getNumberOfSyncedMeasurements() const;
 
-  const int getID(const unsigned short int) const;
+  const int getID(const unsigned short) const;
+
+  struct Subject {
+    enum class Type { ROBOT, LANDMARK };
+    int id;
+    unsigned short index;
+    Type type;
+  };
+
+  bool getSubject(const unsigned short, Subject &) const;
 
   void saveExtractedData();
   void saveInferenceData();
 
   void calculateStateError();
   Robot::State getAverageRMSE();
+
+  static const Robot::Measurement *getMeasurement(const Robot *, size_t);
 
 private:
   /**

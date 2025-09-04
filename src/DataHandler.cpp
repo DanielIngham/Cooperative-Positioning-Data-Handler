@@ -21,8 +21,9 @@
 #include <filesystem> // std::filesystem
 #include <fstream>    // std::ifstream
 #include <iostream>   // std::cout
-#include <sstream>    // std::ostringstream
-#include <stdexcept>  // std::runtime_error
+#include <iterator>
+#include <sstream>   // std::ostringstream
+#include <stdexcept> // std::runtime_error
 #include <string>
 #include <unordered_map> // std::unordered_map
 #include <vector>
@@ -1962,13 +1963,37 @@ std::string Handler::getDataInferenceDirectory() {
  * @note if the dataset has not been set, the function will throw a
  * std::runtime_error.
  */
-const int Handler::getID(unsigned short int barcode) const {
+const int Handler::getID(unsigned short barcode) const {
   for (int i{}; i < total_barcodes_; i++) {
     if (barcodes_[i] == barcode) {
       return (i + 1);
     }
   }
   return -1;
+}
+
+bool Handler::getSubject(const unsigned short barcode, Subject &subject) const {
+
+  subject.id = getID(barcode);
+
+  if (-1 == subject.id) {
+    return false;
+  }
+
+  /* The datahandler first assigns the ID to the robots then the
+   * landmarks. Therefore if the ID is less than or equal to the number
+   * of robots, then it belongs to a robot, otherwise it belong to a
+   * landmark. */
+  if (subject.id <= total_robots_) {
+    subject.type = Subject::Type::ROBOT;
+    subject.index = subject.id - 1U;
+
+  } else {
+    subject.type = Subject::Type::LANDMARK;
+    subject.index = subject.id - total_robots_ - 1U;
+  }
+
+  return true;
 }
 
 /**
@@ -2071,6 +2096,55 @@ const std::vector<size_t> Handler::getNumberOfSyncedMeasurements() const {
          "setNumberOfSyncedMeasurements().");
 
   return total_synced_measurements_;
+}
+
+/**
+ * Return the measurement that has the same timestamp as the odometry input at
+ * the element index provided.
+ * @param robot_id ID of the robot whose measurement needs to be extracted.
+ * @param index Synced index.
+ * @returns pointer to the measurement found. std::nullptr if nothing was
+ * found.
+ */
+const Robot::Measurement *Handler::getMeasurement(const Robot *robot,
+                                                  size_t index) {
+
+  const Robot::Odometry &odometry = robot->synced.odometry.at(index);
+  const double current_time = odometry.time;
+
+  const std::vector<Robot::Measurement> &measurements =
+      robot->synced.measurements;
+
+  /* Threshold for double floating point precision. */
+  static constexpr double decimal_threshold = 1e-5;
+
+  /* Find the first element whose time is larger than the current time.  */
+  auto iterator =
+      std::lower_bound(measurements.begin(), measurements.end(), current_time,
+                       [](const Robot::Measurement &measurement, double time) {
+                         return measurement.time < time;
+                       });
+
+  if (iterator == measurements.end())
+    return nullptr;
+
+  /* Check if the found element's time falls with the threshold of the current
+   * time. Then check if the previous element's time falls within the threshold
+   * of the current time. */
+  for (unsigned short i{}; i < 2U; ++i) {
+    if (std::abs(iterator->time - current_time) < decimal_threshold) {
+
+      return &(*iterator);
+    }
+
+    if (iterator == measurements.begin()) {
+      break;
+    }
+
+    --iterator;
+  }
+
+  return nullptr;
 }
 
 } // namespace Data
