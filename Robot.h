@@ -75,12 +75,13 @@ public:
    * are in the same order.
    */
   struct Measurement {
-    double time; ///< Time stamp of the measurement [s].
+    double time{}; ///< Time stamp of the measurement [s].
     std::vector<unsigned short>
         subjects; ///< The Barcode of the other robots being measured.
     std::vector<double> ranges;   ///< The measured ranges to the subjects [m]
     std::vector<double> bearings; ///< The bearings from the subjects [rad]
 
+    Measurement();
     /**
      * @brief Constructor that allows for the copying of measurement structures.
      */
