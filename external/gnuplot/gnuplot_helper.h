@@ -548,4 +548,16 @@ inline std::string setOutput(std::string filename, TerminalSettings terminal) {
   return oss.str();
 }
 
+/**
+ * Checks if the terminal has the ability to output latex style mathematical
+ * expressions.
+ * @param terminal_type The type of terminal.
+ */
+inline bool latexEnabled(TerminalType terminal_type) {
+  if (TIKZ == terminal_type || EPSLATEX == terminal_type)
+    return true;
+
+  return false;
+}
+
 } // namespace gnuplot
