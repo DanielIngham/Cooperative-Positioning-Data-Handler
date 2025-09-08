@@ -137,7 +137,7 @@ private:
   std::string output_directory_{};
 
   /**
-   * @brief Folder location for the output data correspoding the the data
+   * @brief Folder location for the output data correspoding the data
    * extraction process.
    */
   std::string data_extraction_directory_{};
@@ -217,16 +217,19 @@ private:
    */
   Simulator simulator_;
 
+  /**
+   * Flag indicating whether the data handler is currently using simulated data.
+   */
+  bool simulation_{};
+
   void setOutputDirectory(const std::string &, const std::string &);
 
-  /* Extracting Data from the Dataset */
   void readBarcodes(const std::string &);
   void readLandmarks(const std::string &);
   void readGroundTruth(const std::string &, int);
   void readOdometry(const std::string &, int);
   void readMeasurements(const std::string &, int);
 
-  /* Processing the Data for Filtering */
   void syncData(const double &);
 
   void calculateGroundtruthOdometry();
@@ -234,7 +237,6 @@ private:
 
   void setNumberOfSyncedMeasurements();
 
-  /* Save Dataset Extraction Data */
   void saveStateData();
   void saveOdometryData();
   void saveMeasurementData();
