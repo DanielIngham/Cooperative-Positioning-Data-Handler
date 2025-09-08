@@ -8,6 +8,7 @@
 #ifndef INCLUDE_DATAHANDLER_INPUTHANDLER_HPP_
 #define INCLUDE_DATAHANDLER_INPUTHANDLER_HPP_
 
+#include <cassert>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -17,7 +18,7 @@
 
 namespace ArgumentHandler {
 
-enum MyEnum {
+enum ArgumentOrder {
   EXECUTABLE, ///< The first argument is always the executable.
   FLAG,       ///< The second argument should be a flag prefaced with '-'.
   ARG         ///< The third argument should be the value
@@ -204,21 +205,29 @@ inline void setDataSet(int argc, char *argv[], Data::Handler &data) {
  * @param data Data::Handler instance to be set based on provided arguments.
  */
 inline void setSimulation(int argc, char *argv[], Data::Handler &data) {
-  int data_points = 7500U;
-  int robots = Data::SimulationDefaults::kRobots;
-  int landmarks = Data::SimulationDefaults::kLandmarks;
-  int seed = Data::SimulationDefaults::kSeed;
 
-  double sample_period = Data::SimulationDefaults::kSamplePeriod;
+  assert(argc > 2 && "Number of simulated data points not provided.");
 
-  std::string output_directory = Data::SimulationDefaults::kOutputDir;
+  int data_points = argToInt(argv[ARG]);
 
-  if (argc == 2) {
+  assert(data_points > 0 &&
+         "The number of datapoints must be a positive integer.");
+
+  unsigned int robots{Data::SimulationDefaults::kRobots},
+      landmarks{Data::SimulationDefaults::kLandmarks};
+
+  size_t seed{Data::SimulationDefaults::kSeed};
+
+  double sample_period{Data::SimulationDefaults::kSamplePeriod};
+
+  std::string output_directory{Data::SimulationDefaults::kOutputDir};
+
+  if (argc == 2U) {
     throw std::runtime_error("Number of datapoints not specified. " +
                              helpMessage(argv[EXECUTABLE]));
   }
 
-  for (int i = 3; i < argc; i += 2) {
+  for (unsigned short i{3U}; i < argc; i += 2) {
 
     if (!checkFlag(argv[i])) {
       return;
@@ -266,7 +275,7 @@ inline void setSimulation(int argc, char *argv[], Data::Handler &data) {
   std::cout << "\033[1;32m" << "Simulation Options" << "\033[0m" << std::endl
             << '\t' << "- Data points: " << data_points << std::endl
             << '\t' << "- Robots: " << robots << std::endl
-            << '\t' << "- Landmarks: " << robots << std::endl
+            << '\t' << "- Landmarks: " << landmarks << std::endl
             << '\t' << "- Sample Period: " << sample_period << std::endl
             << '\t' << "- Output Directory: " << output_directory << std::endl
             << '\t' << "- Seed: " << seed << std::endl
