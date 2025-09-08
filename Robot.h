@@ -26,6 +26,8 @@ public:
   Robot &operator=(const Robot &) = default;
   ~Robot();
 
+  static void normaliseAngle(double &);
+
   /**
    * @brief Numerical identifier for the robot.
    * @note The handler starts this index at 1. Therefore the first robot has an
