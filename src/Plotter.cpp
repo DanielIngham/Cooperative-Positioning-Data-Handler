@@ -719,6 +719,7 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
           .key_label = plot_title,
           .x = TIME,
           .y = X_POSITION,
+          .style = gnuplot::LINESPOINTS,
       };
 
       /* Plot Y Position */
@@ -727,6 +728,7 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
           .key_label = plot_title,
           .x = TIME,
           .y = Y_POSITION,
+          .style = gnuplot::LINESPOINTS,
       };
 
       /* Plot Orientation */
@@ -736,6 +738,7 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
           .key_label = plot_title,
           .x = TIME,
           .y = ORIENTATION,
+          .style = gnuplot::LINESPOINTS,
       };
     }
   }

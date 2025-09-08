@@ -46,8 +46,6 @@ public:
 
   void plotPoses(std::initializer_list<PlotType>, unsigned short robot_id = 0);
 
-  void plotPoseRMSE(unsigned short robot_id = 0);
-
   void plotTrajectory(std::initializer_list<PlotType>,
                       unsigned short robot_id = 0);
 
