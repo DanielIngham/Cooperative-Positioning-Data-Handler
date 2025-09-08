@@ -462,10 +462,7 @@ void Simulator::setRobotOdometryAndState() {
                                     groundtruth_pose.orientation;
 
         /* Normalise the orientation */
-        while (bearing_for_centre >= M_PI)
-          bearing_for_centre -= 2.0 * M_PI;
-        while (bearing_for_centre <= -M_PI)
-          bearing_for_centre += 2.0 * M_PI;
+        Robot::normaliseAngle(bearing_for_centre);
 
         /* If the the bearing from the centre point is less than approximately
          * 10 degrees positive or negative, there is no need to make further
@@ -538,10 +535,7 @@ void Simulator::setRobotOdometryAndState() {
           sample_period_ * robot.groundtruth.odometry.at(k).angular_velocity;
 
       /* Normalise orienation between -180 and 180. */
-      while (orientation >= M_PI)
-        orientation -= 2.0 * M_PI;
-      while (orientation < -M_PI)
-        orientation += 2.0 * M_PI;
+      Robot::normaliseAngle(orientation);
 
       robot.groundtruth.states.emplace_back(Robot::State{
           .time = sample_period_ * k,
@@ -609,10 +603,7 @@ void Simulator::setRobotMeasurement() {
                        ego_robot.groundtruth.states[k].orientation};
 
         /* Normalise the bearing between -180 and 180 (-pi and pi) */
-        while (bearing >= M_PI)
-          bearing -= 2.0 * M_PI;
-        while (bearing < -M_PI)
-          bearing += 2.0 * M_PI;
+        Robot::normaliseAngle(bearing);
 
         /* According to the UTIAS multirobot localisation and mapping paper,
          * the robots have a field of view of 60 degrees (-0.52, 0.52
@@ -659,10 +650,7 @@ void Simulator::setRobotMeasurement() {
                          ego_robot.groundtruth.states[k].orientation;
 
         /* Normalise the orientation between -180 and 180 (-pi and pi) */
-        while (bearing >= M_PI)
-          bearing -= 2.0 * M_PI;
-        while (bearing < -M_PI)
-          bearing += 2.0 * M_PI;
+        Robot::normaliseAngle(bearing);
 
         /* According to the UTIAS paper, the robots have a field of view of 60
          * degrees (-0.52, 0.52 radians). */
@@ -752,22 +740,18 @@ void Simulator::addGaussianNoise() {
       robot.synced.measurements.push_back(measurement);
 
       /* Adding Gaussian noise to the measurements of all the subjects. */
-      size_t total_measurements =
-          robot.synced.measurements.back().subjects.size();
+      size_t total_measurements{
+          robot.synced.measurements.back().subjects.size()};
 
       for (unsigned short s{}; s < total_measurements; s++) {
 
-        robot.synced.measurements.back().ranges[s] +=
-            range_noise(this->generator_);
+        robot.synced.measurements.back().ranges[s] += range_noise(generator_);
 
         robot.synced.measurements.back().bearings[s] +=
-            bearing_noise(this->generator_);
+            bearing_noise(generator_);
 
         /* Normalise the bearing error. */
-        while (robot.synced.measurements.back().bearings[s] >= M_PI)
-          robot.synced.measurements.back().bearings[s] -= 2.0 * M_PI;
-        while (robot.synced.measurements.back().bearings[s] < -M_PI)
-          robot.synced.measurements.back().bearings[s] += 2.0 * M_PI;
+        Robot::normaliseAngle(robot.synced.measurements.back().bearings[s]);
       }
     }
   }

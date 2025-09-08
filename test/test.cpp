@@ -737,10 +737,7 @@ void testGroundtruthOdometry() {
 
         /* Normalise the orientation between PI and -PI (180 and -180 degrees
          * respectively) */
-        while (orientation >= M_PI)
-          orientation -= 2.0 * M_PI;
-        while (orientation < -M_PI)
-          orientation += 2.0 * M_PI;
+        Data::Robot::normaliseAngle(orientation);
 
         average_orientation_difference += std::abs(
             orientation - robots[id].groundtruth.states[k + 1].orientation);

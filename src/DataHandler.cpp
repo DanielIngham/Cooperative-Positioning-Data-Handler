@@ -21,9 +21,8 @@
 #include <filesystem> // std::filesystem
 #include <fstream>    // std::ifstream
 #include <iostream>   // std::cout
-#include <iterator>
-#include <sstream>   // std::ostringstream
-#include <stdexcept> // std::runtime_error
+#include <sstream>    // std::ostringstream
+#include <stdexcept>  // std::runtime_error
 #include <string>
 #include <unordered_map> // std::unordered_map
 #include <vector>
@@ -73,10 +72,10 @@ Handler::Handler(const std::string &dataset,
                  const std::string &output_directory,
                  const double &sample_period)
     : dataset_(dataset), output_directory_(output_directory),
-      sampling_period_(sample_period), total_landmarks_(15), total_robots_(5),
+      sampling_period_(sample_period), total_landmarks_(15U), total_robots_(5U),
       total_barcodes_(total_landmarks_ + total_robots_),
       landmarks_(total_landmarks_), robots_(total_robots_),
-      barcodes_(total_barcodes_, 0) {
+      barcodes_(total_barcodes_, 0), simulation_(true) {
 
   setDataSet(dataset, output_directory, sample_period);
 }
@@ -100,23 +99,25 @@ void Handler::setSimulation(const unsigned long int data_points,
 
   auto start = std::chrono::high_resolution_clock::now();
   /* Set class fields */
-  this->dataset_ = "./";
+  dataset_ = "./";
+
+  simulation_ = true;
 
   setOutputDirectory(output_directory, "/simulation/");
 
   /* Set class fields. */
-  this->total_synced_datapoints_ = data_points;
+  total_synced_datapoints_ = data_points;
 
-  this->sampling_period_ = sample_period;
+  sampling_period_ = sample_period;
 
-  this->total_landmarks_ = number_of_landmarks;
-  this->total_robots_ = number_of_robots;
-  this->total_barcodes_ = total_landmarks_ + total_robots_;
+  total_landmarks_ = number_of_landmarks;
+  total_robots_ = number_of_robots;
+  total_barcodes_ = total_landmarks_ + total_robots_;
 
   /* Resize the dataset vectors */
-  this->landmarks_.resize(total_landmarks_);
-  this->robots_.resize(total_robots_);
-  this->barcodes_.resize(total_barcodes_, 0);
+  landmarks_.resize(total_landmarks_);
+  robots_.resize(total_robots_);
+  barcodes_.resize(total_barcodes_, 0);
 
   simulator_.setSimulation(data_points, sample_period, robots_, landmarks_,
                            barcodes_, seed);
@@ -797,10 +798,7 @@ void Handler::syncData(const double &sample_period) {
 
         /* Normalise the orientation between PI and -PI (180 and -180 degrees
          * respectively) */
-        while (interpolated_orientation >= M_PI)
-          interpolated_orientation -= 2.0 * M_PI;
-        while (interpolated_orientation < -M_PI)
-          interpolated_orientation += 2.0 * M_PI;
+        Robot::normaliseAngle(interpolated_orientation);
 
         double interpolated_x_position{
             interpolation_factor *
@@ -1068,12 +1066,9 @@ void Handler::calculateGroundtruthMeasurement() {
           /* Calculate Bearing */
           bearing = std::atan2(y_difference, x_difference) -
                     robots_[id].groundtruth.states[t].orientation;
-          /* Normalise bearing between -180 and 180 (-pi and pi
-           * respectively)*/
-          while (bearing >= M_PI)
-            bearing -= 2.0 * M_PI;
-          while (bearing < -M_PI)
-            bearing += 2.0 * M_PI;
+
+          /* Normalise bearing between -180 and 180 (-pi and pi respectively)*/
+          Robot::normaliseAngle(bearing);
 
           /* Calculate Range */
           range = std::sqrt(x_difference * x_difference +
@@ -1931,11 +1926,20 @@ Robot::State Handler::getAverageRMSE() {
  * Returns the name of the dataset folder (not the full path).
  */
 std::string Handler::getDatasetName() {
+  if (simulation_)
+    return "Simulation";
+
+  assert(dataset_ != "");
+
   std::filesystem::path dataset_path(dataset_);
+
   /* Extracts the folder name and returns it. */
   return dataset_path.filename().string();
 }
 
+/**
+ * Returns the directory where the extracted data will be stored.
+ */
 std::string Handler::getDataExtractionDirectory() {
   assert(data_extraction_directory_ != "" &&
          "Data extraction directory not set by Data "
@@ -1944,6 +1948,9 @@ std::string Handler::getDataExtractionDirectory() {
   return data_extraction_directory_;
 }
 
+/**
+ * Returns the directory where the inference data will be stored.
+ */
 std::string Handler::getDataInferenceDirectory() {
   assert(data_inference_directory_ != "" &&
          "Data inference directory not set by Data "
@@ -2117,21 +2124,25 @@ const std::vector<size_t> Handler::getNumberOfSyncedMeasurements() const {
 const Robot::Measurement *Handler::getMeasurement(const Robot *robot,
                                                   size_t index) {
 
-  const Robot::Odometry &odometry = robot->synced.odometry.at(index);
-  const double current_time = odometry.time;
+  const Robot::Odometry &odometry{robot->synced.odometry.at(index)};
+  const double current_time{odometry.time};
 
+  // const std::vector<Robot::Measurement> &measurements{
+  //     robot->synced.measurements};
+
+  /* TODO: Remove this */
   const std::vector<Robot::Measurement> &measurements =
-      robot->synced.measurements;
+      robot->groundtruth.measurements;
 
   /* Threshold for double floating point precision. */
-  static constexpr double decimal_threshold = 1e-5;
+  static constexpr double decimal_threshold{1e-5};
 
   /* Find the first element whose time is larger than the current time.  */
-  auto iterator =
+  auto iterator{
       std::lower_bound(measurements.begin(), measurements.end(), current_time,
                        [](const Robot::Measurement &measurement, double time) {
                          return measurement.time < time;
-                       });
+                       })};
 
   if (iterator == measurements.end())
     return nullptr;

@@ -884,11 +884,13 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   gnuplot::AxisSettings forward_velocity_axis{
+      .title = "Forward Velocity Probability Distribution",
       .x_label = "Error [m/s]",
       .y_label = "Probability Density [s/m]",
   };
 
   gnuplot::AxisSettings angular_velocity_axis{
+      .title = "Angular Velocity Noise Probability Distribution",
       .x_label = "Error [rad/s]",
       .y_label = "Probability Density [s/rad]",
   };
@@ -915,14 +917,15 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
         binary_robot_data_[id].forward_velocity_pdf.binary_format);
 
     forward_velocity_pdf.back().settings = {
+        .key_label = "Scaled PMF",
         .x = 1,
         .y = 3,
         .box_width = 2,
         .style = gnuplot::BOXES,
     };
 
-    double sigma = std::sqrt(robots[id].forward_velocity_error.variance);
-    double mu = robots[id].forward_velocity_error.mean;
+    double sigma{std::sqrt(robots[id].forward_velocity_error.variance)};
+    double mu{robots[id].forward_velocity_error.mean};
 
     std::ostringstream forward_velocity_gaussian_plot;
     forward_velocity_gaussian_plot
@@ -933,7 +936,13 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
     forward_velocity_pdf.emplace_back(forward_velocity_gaussian_plot.str());
 
     forward_velocity_pdf.back().settings = {
+        .key_label =
+            latexEnabled(terminal_.type)
+                ? "$\\mathcal{N}(" + std::to_string(mu) + "," +
+                      std::to_string(sigma) + ")$"
+                : "N(" + std::to_string(mu) + "," + std::to_string(sigma) + ")",
         .style = gnuplot::LINES,
+        .linewidth = 4,
         .math_expression = true,
     };
 
@@ -944,6 +953,7 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
         binary_robot_data_[id].angular_velocity_pdf.binary_format);
 
     angular_velocity_pdf.back().settings = {
+        .key_label = "Scaled PMF",
         .x = 1,
         .y = 3,
         .box_width = 2,
@@ -959,9 +969,15 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
         << "* exp(- " << "( x - " << mu << ")**2 / (2 *" << std::pow(sigma, 2)
         << "))";
 
-    angular_velocity_pdf.emplace_back(forward_velocity_gaussian_plot.str());
+    angular_velocity_pdf.emplace_back(angular_velocity_gaussian_plot.str());
     angular_velocity_pdf.back().settings = {
+        .key_label =
+            latexEnabled(terminal_.type)
+                ? "$\\mathcal{N}(" + std::to_string(mu) + "," +
+                      std::to_string(sigma) + ")$"
+                : "N(" + std::to_string(mu) + "," + std::to_string(sigma) + ")",
         .style = gnuplot::LINES,
+        .linewidth = 4,
         .math_expression = true,
     };
 
@@ -971,7 +987,7 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
     gnuplot_ << gnuplot::unsetMultiplot();
     gnuplot_.flush();
   }
-}
+} // namespace Data
 
 /**
  * Plots the range and bearing measurements that each vehicle recieved through a
@@ -1100,11 +1116,13 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   gnuplot::AxisSettings range_axis{
+      .title = "Range Noise Probability Distribution",
       .x_label = "Error [m]",
       .y_label = "Probability Density [1/m]",
   };
 
   gnuplot::AxisSettings bearing_axis{
+      .title = "Bearing Noise Probability Distribution",
       .x_label = "Error [rad]",
       .y_label = "Probability Density [1/rad]",
   };
@@ -1120,8 +1138,6 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
     std::string output_file = data_extraction_directory_ + title;
     gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
-    gnuplot_ << gnuplot::setTitle(title);
-
     const unsigned short rows{2U}, columns{1U};
     gnuplot_ << gnuplot::setMultiplot(rows, columns);
 
@@ -1132,6 +1148,7 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
     range_pdf.emplace_back(binary_robot_data_[id].range_pdf.filename,
                            binary_robot_data_[id].range_pdf.binary_format);
     range_pdf.back().settings = {
+        .key_label = "Scaled PMF",
         .x = BIN_INDEX,
         .y = BIN_COUNT,
         .box_width = BIN_WIDTH,
@@ -1148,7 +1165,13 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
 
     range_pdf.emplace_back(range_gaussian_plot.str());
     range_pdf.back().settings = {
+        .key_label =
+            latexEnabled(terminal_.type)
+                ? "$\\mathcal{N}(" + std::to_string(mu) + "," +
+                      std::to_string(sigma) + ")$"
+                : "N(" + std::to_string(mu) + "," + std::to_string(sigma) + ")",
         .style = gnuplot::LINES,
+        .linewidth = 4,
         .math_expression = true,
     };
 
@@ -1158,6 +1181,7 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
     bearing_pdf.emplace_back(binary_robot_data_[id].bearing_pdf.filename,
                              binary_robot_data_[id].bearing_pdf.binary_format);
     bearing_pdf.back().settings = {
+        .key_label = "Scaled PMF",
         .x = BIN_INDEX,
         .y = BIN_COUNT,
         .box_width = BIN_WIDTH,
@@ -1175,7 +1199,13 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
 
     bearing_pdf.emplace_back(bearing_gaussian_plot.str());
     bearing_pdf.back().settings = {
+        .key_label =
+            latexEnabled(terminal_.type)
+                ? "$\\mathcal{N}(" + std::to_string(mu) + "," +
+                      std::to_string(sigma) + ")$"
+                : "N(" + std::to_string(mu) + "," + std::to_string(sigma) + ")",
         .style = gnuplot::LINES,
+        .linewidth = 4,
         .math_expression = true,
     };
 
