@@ -1972,13 +1972,22 @@ const int Handler::getID(unsigned short barcode) const {
   return -1;
 }
 
+/***
+ * Returns a subject structure that corresponds to the barcode provided by a
+ * measurement.
+ * @param[in] barcode The barcode provided by the measurment.
+ * @param[out] subject The data structure containing information about the
+ * subject that relates to the barcode provided.
+ */
 bool Handler::getSubject(const unsigned short barcode, Subject &subject) const {
 
-  subject.id = getID(barcode);
+  int subject_id = getID(barcode);
 
-  if (-1 == subject.id) {
+  if (-1 == subject_id) {
     return false;
   }
+
+  subject.id = static_cast<unsigned short>(subject_id);
 
   /* The datahandler first assigns the ID to the robots then the
    * landmarks. Therefore if the ID is less than or equal to the number
@@ -1987,7 +1996,6 @@ bool Handler::getSubject(const unsigned short barcode, Subject &subject) const {
   if (subject.id <= total_robots_) {
     subject.type = Subject::Type::ROBOT;
     subject.index = subject.id - 1U;
-
   } else {
     subject.type = Subject::Type::LANDMARK;
     subject.index = subject.id - total_robots_ - 1U;

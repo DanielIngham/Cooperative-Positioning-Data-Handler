@@ -713,25 +713,26 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
         break;
       }
 
-      /* Plot X Position */
+      static constexpr double point_size{0.5};
+
       x_plots.emplace_back(plot_type, binary_format);
       x_plots.back().settings = {
           .key_label = plot_title,
           .x = TIME,
           .y = X_POSITION,
           .style = gnuplot::LINESPOINTS,
+          .pointsize = point_size,
       };
 
-      /* Plot Y Position */
       y_plots.emplace_back(plot_type, binary_format);
       y_plots.back().settings = {
           .key_label = plot_title,
           .x = TIME,
           .y = Y_POSITION,
           .style = gnuplot::LINESPOINTS,
+          .pointsize = point_size,
       };
 
-      /* Plot Orientation */
       orientation_plots.emplace_back(plot_type, binary_format);
 
       orientation_plots.back().settings = {
@@ -739,6 +740,7 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
           .x = TIME,
           .y = ORIENTATION,
           .style = gnuplot::LINESPOINTS,
+          .pointsize = point_size,
       };
     }
   }

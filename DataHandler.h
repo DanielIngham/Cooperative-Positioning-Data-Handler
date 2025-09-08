@@ -96,10 +96,21 @@ public:
 
   const int getID(const unsigned short) const;
 
+  /**
+   * Data structure containing information about the agent that is useful for
+   * identification.
+   */
   struct Subject {
+    /** Types of agents. */
     enum class Type { ROBOT, LANDMARK };
-    int id;
-    unsigned short index;
+
+    /** The agents ID number. */
+    unsigned short id{};
+
+    /** The position of agent in the data handlers vectors. */
+    unsigned short index{};
+
+    /** The type of agent: robot/landmark. */
     Type type;
   };
 
