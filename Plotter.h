@@ -94,7 +94,7 @@ private:
 
   /** The number of terminals that have been spawned by the
    * plotter. */
-  static size_t terminal_number_;
+  static unsigned short terminal_number_;
 
   unsigned int total_inference_iterations_{};
 

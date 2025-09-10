@@ -18,7 +18,7 @@
 #endif // REUSE
 
 namespace Data {
-size_t Plotter::terminal_number_{};
+unsigned short Plotter::terminal_number_{};
 
 /**
  * Constructor for instance of the Plotter which sets its fields using the data
