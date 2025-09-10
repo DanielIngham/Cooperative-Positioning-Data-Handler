@@ -550,11 +550,11 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
         .y_label = "y position [m]",
     };
 
-    PlotList plots;
+    PlotList plot_list;
 
-    plots.emplace_back(binary_landmark_data_.filename,
-                       binary_landmark_data_.binary_format);
-    plots.back().settings = {
+    plot_list.emplace_back(binary_landmark_data_.filename,
+                           binary_landmark_data_.binary_format);
+    plot_list.back().settings = {
         .key_label = "Landmarks",
         .style = gnuplot::PlotStyle::POINTS,
     };
