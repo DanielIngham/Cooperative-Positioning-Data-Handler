@@ -69,6 +69,7 @@ public:
   void inference_error_animation(std::initializer_list<PlotType>);
 
   void trajectory_animation(unsigned short);
+
   void plotInferenceIterations(std::initializer_list<PlotType>,
                                std::vector<unsigned int> iterations = {});
 
@@ -291,7 +292,10 @@ private:
   std::vector<RobotData> binary_robot_data_;
 
   void inferenceIterationsPlotter(PlotType,
-                                  std::vector<unsigned int> iteration_numbers);
+                                  std::vector<unsigned int> iterations);
+
+  void trajectoryIterationsPlotter(unsigned short,
+                                   std::vector<unsigned int> iterations);
 
   void binariseRobotPoseData(std::initializer_list<PlotType>,
                              const unsigned short robot_id = 0U);
