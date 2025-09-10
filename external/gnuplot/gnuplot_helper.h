@@ -514,6 +514,7 @@ inline std::string unsetTitle() { return "unset title\n"; }
  * Sets the output for gnuplot to save plots.
  * @param filename The full path the directory where the file should be saved.
  * @param terminal The gnuplot terminal settings.
+ * @note Do NOT include the file extension to the file name.
  */
 inline std::string setOutput(std::string filename, TerminalSettings terminal) {
   switch (terminal.type) {
