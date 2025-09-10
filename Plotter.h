@@ -110,6 +110,8 @@ private:
   /** Directory where the data inference plots are saved. */
   std::string data_infernce_directory_;
 
+  std::string animation_directory_;
+
   /** Total number of synced data points in the dataset. */
   size_t data_points_;
 

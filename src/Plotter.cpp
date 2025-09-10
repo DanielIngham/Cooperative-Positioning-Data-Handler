@@ -42,6 +42,7 @@ Plotter::Plotter(Handler &data)
 
   data_extraction_directory_ = data_.getDataExtractionDirectory();
   data_infernce_directory_ = data_.getDataInferenceDirectory();
+  animation_directory_ = data_extraction_directory_ + "/animation/";
 }
 
 /**
@@ -451,6 +452,8 @@ void Plotter::inference_error_animation(std::initializer_list<PlotType> plots) {
     terminal_.type = gnuplot::GIF;
 
     std::string output_file{data_extraction_directory_ + "/animation/"};
+
+    std::string output_file{animation_directory_};
 
     switch (plot) {
     case SYNCED:
