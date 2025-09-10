@@ -1323,6 +1323,7 @@ void Plotter::addInferenceIteration() {
 
 void Plotter::plotInferenceIterations(std::initializer_list<PlotType> plots,
                                       std::vector<unsigned int> iterations) {
+  terminal_.number = ++terminal_number_;
   gnuplot_ << gnuplot::setTerminal(terminal_);
   gnuplot_ << gnuplot::grid();
 
@@ -1339,6 +1340,7 @@ void Plotter::plotInferenceIterations(std::initializer_list<PlotType> plots,
 void Plotter::inferenceIterationsPlotter(PlotType plot_type,
                                          std::vector<unsigned int> iterations) {
   assert(total_inference_iterations_ > 0);
+  binariseRobotPoseData({GROUNDTRUTH}, 1);
 
   std::vector<bool> plot_iteration(total_inference_iterations_, false);
 
@@ -1392,6 +1394,38 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
   std::vector<Robot> &robots = data_.getRobots();
 
   PlotList x_plots, y_plots, heading_plots;
+
+  if (plot_type == SYNCED) {
+    std::string groundtruth_file = binary_robot_data_[0U].pose.groundtruth;
+
+    x_plots.emplace_back(groundtruth_file, RobotData::Pose::binary_format());
+    x_plots.back().settings = {
+        .key_label = "Groundtruth",
+        .x = TIME,
+        .y = X_POSITION,
+        .style = gnuplot::LINES,
+        .linecolor = gnuplot::LIGHT_RED,
+    };
+
+    y_plots.emplace_back(groundtruth_file, RobotData::Pose::binary_format());
+    y_plots.back().settings = {
+        .key_label = "Groundtruth",
+        .x = TIME,
+        .y = Y_POSITION,
+        .style = gnuplot::LINES,
+        .linecolor = gnuplot::LIGHT_RED,
+    };
+
+    heading_plots.emplace_back(groundtruth_file,
+                               RobotData::Pose::binary_format());
+    heading_plots.back().settings = {
+        .key_label = "Groundtruth",
+        .x = TIME,
+        .y = HEADING,
+        .style = gnuplot::LINES,
+        .linecolor = gnuplot::LIGHT_RED,
+    };
+  }
 
   for (unsigned int i{}; i < total_inference_iterations_; ++i) {
 
