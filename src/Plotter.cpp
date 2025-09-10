@@ -786,7 +786,7 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
       orientation_plots.back().settings = {
           .key_label = plot_title,
           .x = TIME,
-          .y = ORIENTATION,
+          .y = HEADING,
           .style = gnuplot::LINESPOINTS,
           .pointsize = point_size,
       };
@@ -1430,7 +1430,7 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
     heading_plots.back().settings = {
         .key_label = std::to_string(i),
         .x = TIME,
-        .y = ORIENTATION,
+        .y = HEADING,
         .style = gnuplot::LINES,
         .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
         .record = data_points_,
