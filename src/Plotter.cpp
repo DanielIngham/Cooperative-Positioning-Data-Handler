@@ -299,7 +299,6 @@ void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
                  std::cos(measurement.bearings[i] + pose->orientation)};
 
         /* Convert odometry data to binary. */
-
         fout.write(reinterpret_cast<const char *>(&pose->x), sizeof(double));
         fout.write(reinterpret_cast<const char *>(&pose->y), sizeof(double));
         fout.write(reinterpret_cast<const char *>(&x), sizeof(double));
@@ -439,7 +438,10 @@ void Plotter::binariseLandmarkData() {
 }
 
 /**
- * TODO: Replace this with "live" (or maybe animated?) inference plot.
+ * Creates a gif of the optimisation parameter values after each iteration.
+ * @param plots the types of plots the should be created from the parameter
+ * values.
+ * TODO: Add ability to select different robots based on ID.
  */
 void Plotter::inference_error_animation(std::initializer_list<PlotType> plots) {
   static const unsigned short first_iteration{};
