@@ -285,7 +285,8 @@ void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
         pose = &output_robot_data[id].groundtruth.states[k];
 
         /* Round to 4 decimal places */
-        if (std::round((pose->time - measurement.time) * 1e4) / 1e4 == 0.0) {
+        static constexpr double decimal_threshold{1e4};
+        if (std::abs(pose->time - measurement.time) < decimal_threshold) {
           break;
         }
       }
