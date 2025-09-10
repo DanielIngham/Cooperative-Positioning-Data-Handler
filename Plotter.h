@@ -292,12 +292,15 @@ private:
   void inferenceIterationsPlotter(PlotType,
                                   std::vector<unsigned int> iteration_numbers);
 
-  void binariseRobotPoseData(std::initializer_list<PlotType>, unsigned short);
+  void binariseRobotPoseData(std::initializer_list<PlotType>,
+                             const unsigned short robot_id = 0U);
   void binariseLandmarkData();
-  void binariseOdometryData(std::initializer_list<PlotType>, unsigned short);
-  void binariseMeasurementData(std::initializer_list<PlotType>, unsigned short);
+  void binariseOdometryData(std::initializer_list<PlotType>,
+                            const unsigned short robot_id = 0U);
+  void binariseMeasurementData(std::initializer_list<PlotType>,
+                               const unsigned short robot_id = 0U);
   void binariseMeasurementVectors(std::initializer_list<PlotType>,
-                                  unsigned short);
+                                  const unsigned short robot_id = 0U);
 
   void binariseOdometryPDF(unsigned short, const double);
   void binariseMeasurementPDF(unsigned short, const double);

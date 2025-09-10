@@ -68,7 +68,7 @@ void Plotter::setTerminal(gnuplot::TerminalSettings terminal) {
  * @note If the ID number is 0, all robot plots will be shown.
  */
 void Plotter::binariseRobotPoseData(std::initializer_list<PlotType> plots,
-                                    unsigned short robot_id) {
+                                    const unsigned short robot_id) {
 
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Robot ID provided is not valid: " +
@@ -136,7 +136,7 @@ void Plotter::binariseRobotPoseData(std::initializer_list<PlotType> plots,
  * @note If the ID number is 0, all robot plots will be shown.
  */
 void Plotter::binariseOdometryData(std::initializer_list<PlotType> plots,
-                                   unsigned short robot_id) {
+                                   const unsigned short robot_id) {
 
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Robot ID provided is not valid: " +
@@ -250,7 +250,7 @@ void Plotter::binariseMeasurementData(std::initializer_list<PlotType> plots,
 }
 
 void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
-                                         unsigned short robot_id) {
+                                         const unsigned short robot_id) {
 
   std::vector<Robot> &output_robot_data = data_.getRobots();
 
