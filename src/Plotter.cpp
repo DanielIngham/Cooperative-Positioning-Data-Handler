@@ -446,13 +446,17 @@ void Plotter::binariseLandmarkData() {
 void Plotter::inference_error_animation(std::initializer_list<PlotType> plots) {
   static const unsigned short first_iteration{};
 
-  const unsigned short rows{3}, columns{1};
+  const unsigned short rows{3U}, columns{1U};
 
   for (const auto &plot : plots) {
     gnuplot_ << gnuplot::grid();
-    terminal_.type = gnuplot::GIF;
 
-    std::string output_file{data_extraction_directory_ + "/animation/"};
+    terminal_ = {
+        .type = gnuplot::GIF,
+        .number = ++terminal_number_,
+    };
+
+    gnuplot_ << gnuplot::setTerminal(terminal_);
 
     std::string output_file{animation_directory_};
 
@@ -475,7 +479,6 @@ void Plotter::inference_error_animation(std::initializer_list<PlotType> plots) {
     }
 
     gnuplot_ << gnuplot::setOutput(output_file, terminal_);
-    gnuplot_ << gnuplot::setTerminal(terminal_);
 
     for (unsigned short i{}; i < total_inference_iterations_; ++i) {
       gnuplot_ << gnuplot::setMultiplot(rows, columns);
