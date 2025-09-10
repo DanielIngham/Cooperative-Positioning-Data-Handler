@@ -488,6 +488,28 @@ void Plotter::inference_error_animation(std::initializer_list<PlotType> plots) {
   }
 }
 
+void Plotter::trajectory_animation(unsigned short robot_id) {
+  gnuplot_ << gnuplot::grid();
+
+  std::string output_filename{animation_directory_ + "trajectory_animation"};
+  gnuplot_ << gnuplot::setOutput(output_filename, terminal_);
+
+  terminal_ = {
+      .type = gnuplot::GIF,
+      .number = ++terminal_number_,
+  };
+
+  gnuplot_ << gnuplot::setTerminal(terminal_);
+
+  binariseLandmarkData();
+  binariseRobotPoseData({GROUNDTRUTH});
+
+  static const unsigned short first_iteration{};
+  for (unsigned short i{}; i < total_inference_iterations_; ++i) {
+    trajectoryIterationsPlotter(robot_id, {first_iteration, i});
+  }
+}
+
 /**
  * Plots the xy trajectory of the robots alongside the positions of the
  * landmarks.
@@ -537,17 +559,35 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
         .style = gnuplot::PlotStyle::POINTS,
     };
 
-    /* Create the plot for the trajectory of the robots. */
-    plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
-                       binary_robot_data_[id].pose.binary_format());
-    plots.back().settings = {
-        .key_label = "Robot Trajectory",
-        .x = X_POSITION,
-        .y = Y_POSITION,
-        .style = gnuplot::PlotStyle::LINES,
-    };
+    for (const auto &input_plot : plots) {
+      /* Create the plot for the trajectory of the robots. */
+      std::string plot_file{};
+      std::string key{};
 
-    plot(plots, axis);
+      switch (input_plot) {
+      case SYNCED:
+        plot_file = binary_robot_data_[id].pose.groundtruth;
+        key = "Synced trajectory";
+        break;
+      case GROUNDTRUTH:
+        plot_file = binary_robot_data_[id].pose.groundtruth;
+        key = "Groundtruth trajectory";
+        break;
+      default:
+        throw std::runtime_error("Plot type not accepted for trajectory plot.");
+      }
+
+      plot_list.emplace_back(plot_file,
+                             binary_robot_data_[id].pose.binary_format());
+      plot_list.back().settings = {
+          .key_label = key,
+          .x = X_POSITION,
+          .y = Y_POSITION,
+          .style = gnuplot::PlotStyle::LINES,
+      };
+    }
+
+    plot(plot_list, axis);
 
     gnuplot_.flush();
   }

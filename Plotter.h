@@ -68,6 +68,7 @@ public:
 
   void inference_error_animation(std::initializer_list<PlotType>);
 
+  void trajectory_animation(unsigned short);
   void plotInferenceIterations(std::initializer_list<PlotType>,
                                std::vector<unsigned int> iterations = {});
 
