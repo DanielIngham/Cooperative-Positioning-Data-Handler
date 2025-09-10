@@ -254,9 +254,8 @@ void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
 
   std::vector<Robot> &output_robot_data = data_.getRobots();
 
-  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
-
-  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+  unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id},
+      id{static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
 
   size_t total_datapoints = data_.getNumberOfSyncedDatapoints();
 
@@ -322,9 +321,8 @@ void Plotter::binariseMeasurementPDF(unsigned short robot_id,
 
   std::vector<Robot> &robots = data_.getRobots();
 
-  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
-
-  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+  unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id},
+      id{static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
 
   for (; id < end_point; id++) {
     std::unordered_map<int, double> range_bin_counts;
@@ -502,9 +500,10 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
   binariseLandmarkData();
   binariseRobotPoseData(plots, robot_id);
 
-  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+  unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id};
 
-  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+  unsigned short id{
+      static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
 
   for (; id < end_point; ++id) {
 
@@ -786,7 +785,7 @@ void Plotter::plotOdometry(std::initializer_list<PlotType> plots,
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
 
-    std::string output_file = data_extraction_directory_ + title;
+    std::string output_file{data_extraction_directory_ + title};
     gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
     const unsigned short rows{2U}, columns{1U};
@@ -1232,7 +1231,7 @@ void Plotter::addInferenceIteration() {
       /* NOTE: The robot ID's are 1 indexed. */
       unsigned short id{static_cast<unsigned short>(robot.id - 1U)};
 
-      std::string *inference_file;
+      std::string *inference_file{};
       const std::vector<Robot::State> *pose_data;
 
       switch (plot) {
