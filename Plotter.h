@@ -271,6 +271,9 @@ private:
       std::string pose;
       std::string error;
       std::string absolute_error;
+      static std::string binary_format() {
+        return "%double%double%double%double";
+      };
     } iterations;
   };
 
