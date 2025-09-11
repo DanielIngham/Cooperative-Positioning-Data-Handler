@@ -492,7 +492,6 @@ void Plotter::inferenceErrorAnimation(std::initializer_list<PlotType> plots) {
 void Plotter::trajectoryAnimation(const unsigned short robot_id) {
   gnuplot_ << gnuplot::grid();
 
-
   terminal_ = {
       .type = gnuplot::GIF,
       .number = ++terminal_number_,
@@ -555,7 +554,7 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
     PlotList plot_list;
 
     plot_list.emplace_back(binary_landmark_data_.filename,
-                           binary_landmark_data_.binary_format);
+                           LandmarkData::binary_format());
     plot_list.back().settings = {
         .key_label = "Landmarks",
         .style = gnuplot::PlotStyle::POINTS,
