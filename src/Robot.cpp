@@ -111,27 +111,30 @@ void Robot::calculateMeasurementError(const bool simulation) {
   this->error.measurements.reserve(this->groundtruth.measurements.size());
 
   /* Calculate Range and Bearing error for each measurement. */
-  auto iterator = this->error.measurements.begin();
-  for (std::size_t k = 0; k < this->groundtruth.measurements.size(); k++) {
+  auto iterator{this->error.measurements.begin()};
+  for (std::size_t k{}; k < this->groundtruth.measurements.size(); k++) {
 
     /* Loop through the subjects */
-    bool first_item = true;
-    for (std::size_t s = 0;
-         s < this->groundtruth.measurements[k].subjects.size(); s++) {
+    bool first_item{true};
+    for (std::size_t s{}; s < this->groundtruth.measurements[k].subjects.size();
+         s++) {
 
       /* Check that the subjects match between the groundtruth and the synced
        * measurements.*/
-      if (this->groundtruth.measurements[k].subjects[s] !=
-          this->synced.measurements[k].subjects[s]) {
-        throw std::runtime_error("The groundtruth subject barcode did not "
-                                 "match the syned subject barcode.");
+      if (groundtruth.measurements[k].subjects[s] !=
+          synced.measurements[k].subjects[s]) {
+        throw std::runtime_error(
+            "The groundtruth subject barcode did not "
+            "match the syned subject barcode: " +
+            std::to_string(groundtruth.measurements[k].subjects[s]) +
+            "!=" + std::to_string(synced.measurements[k].subjects[s]));
       }
 
       /* Ignore invalid measurements. These invalid measurements are explicitly
        * set by DataHandler::calculateGroundtruthMeasurement when an invalid
        * subject barcode is detected. */
-      if (this->groundtruth.measurements[k].ranges[s] == -1.0 &&
-          this->groundtruth.measurements[k].bearings[s] == 2 * M_PI) {
+      if (groundtruth.measurements[k].ranges[s] == -1.0 &&
+          groundtruth.measurements[k].bearings[s] == 2 * M_PI) {
         continue;
       }
 
@@ -139,14 +142,14 @@ void Robot::calculateMeasurementError(const bool simulation) {
        * instance of the measurment error. */
       if (first_item) {
         first_item = false;
-        this->error.measurements.push_back(
-            Measurement(this->groundtruth.measurements[k].time,
-                        this->groundtruth.measurements[k].subjects[s],
-                        this->groundtruth.measurements[k].ranges[s] -
-                            this->synced.measurements[k].ranges[s],
-                        this->groundtruth.measurements[k].bearings[s] -
-                            this->synced.measurements[k].bearings[s]));
-        iterator = this->error.measurements.end() - 1;
+        error.measurements.emplace_back(
+            groundtruth.measurements[k].time,
+            groundtruth.measurements[k].subjects[s],
+            groundtruth.measurements[k].ranges[s] -
+                synced.measurements[k].ranges[s],
+            groundtruth.measurements[k].bearings[s] -
+                synced.measurements[k].bearings[s]);
+        iterator = error.measurements.end() - 1;
       } else {
         /* Otherwise append the measurement values to the existing measurments
            for the current time stamp. */
