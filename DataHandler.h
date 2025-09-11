@@ -71,10 +71,10 @@ public:
              const double &sampling_period = HandlerDefaults::kSamplePeriod);
 
   void setSimulation(
-      unsigned long int,
+      size_t,
       const unsigned short number_of_robots = SimulationDefaults::kRobots,
       const unsigned short number_of_landmarks = SimulationDefaults::kLandmarks,
-      double sample_period = SimulationDefaults::kSamplePeriod,
+      const double sample_period = SimulationDefaults::kSamplePeriod,
       const std::string &output_directory = SimulationDefaults::kOutputDir,
       const unsigned long seed = SimulationDefaults::kSeed);
 
