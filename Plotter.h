@@ -261,7 +261,7 @@ private:
 
     /** Contains the filenames of the variants of extracted Pose data. */
     struct Pose : DataVariants {
-      static std::string binary_format() {
+      static const std::string binary_format() {
         return "%double%double%double%double";
       }
     } pose;
@@ -272,16 +272,16 @@ private:
       std::string pose;
       std::string error;
       std::string absolute_error;
-      static std::string binary_format() {
+      static const std::string binary_format() {
         return "%double%double%double%double";
       };
     } iterations;
   };
 
   /** Filename of the binary landmark data. */
-  struct {
+  struct LandmarkData {
     std::string filename;
-    const std::string binary_format = "%double%double";
+    static const std::string binary_format() { return "%double%double"; };
   } binary_landmark_data_;
 
   void plot(const PlotList &, const gnuplot::AxisSettings &);
