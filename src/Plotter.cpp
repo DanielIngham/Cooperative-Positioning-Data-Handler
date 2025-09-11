@@ -1479,9 +1479,37 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
 }
 
 void Plotter::trajectoryIterationsPlotter(
-    unsigned short robot_id, std::vector<unsigned int> iterations) {
+    const unsigned short robot_id, std::vector<unsigned int> iterations) {
 
   assert(total_inference_iterations_ > 0U);
+  assert(robot_id > 0U);
+
+  const unsigned short id{static_cast<unsigned short>(robot_id - 1)};
+
+  gnuplot::AxisSettings axis{
+      .title = "Robot " + std::to_string(id + 1) + " Trajectory",
+      .x_label = "x position [m]",
+      .y_label = "y position [m]",
+  };
+
+  PlotList plot_list;
+
+  plot_list.emplace_back(binary_landmark_data_.filename,
+                         LandmarkData::binary_format());
+
+  plot_list.back().settings = {
+      .key_label = "Landmarks",
+      .style = gnuplot::PlotStyle::POINTS,
+  };
+
+  plot_list.emplace_back(binary_robot_data_[id].pose.groundtruth,
+                         RobotData::Pose::binary_format());
+  plot_list.back().settings = {
+      .key_label = "Groundtruth Trajectory",
+      .x = X_POSITION,
+      .y = Y_POSITION,
+      .style = gnuplot::PlotStyle::LINES,
+  };
 
   std::vector<bool> plot_iteration(total_inference_iterations_, false);
 
@@ -1497,64 +1525,31 @@ void Plotter::trajectoryIterationsPlotter(
     }
   }
 
-  unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id};
+  for (unsigned short i{}; i < total_inference_iterations_; ++i) {
 
-  unsigned short id{
-      static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
+    if (!plot_iteration[i])
+      continue;
 
-  for (; id < end_point; ++id) {
-    std::string title{"Robot " + std::to_string(id + 1) + " Trajectory"};
-    std::string output_file{data_extraction_directory_ + title};
+    plot_list.emplace_back(binary_robot_data_[id].iterations.pose,
+                           RobotData::Iterations::binary_format());
 
-    gnuplot::AxisSettings axis{
-        .title = title,
-        .x_label = "x position [m]",
-        .y_label = "y position [m]",
+    /* HACK: It seems like the binary data saves the double values as
+     * floating point values represented by 32 bits. */
+    const unsigned short bits_per_item{32U};
+
+    plot_list.back().settings = {
+        .key_label = std::to_string(i),
+        .x = X_POSITION,
+        .y = Y_POSITION,
+        .style = gnuplot::PlotStyle::LINES,
+        .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
+        .record = data_points_,
+        .skip = i * data_points_ * bits_per_item,
     };
-
-    PlotList plot_list;
-
-    for (unsigned short i{}; i < total_inference_iterations_; ++i) {
-
-      plot_list.emplace_back(binary_landmark_data_.filename,
-                             RobotData::Iterations::binary_format());
-
-      plot_list.back().settings = {
-          .key_label = "Landmarks",
-          .style = gnuplot::PlotStyle::POINTS,
-      };
-
-      plot_list.emplace_back(binary_robot_data_[id].pose.groundtruth,
-                             RobotData::Iterations::binary_format());
-      plot_list.back().settings = {
-          .key_label = "Groundtruth Trajectory",
-          .x = X_POSITION,
-          .y = Y_POSITION,
-          .style = gnuplot::PlotStyle::LINES,
-      };
-
-      plot_list.emplace_back(binary_robot_data_[id].iterations.pose,
-                             RobotData::Iterations::binary_format());
-
-      /* HACK: It seems like the binary data saves the double values as
-       * floating point values represented by 32 bits. */
-      const unsigned short bits_per_item{32U};
-
-      plot_list.back().settings = {
-          .key_label = "Inferred Trajectory",
-          .x = X_POSITION,
-          .y = Y_POSITION,
-          .style = gnuplot::PlotStyle::LINES,
-          .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
-          .record = data_points_,
-          .skip = i * data_points_ * bits_per_item,
-      };
-    }
-    plot(plot_list, axis);
-
-    gnuplot_.flush();
   }
-}
+  plot(plot_list, axis);
+
+} // namespace Data
 
 /**
  * Writes binary file for odometry data.
