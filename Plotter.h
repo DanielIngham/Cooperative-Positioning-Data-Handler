@@ -290,11 +290,10 @@ private:
    */
   std::vector<RobotData> binary_robot_data_;
 
-  void inferenceIterationsPlotter(PlotType,
-                                  std::vector<unsigned int> iterations);
+  void inferenceIterationsPlotter(PlotType, std::vector<unsigned int>);
 
-  void trajectoryIterationsPlotter(unsigned short,
-                                   std::vector<unsigned int> iterations);
+  void trajectoryIterationsPlotter(const unsigned short,
+                                   std::vector<unsigned int>);
 
   void binariseRobotPoseData(std::initializer_list<PlotType>,
                              const unsigned short robot_id = 0U);
