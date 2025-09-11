@@ -444,7 +444,7 @@ void Plotter::binariseLandmarkData() {
  * values.
  * TODO: Add ability to select different robots based on ID.
  */
-void Plotter::inference_error_animation(std::initializer_list<PlotType> plots) {
+void Plotter::inferenceErrorAnimation(std::initializer_list<PlotType> plots) {
   static const unsigned short first_iteration{};
 
   const unsigned short rows{3U}, columns{1U};
@@ -489,7 +489,7 @@ void Plotter::inference_error_animation(std::initializer_list<PlotType> plots) {
   }
 }
 
-void Plotter::trajectory_animation(unsigned short robot_id) {
+void Plotter::trajectoryAnimation(const unsigned short robot_id) {
   gnuplot_ << gnuplot::grid();
 
   std::string output_filename{animation_directory_ + "trajectory_animation"};
