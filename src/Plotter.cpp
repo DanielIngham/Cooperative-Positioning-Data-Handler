@@ -1445,7 +1445,7 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
         .y = X_POSITION,
         .style = gnuplot::LINES,
         .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
-        .record = data_points_,
+        .record = data_points_ - 1,
         .skip = i * data_points_ * bits_per_item,
     };
 
@@ -1456,7 +1456,7 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
         .y = Y_POSITION,
         .style = gnuplot::LINES,
         .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
-        .record = data_points_,
+        .record = data_points_ - 1,
         .skip = i * data_points_ * bits_per_item,
     };
 
@@ -1468,7 +1468,7 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
         .y = HEADING,
         .style = gnuplot::LINES,
         .linecolor = (i == 0U) ? gnuplot::BLACK : gnuplot::NONE,
-        .record = data_points_,
+        .record = data_points_ - 1,
         .skip = i * data_points_ * bits_per_item,
     };
   }
