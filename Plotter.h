@@ -47,21 +47,20 @@ public:
   void plotPoses(std::initializer_list<PlotType>, unsigned short robot_id = 0);
 
   void plotTrajectory(std::initializer_list<PlotType>,
-                      unsigned short robot_id = 0);
+                      const unsigned short robot_id = 0);
 
   void plotOdometry(std::initializer_list<PlotType>,
-                    unsigned short robot_id = 0);
+                    const unsigned short robot_id = 0);
 
-  void plotMeasurements(std::initializer_list<PlotType>,
-                        unsigned short robot_id = 0);
-
-  void plotMeasurementsVector(std::initializer_list<PlotType>,
-                              unsigned short robot_id = 0);
-
-  void plotOdometryPDFs(unsigned short robot_id = 0,
+  void plotOdometryPDFs(const unsigned short robot_id = 0,
                         const double bin_size = 0.001);
 
-  void plotMeasurementPDFs(unsigned short robot_id = 0,
+  void plotMeasurements(std::initializer_list<PlotType>,
+                        const unsigned short robot_id = 0);
+
+  void plotMeasurementsVector(const unsigned short robot_id = 0);
+
+  void plotMeasurementPDFs(const unsigned short robot_id = 0,
                            const double bin_size = 0.001);
 
   void addInferenceIteration();
