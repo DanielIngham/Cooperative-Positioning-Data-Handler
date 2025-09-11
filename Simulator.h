@@ -47,8 +47,11 @@ public:
                      const unsigned long seed = SimulationDefaults::kSeed);
 
 private:
-  /* Random Setup and seeding. */
-  std::mt19937 generator_;
+  /**
+   * Seed value used for the generator.
+   */
+  size_t generator_seed_;
+
   /**
    * @ brief The total number of samples for each robot in the simulation.
    */

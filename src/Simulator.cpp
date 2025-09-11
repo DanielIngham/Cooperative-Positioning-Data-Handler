@@ -56,7 +56,7 @@ void Simulator::setSimulation(const unsigned long int data_points,
 
   total_landmarks = landmarks.size();
   total_robots = robots.size();
-  total_barcodes_ = this->total_landmarks + this->total_robots;
+  total_barcodes_ = total_landmarks + total_robots;
 
   robots_ = &robots;
   landmarks_ = &landmarks;
@@ -77,13 +77,13 @@ void Simulator::setSimulation(const unsigned long int data_points,
  * simulator.
  */
 void Simulator::assignVectorMemory() {
-  for (unsigned short id{}; id < total_robots; ++id) {
-    (*robots_)[id].groundtruth.states.reserve(data_points_);
-    (*robots_)[id].synced.odometry.reserve(data_points_);
+  for (auto &robot : *robots_) {
+    robot.groundtruth.states.reserve(data_points_);
+    robot.synced.odometry.reserve(data_points_);
 
     /* Set the first element to the origin. This will be overwritten with random
      * values in Simulator::setRobots(). */
-    (*robots_)[id].groundtruth.states.emplace_back(Robot::State{
+    robot.groundtruth.states.emplace_back(Robot::State{
         .time = .0,
         .x = .0,
         .y = .0,
@@ -121,19 +121,22 @@ void Simulator::setBarcodes() {
  */
 void Simulator::setErrorStatistics() {
 
+  std::mt19937 generator{static_cast<unsigned int>(generator_seed_)};
+
   /* Set the landmarks standard deviation */
   std::uniform_real_distribution<double> deviation(
       std::sqrt(variance_.landmarks[MIN]), std::sqrt(variance_.landmarks[MAX]));
 
   /* Loop through each landmark and set the id and standard deviation */
-  for (unsigned short i{}; i < total_landmarks; i++) {
+  unsigned short landmark_id{total_robots};
+  for (auto &landmark : *landmarks_) {
 
     /* Set the ID for each Landmark */
-    (*landmarks_)[i].id = total_robots + (i + 1);
+    landmark.id = ++landmark_id;
 
     /* Set the variance for each landmark */
-    (*landmarks_)[i].x_std_dev = deviation(generator_);
-    (*landmarks_)[i].y_std_dev = deviation(generator_);
+    landmark.x_std_dev = deviation(generator);
+    landmark.y_std_dev = deviation(generator);
   }
 
   /* Set all the robot ID's and variance robots */
@@ -149,17 +152,16 @@ void Simulator::setErrorStatistics() {
   std::uniform_real_distribution<double> bearing_error(variance_.bearing[MIN],
                                                        variance_.bearing[MAX]);
 
-  for (unsigned short id{}; id < total_robots; id++) {
-    (*robots_)[id].id = id + 1;
+  unsigned short id{};
+  for (auto &robot : *robots_) {
+    robot.id = ++id;
 
-    (*robots_)[id].forward_velocity_error.variance =
-        forward_velocity_error(generator_);
+    robot.forward_velocity_error.variance = forward_velocity_error(generator);
 
-    (*robots_)[id].angular_velocity_error.variance =
-        angular_velocity_error(generator_);
+    robot.angular_velocity_error.variance = angular_velocity_error(generator);
 
-    (*robots_)[id].range_error.variance = range_error(generator_);
-    (*robots_)[id].bearing_error.variance = bearing_error(generator_);
+    robot.range_error.variance = range_error(generator);
+    robot.bearing_error.variance = bearing_error(generator);
   }
 }
 
@@ -168,9 +170,11 @@ void Simulator::setErrorStatistics() {
  */
 void Simulator::setLandmarkPositions() {
 
+  std::mt19937 generator{static_cast<unsigned int>(generator_seed_)};
+
   /* Generate random x, y positions within the simulation region and some
    * buffer: 0.5 metres.*/
-  double position_padding{0.5};
+  static constexpr double position_padding{0.5};
 
   std::uniform_real_distribution<double> position_x(
       position_padding, limits_.width - position_padding);
@@ -179,19 +183,18 @@ void Simulator::setLandmarkPositions() {
       position_padding, limits_.height - position_padding);
 
   /* Set the first landmark with a random x,y coordinate pair. */
-  (*landmarks_).front().x = position_x(generator_);
-  (*landmarks_).front().y = position_y(generator_);
+  (*landmarks_).front().x = position_x(generator);
+  (*landmarks_).front().y = position_y(generator);
 
   /* Loop through each landmark and assign a x,y coordinate that is at least
    * 2m apart from all other landmarks. */
-
-  auto timer_start = std::chrono::high_resolution_clock::now();
+  auto timer_start{std::chrono::high_resolution_clock::now()};
 
   for (unsigned short i{1U}; i < total_landmarks; i++) {
-    auto current_time = std::chrono::high_resolution_clock::now();
+    auto current_time{std::chrono::high_resolution_clock::now()};
 
-    auto timer_duration = std::chrono::duration_cast<std::chrono::seconds>(
-        current_time - timer_start);
+    auto timer_duration{std::chrono::duration_cast<std::chrono::seconds>(
+        current_time - timer_start)};
 
     if (timer_duration.count() > 1) {
       position_x.param(std::uniform_real_distribution<double>::param_type(
@@ -209,21 +212,21 @@ void Simulator::setLandmarkPositions() {
     }
 
     /* Generate a random coordinate for the landmark*/
-    (*landmarks_)[i].x = position_x(this->generator_);
-    (*landmarks_)[i].y = position_y(this->generator_);
+    (*landmarks_)[i].x = position_x(generator);
+    (*landmarks_)[i].y = position_y(generator);
 
     for (unsigned short j{}; j < i; j++) {
 
       /* Check that the new point is far enough away from other points
        * randomly choosen. */
-      double x_difference = (*landmarks_)[i].x - (*landmarks_)[j].x;
-      double y_difference = (*landmarks_)[i].y - (*landmarks_)[j].y;
-      double distance =
-          std::sqrt(x_difference * x_difference + y_difference * y_difference);
+      double x_difference{(*landmarks_)[i].x - (*landmarks_)[j].x};
+      double y_difference{(*landmarks_)[i].y - (*landmarks_)[j].y};
+      double distance{
+          std::sqrt(x_difference * x_difference + y_difference * y_difference)};
 
       /* If the point generated is too close to other points, restart the
        * process. */
-      double minimum_distance{2.0};
+      static constexpr double minimum_distance{2.0};
 
       if (distance < minimum_distance) {
         i--;
@@ -239,6 +242,8 @@ void Simulator::setLandmarkPositions() {
  */
 void Simulator::setRobotsInitalState() {
 
+  std::mt19937 generator{static_cast<unsigned int>(generator_seed_)};
+
   /* Set up random function for x and y position to fall within 1 metre of the
    * simulation limits. */
   static const double position_padding{1.0};
@@ -251,19 +256,19 @@ void Simulator::setRobotsInitalState() {
   std::uniform_real_distribution<double> orientation(-M_PI, M_PI);
 
   /* Set the initial value for the robot 1 state. */
-  bool unique;
+  bool unique{};
   do {
     unique = true;
 
     /* Overwrite the origin values set in Robot::assignVectorMemory. */
-    Robot::State &first_robot_state =
-        (*robots_).front().groundtruth.states.front();
+    Robot::State &first_robot_state{
+        (*robots_).front().groundtruth.states.front()};
 
     first_robot_state = {
         .time = .0,
-        .x = position_x(generator_),
-        .y = position_y(generator_),
-        .orientation = orientation(generator_),
+        .x = position_x(generator),
+        .y = position_y(generator),
+        .orientation = orientation(generator),
     };
 
     for (const auto &landmark : (*landmarks_)) {
@@ -293,16 +298,16 @@ void Simulator::setRobotsInitalState() {
 
     current_robot_pose = Robot::State{
         .time = .0,
-        .x = position_x(generator_),
-        .y = position_y(generator_),
-        .orientation = orientation(generator_),
+        .x = position_x(generator),
+        .y = position_y(generator),
+        .orientation = orientation(generator),
     };
 
     /* Check that the position is far enough away from other robots */
     for (unsigned short j{}; j < id; j++) {
 
-      const Robot::State &other_agent_pose =
-          (*robots_)[j].groundtruth.states.front();
+      const Robot::State &other_agent_pose{
+          (*robots_)[j].groundtruth.states.front()};
 
       /* Check that the new point is far enough away from other points
        * randomly choosen. */
@@ -359,6 +364,8 @@ void Simulator::setRobotsInitalState() {
  */
 void Simulator::setRobotOdometryAndState() {
 
+  std::mt19937 generator{static_cast<unsigned int>(generator_seed_)};
+
   /* Create a centre point. */
   double centre_x{limits_.width / 2.0}, centre_y{limits_.height / 2.0};
 
@@ -405,7 +412,7 @@ void Simulator::setRobotOdometryAndState() {
     /* Populate the robot's inital input. */
     robot.groundtruth.odometry.push_back(Robot::Odometry{
         .time = 0.0,
-        .forward_velocity = initial_forward_velocity(generator_),
+        .forward_velocity = initial_forward_velocity(generator),
         .angular_velocity = 0.0,
     });
 
@@ -432,7 +439,7 @@ void Simulator::setRobotOdometryAndState() {
                      .orientation = orientation});
 
     /* Assign a random walk length at random  */
-    unsigned short random_walk_duration{walk_length(this->generator_)};
+    unsigned short random_walk_duration{walk_length(generator)};
 
     /* Generate random odometry inputs for every datapoint. */
     double angular_input{};
@@ -454,12 +461,12 @@ void Simulator::setRobotOdometryAndState() {
 
         /* Calculate the distance from the centre points and get the angle
          * adjustment. */
-        double x_difference = centre_x - groundtruth_pose.x;
+        double x_difference{centre_x - groundtruth_pose.x};
 
-        double y_difference = centre_y - groundtruth_pose.y;
+        double y_difference{centre_y - groundtruth_pose.y};
 
-        double bearing_for_centre = std::atan2(y_difference, x_difference) -
-                                    groundtruth_pose.orientation;
+        double bearing_for_centre{std::atan2(y_difference, x_difference) -
+                                  groundtruth_pose.orientation};
 
         /* Normalise the orientation */
         Robot::normaliseAngle(bearing_for_centre);
@@ -476,11 +483,11 @@ void Simulator::setRobotOdometryAndState() {
       } else if ((k % random_walk_duration) == 0) {
 
         /* Assign a new velocity adjustment */
-        forward_adjustment = forward_velocity_input(generator_);
-        angular_input = angular_velocity_input(generator_);
+        forward_adjustment = forward_velocity_input(generator);
+        angular_input = angular_velocity_input(generator);
 
         /* Assign a new random walk length at random  */
-        random_walk_duration = walk_length(generator_);
+        random_walk_duration = walk_length(generator);
       }
 
       /* Boundary checks on new odometry values. */
@@ -556,10 +563,10 @@ void Simulator::setRobotOdometryAndState() {
  */
 void Simulator::setRobotMeasurement() {
 
-  const unsigned short &measurement_to_odometry_ratio =
-      SimulationDefaults::kmeasurement_to_odometry_ratio;
+  const unsigned short &measurement_to_odometry_ratio{
+      SimulationDefaults::kmeasurement_to_odometry_ratio};
 
-  const double &max_range = SimulationDefaults::kmax_range;
+  const double &max_range{SimulationDefaults::kmax_range};
 
   for (unsigned long k{}; k < data_points_; k++) {
 
@@ -646,8 +653,8 @@ void Simulator::setRobotMeasurement() {
           continue;
         }
 
-        double bearing = std::atan2(y_difference, x_difference) -
-                         ego_robot.groundtruth.states[k].orientation;
+        double bearing{std::atan2(y_difference, x_difference) -
+                       ego_robot.groundtruth.states[k].orientation};
 
         /* Normalise the orientation between -180 and 180 (-pi and pi) */
         Robot::normaliseAngle(bearing);
@@ -680,12 +687,12 @@ void Simulator::setGeneratorSeed(unsigned long seed) {
   /* If a seed is not provided, generate a random one. Otherwise, use the one
    * provided by the user. */
   if (seed == 0) {
-
     std::random_device random_device;
-    seed = random_device();
+    generator_seed_ = random_device();
+  } else {
+    generator_seed_ = seed;
   }
 
-  generator_.seed(seed);
   std::cout << "\033[1;32mSimulator is using seed:\033[0m " << seed
             << std::endl;
 }
@@ -708,34 +715,41 @@ void Simulator::addGaussianNoise() {
                                "calling this function");
     }
 
+    std::mt19937 odometry_generator(static_cast<unsigned int>(generator_seed_));
+
     /* Create Gaussian noise generators. */
     std::normal_distribution<double> forward_velocity_noise(
-        0, std::sqrt(robot.forward_velocity_error.variance));
+        robot.forward_velocity_error.mean,
+        std::sqrt(robot.forward_velocity_error.variance));
 
     std::normal_distribution<double> angular_velocity_noise(
-        0, std::sqrt(robot.angular_velocity_error.variance));
+        robot.angular_velocity_error.mean,
+        std::sqrt(robot.angular_velocity_error.variance));
 
     /* Apply Gaussian noise to odometry. */
     for (const auto &odometry : robot.groundtruth.odometry) {
       robot.synced.odometry.emplace_back(Robot::Odometry{
           .time = odometry.time,
-          .forward_velocity =
-              odometry.forward_velocity + forward_velocity_noise(generator_),
-          .angular_velocity =
-              odometry.angular_velocity + angular_velocity_noise(generator_)});
+          .forward_velocity = odometry.forward_velocity +
+                              forward_velocity_noise(odometry_generator),
+          .angular_velocity = odometry.angular_velocity +
+                              angular_velocity_noise(odometry_generator),
+      });
     }
 
-    /* Apply Gaussian noise to range and bearing measurements. */
-    std::normal_distribution<double> range_noise(
-        robot.range_error.mean, std::sqrt(robot.range_error.variance));
+    std::mt19937 measurement_generator(
+        static_cast<unsigned int>(generator_seed_));
 
-    std::normal_distribution<double> bearing_noise(
-        robot.bearing_error.mean, std::sqrt(robot.bearing_error.variance));
+    /* Apply Gaussian noise to range and bearing measurements. */
+    std::normal_distribution<double> range_noise{
+        robot.range_error.mean, std::sqrt(robot.range_error.variance)};
+
+    std::normal_distribution<double> bearing_noise{
+        robot.bearing_error.mean, std::sqrt(robot.bearing_error.variance)};
 
     /* For each measurment, add Gaussian noise. */
     for (const Robot::Measurement &measurement :
          robot.groundtruth.measurements) {
-
       /* Copy the measurement */
       robot.synced.measurements.push_back(measurement);
 
@@ -745,10 +759,11 @@ void Simulator::addGaussianNoise() {
 
       for (unsigned short s{}; s < total_measurements; s++) {
 
-        robot.synced.measurements.back().ranges[s] += range_noise(generator_);
+        const double added_range_noise{range_noise(measurement_generator)};
+        const double added_bearing_noise{bearing_noise(measurement_generator)};
 
-        robot.synced.measurements.back().bearings[s] +=
-            bearing_noise(generator_);
+        robot.synced.measurements.back().ranges[s] += added_range_noise;
+        robot.synced.measurements.back().bearings[s] += added_bearing_noise;
 
         /* Normalise the bearing error. */
         Robot::normaliseAngle(robot.synced.measurements.back().bearings[s]);
