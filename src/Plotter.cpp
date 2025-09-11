@@ -1,4 +1,5 @@
 #include "Plotter.h"
+#include "Landmark.h"
 #include "Robot.h"
 
 #include <algorithm>
@@ -252,12 +253,12 @@ void Plotter::binariseMeasurementData(std::initializer_list<PlotType> plots,
 void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
                                          const unsigned short robot_id) {
 
-  std::vector<Robot> &output_robot_data = data_.getRobots();
+  const std::vector<Robot> &output_robot_data{data_.getRobots()};
 
   unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id},
       id{static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
 
-  size_t total_datapoints = data_.getNumberOfSyncedDatapoints();
+  const size_t total_datapoints{data_.getNumberOfSyncedDatapoints()};
 
   for (; id < end_point; ++id) {
 
