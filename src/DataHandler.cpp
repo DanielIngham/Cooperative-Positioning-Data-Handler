@@ -90,10 +90,10 @@ Handler::Handler(const std::string &dataset,
  * are saved.
  * @param[in] seed The seed used by the random number generator for simulation.
  */
-void Handler::setSimulation(const unsigned long int data_points,
+void Handler::setSimulation(const size_t data_points,
                             const unsigned short number_of_robots,
                             const unsigned short number_of_landmarks,
-                            double sample_period,
+                            const double sample_period,
                             const std::string &output_directory,
                             const unsigned long seed) {
 
