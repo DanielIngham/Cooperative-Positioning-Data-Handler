@@ -594,8 +594,7 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
   }
 }
 
-void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
-                                     unsigned short robot_id) {
+void Plotter::plotMeasurementsVector(unsigned short robot_id) {
 
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
@@ -603,15 +602,16 @@ void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
 
   binariseLandmarkData();
   binariseRobotPoseData({GROUNDTRUTH}, robot_id);
-  binariseMeasurementVectors(plots, robot_id);
+  binariseMeasurementVectors({GROUNDTRUTH}, robot_id);
 
   unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
 
   unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
 
   for (; id < end_point; ++id) {
-    std::string title =
-        "Robot " + std::to_string(id + 1) + " Measurement Vectors";
+
+    std::string title{"Robot " + std::to_string(id + 1) +
+                      " Measurement Vectors"};
 
     gnuplot_ << gnuplot::setTitle(title);
 
@@ -625,7 +625,7 @@ void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
     PlotList plots;
 
     plots.emplace_back(binary_robot_data_[id].measurement_vector.filename,
-                       binary_robot_data_[id].measurement_vector.binary_format);
+                       RobotData::MeasurementVector::binary_format);
     plots.back().settings = {
         .key_label = "Measurement Vectors",
         .style = gnuplot::PlotStyle::VECTORS,
@@ -633,7 +633,7 @@ void Plotter::plotMeasurementsVector(std::initializer_list<PlotType> plots,
     };
 
     plots.emplace_back(binary_landmark_data_.filename,
-                       binary_landmark_data_.binary_format);
+                       LandmarkData::binary_format());
     plots.back().settings = {
         .key_label = "Landmarks",
         .style = gnuplot::PlotStyle::POINTS,
@@ -1070,7 +1070,7 @@ void Plotter::plotMeasurements(std::initializer_list<PlotType> plots,
     std::string output_file = data_extraction_directory_ + title;
     gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
-    const unsigned short rows{2U}, columns{2U};
+    static constexpr unsigned short rows{2U}, columns{1U};
     gnuplot_ << gnuplot::setMultiplot(rows, columns);
 
     gnuplot_ << gnuplot::grid();
@@ -1367,11 +1367,11 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
   switch (plot_type) {
   case SYNCED:
     inference_file = &binary_robot_data_[0U].iterations.pose;
-
     x_axis.title = "x position";
     y_axis.title = "y position";
     heading_axis.title = "heading";
     break;
+
   case ERROR:
     inference_file = &binary_robot_data_[0U].iterations.error;
     x_axis.title = "x position error";
@@ -1386,8 +1386,8 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
     y_axis.title = "Absolute y position error";
     heading_axis.title = "Absolute heading error";
     break;
-  default:
 
+  default:
     throw std::runtime_error("Plot type provided to the inference iterations "
                              "plotter is not accepted");
   }
