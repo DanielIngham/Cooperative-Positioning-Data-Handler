@@ -492,8 +492,6 @@ void Plotter::inferenceErrorAnimation(std::initializer_list<PlotType> plots) {
 void Plotter::trajectoryAnimation(const unsigned short robot_id) {
   gnuplot_ << gnuplot::grid();
 
-  std::string output_filename{animation_directory_ + "trajectory_animation"};
-  gnuplot_ << gnuplot::setOutput(output_filename, terminal_);
 
   terminal_ = {
       .type = gnuplot::GIF,
@@ -501,6 +499,9 @@ void Plotter::trajectoryAnimation(const unsigned short robot_id) {
   };
 
   gnuplot_ << gnuplot::setTerminal(terminal_);
+
+  std::string output_filename{animation_directory_ + "trajectory_animation"};
+  gnuplot_ << gnuplot::setOutput(output_filename, terminal_);
 
   binariseLandmarkData();
   binariseRobotPoseData({GROUNDTRUTH});
