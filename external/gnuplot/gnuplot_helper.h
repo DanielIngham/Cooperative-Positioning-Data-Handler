@@ -368,7 +368,7 @@ inline std::string to_string(TerminalType type) {
   case JPEG:
     return "jpeg";
   case GIF:
-    return "gif animate delay 10 loop 0";
+    return "gif animate delay 50 loop 0";
   case PDF:
     return "pdfcairo";
   case SVG:
