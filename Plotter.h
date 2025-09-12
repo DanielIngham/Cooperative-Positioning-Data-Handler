@@ -63,14 +63,16 @@ public:
   void plotMeasurementPDFs(const unsigned short robot_id = 0,
                            const double bin_size = 0.001);
 
-  void addInferenceIteration();
+  void addInferenceIteration(const unsigned short);
 
-  void inferenceErrorAnimation(std::initializer_list<PlotType>);
+  void inferenceErrorAnimation(std::initializer_list<PlotType>,
+                               const unsigned short robot_id = 0);
 
   void trajectoryAnimation(const unsigned short);
 
   void plotInferenceIterations(std::initializer_list<PlotType>,
-                               std::vector<unsigned int> iterations = {});
+                               std::vector<unsigned int> iterations = {},
+                               const unsigned short robot_id = 0);
 
 private:
   struct Plot {
@@ -290,7 +292,8 @@ private:
    */
   std::vector<RobotData> binary_robot_data_;
 
-  void inferenceIterationsPlotter(PlotType, std::vector<unsigned int>);
+  void inferenceIterationsPlotter(const unsigned short, PlotType,
+                                  std::vector<unsigned int>);
 
   void trajectoryIterationsPlotter(const unsigned short,
                                    std::vector<unsigned int>);
