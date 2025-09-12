@@ -535,7 +535,8 @@ void Simulator::setRobotMeasurement() {
 
   const double &max_range{SimulationDefaults::kmax_range};
 
-  for (unsigned long k{}; k < data_points_; k++) {
+  /* The first measurement should occur after t0. */
+  for (unsigned long k{measurement_to_odometry_ratio}; k < data_points_; k++) {
 
     if ((k % measurement_to_odometry_ratio) != 0) {
       continue;
@@ -584,7 +585,7 @@ void Simulator::setRobotMeasurement() {
          * radians). Any bearing larger than that should not be included in
          * the measurements.
          */
-        static const double max_fov{0.52};
+        static constexpr double max_fov{0.52};
 
         if (std::abs(bearing) > max_fov) {
           continue;
@@ -597,8 +598,9 @@ void Simulator::setRobotMeasurement() {
               ego_robot.groundtruth.states[k].time, other_agent.barcode, range,
               bearing);
         } else {
-          Robot::Measurement &newest_measurement =
-              ego_robot.groundtruth.measurements.back();
+
+          Robot::Measurement &newest_measurement{
+              ego_robot.groundtruth.measurements.back()};
 
           newest_measurement.subjects.push_back(other_agent.barcode);
           newest_measurement.ranges.push_back(range);
