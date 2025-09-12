@@ -1613,7 +1613,6 @@ void Plotter::write_binary(std::string &filename,
   }
 
   for (auto const &row : state_data) {
-    std::cout << row.time << std::endl;
     fout.write(reinterpret_cast<const char *>(&row.time), sizeof(double));
     fout.write(reinterpret_cast<const char *>(&row.x), sizeof(double));
     fout.write(reinterpret_cast<const char *>(&row.y), sizeof(double));
