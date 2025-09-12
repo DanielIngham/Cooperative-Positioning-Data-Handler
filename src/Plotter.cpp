@@ -76,11 +76,11 @@ void Plotter::binariseRobotPoseData(std::initializer_list<PlotType> plots,
                              std::to_string(robot_id));
   }
 
-  std::vector<Robot> &input_robot_data = data_.getRobots();
+  std::vector<Robot> &input_robot_data{data_.getRobots()};
 
-  unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
-
-  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+  unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id};
+  unsigned short id{
+      static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
 
   for (; id < end_point; ++id) {
     for (const PlotType &plot : plots) {
@@ -1613,6 +1613,7 @@ void Plotter::write_binary(std::string &filename,
   }
 
   for (auto const &row : state_data) {
+    std::cout << row.time << std::endl;
     fout.write(reinterpret_cast<const char *>(&row.time), sizeof(double));
     fout.write(reinterpret_cast<const char *>(&row.x), sizeof(double));
     fout.write(reinterpret_cast<const char *>(&row.y), sizeof(double));
