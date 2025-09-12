@@ -2127,12 +2127,8 @@ const Robot::Measurement *Handler::getMeasurement(const Robot *robot,
   const Robot::Odometry &odometry{robot->synced.odometry.at(index)};
   const double current_time{odometry.time};
 
-  // const std::vector<Robot::Measurement> &measurements{
-  //     robot->synced.measurements};
-
-  /* TODO: Remove this */
-  const std::vector<Robot::Measurement> &measurements =
-      robot->groundtruth.measurements;
+  const std::vector<Robot::Measurement> &measurements{
+      robot->synced.measurements};
 
   /* Threshold for double floating point precision. */
   static constexpr double decimal_threshold{1e-5};
@@ -2150,7 +2146,8 @@ const Robot::Measurement *Handler::getMeasurement(const Robot *robot,
   /* Check if the found element's time falls with the threshold of the current
    * time. Then check if the previous element's time falls within the threshold
    * of the current time. */
-  for (unsigned short i{}; i < 2U; ++i) {
+  const unsigned short check_current_and_previous_index{2U};
+  for (unsigned short i{}; i < check_current_and_previous_index; ++i) {
     if (std::abs(iterator->time - current_time) < decimal_threshold) {
 
       return &(*iterator);
