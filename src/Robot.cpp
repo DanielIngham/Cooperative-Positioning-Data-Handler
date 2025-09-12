@@ -180,104 +180,103 @@ void Robot::calculateMeasurementError(const bool simulation) {
 void Robot::calculateSampleErrorStats() {
 
   /* Check if the eror measurement vector has been populated. */
-  if (0 == this->error.odometry.size() ||
-      0 == this->error.measurements.size()) {
+  if (0 == error.odometry.size() || 0 == error.measurements.size()) {
     throw std::runtime_error(
         "Sensor Error has not been set: call "
         "Robot::calculateMeasurementError() before this funciton.");
   }
 
   /* Calculate forward velocity mean error. */
-  double total_forward_velocity_error =
-      std::accumulate(this->error.odometry.begin(), this->error.odometry.end(),
-                      0.0, [](double acc, const Odometry &element) {
+  double total_forward_velocity_error{
+      std::accumulate(error.odometry.begin(), error.odometry.end(), 0.0,
+                      [](double acc, const Odometry &element) {
                         return acc + element.forward_velocity;
-                      });
+                      })};
 
-  this->forward_velocity_error.mean =
-      total_forward_velocity_error / this->error.odometry.size();
+  forward_velocity_error.mean =
+      total_forward_velocity_error / error.odometry.size();
 
   /* Forward velocity measurement error variance */
-  double total_forward_velocity_deviation = std::accumulate(
-      this->error.odometry.begin(), this->error.odometry.end(), 0.0,
-      [&](double acc, const Odometry &element) {
-        return acc + std::pow(element.forward_velocity -
-                                  this->forward_velocity_error.mean,
-                              2);
-      });
+  double total_forward_velocity_deviation{
+      std::accumulate(error.odometry.begin(), error.odometry.end(), 0.0,
+                      [&](double acc, const Odometry &element) {
+                        return acc + std::pow(element.forward_velocity -
+                                                  forward_velocity_error.mean,
+                                              2);
+                      })};
 
-  this->forward_velocity_error.variance =
-      total_forward_velocity_deviation / (this->error.odometry.size() - 1);
+  forward_velocity_error.variance =
+      total_forward_velocity_deviation / (error.odometry.size() - 1);
 
   /* Calculate angular velocity mean error. */
-  double total_angular_velocity_error =
-      std::accumulate(this->error.odometry.begin(), this->error.odometry.end(),
-                      0.0, [](double acc, const Odometry &element) {
+  double total_angular_velocity_error{
+      std::accumulate(error.odometry.begin(), error.odometry.end(), 0.0,
+                      [](double acc, const Odometry &element) {
                         return acc + element.angular_velocity;
-                      });
+                      })};
 
-  this->angular_velocity_error.mean =
-      total_angular_velocity_error / this->error.odometry.size();
+  angular_velocity_error.mean =
+      total_angular_velocity_error / error.odometry.size();
 
   /* Angular velocity measurement error variance */
-  double total_angular_velocity_deviation = std::accumulate(
-      this->error.odometry.begin(), this->error.odometry.end(), 0.0,
-      [&](double acc, const Odometry &element) {
-        return acc + std::pow(element.angular_velocity -
-                                  this->angular_velocity_error.mean,
-                              2);
-      });
+  double total_angular_velocity_deviation{
+      std::accumulate(error.odometry.begin(), error.odometry.end(), 0.0,
+                      [&](double acc, const Odometry &element) {
+                        return acc + std::pow(element.angular_velocity -
+                                                  angular_velocity_error.mean,
+                                              2);
+                      })};
 
-  this->angular_velocity_error.variance =
-      total_angular_velocity_deviation / (this->error.odometry.size() - 1);
+  angular_velocity_error.variance =
+      total_angular_velocity_deviation / (error.odometry.size() - 1);
 
   /* Calculate range measurement mean error.
    * NOTE: The calculation of the total number of measurments is used for both
    * the range and bearing mean calculation using the assumption that the number
    * of range and bearings measurements are equal. This should always the case
    * as each range measurment will have a corresponding bearing. */
-  double total_measurements = 0.0;
-  double total_range_error = std::accumulate(
-      this->error.measurements.begin(), this->error.measurements.end(), 0.0,
-      [&](double acc, const Measurement &element) {
-        total_measurements += element.ranges.size();
-        return acc + std::accumulate(element.ranges.begin(),
-                                     element.ranges.end(), 0.0);
-      });
+  double total_measurements{};
+  double total_range_error{
+      std::accumulate(error.measurements.begin(), error.measurements.end(), 0.0,
+                      [&](double acc, const Measurement &element) {
+                        total_measurements += element.ranges.size();
+                        return acc + std::accumulate(element.ranges.begin(),
+                                                     element.ranges.end(), 0.0);
+                      })};
 
-  this->range_error.mean = total_range_error / total_measurements;
+  range_error.mean = total_range_error / total_measurements;
 
   /* Range measurement error variance */
-  double total_range_deviation = std::accumulate(
-      this->error.measurements.begin(), this->error.measurements.end(), 0.0,
+  double total_range_deviation{std::accumulate(
+      error.measurements.begin(), error.measurements.end(), 0.0,
       [&](double acc, const Measurement &element) {
         return acc + std::pow(std::accumulate(element.ranges.begin(),
                                               element.ranges.end(), 0.0) -
-                                  this->range_error.mean,
+                                  range_error.mean,
                               2);
-      });
-  this->range_error.variance = total_range_deviation / (total_measurements - 1);
+      })};
+  range_error.variance = total_range_deviation / (total_measurements - 1);
 
   /* Calculate bearing measurement mean erorr. */
-  double total_bearing_error = std::accumulate(
-      this->error.measurements.begin(), this->error.measurements.end(), 0.0,
+  double total_bearing_error{std::accumulate(
+      error.measurements.begin(), error.measurements.end(), 0.0,
       [](double acc, const Measurement &element) {
         return acc + std::accumulate(element.bearings.begin(),
                                      element.bearings.end(), 0.0);
-      });
-  this->bearing_error.mean = total_bearing_error / total_measurements;
+      })};
+
+  bearing_error.mean = total_bearing_error / total_measurements;
 
   /* Bearing measurement error variance */
-  double total_bearing_deviation = std::accumulate(
-      this->error.measurements.begin(), this->error.measurements.end(), 0.0,
+  double total_bearing_deviation{std::accumulate(
+      error.measurements.begin(), error.measurements.end(), 0.0,
       [&](double acc, const Measurement &element) {
         return acc + std::pow(std::accumulate(element.bearings.begin(),
                                               element.bearings.end(), 0.0) -
-                                  this->bearing_error.mean,
+                                  bearing_error.mean,
                               2);
-      });
-  this->bearing_error.variance =
-      total_bearing_deviation / (total_measurements - 1);
+      })};
+  bearing_error.variance = total_bearing_deviation / (total_measurements - 1);
 }
 
 /**
@@ -288,7 +287,7 @@ void Robot::calculateSampleErrorStats() {
  */
 unsigned long int Robot::calculateMedian(const unsigned long int lower,
                                          const unsigned long int upper) {
-  unsigned long int median = upper - lower + 1;
+  unsigned long median{upper - lower + 1};
   median = (median + 1) / 2 - 1;
   return median + lower;
 }
@@ -333,51 +332,56 @@ void Robot::calculateQuartiles(const std::vector<double> &sorted_vector,
 void Robot::setQuartiles() {
   /* Extract the data into seperate vectors to be sorted. */
   std::vector<double> forward_velocity;
-  forward_velocity.reserve(this->error.odometry.size());
+  forward_velocity.reserve(error.odometry.size());
 
   std::vector<double> angular_velocity;
-  angular_velocity.reserve(this->error.odometry.size());
+  angular_velocity.reserve(error.odometry.size());
 
-  std::vector<double> range_errors;
-  range_errors.reserve(this->raw.measurements.size());
-
-  std::vector<double> bearing_errors;
-  bearing_errors.reserve(this->raw.measurements.size());
-
-  std::transform(this->error.odometry.begin(), this->error.odometry.end(),
+  std::transform(error.odometry.begin(), error.odometry.end(),
                  std::back_inserter(forward_velocity),
                  [](const Robot::Odometry &odometry) {
                    return odometry.forward_velocity;
                  });
 
-  std::transform(this->error.odometry.begin(), this->error.odometry.end(),
+  std::transform(error.odometry.begin(), error.odometry.end(),
                  std::back_inserter(angular_velocity),
                  [](const Robot::Odometry &odometry) {
                    return odometry.angular_velocity;
                  });
 
-  for (const auto &measurement_errors : this->error.measurements) {
+  std::sort(forward_velocity.begin(), forward_velocity.end());
+  std::sort(angular_velocity.begin(), angular_velocity.end());
+
+  /* Set the median, first quartile, third quartile, and inter-quartile range.
+   */
+  calculateQuartiles(forward_velocity, forward_velocity_error);
+  calculateQuartiles(angular_velocity, angular_velocity_error);
+
+  if (raw.measurements.empty()) {
+    return;
+  }
+
+  std::vector<double> range_errors;
+  range_errors.reserve(raw.measurements.size());
+
+  std::vector<double> bearing_errors;
+  bearing_errors.reserve(raw.measurements.size());
+
+  for (const auto &measurement_errors : error.measurements) {
     std::copy(measurement_errors.ranges.begin(),
               measurement_errors.ranges.end(),
               std::back_inserter(range_errors));
+
     std::copy(measurement_errors.bearings.begin(),
               measurement_errors.bearings.end(),
               std::back_inserter(bearing_errors));
   }
 
-  /* Sort the vectors in ascending order. */
-  std::sort(forward_velocity.begin(), forward_velocity.end());
-  std::sort(angular_velocity.begin(), angular_velocity.end());
-
   std::sort(range_errors.begin(), range_errors.end());
   std::sort(bearing_errors.begin(), bearing_errors.end());
 
-  /* Set the median, first quartile, third quartile, and inter-quartile range.
-   */
-  calculateQuartiles(forward_velocity, this->forward_velocity_error);
-  calculateQuartiles(angular_velocity, this->angular_velocity_error);
-  calculateQuartiles(range_errors, this->range_error);
-  calculateQuartiles(bearing_errors, this->bearing_error);
+  calculateQuartiles(range_errors, range_error);
+  calculateQuartiles(bearing_errors, bearing_error);
 }
 
 /**
@@ -392,24 +396,26 @@ void Robot::removeOutliers() {
   /* The Odometry Data does noth have significant outliers present for datasets
    * 1-8 */
   /* Remove Measurement Outliers */
-  for (auto error_measurement_iterator = this->error.measurements.begin();
-       error_measurement_iterator != this->error.measurements.end();) {
+  for (auto error_measurement_iterator = error.measurements.begin();
+       error_measurement_iterator != error.measurements.end();) {
 
     /*  NOTE: The upper and lower bound for the range (10) and bearing (20) were
      * manually tuned. */
-    double range_lower_bound =
-        this->range_error.q1 - 10 * this->range_error.iqr;
-    double range_upper_bound =
-        this->range_error.q3 + 10 * this->range_error.iqr;
+    static constexpr double range_threshold{10.};
+    const double range_lower_bound{range_error.q1 -
+                                   range_threshold * range_error.iqr};
+    const double range_upper_bound{range_error.q3 +
+                                   range_threshold * range_error.iqr};
 
-    double bearing_lower_bound =
-        this->bearing_error.q1 - 20 * this->bearing_error.iqr;
-    double bearing_upper_bound =
-        this->bearing_error.q3 + 20 * this->bearing_error.iqr;
+    static constexpr double bearing_threshold{20.};
+    const double bearing_lower_bound{bearing_error.q1 -
+                                     bearing_threshold * bearing_error.iqr};
+    const double bearing_upper_bound{bearing_error.q3 +
+                                     bearing_threshold * bearing_error.iqr};
 
-    auto subjects_iterator = error_measurement_iterator->subjects.begin();
-    auto ranges_iterator = error_measurement_iterator->ranges.begin();
-    auto bearings_iterator = error_measurement_iterator->bearings.begin();
+    auto subjects_iterator{error_measurement_iterator->subjects.begin()};
+    auto ranges_iterator{error_measurement_iterator->ranges.begin()};
+    auto bearings_iterator{error_measurement_iterator->bearings.begin()};
 
     for (; subjects_iterator != error_measurement_iterator->subjects.end();) {
 
@@ -436,7 +442,7 @@ void Robot::removeOutliers() {
     /* If the measurement has no subjects left. Remove the timestep. */
     if (0U == error_measurement_iterator->subjects.size()) {
       error_measurement_iterator =
-          this->error.measurements.erase(error_measurement_iterator);
+          error.measurements.erase(error_measurement_iterator);
     } else {
       ++error_measurement_iterator;
     }
@@ -450,38 +456,34 @@ void Robot::removeOutliers() {
  */
 void Robot::calculateStateError() {
   /* Check if the synced have been set. */
-  if (this->synced.states.empty()) {
+  if (synced.states.empty()) {
     throw std::runtime_error("Synced states have to been set.");
   }
 
   /* If the error states have already been set, clear the old values and
    * recalculate them. */
-  if (!this->error.states.empty()) {
-    this->error.states.clear();
-    this->absolute_state_error.clear();
+  if (!error.states.empty()) {
+    error.states.clear();
+    absolute_state_error.clear();
   }
 
-  const size_t total_data_points = this->synced.states.size();
+  const size_t total_data_points{synced.states.size()};
 
-  this->error.states.reserve(total_data_points);
-  this->absolute_state_error.reserve(total_data_points);
+  error.states.reserve(total_data_points);
+  absolute_state_error.reserve(total_data_points);
 
   /* Calculate the error between the groundtruth and the states. */
-  for (unsigned long k = 0; k < total_data_points; k++) {
-    const double &time = this->groundtruth.states[k].time;
+  for (unsigned long k{}; k < total_data_points; k++) {
 
-    const double x_error =
-        this->groundtruth.states[k].x - this->synced.states[k].x;
+    const double &time{groundtruth.states[k].time};
+    const double x_error{groundtruth.states[k].x - synced.states[k].x};
+    const double y_error{groundtruth.states[k].y - synced.states[k].y};
 
-    const double y_error =
-        this->groundtruth.states[k].y - this->synced.states[k].y;
-
-    double orientation_error = this->groundtruth.states[k].orientation -
-                               this->synced.states[k].orientation;
+    double orientation_error{groundtruth.states[k].orientation -
+                             synced.states[k].orientation};
 
     /* Normalise the orientation error between -180 and 180. */
     normaliseAngle(orientation_error);
-
     rmse.x += x_error * x_error;
     rmse.y += y_error * y_error;
     rmse.orientation += orientation_error * orientation_error;
