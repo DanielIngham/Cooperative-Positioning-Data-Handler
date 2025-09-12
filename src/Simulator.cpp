@@ -366,14 +366,10 @@ void Simulator::setRobotOdometryAndState() {
 
   std::mt19937 generator{static_cast<unsigned int>(generator_seed_)};
 
-  /* Create a centre point. */
-  double centre_x{limits_.width / 2.0}, centre_y{limits_.height / 2.0};
-
   /* Set up random number generation functions.
    * The walk length denotes the number of samples for which an input is
    * applied. */
   const unsigned short minimum_walk{20U}, maximum_walk{500U};
-
   std::uniform_int_distribution<unsigned short> walk_length(minimum_walk,
                                                             maximum_walk);
 
@@ -416,28 +412,6 @@ void Simulator::setRobotOdometryAndState() {
         .angular_velocity = 0.0,
     });
 
-    /* Calculate the resulting state from this those intpus */
-
-    double x_position{
-        robot.groundtruth.states.front().x +
-        robot.groundtruth.odometry.front().forward_velocity * sample_period_ *
-            std::cos(robot.groundtruth.states.front().orientation)};
-
-    double y_position{
-        robot.groundtruth.states.front().y +
-        robot.groundtruth.odometry.front().forward_velocity * sample_period_ *
-            std::sin(robot.groundtruth.states.front().orientation)};
-
-    double orientation{robot.groundtruth.states.front().orientation +
-                       sample_period_ *
-                           robot.groundtruth.odometry.front().angular_velocity};
-
-    robot.groundtruth.states.emplace_back(
-        Robot::State{.time = sample_period_,
-                     .x = x_position,
-                     .y = y_position,
-                     .orientation = orientation});
-
     /* Assign a random walk length at random  */
     unsigned short random_walk_duration{walk_length(generator)};
 
@@ -445,6 +419,31 @@ void Simulator::setRobotOdometryAndState() {
     double angular_input{};
 
     for (size_t k{1}; k < data_points_; ++k) {
+
+      /* Calculate the resulting state from this those intpus */
+      double x_position{
+          robot.groundtruth.states.back().x +
+          robot.groundtruth.odometry.back().forward_velocity * sample_period_ *
+              std::cos(robot.groundtruth.states.back().orientation)};
+
+      double y_position{
+          robot.groundtruth.states.back().y +
+          robot.groundtruth.odometry.back().forward_velocity * sample_period_ *
+              std::sin(robot.groundtruth.states.back().orientation)};
+
+      double orientation{
+          robot.groundtruth.states.back().orientation +
+          sample_period_ * robot.groundtruth.odometry.back().angular_velocity};
+
+      robot.groundtruth.states.emplace_back(Robot::State{
+          .time = sample_period_ * k,
+          .x = x_position,
+          .y = y_position,
+          .orientation = orientation,
+      });
+
+      /* Set the time of the synced state data points. */
+      robot.synced.states[k].time = robot.groundtruth.states[k].time;
 
       double forward_adjustment{0.0};
 
@@ -461,6 +460,9 @@ void Simulator::setRobotOdometryAndState() {
 
         /* Calculate the distance from the centre points and get the angle
          * adjustment. */
+        const double centre_x{limits_.width / 2.0},
+            centre_y{limits_.height / 2.0};
+
         double x_difference{centre_x - groundtruth_pose.x};
 
         double y_difference{centre_y - groundtruth_pose.y};
@@ -495,7 +497,7 @@ void Simulator::setRobotOdometryAndState() {
           robot.groundtruth.odometry.at(k - 1).forward_velocity +
           forward_adjustment};
 
-      double &new_angular_velocity = angular_input;
+      double &new_angular_velocity{angular_input};
 
       /* NOTE: It is assumed that the robots cannot reverse. */
       if (new_forward_velocity > limits_.forward_velocity) {
@@ -518,41 +520,6 @@ void Simulator::setRobotOdometryAndState() {
           .forward_velocity = new_forward_velocity,
           .angular_velocity = new_angular_velocity,
       });
-
-      /* Prevents the groundtruth from having one more value than the
-       * odometry.
-       */
-      if (robot.groundtruth.states.size() == data_points_) {
-        continue;
-      }
-
-      /* Calculate the resulting state from this those intpus */
-      x_position = robot.groundtruth.states.at(k).x +
-                   robot.groundtruth.odometry.at(k).forward_velocity *
-                       sample_period_ *
-                       std::cos(robot.groundtruth.states.at(k).orientation);
-
-      y_position = robot.groundtruth.states.at(k).y +
-                   robot.groundtruth.odometry.at(k).forward_velocity *
-                       sample_period_ *
-                       std::sin(robot.groundtruth.states.at(k).orientation);
-
-      orientation =
-          robot.groundtruth.states.at(k).orientation +
-          sample_period_ * robot.groundtruth.odometry.at(k).angular_velocity;
-
-      /* Normalise orienation between -180 and 180. */
-      Robot::normaliseAngle(orientation);
-
-      robot.groundtruth.states.emplace_back(Robot::State{
-          .time = sample_period_ * k,
-          .x = x_position,
-          .y = y_position,
-          .orientation = orientation,
-      });
-
-      /* Set the time of the synced state data points. */
-      robot.synced.states[k].time = sample_period_ * k;
     }
   }
 }
