@@ -276,7 +276,7 @@ void Plotter::binariseMeasurementVectors(std::initializer_list<PlotType> plots,
 
     /* Loop through each measurement. */
     for (const Robot::Measurement &measurement :
-         output_robot_data[id].groundtruth.measurements) {
+         output_robot_data[id].synced.measurements) {
 
       const Robot::State *pose;
 
@@ -442,49 +442,57 @@ void Plotter::binariseLandmarkData() {
  * Creates a gif of the optimisation parameter values after each iteration.
  * @param plots the types of plots the should be created from the parameter
  * values.
- * TODO: Add ability to select different robots based on ID.
  */
-void Plotter::inferenceErrorAnimation(std::initializer_list<PlotType> plots) {
-  static const unsigned short first_iteration{};
+void Plotter::inferenceErrorAnimation(std::initializer_list<PlotType> plots,
+                                      const unsigned short robot_id) {
 
-  const unsigned short rows{3U}, columns{1U};
+  const unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id};
+  unsigned short id{
+      static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
 
-  for (const auto &plot : plots) {
-    gnuplot_ << gnuplot::grid();
+  for (; id < end_point; ++id) {
 
-    terminal_ = {
-        .type = gnuplot::GIF,
-        .number = ++terminal_number_,
-    };
+    for (const auto &plot : plots) {
+      gnuplot_ << gnuplot::grid();
 
-    gnuplot_ << gnuplot::setTerminal(terminal_);
+      terminal_ = {
+          .type = gnuplot::GIF,
+          .number = ++terminal_number_,
+      };
 
-    std::string output_file{animation_directory_};
+      gnuplot_ << gnuplot::setTerminal(terminal_);
 
-    switch (plot) {
-    case SYNCED:
-      output_file += "synced_iterations";
-      break;
+      std::string output_file{animation_directory_ + "Robot_" +
+                              std::to_string(id + 1) + "_"};
 
-    case ERROR:
-      output_file += "error_iterations";
-      break;
+      switch (plot) {
+      case SYNCED:
+        output_file += "synced_iterations";
+        break;
 
-    case ABSOLUTE_ERROR:
-      output_file += "absolute_error_iterations";
-      break;
+      case ERROR:
+        output_file += "error_iterations";
+        break;
 
-    default:
-      throw std::runtime_error("The plot type provide is not accepted by the "
-                               "inference animation function.");
-    }
+      case ABSOLUTE_ERROR:
+        output_file += "absolute_error_iterations";
+        break;
 
-    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+      default:
+        throw std::runtime_error("The plot type provide is not accepted by the "
+                                 "inference animation function.");
+      }
 
-    for (unsigned short i{}; i < total_inference_iterations_; ++i) {
-      gnuplot_ << gnuplot::setMultiplot(rows, columns);
-      inferenceIterationsPlotter(plot, {first_iteration, i});
-      gnuplot_ << gnuplot::unsetMultiplot();
+      gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
+      static constexpr unsigned short first_iteration{};
+      static constexpr unsigned short rows{3U}, columns{1U};
+
+      for (unsigned short i{}; i < total_inference_iterations_; ++i) {
+        gnuplot_ << gnuplot::setMultiplot(rows, columns);
+        inferenceIterationsPlotter(id + 1, plot, {first_iteration, i});
+        gnuplot_ << gnuplot::unsetMultiplot();
+      }
     }
   }
 }
@@ -567,7 +575,7 @@ void Plotter::plotTrajectory(std::initializer_list<PlotType> plots,
 
       switch (input_plot) {
       case SYNCED:
-        plot_file = binary_robot_data_[id].pose.groundtruth;
+        plot_file = binary_robot_data_[id].pose.synced;
         key = "Synced trajectory";
         break;
       case GROUNDTRUTH:
@@ -644,6 +652,7 @@ void Plotter::plotMeasurementsVector(unsigned short robot_id) {
 
     plots.emplace_back(binary_robot_data_[id].pose.groundtruth,
                        binary_robot_data_[id].pose.binary_format());
+
     plots.back().settings = {
         .x = X_POSITION,
         .y = Y_POSITION,
@@ -689,17 +698,17 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
 
   binariseRobotPoseData(plots, robot_id);
 
-  const unsigned short end_point = (robot_id == 0U) ? total_robots_ : robot_id;
+  const unsigned short end_point{(robot_id == 0U) ? total_robots_ : robot_id};
+  unsigned short id{
+      static_cast<unsigned short>((robot_id == 0U) ? 0U : robot_id - 1U)};
 
-  unsigned short id = (robot_id == 0U) ? 0U : robot_id - 1U;
-
-  std::string title = "Robot " + std::to_string(id + 1U) + " Groundtruth";
+  std::string title{"Robot " + std::to_string(id + 1U) + " Groundtruth"};
   gnuplot_ << gnuplot::setTitle(title);
 
   terminal_.number = ++terminal_number_;
   gnuplot_ << gnuplot::setTerminal(terminal_);
 
-  std::string output_file = data_extraction_directory_ + title;
+  std::string output_file{data_extraction_directory_ + title};
   gnuplot_ << gnuplot::setOutput(output_file, terminal_);
 
   gnuplot_ << gnuplot::grid();
@@ -783,7 +792,6 @@ void Plotter::plotPoses(std::initializer_list<PlotType> plots,
       };
 
       orientation_plots.emplace_back(plot_type, binary_format);
-
       orientation_plots.back().settings = {
           .key_label = plot_title,
           .x = TIME,
@@ -923,14 +931,13 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
   if (robot_id > total_robots_ || robot_id < 0) {
     throw std::runtime_error("Invalid robot id: " + std::to_string(robot_id));
   }
-
-  std::vector<Robot> robots = data_.getRobots();
-
   binariseOdometryPDF(robot_id, bin_size);
 
-  const unsigned short end_point = (robot_id == 0) ? total_robots_ : robot_id;
+  std::vector<Robot> robots{data_.getRobots()};
 
-  unsigned short id = (robot_id == 0) ? 0 : robot_id - 1;
+  const unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id};
+  unsigned short id{
+      static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
 
   gnuplot::AxisSettings forward_velocity_axis{
       .title = "Forward Velocity Probability Distribution",
@@ -1266,38 +1273,42 @@ void Plotter::plotMeasurementPDFs(unsigned short robot_id,
   }
 }
 
-void Plotter::addInferenceIteration() {
+void Plotter::addInferenceIteration(const unsigned short robot_id) {
 
   std::initializer_list<PlotType> plots{SYNCED, ERROR, ABSOLUTE_ERROR};
 
   std::vector<Robot> &robots = data_.getRobots();
 
-  for (const auto &plot : plots) {
-    for (const Robot &robot : robots) {
+  const unsigned short end_index{(robot_id == 0) ? total_robots_ : robot_id};
+  unsigned short id{
+      static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
+
+  for (; id < total_robots_; ++id) {
+    for (const auto &plot : plots) {
+
+      Robot &robot = robots.at(id);
 
       /* NOTE: The robot ID's are 1 indexed. */
-      unsigned short id{static_cast<unsigned short>(robot.id - 1U)};
-
       std::string *inference_file{};
       const std::vector<Robot::State> *pose_data;
 
       switch (plot) {
       case SYNCED:
-        inference_file = &binary_robot_data_[id].iterations.pose;
+        inference_file = &binary_robot_data_.at(id).iterations.pose;
         *inference_file =
             "Robot" + std::to_string(robot.id) + "_synced_iterations";
         pose_data = &robot.synced.states;
         break;
 
       case ERROR:
-        inference_file = &binary_robot_data_[id].iterations.error;
+        inference_file = &binary_robot_data_.at(id).iterations.error;
         *inference_file =
             "Robot" + std::to_string(robot.id) + "_error_iterations";
         pose_data = &robot.error.states;
         break;
 
       case ABSOLUTE_ERROR:
-        inference_file = &binary_robot_data_[id].iterations.absolute_error;
+        inference_file = &binary_robot_data_.at(id).iterations.absolute_error;
         *inference_file =
             "Robot" + std::to_string(robot.id) + "_absolute_error_iterations";
         pose_data = &robot.absolute_state_error;
@@ -1323,25 +1334,39 @@ void Plotter::addInferenceIteration() {
 }
 
 void Plotter::plotInferenceIterations(std::initializer_list<PlotType> plots,
-                                      std::vector<unsigned int> iterations) {
-  terminal_.number = ++terminal_number_;
-  gnuplot_ << gnuplot::setTerminal(terminal_);
-  gnuplot_ << gnuplot::grid();
+                                      std::vector<unsigned int> iterations,
+                                      const unsigned short robot_id) {
 
-  const unsigned short rows{3U}, columns{1U};
+  assert(robot_id >= 0);
 
-  for (const auto &plot : plots) {
-    gnuplot_ << gnuplot::setMultiplot(rows, columns);
-    inferenceIterationsPlotter(plot, iterations);
-    gnuplot_ << gnuplot::unsetMultiplot();
+  const unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id};
+  unsigned short id{
+      static_cast<unsigned short>((robot_id == 0) ? 0 : robot_id - 1)};
+
+  for (; id < end_point; ++id) {
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+    gnuplot_ << gnuplot::grid();
+
+    const unsigned short rows{3U}, columns{1U};
+
+    for (const auto &plot : plots) {
+      gnuplot_ << gnuplot::setMultiplot(rows, columns);
+      inferenceIterationsPlotter(id + 1, plot, iterations);
+      gnuplot_ << gnuplot::unsetMultiplot();
+    }
+    gnuplot_.flush();
   }
-  gnuplot_.flush();
+  total_inference_iterations_ = 0;
 }
 
-void Plotter::inferenceIterationsPlotter(PlotType plot_type,
+void Plotter::inferenceIterationsPlotter(const unsigned short robot_id,
+                                         PlotType plot_type,
                                          std::vector<unsigned int> iterations) {
   assert(total_inference_iterations_ > 0);
-  binariseRobotPoseData({GROUNDTRUTH}, 1);
+  assert(robot_id >= 1);
+
+  binariseRobotPoseData({GROUNDTRUTH}, robot_id);
 
   std::vector<bool> plot_iteration(total_inference_iterations_, false);
 
@@ -1366,21 +1391,22 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
 
   switch (plot_type) {
   case SYNCED:
-    inference_file = &binary_robot_data_[0U].iterations.pose;
+    inference_file = &binary_robot_data_.at(robot_id - 1).iterations.pose;
     x_axis.title = "x position";
     y_axis.title = "y position";
     heading_axis.title = "heading";
     break;
 
   case ERROR:
-    inference_file = &binary_robot_data_[0U].iterations.error;
+    inference_file = &binary_robot_data_.at(robot_id - 1).iterations.error;
     x_axis.title = "x position error";
     y_axis.title = "y position error";
     heading_axis.title = "heading error";
 
     break;
   case ABSOLUTE_ERROR:
-    inference_file = &binary_robot_data_[0U].iterations.absolute_error;
+    inference_file =
+        &binary_robot_data_.at(robot_id - 1).iterations.absolute_error;
 
     x_axis.title = "Absolute x position error";
     y_axis.title = "Absolute y position error";
@@ -1397,7 +1423,8 @@ void Plotter::inferenceIterationsPlotter(PlotType plot_type,
   PlotList x_plots, y_plots, heading_plots;
 
   if (plot_type == SYNCED) {
-    std::string groundtruth_file = binary_robot_data_[0U].pose.groundtruth;
+    std::string groundtruth_file =
+        binary_robot_data_.at(robot_id).pose.groundtruth;
 
     x_plots.emplace_back(groundtruth_file, RobotData::Pose::binary_format());
     x_plots.back().settings = {
