@@ -7,6 +7,7 @@
  * @date 2025-04-23
  */
 #include "Robot.h"
+#include "Agent.h"
 #include <algorithm> // std::sort
 #include <cmath>
 #include <cstdlib>
@@ -21,7 +22,8 @@ namespace Data {
 /**
  * @brief Default constructor.
  */
-Robot::Robot() : id(0), barcode(0) {}
+Robot::Robot(unsigned short id, unsigned short barcode)
+    : Agent(id, barcode, Agent::Type::ROBOT) {}
 
 /**
  * @brief Default destructor.
@@ -36,7 +38,6 @@ Robot::~Robot() {}
 void Robot::calculateSensorErrror(const bool simulation) {
   calculateOdometryError();
   calculateMeasurementError(simulation);
-  removeOutliers();
 }
 
 /**
@@ -46,14 +47,14 @@ void Robot::calculateSensorErrror(const bool simulation) {
 void Robot::calculateOdometryError() {
   /* Check if the groundtruth has been set. */
   if (groundtruth.odometry.size() == 0) {
-    throw std::runtime_error("Groundtruth odometry values for robot " +
-                             std::to_string(id) + " have not been set.");
+    throw std::runtime_error("Groundtruth odometry values for robot " + id() +
+                             " have not been set.");
   }
 
   /* Check if the synced data has been set. */
   if (synced.odometry.size() == 0) {
-    throw std::runtime_error("Synced odometry values for robot " +
-                             std::to_string(id) + " have not been set.");
+    throw std::runtime_error("Synced odometry values for robot " + id() +
+                             " have not been set.");
   }
 
   /* If the odometry error vector is not empty, empty it before calculation. */
@@ -92,13 +93,13 @@ void Robot::calculateMeasurementError(const bool simulation) {
   /* Check if the groundtruth has been set. */
   if (this->groundtruth.measurements.size() == 0 && !simulation) {
     throw std::runtime_error("Groundtruth measurement values for robot " +
-                             std::to_string(this->id) + " have not been set.");
+                             id() + " have not been set.");
   }
 
   /* Check if the synced data has been set. */
   if (this->synced.measurements.size() == 0 && !simulation) {
-    throw std::runtime_error("Synced measurement values for robot " +
-                             std::to_string(this->id) + " have not been set.");
+    throw std::runtime_error("Synced measurement values for robot " + id() +
+                             " have not been set.");
   }
 
   /* If the measurement error vector is not empty, empty it before calculation.
@@ -123,11 +124,10 @@ void Robot::calculateMeasurementError(const bool simulation) {
        * measurements.*/
       if (groundtruth.measurements[k].subjects[s] !=
           synced.measurements[k].subjects[s]) {
-        throw std::runtime_error(
-            "The groundtruth subject barcode did not "
-            "match the syned subject barcode: " +
-            std::to_string(groundtruth.measurements[k].subjects[s]) +
-            "!=" + std::to_string(synced.measurements[k].subjects[s]));
+        throw std::runtime_error("The groundtruth subject barcode did not "
+                                 "match the syned subject barcode: " +
+                                 groundtruth.measurements[k].subjects[s] +
+                                 "!=" + synced.measurements[k].subjects[s]);
       }
 
       /* Ignore invalid measurements. These invalid measurements are explicitly
@@ -385,70 +385,6 @@ void Robot::setQuartiles() {
 }
 
 /**
- * @brief Uses the interquartile range to remove outliers from the measurements.
- * @details This is done since some measurement errors are due to incorrect data
- * assocation (associaating the wrong barcode to a robot) and therefore give an
- * incorrect indication of the noise present in the range and bearing sensor.
- */
-void Robot::removeOutliers() {
-  setQuartiles();
-
-  /* The Odometry Data does noth have significant outliers present for datasets
-   * 1-8 */
-  /* Remove Measurement Outliers */
-  for (auto error_measurement_iterator = error.measurements.begin();
-       error_measurement_iterator != error.measurements.end();) {
-
-    /*  NOTE: The upper and lower bound for the range (10) and bearing (20) were
-     * manually tuned. */
-    static constexpr double range_threshold{10.};
-    const double range_lower_bound{range_error.q1 -
-                                   range_threshold * range_error.iqr};
-    const double range_upper_bound{range_error.q3 +
-                                   range_threshold * range_error.iqr};
-
-    static constexpr double bearing_threshold{20.};
-    const double bearing_lower_bound{bearing_error.q1 -
-                                     bearing_threshold * bearing_error.iqr};
-    const double bearing_upper_bound{bearing_error.q3 +
-                                     bearing_threshold * bearing_error.iqr};
-
-    auto subjects_iterator{error_measurement_iterator->subjects.begin()};
-    auto ranges_iterator{error_measurement_iterator->ranges.begin()};
-    auto bearings_iterator{error_measurement_iterator->bearings.begin()};
-
-    for (; subjects_iterator != error_measurement_iterator->subjects.end();) {
-
-      if (*ranges_iterator < range_lower_bound ||
-          *ranges_iterator > range_upper_bound ||
-          *bearings_iterator < bearing_lower_bound ||
-          *bearings_iterator > bearing_upper_bound) {
-
-        subjects_iterator =
-            error_measurement_iterator->subjects.erase(subjects_iterator);
-        ranges_iterator =
-            error_measurement_iterator->ranges.erase(ranges_iterator);
-        bearings_iterator =
-            error_measurement_iterator->bearings.erase(bearings_iterator);
-
-        continue;
-      }
-
-      ++subjects_iterator;
-      ++ranges_iterator;
-      ++bearings_iterator;
-    }
-
-    /* If the measurement has no subjects left. Remove the timestep. */
-    if (0U == error_measurement_iterator->subjects.size()) {
-      error_measurement_iterator =
-          error.measurements.erase(error_measurement_iterator);
-    } else {
-      ++error_measurement_iterator;
-    }
-  }
-}
-/**
  * @brief calculates the difference between the groundtruth and the synced
  * states.
  * @details The synced states are calculated by some localisation filter and not
@@ -521,7 +457,7 @@ void Robot::calculateStateError() {
 Robot::State Robot::getRMSE() const {
   if (rmse.x == 0.0 && rmse.y == 0.0 && rmse.orientation == 0.0) {
     std::cout << "\033[1;33m" << "[WARNING]" << "\033[0m "
-              << "The RMSE of Robot " << id << " does not seem to be set.";
+              << "The RMSE of Robot " << id() << " does not seem to be set.";
   }
 
   return rmse;

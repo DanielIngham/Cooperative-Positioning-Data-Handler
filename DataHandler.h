@@ -83,8 +83,10 @@ public:
   std::string getDataInferenceDirectory();
 
   std::vector<Robot> &getRobots();
+  Robot &getRobot(Agent::ID id);
+
   const std::vector<Landmark> &getLandmarks() const;
-  const std::vector<unsigned short int> &getBarcodes() const;
+  Landmark &getLandmark(Agent::ID id);
 
   const double getSamplePeriod() const;
 
@@ -94,7 +96,7 @@ public:
   const unsigned long getNumberOfSyncedDatapoints() const;
   const std::vector<size_t> getNumberOfSyncedMeasurements() const;
 
-  const int getID(const unsigned short) const;
+  const Agent *getAgent(const Agent::Barcode) const;
 
   /**
    * Data structure containing information about the agent that is useful for
@@ -113,8 +115,6 @@ public:
     /** The type of agent: robot/landmark. */
     Type type;
   };
-
-  bool getSubject(const unsigned short, Subject &) const;
 
   void saveExtractedData();
   void saveInferenceData();
@@ -197,19 +197,6 @@ private:
    * Data::Handler::calculateGroundtruthMeasurement.
    */
   std::vector<Robot> robots_;
-
-  /**
-   * @brief  List of all barcodes corresponding to the robots and landmarks.
-   * @note The index of the element in the array corresponds to its ID minus
-   * one.
-   * @details The list of barcodes corresponding to both the robots and the
-   * landmarks exctracted from the 'Barcodes.dat' file. The UTIAS dataset
-   * contains 20 barcodes: 5 robots and 15 landmarks. All barcodes are
-   * initialised to 0. Since none of the barcodes have a value of 0, this will
-   * be used as a check by Data::Handler::readLandmarks to see if all the
-   * barcodes were correctly set.
-   */
-  std::vector<unsigned short int> barcodes_;
 
   /**
    * @brief Simulator class responsible for creating odometry, and measurement

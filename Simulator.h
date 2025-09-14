@@ -37,13 +37,13 @@ class Simulator {
 public:
   Simulator();
   Simulator(const unsigned long int, double, std::vector<Robot> &,
-            std::vector<Landmark> &, std::vector<unsigned short int> &,
+            std::vector<Landmark> &,
             const unsigned long seed = SimulationDefaults::kSeed);
   ~Simulator();
 
   /* Setters */
   void setSimulation(const unsigned long int, double, std::vector<Robot> &,
-                     std::vector<Landmark> &, std::vector<unsigned short int> &,
+                     std::vector<Landmark> &,
                      const unsigned long seed = SimulationDefaults::kSeed);
 
 private:
@@ -91,11 +91,6 @@ private:
    * @brief Pointer to input landmark vector.
    */
   std::vector<Landmark> *landmarks_{};
-
-  /**
-   * @brief Pointer to the input barcodes vector.
-   */
-  std::vector<unsigned short int> *barcodes_{};
 
   /**
    * @brief The simulation limits for the robots.

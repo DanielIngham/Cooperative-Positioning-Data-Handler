@@ -7,6 +7,8 @@
 #ifndef INCLUDE_INCLUDE_ROBOT_H_
 #define INCLUDE_INCLUDE_ROBOT_H_
 
+#include "Agent.h"
+
 #include <cmath>  // std::atan2
 #include <vector> // std::vector
 
@@ -17,29 +19,16 @@ namespace Data {
  * @brief Houses all data and functionality related to a given robot in a
  * multi-robot localisation environment
  */
-class Robot {
+class Robot : public Agent {
 public:
-  Robot();
+  Robot(unsigned short id, unsigned short barcode);
   Robot(Robot &&) = default;
-  Robot(const Robot &) = default;
-  Robot &operator=(Robot &&) = default;
-  Robot &operator=(const Robot &) = default;
+  Robot(const Robot &) = delete;
+  Robot &operator=(Robot &&) = delete;
+  Robot &operator=(const Robot &) = delete;
   ~Robot();
 
   static void normaliseAngle(double &);
-
-  /**
-   * @brief Numerical identifier for the robot.
-   * @note The handler starts this index at 1. Therefore the first robot has an
-   * ID of 1.
-   */
-  unsigned short id;
-
-  /**
-   * @brief  Barcode associated with the robot. This is what the other robots
-   * will read during there operation to identify each other.
-   */
-  unsigned short barcode;
 
   /**
    * @brief Data attributes for a single groundtruth reading extracted from
@@ -78,7 +67,7 @@ public:
    */
   struct Measurement {
     double time{}; ///< Time stamp of the measurement [s].
-    std::vector<unsigned short>
+    std::vector<Agent::Barcode>
         subjects; ///< The Barcode of the other robots being measured.
     std::vector<double> ranges;   ///< The measured ranges to the subjects [m]
     std::vector<double> bearings; ///< The bearings from the subjects [rad]
@@ -95,7 +84,7 @@ public:
      * @brief Constructor that allows for the copying of measurement structure
      * elements.
      */
-    Measurement(double time_, const std::vector<unsigned short> &subjects_,
+    Measurement(double time_, const std::vector<Barcode> &subjects_,
                 const std::vector<double> &ranges_,
                 const std::vector<double> &bearings_)
         : time(time_), subjects(subjects_), ranges(ranges_),
@@ -104,8 +93,7 @@ public:
      * @brief Constructor for convenient population of raw measurments that have
      * only one subject.
      */
-    Measurement(double time_, unsigned short subject_, double range_,
-                double bearing_)
+    Measurement(double time_, Barcode subject_, double range_, double bearing_)
         : time(time_) {
       subjects.push_back(subject_);
       ranges.push_back(range_);
@@ -180,8 +168,6 @@ private:
 
   void calculateOdometryError();
   void calculateMeasurementError(const bool simulation = false);
-
-  void removeOutliers();
 };
 } // namespace Data
 

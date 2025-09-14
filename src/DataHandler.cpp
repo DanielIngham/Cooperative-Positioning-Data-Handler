@@ -11,6 +11,8 @@
  */
 
 #include "DataHandler.h"
+#include "Agent.h"
+#include "Landmark.h"
 #include "Simulator.h"
 
 #include <algorithm> // std::remove_if and std::find
@@ -24,7 +26,7 @@
 #include <sstream>    // std::ostringstream
 #include <stdexcept>  // std::runtime_error
 #include <string>
-#include <unordered_map> // std::unordered_map
+#include <unordered_map>
 #include <vector>
 
 namespace Data {
@@ -51,8 +53,7 @@ Handler::Handler(const unsigned long int data_points, double sample_period,
     : sampling_period_(sample_period), total_landmarks_(number_of_landmarks),
       total_robots_(number_of_robots),
       total_barcodes_(total_landmarks_ + total_robots_),
-      total_synced_datapoints_(data_points), landmarks_(total_landmarks_),
-      robots_(total_robots_), barcodes_(total_barcodes_) {
+      total_synced_datapoints_(data_points) {
 
   setSimulation(data_points, sample_period, number_of_robots,
                 number_of_landmarks, output_directory);
@@ -73,9 +74,7 @@ Handler::Handler(const std::string &dataset,
                  const double &sample_period)
     : dataset_(dataset), output_directory_(output_directory),
       sampling_period_(sample_period), total_landmarks_(15U), total_robots_(5U),
-      total_barcodes_(total_landmarks_ + total_robots_),
-      landmarks_(total_landmarks_), robots_(total_robots_),
-      barcodes_(total_barcodes_, 0), simulation_(true) {
+      total_barcodes_(total_landmarks_ + total_robots_), simulation_(true) {
 
   setDataSet(dataset, output_directory, sample_period);
 }
@@ -97,7 +96,7 @@ void Handler::setSimulation(const size_t data_points,
                             const std::string &output_directory,
                             const unsigned long seed) {
 
-  auto start = std::chrono::high_resolution_clock::now();
+  auto start{std::chrono::high_resolution_clock::now()};
   /* Set class fields */
   dataset_ = "./";
 
@@ -114,13 +113,8 @@ void Handler::setSimulation(const size_t data_points,
   total_robots_ = number_of_robots;
   total_barcodes_ = total_landmarks_ + total_robots_;
 
-  /* Resize the dataset vectors */
-  landmarks_.resize(total_landmarks_);
-  robots_.resize(total_robots_);
-  barcodes_.resize(total_barcodes_, 0);
-
   simulator_.setSimulation(data_points, sample_period, robots_, landmarks_,
-                           barcodes_, seed);
+                           seed);
 
   setNumberOfSyncedMeasurements();
 
@@ -133,11 +127,11 @@ void Handler::setSimulation(const size_t data_points,
     }
 
     /* Stop timer after extraction. */
-    auto end = std::chrono::high_resolution_clock::now();
+    auto end{std::chrono::high_resolution_clock::now()};
 
     /* Calculate duration. */
-    auto duration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    auto duration{
+        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)};
 
     std::cout << "\033[1;32mSimulation Complete:\033[0m \033[3m"
               << this->data_extraction_directory_ << "\033[0m ["
@@ -191,22 +185,12 @@ void Handler::setDataSet(const std::string &dataset,
   setOutputDirectory(output_directory, dataset);
 
   /* Set the sample period for this dataset. */
-  this->sampling_period_ = sample_period;
+  sampling_period_ = sample_period;
 
   /* All datasets contain 15 landmarks and 5 robots. */
-  this->total_landmarks_ = 15U;
-  this->total_robots_ = 5U;
-  this->total_barcodes_ = total_landmarks_ + total_robots_;
-
-  /* Resize the dataset vectors */
-  this->landmarks_.resize(total_landmarks_);
-  this->robots_.resize(total_robots_);
-  this->barcodes_.resize(total_barcodes_, 0);
-
-  /* Set the robot ID */
-  for (unsigned short id{}; id < total_robots_; id++) {
-    robots_[id].id = id + 1U;
-  }
+  total_landmarks_ = 15U;
+  total_robots_ = 5U;
+  total_barcodes_ = total_landmarks_ + total_robots_;
 
   try {
     /* Perform data extraction in the directory */
@@ -249,10 +233,10 @@ void Handler::setDataSet(const std::string &dataset,
       robots_[i].calculateSampleErrorStats();
     }
     /* Stop timer after extraction. */
-    auto end = std::chrono::high_resolution_clock::now();
+    auto end{std::chrono::high_resolution_clock::now()};
     /* Calculate duration. */
-    auto duration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    auto duration{
+        std::chrono::duration_cast<std::chrono::milliseconds>(end - start)};
 
     std::cout << "\033[1;32mData Extraction Complete:\033[0m \033[3m" << dataset
               << "\033[0m [" << duration.count() << " ms]" << std::endl;
@@ -288,25 +272,25 @@ void Handler::setOutputDirectory(const std::string &output_directory,
         "executation. Add command:  PROJECT_DIR=$(CURDIR) into your makefile.");
   }
 
-  std::string project_directory(project_env);
+  std::string project_directory{project_env};
 
-  this->output_directory_ = project_directory + ("/output/" + output_directory);
+  output_directory_ = project_directory + ("/output/" + output_directory);
 
   /* Creates unique simulation folder using the current system time. */
   try {
-    auto now = std::chrono::system_clock::now();
-    std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+    auto now{std::chrono::system_clock::now()};
+    std::time_t now_c{std::chrono::system_clock::to_time_t(now)};
 
-    std::tm now_tm = *std::localtime(&now_c);
+    std::tm now_tm{*std::localtime(&now_c)};
     std::ostringstream oss;
 
     oss << std::put_time(&now_tm, "%Y%m%d_%H%M%S");
 
-    std::string unique_directory =
-        output_directory_ + '/' + folder + '/' + oss.str();
+    std::string unique_directory{output_directory_ + '/' + folder + '/' +
+                                 oss.str()};
 
-    this->data_extraction_directory_ = unique_directory + "/data_extraction/";
-    this->data_inference_directory_ = unique_directory + "/inference";
+    data_extraction_directory_ = unique_directory + "/data_extraction/";
+    data_inference_directory_ = unique_directory + "/inference";
 
   } catch (std::runtime_error &error) {
     std::cout << "Unable to set dataset: " << error.what() << std::endl;
@@ -328,7 +312,7 @@ void Handler::readBarcodes(const std::string &dataset) {
         "the Data::Handler class instance or using Data::Handler::setDataSet.");
   }
 
-  std::string filename = dataset + "/Barcodes.dat";
+  std::string filename{dataset + "/Barcodes.dat"};
   std::ifstream file(filename);
 
   if (!file.is_open()) {
@@ -345,25 +329,24 @@ void Handler::readBarcodes(const std::string &dataset) {
       continue;
     }
 
-    /* Remove whitespaces */
-    line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-
     if (i >= total_barcodes_) {
       throw std::runtime_error("The number of barcodes read exceeds total "
                                "number of barcodes specified.");
     }
 
-    if (barcodes_.empty()) {
-      throw std::runtime_error(
-          "The total number of barcodes was not specified.");
-    }
+    /* Remove only space characters (' ') */
+    line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
-    /* Extract barcodes into barcodes array */
-    barcodes_[i] = std::stoi(line.substr(line.find('\t', 0)));
+    /* Extract ID and barcode from line in file. */
+    std::istringstream iss(line);
+    unsigned short id, barcode;
+    iss >> id >> barcode;
+
+    /* Create the instances of the robot and landmark classes. */
     if (i < total_robots_) {
-      robots_[i].barcode = barcodes_[i];
+      robots_.emplace_back(id, barcode);
     } else {
-      landmarks_[i - total_robots_].barcode = barcodes_[i];
+      landmarks_.emplace_back(id, barcode);
     }
     ++i;
   }
@@ -380,7 +363,7 @@ void Handler::readBarcodes(const std::string &dataset) {
  */
 void Handler::readLandmarks(const std::string &dataset) {
 
-  std::string filename = dataset + "/Landmark_Groundtruth.dat";
+  std::string filename{dataset + "/Landmark_Groundtruth.dat"};
   std::ifstream file(filename);
 
   if (!file.is_open()) {
@@ -396,58 +379,37 @@ void Handler::readLandmarks(const std::string &dataset) {
       continue;
     }
 
-    /* Remove whitespaces */
-    line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
-
     if (i >= total_landmarks_) {
       throw std::runtime_error(
           "Total number of read landmarks exceeds TOTAL_LANDMARKS variable.\n");
     }
 
+    /* Remove only space characters (' ') */
+    line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
+
+    std::istringstream iss(line);
+
+    unsigned short id;
+    double x, y, x_std_dev, y_std_dev;
+
+    iss >> id >> x >> y >> x_std_dev >> y_std_dev;
+
     /* Set the landmark's ID */
     std::size_t start_index{};
-    std::size_t end_index = line.find('\t', 0);
-    landmarks_[i].id = std::stoi(line.substr(start_index, end_index));
+    std::size_t end_index{line.find('\t', 0)};
 
-    /* Ensure that the barcodes have been extracted and set */
-    if (barcodes_[landmarks_[i].id - 1U] == 0) {
-      throw std::runtime_error("An error occured with barcodes extraction, "
-                               "barcodes were not correctly set.");
-    }
+    Landmark &landmark = getLandmark(Agent::ID{id});
 
-    /* Set landmark's barcode */
-    landmarks_[i].barcode = barcodes_[landmarks_[i].id - 1];
-
-    /* Landmark x-coordinate [m] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    landmarks_[i].x =
-        std::stod(line.substr(start_index, end_index - start_index));
-
-    /* Landmark y-coordinate [m] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    landmarks_[i].y =
-        std::stod(line.substr(start_index, end_index - start_index));
-
-    /* Landmark x standard deviation [m] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    landmarks_[i].x_std_dev =
-        std::stod(line.substr(start_index, end_index - start_index));
-
-    /* Landmark y standard deviation [m] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    landmarks_[i++].y_std_dev =
-        std::stod(line.substr(start_index, end_index - start_index));
+    landmark.position(x, y);
+    landmark.standard_deviation(x_std_dev, y_std_dev);
   }
 
   file.close();
 }
 
 /**
- * @brief Extracts data from the groundtruth data file: Robotx_Groundtruth.dat.
+ * @brief Extracts data from the groundtruth data file:
+ * Robotx_Groundtruth.dat.
  * @param[in] dataset path to the dataset folder.
  * @param[in] robot_id the ID of the robot for which the extracted measurement
  * will be assigned to.
@@ -461,8 +423,8 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
   robots_[robot_id].raw.states.clear();
 
   /* Setup file for data extraction */
-  std::string filename =
-      dataset + "/Robot" + std::to_string(robot_id + 1) + "_Groundtruth.dat";
+  std::string filename{dataset + "/Robot" + std::to_string(robot_id + 1) +
+                       "_Groundtruth.dat"};
   std::ifstream file(filename);
 
   /* Check if the file could be opened */
@@ -482,29 +444,11 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
     /* Remove whitespaces */
     line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
+    double time, x_coordinate, y_coordinate, orientation;
+
     /* Extract Data into thier respective variables */
-    /* - Time */
-    std::size_t start_index{};
-    std::size_t end_index = line.find('\t', 0);
-    double time = std::stod(line.substr(start_index, end_index));
-
-    /* - x-coordinate [m] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    double x_coordinate =
-        std::stod(line.substr(start_index, end_index - start_index));
-
-    /* - y-coordinate [m] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    double y_coordinate =
-        std::stod(line.substr(start_index, end_index - start_index));
-
-    /* - Orientaiton [rad] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    double orientation =
-        std::stod(line.substr(start_index, end_index - start_index));
+    std::istringstream iss(line);
+    iss >> time >> x_coordinate >> y_coordinate >> orientation;
 
     /* Populate robot states with exracted values. */
     robots_[robot_id].raw.states.emplace_back(Robot::State{
@@ -533,8 +477,9 @@ void Handler::readOdometry(const std::string &dataset, int robot_id) {
   robots_[robot_id].raw.odometry.clear();
 
   /* Setup file for data extraction */
-  std::string filename =
-      dataset + "/Robot" + std::to_string(robot_id + 1) + "_Odometry.dat";
+  std::string filename{dataset + "/Robot" + std::to_string(robot_id + 1) +
+                       "_Odometry.dat"};
+
   std::fstream file(filename);
 
   /* Check if the file could be opened */
@@ -552,24 +497,12 @@ void Handler::readOdometry(const std::string &dataset, int robot_id) {
     /* Remove Whitespace */
     line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
-    /* Extract Data into thier respective variables */
-    /* - Time */
-    std::size_t start_index{};
-    std::size_t end_index = line.find('\t', 0);
-    double time = std::stod(line.substr(start_index, end_index));
+    double time, forward_velocity, angular_velocity;
 
-    /* - Forward Velocity [m/s] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    double forward_velocity =
-        std::stod(line.substr(start_index, end_index - start_index));
-    ;
-    /* - Angular Velocity [rad/s] */
-    start_index = end_index + 1;
-    end_index = line.find('\t', start_index);
-    double angular_velocity =
-        std::stod(line.substr(start_index, end_index - start_index));
-    ;
+    /* Extract Data into thier respective variables */
+    std::istringstream iss(line);
+    iss >> time >> forward_velocity >> angular_velocity;
+
     /* Populate the robot class with the extracted values. */
     robots_[robot_id].raw.odometry.emplace_back(Robot::Odometry{
         .time = time,
@@ -599,8 +532,8 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
   robots_[robot_id].synced.measurements.clear();
 
   /* Setup file for data extraction */
-  std::string filename =
-      dataset + "/Robot" + std::to_string(robot_id + 1) + "_Measurement.dat";
+  std::string filename{dataset + "/Robot" + std::to_string(robot_id + 1) +
+                       "_Measurement.dat"};
   std::fstream file(filename);
 
   /* Check if the file could be opened */
@@ -616,32 +549,21 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
     if ('#' == line[0]) {
       continue;
     }
+
     /* Remove Whitespaces */
     line.erase(std::remove(line.begin(), line.end(), ' '), line.end());
 
+    std::istringstream iss(line);
+    double time, range, bearing;
+    unsigned short subject;
+
     /* Extract Data into thier respective variables.  */
-    /* - Time [s]*/
-    std::size_t start_index{};
-    std::size_t end_index = line.find('\t', 0);
-    double time = std::stod(line.substr(start_index, end_index));
+    iss >> time >> subject >> range >> bearing;
 
-    /* - Subject (ID) */
-    start_index = end_index;
-    end_index = line.find('\t', ++end_index);
-    int subject = std::stoi(line.substr(start_index, end_index));
+    const Agent::Barcode subject_barcode{subject};
 
-    /* - Range [m] */
-    start_index = end_index;
-    end_index = line.find('\t', ++end_index);
-    double range = std::stod(line.substr(start_index, end_index));
-
-    /* - Bearing [rad] */
-    start_index = end_index;
-    end_index = line.find('\t', ++end_index);
-    double bearing = std::stod(line.substr(start_index, end_index));
-
-    robots_[robot_id].raw.measurements.emplace_back(time, subject, range,
-                                                    bearing);
+    robots_[robot_id].raw.measurements.emplace_back(time, subject_barcode,
+                                                    range, bearing);
   }
 
   file.close();
@@ -662,13 +584,15 @@ void Handler::syncData(const double &sample_period) {
   double maximum_time = robots_.front().raw.states.back().time;
 
   for (int i{1U}; i < total_robots_; i++) {
-    double robot_minimum_time =
+
+    const double robot_minimum_time{
         std::min({robots_[i].raw.states.front().time,
                   robots_[i].raw.odometry.front().time,
-                  robots_[i].raw.measurements.front().time});
-    double robot_maximum_time = std::min(
+                  robots_[i].raw.measurements.front().time})};
+
+    const double robot_maximum_time{std::min(
         {robots_[i].raw.states.back().time, robots_[i].raw.odometry.back().time,
-         robots_[i].raw.measurements.back().time});
+         robots_[i].raw.measurements.back().time})};
 
     if (robot_minimum_time < minimum_time) {
       minimum_time = robot_minimum_time;
@@ -682,9 +606,9 @@ void Handler::syncData(const double &sample_period) {
    * of the system. */
   for (int i{}; i < total_robots_; ++i) {
     /* Set the loop length to the size of the largest vector */
-    std::size_t dataset_size =
+    std::size_t dataset_size{
         std::max({robots_[i].raw.states.size(), robots_[i].raw.odometry.size(),
-                  robots_[i].raw.measurements.size()});
+                  robots_[i].raw.measurements.size()})};
 
     for (std::size_t j{}; j < dataset_size; ++j) {
       if (j < robots_[i].raw.states.size()) {
@@ -715,8 +639,8 @@ void Handler::syncData(const double &sample_period) {
 
     robots_[id].synced.measurements.clear();
 
-    auto current_groundtruth = robots_[id].raw.states.begin();
-    auto current_odometry = robots_[id].raw.odometry.begin();
+    auto current_groundtruth{robots_[id].raw.states.begin()};
+    auto current_odometry{robots_[id].raw.odometry.begin()};
 
     for (double synced_timestamp{}; synced_timestamp <= maximum_time;
          synced_timestamp += sample_period) {
@@ -997,27 +921,26 @@ void Handler::calculateGroundtruthOdometry() {
  * y\f$ denotes the robot's y-coordinate.
  */
 void Handler::calculateGroundtruthMeasurement() {
-  for (int id{}; id < total_robots_; id++) {
+  for (auto &robot : robots_) {
 
-    robots_[id].groundtruth.measurements.clear();
-    auto iterator = robots_[id].groundtruth.measurements.begin();
+    robot.groundtruth.measurements.clear();
+
+    auto iterator{robot.groundtruth.measurements.begin()};
 
     /* For loop iterator. Since the extracted data values ordered by time in
      * ascending order, once a time value is found, prior time values do not
      * need to be checked for newer time stamps. */
     size_t t{};
 
-    for (size_t k{}; k < robots_[id].synced.measurements.size(); k++) {
+    for (size_t k{}; k < robot.synced.measurements.size(); k++) {
       /* Find the value of the ground truth with the same time stamp as the
        * measurement */
-      static const double timestamp_threshold = 1e3;
-      for (; t < robots_[id].groundtruth.states.size(); t++) {
+      static const double timestamp_threshold{1e-3};
+      for (; t < robot.groundtruth.states.size(); t++) {
 
         const double rounded_time_difference =
-            std::round((robots_[id].groundtruth.states[t].time -
-                        robots_[id].synced.measurements[k].time) *
-                       timestamp_threshold) /
-            timestamp_threshold;
+            std::abs((robot.groundtruth.states[t].time -
+                      robot.synced.measurements[k].time)) < timestamp_threshold;
 
         if (rounded_time_difference == 0.0) {
           break;
@@ -1026,10 +949,7 @@ void Handler::calculateGroundtruthMeasurement() {
 
       /* Loop through each of the subjects and in the measurements and extract
        * the landmarks */
-      for (size_t s{}; s < robots_[id].synced.measurements[k].subjects.size();
-           s++) {
-        /* Get the subjects ID from its barcode. */
-        int subject_ID{getID(robots_[id].synced.measurements[k].subjects[s])};
+      for (size_t s{}; s < robot.synced.measurements[k].subjects.size(); s++) {
 
         /* If the subjects barcode extracted does not correspond to any of the
          * barcodes extracted, then don't add the measurement. Then the ground
@@ -1039,35 +959,42 @@ void Handler::calculateGroundtruthMeasurement() {
         double range{-1.0};         // Invalid range
         double bearing{2.0 * M_PI}; // Invalid Bearing
 
-        if (-1 != subject_ID) {
+        /* Get the subjects ID from its barcode. */
+        const Agent::Barcode barcode{robot.synced.measurements[k].subjects[s]};
+
+        const Agent *agent{getAgent(barcode)};
+
+        if (agent) {
 
           double x_difference;
           double y_difference;
 
-          /* All robots have ID's [1,5]. */
-          static const unsigned short first_landmark_ID = 6U;
+          if (agent->type() == Agent::Type::ROBOT) {
 
-          if (subject_ID < first_landmark_ID) {
-            subject_ID--;
-            x_difference = robots_[subject_ID].groundtruth.states[t].x -
-                           robots_[id].groundtruth.states[t].x;
-            y_difference = robots_[subject_ID].groundtruth.states[t].y -
-                           robots_[id].groundtruth.states[t].y;
+            const Robot *agent_robot{dynamic_cast<const Robot *>(agent)};
+
+            x_difference = agent_robot->groundtruth.states[t].x -
+                           robot.groundtruth.states[t].x;
+
+            y_difference = agent_robot->groundtruth.states[t].y -
+                           robot.groundtruth.states[t].y;
           }
           /* All landmarks have ID's [6,20]. */
           else {
-            subject_ID -= first_landmark_ID;
-            x_difference =
-                landmarks_[subject_ID].x - robots_[id].groundtruth.states[t].x;
-            y_difference =
-                landmarks_[subject_ID].y - robots_[id].groundtruth.states[t].y;
+            const Landmark *agent_landmark{
+                dynamic_cast<const Landmark *>(agent)};
+
+            x_difference = agent_landmark->x() - robot.groundtruth.states[t].x;
+
+            y_difference = agent_landmark->y() - robot.groundtruth.states[t].y;
           }
 
           /* Calculate Bearing */
           bearing = std::atan2(y_difference, x_difference) -
-                    robots_[id].groundtruth.states[t].orientation;
+                    robot.groundtruth.states[t].orientation;
 
-          /* Normalise bearing between -180 and 180 (-pi and pi respectively)*/
+          /* Normalise bearing between -180 and 180 (-pi and pi
+           * respectively)*/
           Robot::normaliseAngle(bearing);
 
           /* Calculate Range */
@@ -1077,15 +1004,15 @@ void Handler::calculateGroundtruthMeasurement() {
 
         /* Create a new instance of the Measurement struct on the first */
         if (0 == s) {
-          robots_[id].groundtruth.measurements.push_back(Robot::Measurement(
-              robots_[id].synced.measurements[k].time,
-              robots_[id].synced.measurements[k].subjects[s], range, bearing));
+          robot.groundtruth.measurements.push_back(Robot::Measurement(
+              robot.synced.measurements[k].time,
+              robot.synced.measurements[k].subjects[s], range, bearing));
 
           /* Move the iterator to the newly created instance*/
-          iterator = robots_[id].groundtruth.measurements.end() - 1;
+          iterator = robot.groundtruth.measurements.end() - 1;
         } else {
           iterator->subjects.push_back(
-              robots_[id].synced.measurements[k].subjects[s]);
+              robot.synced.measurements[k].subjects[s]);
           iterator->ranges.push_back(range);
           iterator->bearings.push_back(bearing);
         }
@@ -1172,8 +1099,8 @@ void Handler::relativeLandmarkDistance() {
   for (std::size_t k{}; k < robots_.front().groundtruth.states.size(); k++) {
 
     for (int l{}; l < total_landmarks_; l++) {
-      double x{robots_.front().groundtruth.states[k].x - landmarks_[l].x};
-      double y{robots_.front().groundtruth.states[k].y - landmarks_[l].y};
+      double x{robots_.front().groundtruth.states[k].x - landmarks_[l].x()};
+      double y{robots_.front().groundtruth.states[k].y - landmarks_[l].y()};
       double range = std::sqrt(x * x + y * y);
       const unsigned short landmark_id_offset{
           static_cast<unsigned short>(total_robots_ + 1U)};
@@ -1298,6 +1225,8 @@ void Handler::saveStateData() {
  */
 void Handler::saveMeasurementData() {
 
+  static constexpr char robot_character{'r'}, landmark_character{'l'};
+
   std::ofstream robot_file;
   std::string filename = data_extraction_directory_ + "Measurement.dat";
   /* If the file already exists, there is no need to rewrite the data again.
@@ -1317,62 +1246,68 @@ void Handler::saveMeasurementData() {
   /* Save the values of the raw and synced measurment values of a given robot
    * into the same file with the last row indicating 'g' for raw  and 'i' for
    * synced.*/
-  for (unsigned short id{}; id < total_robots_; id++) {
+  for (const auto &robot : robots_) {
 
     /* NOTE: when the "raw" measurement data structure is populated, it only
      * adds one element to the members for each time stamp. After
      * interpolation, these values are combined if they have the same time
      * stamp.*/
-    for (std::size_t k{}; k < robots_[id].raw.measurements.size(); k++) {
+    for (std::size_t k{}; k < robot.raw.measurements.size(); k++) {
 
       /* NOTE: that time stamp grouping is not performed for raw measurements,
        * therefore each subject vector has only one element. */
-      int subject_ID{getID(robots_[id].raw.measurements[k].subjects.front())};
+      const Agent::Barcode barcode{robot.raw.measurements[k].subjects.front()};
+
+      const Agent *agent{getAgent(barcode)};
+
       char measurement_type;
-      /* Robots from the UTIAS dataset have ID's from [1,5]. */
-      if (subject_ID < 6) {
-        measurement_type = 'r';
+
+      if (agent->type() == Agent::Type::ROBOT) {
+        measurement_type = robot_character;
       }
       /* Landmarks from the UTIAS dataset have ID's from [5,20]. */
       else {
-        measurement_type = 'l';
+        measurement_type = landmark_character;
       }
-      robot_file << robots_[id].raw.measurements[k].time << '\t'
-                 << robots_[id].raw.measurements[k].subjects.front() << '\t'
-                 << robots_[id].raw.measurements[k].ranges.front() << '\t'
-                 << robots_[id].raw.measurements[k].bearings.front() << '\t'
-                 << 'r' << '\t' << id + 1 << '\t' << measurement_type << '\n';
+      robot_file << robot.raw.measurements[k].time << '\t'
+                 << robot.raw.measurements[k].subjects.front() << '\t'
+                 << robot.raw.measurements[k].ranges.front() << '\t'
+                 << robot.raw.measurements[k].bearings.front() << '\t' << 'r'
+                 << '\t' << robot.id() << '\t' << measurement_type << '\n';
     }
 
     /* Save both the synced and the calculated groundtruth */
-    for (std::size_t k{}; k < robots_[id].synced.measurements.size(); k++) {
+    for (std::size_t k{}; k < robot.synced.measurements.size(); k++) {
 
-      for (std::size_t s{};
-           s < robots_[id].synced.measurements[k].subjects.size(); s++) {
+      for (std::size_t s{}; s < robot.synced.measurements[k].subjects.size();
+           s++) {
 
-        int subject_ID{
-            getID(robots_[id].groundtruth.measurements[k].subjects[s])};
+        const Agent::Barcode barcode{
+            robot.groundtruth.measurements[k].subjects[s]};
+
+        const Agent *agent{getAgent(barcode)};
 
         char measurement_type;
-        if (subject_ID < 6) {
-          measurement_type = 'r';
+
+        if (agent->type() == Agent::Type::ROBOT) {
+          measurement_type = robot_character;
         }
         /* Landmarks from the UTIAS dataset have ID's from [5,20]. */
         else {
-          measurement_type = 'l';
+          measurement_type = landmark_character;
         }
-        robot_file << robots_[id].synced.measurements[k].time << '\t'
-                   << robots_[id].synced.measurements[k].subjects[s] << '\t'
-                   << robots_[id].synced.measurements[k].ranges[s] << '\t'
-                   << robots_[id].synced.measurements[k].bearings[s] << '\t'
-                   << 's' << '\t' << id + 1 << '\t' << measurement_type << '\n';
 
-        robot_file << robots_[id].groundtruth.measurements[k].time << '\t'
-                   << robots_[id].groundtruth.measurements[k].subjects[s]
-                   << '\t' << robots_[id].groundtruth.measurements[k].ranges[s]
-                   << '\t'
-                   << robots_[id].groundtruth.measurements[k].bearings[s]
-                   << '\t' << 'g' << '\t' << id + 1 << '\t' << measurement_type
+        robot_file << robot.synced.measurements[k].time << '\t'
+                   << robot.synced.measurements[k].subjects[s] << '\t'
+                   << robot.synced.measurements[k].ranges[s] << '\t'
+                   << robot.synced.measurements[k].bearings[s] << '\t' << 's'
+                   << '\t' << robot.id() << '\t' << measurement_type << '\n';
+
+        robot_file << robot.groundtruth.measurements[k].time << '\t'
+                   << robot.groundtruth.measurements[k].subjects[s] << '\t'
+                   << robot.groundtruth.measurements[k].ranges[s] << '\t'
+                   << robot.groundtruth.measurements[k].bearings[s] << '\t'
+                   << 'g' << '\t' << robot.id() << '\t' << measurement_type
                    << '\n';
       }
     }
@@ -1392,8 +1327,10 @@ void Handler::saveMeasurementData() {
  */
 void Handler::saveOdometryData() {
 
+  static constexpr char raw_char{'r'}, synced_char{'s'}, groundtruth_char{'g'};
+
   std::ofstream robot_file;
-  std::string filename = data_extraction_directory_ + "Odometry.dat";
+  std::string filename{data_extraction_directory_ + "Odometry.dat"};
   /* If the file already exists, there is no need to rewrite the data again.
    */
 
@@ -1409,31 +1346,30 @@ void Handler::saveOdometryData() {
       << "# Time [s]	Forward Velocity [m/s]	Angular Velocity "
          "[rad/s]	Raw (r)/Synced(s)/Groundtruth(g)	Robot ID\n";
 
-  for (int id{}; id < total_robots_; id++) {
+  for (const auto &robot : robots_) {
 
-    std::size_t largest_vector_size = std::max(
-        {robots_[id].raw.odometry.size(), robots_[id].synced.odometry.size()});
+    std::size_t largest_vector_size{
+        std::max({robot.raw.odometry.size(), robot.synced.odometry.size()})};
 
     for (std::size_t k{}; k < largest_vector_size; k++) {
 
-      if (k < robots_[id].raw.odometry.size()) {
-        robot_file << robots_[id].raw.odometry[k].time << '\t'
-                   << robots_[id].raw.odometry[k].forward_velocity << '\t'
-                   << robots_[id].raw.odometry[k].angular_velocity << '\t'
-                   << 'r' << '\t' << id + 1 << '\n';
+      if (k < robot.raw.odometry.size()) {
+        robot_file << robot.raw.odometry[k].time << '\t'
+                   << robot.raw.odometry[k].forward_velocity << '\t'
+                   << robot.raw.odometry[k].angular_velocity << '\t' << raw_char
+                   << '\t' << robot.id() << '\n';
       }
 
-      if (k < robots_[id].synced.odometry.size()) {
-        robot_file << robots_[id].synced.odometry[k].time << '\t'
-                   << robots_[id].synced.odometry[k].forward_velocity << '\t'
-                   << robots_[id].synced.odometry[k].angular_velocity << '\t'
-                   << 's' << '\t' << id + 1 << '\n';
+      if (k < robot.synced.odometry.size()) {
+        robot_file << robot.synced.odometry[k].time << '\t'
+                   << robot.synced.odometry[k].forward_velocity << '\t'
+                   << robot.synced.odometry[k].angular_velocity << '\t'
+                   << synced_char << '\t' << robot.id() << '\n';
 
-        robot_file << robots_[id].groundtruth.odometry[k].time << '\t'
-                   << robots_[id].groundtruth.odometry[k].forward_velocity
-                   << '\t'
-                   << robots_[id].groundtruth.odometry[k].angular_velocity
-                   << '\t' << 'g' << '\t' << id + 1 << '\n';
+        robot_file << robot.groundtruth.odometry[k].time << '\t'
+                   << robot.groundtruth.odometry[k].forward_velocity << '\t'
+                   << robot.groundtruth.odometry[k].angular_velocity << '\t'
+                   << groundtruth_char << '\t' << robot.id() << '\n';
       }
     }
 
@@ -1457,7 +1393,7 @@ void Handler::saveOdometryData() {
 void Handler::saveErrorData() {
 
   std::ofstream robot_file;
-  std::string filename = data_extraction_directory_ + "Odometry-Error.dat";
+  std::string filename{data_extraction_directory_ + "Odometry-Error.dat"};
   /* If the file already exists, there is no need to rewrite the data again.
    */
 
@@ -1477,7 +1413,7 @@ void Handler::saveErrorData() {
 
     for (const auto odometry : robot.error.odometry) {
       robot_file << odometry.time << '\t' << odometry.forward_velocity << '\t'
-                 << odometry.angular_velocity << '\t' << robot.id << '\n';
+                 << odometry.angular_velocity << '\t' << robot.id() << '\n';
     }
 
     /* Add two empty lines after robot entires for gnuplot */
@@ -1508,7 +1444,7 @@ void Handler::saveErrorData() {
       for (std::size_t s{}; s < measurements.subjects.size(); s++) {
         robot_file << measurements.time << '\t' << measurements.subjects[s]
                    << '\t' << measurements.ranges[s] << '\t'
-                   << measurements.bearings[s] << '\t' << robot.id << '\n';
+                   << measurements.bearings[s] << '\t' << robot.id() << '\n';
       }
     }
 
@@ -1535,8 +1471,8 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
   std::ofstream robot_file;
 
   /* Forward Velocity */
-  std::string filename =
-      data_extraction_directory_ + "Forward-Velocity-Error-PDF.dat";
+  std::string filename{data_extraction_directory_ +
+                       "Forward-Velocity-Error-PDF.dat"};
 
   robot_file.open(filename);
 
@@ -1572,7 +1508,7 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
       double bin_end{bin_start + bin_size};
 
       robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                 << count << '\t' << robot.id << '\n';
+                 << count << '\t' << robot.id() << '\n';
     }
     /* Add two empty lines after robot entires for gnuplot */
     robot_file << '\n';
@@ -1610,7 +1546,7 @@ void Handler::saveOdometryErrorPDF(double bin_size) {
       double bin_end{bin_start + bin_size};
 
       robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                 << count << '\t' << robot.id << '\n';
+                 << count << '\t' << robot.id() << '\n';
     }
 
     /* Add two empty lines after robot entires for gnuplot */
@@ -1736,7 +1672,7 @@ void Handler::saveRobotErrorStatistics() {
           "Bearing Mean [rad]	Bearing Variance [rad^2]\n";
 
   for (const auto &robot : robots_) {
-    file << robot.id << '\t' << robot.forward_velocity_error.mean << '\t'
+    file << robot.id() << '\t' << robot.forward_velocity_error.mean << '\t'
          << robot.forward_velocity_error.variance << '\t'
          << robot.angular_velocity_error.mean << '\t'
          << robot.angular_velocity_error.variance << '\t'
@@ -1765,9 +1701,9 @@ void Handler::saveLandmarks() {
   file << "# ID	Barcode	x-coordinate [m]	y-coordinate "
           "[m]	x std-dev [m]	y std-dev [m]\n";
   for (const auto &landmark : landmarks_) {
-    file << landmark.id << '\t' << landmark.barcode << '\t' << landmark.x
-         << '\t' << landmark.y << '\t' << landmark.x_std_dev << '\t'
-         << landmark.y_std_dev << '\n';
+    file << landmark.id() << '\t' << landmark.barcode() << '\t' << landmark.x()
+         << '\t' << landmark.y() << '\t' << landmark.x_std_dev() << '\t'
+         << landmark.y_std_dev() << '\n';
   }
 
   file.close();
@@ -1801,14 +1737,14 @@ void Handler::saveInferenceData() {
       robot.calculateStateError();
     }
     if (total_synced_datapoints_ > robot.error.states.size()) {
-      throw std::runtime_error("Robot " + std::to_string(robot.id) +
+      throw std::runtime_error("Robot " + robot.id() +
                                " has less synced datapoints than groundtruth "
                                "points. Check your filter implementation.");
     }
 
     for (const auto &pose : robot.error.states) {
       file << pose.time << '\t' << pose.x << '\t' << pose.y << '\t'
-           << pose.orientation << '\t' << robot.id << '\n';
+           << pose.orientation << '\t' << robot.id() << '\n';
     }
 
     file << '\n';
@@ -1836,14 +1772,14 @@ void Handler::saveInferenceData() {
     }
 
     if (total_synced_datapoints_ > robot.error.states.size()) {
-      throw std::runtime_error("Robot " + std::to_string(robot.id) +
+      throw std::runtime_error("Robot " + robot.id() +
                                " has less synced datapoints than groundtruth "
                                "points. Check your filter implementation.");
     }
 
     for (const auto &pose : robot.synced.states) {
       file << pose.time << '\t' << pose.x << '\t' << pose.y << '\t'
-           << pose.orientation << '\t' << robot.id << '\n';
+           << pose.orientation << '\t' << robot.id() << '\n';
     }
 
     file << '\n';
@@ -1851,25 +1787,6 @@ void Handler::saveInferenceData() {
   }
 
   file.close();
-}
-
-/**
- * @brief Getter for the array of Barcodes.
- * @return a reference the barcodes integer vector extracted from the barcodes
- * data file: Barcodes.dat.
- * @note if the dataset has not been set, the function will throw a
- * std::runtime_error.
- */
-const std::vector<unsigned short int> &Handler::getBarcodes() const {
-  if ("" == this->dataset_) {
-    throw std::runtime_error(
-        "Dataset has not been specified during object instantiation. Please "
-        "ensure you call void setDataSet(std::string) before attempting to "
-        "get "
-        "data.");
-  }
-
-  return barcodes_;
 }
 
 /**
@@ -1893,7 +1810,7 @@ void Handler::calculateStateError() {
 
     if (!pose_set) {
       std::cout << "\033[1;33m" << "[WARNING]" << "\033[0m "
-                << "The synced states of " << "Robot " << robot.id
+                << "The synced states of " << "Robot " << robot.id()
                 << " do not seem to be set." << std::endl;
     }
 
@@ -1960,55 +1877,33 @@ std::string Handler::getDataInferenceDirectory() {
 }
 
 /**
- * @brief Searches trough the list of barcodes to find the index ID of the
- * robot or landmark.
- * @param[in] barcode the barcode value for which the ID needs to be found.
- * @return the ID of the robot of landmark. If the ID is not found -1 is
+ * @brief Searches trough the agents to find the agent whose barcode matches
+ * that which was provided.
+ * @param[in] barcode the barcode value for the agent which needs to be found.
+ * @return a pointer to the agent. If the ID is not found, a nullptr is
  * returned.
  * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and
  * index 3 in the array Data::Handler::robots_.
- * @note if the dataset has not been set, the function will throw a
- * std::runtime_error.
  */
-const int Handler::getID(unsigned short barcode) const {
-  for (int i{}; i < total_barcodes_; i++) {
-    if (barcodes_[i] == barcode) {
-      return (i + 1);
+const Agent *Handler::getAgent(Agent::Barcode barcode) const {
+  const Agent *agent{};
+
+  for (auto &robot : robots_) {
+    agent = &robot;
+
+    if (barcode == agent->barcode()) {
+      return agent;
     }
   }
-  return -1;
-}
 
-/***
- * Returns a subject structure that corresponds to the barcode provided by a
- * measurement.
- * @param[in] barcode The barcode provided by the measurment.
- * @param[out] subject The data structure containing information about the
- * subject that relates to the barcode provided.
- */
-bool Handler::getSubject(const unsigned short barcode, Subject &subject) const {
+  for (auto &landmark : landmarks_) {
+    agent = &landmark;
 
-  int subject_id = getID(barcode);
-
-  if (-1 == subject_id) {
-    return false;
+    if (barcode == agent->barcode()) {
+      return agent;
+    }
   }
-
-  subject.id = static_cast<unsigned short>(subject_id);
-
-  /* The datahandler first assigns the ID to the robots then the
-   * landmarks. Therefore if the ID is less than or equal to the number
-   * of robots, then it belongs to a robot, otherwise it belong to a
-   * landmark. */
-  if (subject.id <= total_robots_) {
-    subject.type = Subject::Type::ROBOT;
-    subject.index = subject.id - 1U;
-  } else {
-    subject.type = Subject::Type::LANDMARK;
-    subject.index = subject.id - total_robots_ - 1U;
-  }
-
-  return true;
+  return nullptr;
 }
 
 /**
@@ -2025,6 +1920,16 @@ const std::vector<Landmark> &Handler::getLandmarks() const {
         "data.");
   }
   return landmarks_;
+}
+
+Landmark &Handler::getLandmark(Agent::ID id) {
+  for (auto &landmark : landmarks_) {
+    if (landmark.id() == id) {
+      return landmark;
+    }
+  }
+
+  throw std::runtime_error("Unable to find robot with id: " + id);
 }
 
 /**
@@ -2045,6 +1950,18 @@ std::vector<Robot> &Handler::getRobots() {
   }
 
   return robots_;
+}
+
+Robot &Handler::getRobot(Agent::ID id) {
+  /* Loop through each robot to find matching ID and return reference to the
+   * match. */
+  for (auto &robot : robots_) {
+    if (robot.id() == id) {
+      return robot;
+    }
+  }
+
+  throw std::runtime_error("Unable to find robot with id: " + id);
 }
 
 /**
@@ -2144,8 +2061,8 @@ const Robot::Measurement *Handler::getMeasurement(const Robot *robot,
     return nullptr;
 
   /* Check if the found element's time falls with the threshold of the current
-   * time. Then check if the previous element's time falls within the threshold
-   * of the current time. */
+   * time. Then check if the previous element's time falls within the
+   * threshold of the current time. */
   const unsigned short check_current_and_previous_index{2U};
   for (unsigned short i{}; i < check_current_and_previous_index; ++i) {
     if (std::abs(iterator->time - current_time) < decimal_threshold) {

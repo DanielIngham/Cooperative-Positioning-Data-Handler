@@ -7,6 +7,8 @@
 #ifndef INCLUDE_INCLUDE_LANDMARK_H_
 #define INCLUDE_INCLUDE_LANDMARK_H_
 
+#include "Agent.h"
+
 namespace Data {
 
 /**
@@ -17,17 +19,30 @@ namespace Data {
  * The DataExtractor::readLandmarks is responsible for populating this data
  * structure with the appropriate values from a provided dataset.
  */
-struct Landmark {
-  unsigned short id;      ///< Numerical identifier for the landmark.
-  unsigned short barcode; ///< Barcode associated with the landmark. This is
-                          ///< what the robots will read during there operation
-                          ///< to identify the landmarks.
+class Landmark : public Agent {
+public:
+  Landmark(unsigned short id, unsigned short barcode);
+  Landmark(Landmark &&) = default;
+  Landmark(const Landmark &) = delete;
+  Landmark &operator=(Landmark &&) = delete;
+  Landmark &operator=(const Landmark &) = delete;
+  ~Landmark();
 
-  double x;         ///< The landmark's golbal x-coordinate [m]
-  double y;         ///< The landmark's golbal y-coordinate [m]
-  double x_std_dev; ///< The x-standard deviation of the positioning error [m]
-  double y_std_dev; ///< The y-standard deviation of the positioning error [m]
+  const double x() const;
+  const double y() const;
+  const double x_std_dev() const;
+  const double y_std_dev() const;
+
+  void position(double x, double y);
+  void standard_deviation(double x, double y);
+
+private:
+  double x_;         ///< The landmark's golbal x-coordinate [m]
+  double y_;         ///< The landmark's golbal y-coordinate [m]
+  double x_std_dev_; ///< The x-standard deviation of the positioning error [m]
+  double y_std_dev_; ///< The y-standard deviation of the positioning error [m]
 };
+
 } // namespace Data
 
 #endif // INCLUDE_INCLUDE_LANDMARK_H_

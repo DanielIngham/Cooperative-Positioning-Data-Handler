@@ -933,7 +933,7 @@ void Plotter::plotOdometryPDFs(unsigned short robot_id, const double bin_size) {
   }
   binariseOdometryPDF(robot_id, bin_size);
 
-  std::vector<Robot> robots{data_.getRobots()};
+  std::vector<Robot> &robots{data_.getRobots()};
 
   const unsigned short end_point{(robot_id == 0) ? total_robots_ : robot_id};
   unsigned short id{
@@ -1295,22 +1295,19 @@ void Plotter::addInferenceIteration(const unsigned short robot_id) {
       switch (plot) {
       case SYNCED:
         inference_file = &binary_robot_data_.at(id).iterations.pose;
-        *inference_file =
-            "Robot" + std::to_string(robot.id) + "_synced_iterations";
+        *inference_file = "Robot" + robot.id() + "_synced_iterations";
         pose_data = &robot.synced.states;
         break;
 
       case ERROR:
         inference_file = &binary_robot_data_.at(id).iterations.error;
-        *inference_file =
-            "Robot" + std::to_string(robot.id) + "_error_iterations";
+        *inference_file = "Robot" + robot.id() + "_error_iterations";
         pose_data = &robot.error.states;
         break;
 
       case ABSOLUTE_ERROR:
         inference_file = &binary_robot_data_.at(id).iterations.absolute_error;
-        *inference_file =
-            "Robot" + std::to_string(robot.id) + "_absolute_error_iterations";
+        *inference_file = "Robot" + robot.id() + "_absolute_error_iterations";
         pose_data = &robot.absolute_state_error;
         break;
 
@@ -1717,9 +1714,11 @@ void Plotter::write_binary(std::string &filename,
     throw std::runtime_error("Could not open temporary file");
   }
 
-  for (auto const &row : landmark_data) {
-    fout.write(reinterpret_cast<const char *>(&row.x), sizeof(double));
-    fout.write(reinterpret_cast<const char *>(&row.y), sizeof(double));
+  for (const auto &row : landmark_data) {
+    const double x{row.x()};
+    const double y{row.y()};
+    fout.write(reinterpret_cast<const char *>(&x), sizeof(double));
+    fout.write(reinterpret_cast<const char *>(&y), sizeof(double));
   }
 
   fout.close();

@@ -31,14 +31,11 @@ Simulator::~Simulator() {}
  */
 Simulator::Simulator(const unsigned long int data_points, double sample_period,
                      std::vector<Robot> &robots,
-                     std::vector<Landmark> &landmarks,
-                     std::vector<unsigned short int> &barcodes,
-                     const unsigned long seed)
+                     std::vector<Landmark> &landmarks, const unsigned long seed)
     : data_points_(data_points), sample_period_(sample_period),
-      robots_(&robots), landmarks_(&landmarks), barcodes_(&barcodes) {
+      robots_(&robots), landmarks_(&landmarks) {
 
-  setSimulation(data_points_, sample_period_, robots, landmarks, barcodes,
-                seed);
+  setSimulation(data_points_, sample_period_, robots, landmarks, seed);
 }
 
 /**
@@ -47,7 +44,6 @@ Simulator::Simulator(const unsigned long int data_points, double sample_period,
 void Simulator::setSimulation(const unsigned long int data_points,
                               double sample_period, std::vector<Robot> &robots,
                               std::vector<Landmark> &landmarks,
-                              std::vector<unsigned short int> &barcodes,
                               const unsigned long seed) {
   setGeneratorSeed(seed);
 
@@ -60,7 +56,6 @@ void Simulator::setSimulation(const unsigned long int data_points,
 
   robots_ = &robots;
   landmarks_ = &landmarks;
-  barcodes_ = &barcodes;
 
   assignVectorMemory();
   setBarcodes();
@@ -103,14 +98,15 @@ void Simulator::assignVectorMemory() {
  * simulation, this checksum is not nessary and therefore not incorporated.
  */
 void Simulator::setBarcodes() {
-  for (unsigned short id{}; id < total_barcodes_; ++id) {
+  for (unsigned short i{}; i < total_barcodes_; ++i) {
+    const unsigned short id{static_cast<unsigned short>(i + 1U)};
+    const unsigned short barcode{id};
 
-    (*barcodes_)[id] = id + 1;
-
-    if (id < total_robots) {
-      (*robots_)[id].barcode = (*barcodes_)[id];
+    if (i < total_robots) {
+      /* To align with the UTIAS dataset, the ids are one indexed. */
+      (*robots_).emplace_back(id, barcode);
     } else {
-      (*landmarks_)[id - total_robots].barcode = (*barcodes_)[id];
+      (*landmarks_).emplace_back(id, barcode);
     }
   }
 }
@@ -131,12 +127,8 @@ void Simulator::setErrorStatistics() {
   unsigned short landmark_id{total_robots};
   for (auto &landmark : *landmarks_) {
 
-    /* Set the ID for each Landmark */
-    landmark.id = ++landmark_id;
-
     /* Set the variance for each landmark */
-    landmark.x_std_dev = deviation(generator);
-    landmark.y_std_dev = deviation(generator);
+    landmark.standard_deviation(deviation(generator), deviation(generator));
   }
 
   /* Set all the robot ID's and variance robots */
@@ -154,7 +146,6 @@ void Simulator::setErrorStatistics() {
 
   unsigned short id{};
   for (auto &robot : *robots_) {
-    robot.id = ++id;
 
     robot.forward_velocity_error.variance = forward_velocity_error(generator);
 
@@ -183,8 +174,7 @@ void Simulator::setLandmarkPositions() {
       position_padding, limits_.height - position_padding);
 
   /* Set the first landmark with a random x,y coordinate pair. */
-  (*landmarks_).front().x = position_x(generator);
-  (*landmarks_).front().y = position_y(generator);
+  (*landmarks_).front().position(position_x(generator), position_y(generator));
 
   /* Loop through each landmark and assign a x,y coordinate that is at least
    * 2m apart from all other landmarks. */
@@ -208,19 +198,18 @@ void Simulator::setLandmarkPositions() {
           -1.0, limits_.width + 1));
 
       position_y.param(std::uniform_real_distribution<double>::param_type(
-          -1.0, this->limits_.height + 1));
+          -1.0, limits_.height + 1));
     }
 
     /* Generate a random coordinate for the landmark*/
-    (*landmarks_)[i].x = position_x(generator);
-    (*landmarks_)[i].y = position_y(generator);
+    (*landmarks_)[i].position(position_x(generator), position_y(generator));
 
     for (unsigned short j{}; j < i; j++) {
 
       /* Check that the new point is far enough away from other points
        * randomly choosen. */
-      double x_difference{(*landmarks_)[i].x - (*landmarks_)[j].x};
-      double y_difference{(*landmarks_)[i].y - (*landmarks_)[j].y};
+      double x_difference{(*landmarks_)[i].x() - (*landmarks_)[j].x()};
+      double y_difference{(*landmarks_)[i].y() - (*landmarks_)[j].y()};
       double distance{
           std::sqrt(x_difference * x_difference + y_difference * y_difference)};
 
@@ -274,8 +263,8 @@ void Simulator::setRobotsInitalState() {
     for (const auto &landmark : (*landmarks_)) {
       /* Check that the new point is far enough away from other points
        * randomly choosen. */
-      double x_difference{landmark.x - first_robot_state.x};
-      double y_difference{landmark.y - first_robot_state.y};
+      double x_difference{landmark.x() - first_robot_state.x};
+      double y_difference{landmark.y() - first_robot_state.y};
       double distance{
           std::sqrt(x_difference * x_difference + y_difference * y_difference)};
 
@@ -337,8 +326,8 @@ void Simulator::setRobotsInitalState() {
     for (const auto &landmark : (*landmarks_)) {
       /* Check that the new point is far enough away from other points
        * randomly choosen. */
-      double x_difference{landmark.x - current_robot_pose.x};
-      double y_difference{landmark.y - current_robot_pose.y};
+      double x_difference{landmark.x() - current_robot_pose.x};
+      double y_difference{landmark.y() - current_robot_pose.y};
       double distance{
           std::sqrt(x_difference * x_difference + y_difference * y_difference)};
 
@@ -400,7 +389,7 @@ void Simulator::setRobotOdometryAndState() {
     /* Check if the intial states for every robots has bee set. */
     if (robot.groundtruth.states.empty()) {
       throw std::runtime_error(
-          "The initial state of Robot " + std::to_string(robot.id) +
+          "The initial state of Robot " + robot.id() +
           " was not set. Call Simulator::setRobotsInitalState before calling "
           "Simulator::setRobotOdometry");
     }
@@ -553,7 +542,7 @@ void Simulator::setRobotMeasurement() {
       for (auto &other_agent : (*robots_)) {
 
         /* The robot cannot take any measurements of itself. */
-        if (ego_robot.id == other_agent.id) {
+        if (ego_robot.id() == other_agent.id()) {
           continue;
         }
 
@@ -594,25 +583,26 @@ void Simulator::setRobotMeasurement() {
         /* Populate data structure with the calculated measurement. */
         if (first_entry) {
           first_entry = false;
+
           ego_robot.groundtruth.measurements.emplace_back(
-              ego_robot.groundtruth.states[k].time, other_agent.barcode, range,
-              bearing);
+              ego_robot.groundtruth.states[k].time, other_agent.barcode(),
+              range, bearing);
         } else {
 
           Robot::Measurement &newest_measurement{
               ego_robot.groundtruth.measurements.back()};
 
-          newest_measurement.subjects.push_back(other_agent.barcode);
+          newest_measurement.subjects.push_back(other_agent.barcode());
           newest_measurement.ranges.push_back(range);
           newest_measurement.bearings.push_back(bearing);
         }
       }
 
       /* Determine the groundtruth range and bearing from landmarks. */
-      for (const auto landmark : (*landmarks_)) {
+      for (const auto &landmark : (*landmarks_)) {
 
-        double x_difference{landmark.x - ego_robot.groundtruth.states[k].x};
-        double y_difference{landmark.y - ego_robot.groundtruth.states[k].y};
+        double x_difference{landmark.x() - ego_robot.groundtruth.states[k].x};
+        double y_difference{landmark.y() - ego_robot.groundtruth.states[k].y};
         double range{std::sqrt(x_difference * x_difference +
                                y_difference * y_difference)};
 
@@ -638,11 +628,11 @@ void Simulator::setRobotMeasurement() {
         if (first_entry) {
           first_entry = false;
           ego_robot.groundtruth.measurements.emplace_back(
-              ego_robot.groundtruth.states[k].time, landmark.barcode, range,
+              ego_robot.groundtruth.states[k].time, landmark.barcode(), range,
               bearing);
         } else {
           ego_robot.groundtruth.measurements.back().subjects.push_back(
-              landmark.barcode);
+              landmark.barcode());
           ego_robot.groundtruth.measurements.back().ranges.push_back(range);
           ego_robot.groundtruth.measurements.back().bearings.push_back(bearing);
         }
