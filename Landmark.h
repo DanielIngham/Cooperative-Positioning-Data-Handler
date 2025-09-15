@@ -37,10 +37,11 @@ public:
   void standard_deviation(double x, double y);
 
 private:
-  double x_;         ///< The landmark's golbal x-coordinate [m]
-  double y_;         ///< The landmark's golbal y-coordinate [m]
-  double x_std_dev_; ///< The x-standard deviation of the positioning error [m]
-  double y_std_dev_; ///< The y-standard deviation of the positioning error [m]
+  struct Euclidean2D {
+    double x;   ///< The landmark's global x-coordinate.
+    double y;   ///< The landmark's global y-coordinate.
+    bool set{}; ///< Flag to prevent resetting initial state.
+  } position_, std_dev_;
 };
 
 } // namespace Data
