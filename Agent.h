@@ -27,6 +27,10 @@ public:
       return value_ == other.value_;
     }
 
+    bool operator<(const Identifier &other) const {
+      return value_ < other.value_;
+    }
+
     operator std::string() const { return std::to_string(value_); }
 
     friend std::ostream &operator<<(std::ostream &os,
