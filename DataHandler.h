@@ -96,25 +96,7 @@ public:
   const unsigned long getNumberOfSyncedDatapoints() const;
   const std::vector<size_t> getNumberOfSyncedMeasurements() const;
 
-  const Agent *getAgent(const Agent::Barcode) const;
-
-  /**
-   * Data structure containing information about the agent that is useful for
-   * identification.
-   */
-  struct Subject {
-    /** Types of agents. */
-    enum class Type { ROBOT, LANDMARK };
-
-    /** The agents ID number. */
-    unsigned short id{};
-
-    /** The position of agent in the data handlers vectors. */
-    unsigned short index{};
-
-    /** The type of agent: robot/landmark. */
-    Type type;
-  };
+  const Agent *getAgent(const Agent::Barcode &) const;
 
   void saveExtractedData();
   void saveInferenceData();

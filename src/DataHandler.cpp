@@ -96,6 +96,8 @@ void Handler::setSimulation(const size_t data_points,
                             const std::string &output_directory,
                             const unsigned long seed) {
 
+  static constexpr bool simulation{true};
+
   auto start{std::chrono::high_resolution_clock::now()};
   /* Set class fields */
   dataset_ = "./";
@@ -117,8 +119,6 @@ void Handler::setSimulation(const size_t data_points,
                            seed);
 
   setNumberOfSyncedMeasurements();
-
-  const bool simulation{true};
 
   try {
     /* Calculate odometry and measurement errors. */
@@ -398,7 +398,7 @@ void Handler::readLandmarks(const std::string &dataset) {
     std::size_t start_index{};
     std::size_t end_index{line.find('\t', 0)};
 
-    Landmark &landmark = getLandmark(Agent::ID{id});
+    Landmark &landmark{getLandmark(Agent::ID{id})};
 
     landmark.position(x, y);
     landmark.standard_deviation(x_std_dev, y_std_dev);
@@ -960,8 +960,7 @@ void Handler::calculateGroundtruthMeasurement() {
         double bearing{2.0 * M_PI}; // Invalid Bearing
 
         /* Get the subjects ID from its barcode. */
-        const Agent::Barcode barcode{robot.synced.measurements[k].subjects[s]};
-
+        const Agent::Barcode &barcode{robot.synced.measurements[k].subjects[s]};
         const Agent *agent{getAgent(barcode)};
 
         if (agent) {
@@ -1256,8 +1255,7 @@ void Handler::saveMeasurementData() {
 
       /* NOTE: that time stamp grouping is not performed for raw measurements,
        * therefore each subject vector has only one element. */
-      const Agent::Barcode barcode{robot.raw.measurements[k].subjects.front()};
-
+      const Agent::Barcode &barcode{robot.raw.measurements[k].subjects.front()};
       const Agent *agent{getAgent(barcode)};
 
       char measurement_type;
@@ -1282,7 +1280,7 @@ void Handler::saveMeasurementData() {
       for (std::size_t s{}; s < robot.synced.measurements[k].subjects.size();
            s++) {
 
-        const Agent::Barcode barcode{
+        const Agent::Barcode &barcode{
             robot.groundtruth.measurements[k].subjects[s]};
 
         const Agent *agent{getAgent(barcode)};
@@ -1885,7 +1883,7 @@ std::string Handler::getDataInferenceDirectory() {
  * @note the ID is one larger than it's index. Therefore, robot 4 has ID 4 and
  * index 3 in the array Data::Handler::robots_.
  */
-const Agent *Handler::getAgent(Agent::Barcode barcode) const {
+const Agent *Handler::getAgent(const Agent::Barcode &barcode) const {
   const Agent *agent{};
 
   for (auto &robot : robots_) {
