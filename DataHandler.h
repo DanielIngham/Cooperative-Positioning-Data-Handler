@@ -39,6 +39,11 @@ struct HandlerDefaults {
   static const inline std::string kOutputDir{};
 };
 
+static constexpr const char *Set[]{
+    "MRCLAM_Dataset1", "MRCLAM_Dataset2", "MRCLAM_Dataset3",
+    "MRCLAM_Dataset4", "MRCLAM_Dataset5", "MRCLAM_Dataset6",
+    "MRCLAM_Dataset7", "MRCLAM_Dataset8", "MRCLAM_Dataset9"};
+
 /**
  * @class Handler
  * @brief Extracts the data from the UTIAS Multi-robot Localisaion and Mapping
