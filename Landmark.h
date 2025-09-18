@@ -8,6 +8,7 @@
 #define INCLUDE_INCLUDE_LANDMARK_H_
 
 #include "Agent.h"
+#include <vector>
 
 namespace Data {
 
@@ -27,6 +28,8 @@ public:
   Landmark &operator=(Landmark &&) = delete;
   Landmark &operator=(const Landmark &) = delete;
   ~Landmark();
+
+  using List = std::vector<Landmark>;
 
   const double x() const;
   const double y() const;

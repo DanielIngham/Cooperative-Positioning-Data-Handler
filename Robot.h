@@ -28,6 +28,8 @@ public:
   Robot &operator=(const Robot &) = delete;
   ~Robot();
 
+  using List = std::vector<Robot>;
+
   static void normaliseAngle(double &);
 
   /**
