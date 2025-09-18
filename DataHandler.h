@@ -87,10 +87,10 @@ public:
   std::string getDataExtractionDirectory();
   std::string getDataInferenceDirectory();
 
-  std::vector<Robot> &getRobots();
+  Robot::List &getRobots();
   Robot &getRobot(Agent::ID id);
 
-  const std::vector<Landmark> &getLandmarks() const;
+  const Landmark::List &getLandmarks() const;
   Landmark &getLandmark(Agent::ID id);
 
   const double getSamplePeriod() const;
@@ -110,6 +110,11 @@ public:
   Robot::State getAverageRMSE();
 
   static const Robot::Measurement *getMeasurement(const Robot *, size_t);
+
+  static const std::string getProjectDirectory();
+
+  /** Folder in which the output data is saved. */
+  static constexpr const char *output_folder{"/output/"};
 
 private:
   /**

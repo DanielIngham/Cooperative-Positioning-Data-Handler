@@ -255,26 +255,9 @@ void Handler::setDataSet(const std::string &dataset,
 void Handler::setOutputDirectory(const std::string &output_directory,
                                  const std::string &folder) {
 
-  /* The PROJECT_DIR preprocessor should be set by Cmake, but if not, then check
-   * if a environment variable was made by make. */
-#ifdef PROJECT_DIR
-  const char *project_env = PROJECT_DIR;
-#else
-  const char *project_env = std::getenv("PROJECT_DIR");
-#endif // PROJECT_DIR
+  std::string project_directory{getProjectDirectory()};
 
-  /* Check if the project environment variable has been set. If not, throw
-   * error.
-   */
-  if (project_env == NULL) {
-    throw std::runtime_error(
-        "Project directory environment variable not specified before "
-        "executation. Add command:  PROJECT_DIR=$(CURDIR) into your makefile.");
-  }
-
-  std::string project_directory{project_env};
-
-  output_directory_ = project_directory + ("/output/" + output_directory);
+  output_directory_ = project_directory + (output_folder + output_directory);
 
   /* Creates unique simulation folder using the current system time. */
   try {
@@ -1909,7 +1892,7 @@ const Agent *Handler::getAgent(const Agent::Barcode &barcode) const {
  * @return a reference to the Landmarks class vector, populated by extracting
  * data form Landmarks.dat.
  */
-const std::vector<Landmark> &Handler::getLandmarks() const {
+const Landmark::List &Handler::getLandmarks() const {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
@@ -1938,7 +1921,7 @@ Landmark &Handler::getLandmark(Agent::ID id) {
  * @note if the dataset has not been set, the function will throw a
  * std::runtime_error.
  */
-std::vector<Robot> &Handler::getRobots() {
+Robot::List &Handler::getRobots() {
   if ("" == this->dataset_) {
     throw std::runtime_error(
         "Dataset has not been specified during object instantiation. Please "
@@ -2078,4 +2061,26 @@ const Robot::Measurement *Handler::getMeasurement(const Robot *robot,
   return nullptr;
 }
 
+/**
+ * Returns the project directory.
+ */
+const std::string Handler::getProjectDirectory() {
+/* The PROJECT_DIR preprocessor should be set by Cmake, but if not, then check
+ * if a environment variable was made by make. */
+#ifdef PROJECT_DIR
+  const char *project_env = PROJECT_DIR;
+#else
+  const char *project_env = std::getenv("PROJECT_DIR");
+#endif // PROJECT_DIR
+
+  /* Check if the project environment variable has been set. If not, throw
+   * error.
+   */
+  if (project_env == NULL) {
+    throw std::runtime_error(
+        "Project directory environment variable not specified before "
+        "executation. Add command:  PROJECT_DIR=$(CURDIR) into your makefile.");
+  }
+  return std::string(project_env);
+}
 } // namespace Data
