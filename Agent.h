@@ -21,7 +21,7 @@ public:
     const unsigned short value_;
 
   public:
-    Identifier(unsigned short barcode) : value_{barcode} {};
+    Identifier(unsigned short identifier) : value_{identifier} {};
 
     bool operator==(const Identifier &other) const {
       return value_ == other.value_;
@@ -34,13 +34,13 @@ public:
     operator std::string() const { return std::to_string(value_); }
 
     friend std::ostream &operator<<(std::ostream &os,
-                                    const Identifier &barcode) {
-      return os << barcode.value_;
+                                    const Identifier &identifier) {
+      return os << identifier.value_;
     }
 
     friend std::string operator+(const std::string &s,
-                                 const Identifier &barcode) {
-      return s + std::to_string(barcode.value_);
+                                 const Identifier &identifier) {
+      return s + std::to_string(identifier.value_);
     }
   };
 
