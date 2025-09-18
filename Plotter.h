@@ -5,15 +5,13 @@
  */
 #pragma once
 
-#include "DataHandler.h"
 #include "Landmark.h"
 #include "Robot.h"
 
 #include <cmath>
-#include <initializer_list>
-#include <tuple>
+#include <stdexcept>
 #include <unistd.h>
-#include <variant>
+#include <unordered_map>
 #include <vector>
 
 /* Warn about depreciated functions. */
@@ -24,74 +22,123 @@
 
 namespace Data {
 
+enum class Type { SYNCED, GROUNDTRUTH, RAW, ERROR, ABSOLUTE_ERROR };
+
+class Plotter;
+
+struct Data {
+
+  std::string binary_filename_{};
+
+  std::string binary_file_format_{};
+
+  std::string plot_string_{};
+};
+
+template <typename T> class PlotData {
+public:
+  explicit PlotData(const Agent &agent) : agent_{agent} {
+    data_.binary_file_format_ = setBinaryFormat();
+  };
+
+  PlotData(PlotData &&) = default;
+  PlotData(const PlotData &) = default;
+  PlotData &operator=(PlotData &&) = default;
+  PlotData &operator=(const PlotData &) = default;
+  ~PlotData() = default;
+
+private:
+  friend Plotter;
+
+  const Agent &agent_;
+
+  std::string name_;
+
+  Data data_;
+
+  std::string setBinaryFormat() {
+    if constexpr (std::is_same_v<T, Robot::State>) {
+      return "%double%double%double%double";
+
+    } else if constexpr (std::is_same_v<T, Robot::Odometry>) {
+      return "%double%double%double";
+
+    } else if constexpr (std::is_same_v<T, Robot::Measurement>) {
+      return "%double%ushort%double%double";
+
+    } else if constexpr (std::is_same_v<T, Landmark>) {
+      return "%double%double";
+
+    } else {
+      throw std::runtime_error("Unknown type provided to Plot template.");
+    }
+  }
+};
+
+struct PlotSettings {
+  PlotSettings(std::string equation) { data_.plot_string_ = equation; };
+
+  PlotSettings(Data data) : data_{data} {};
+
+  Data data_;
+
+  gnuplot::PlotSettings settings_;
+};
+
 class Plotter {
 public:
-  explicit Plotter(Handler &);
+  Plotter();
   Plotter(Plotter &&) = delete;
   Plotter(const Plotter &) = delete;
   Plotter &operator=(Plotter &&) = delete;
   Plotter &operator=(const Plotter &) = delete;
-  ~Plotter();
+  ~Plotter() = default;
 
-  /** Type of data extracted/calculated from the dataset. */
-  enum PlotType {
-    SYNCED,      ///< Synced data after linear interpolation.
-    RAW,         ///< Raw data extracted from the dataset.
-    GROUNDTRUTH, ///< Groundtruth data extracted or calculated from the dataset.
-    ERROR,       ///< Difference between the groundtruth and the synced data.
-    ABSOLUTE_ERROR ///< Absolute value of the error.
-  };
+  using PlotSettingsList = std::vector<PlotSettings>;
+  using PlotTypeList = std::initializer_list<Type>;
+  template <typename T> using PlotDataList = std::vector<PlotData<T>>;
 
   void setTerminal(gnuplot::TerminalSettings);
 
-  void plotPoses(std::initializer_list<PlotType>, unsigned short robot_id = 0);
+  static constexpr PlotTypeList trajectory_types{Type::GROUNDTRUTH,
+                                                 Type::SYNCED};
 
-  void plotTrajectory(std::initializer_list<PlotType>,
-                      const unsigned short robot_id = 0);
+  static constexpr PlotTypeList sensor_types{Type::GROUNDTRUTH, Type::SYNCED,
+                                             Type::ERROR};
 
-  void plotOdometry(std::initializer_list<PlotType>,
-                    const unsigned short robot_id = 0);
+  static constexpr PlotTypeList pose_types{Type::GROUNDTRUTH, Type::SYNCED,
+                                           Type::ERROR, Type::ABSOLUTE_ERROR};
 
-  void plotOdometryPDFs(const unsigned short robot_id = 0,
+  void plotPoses(const std::vector<Robot> &, PlotTypeList types = pose_types);
+
+  void plotTrajectory(const std::vector<Robot> &, const std::vector<Landmark> &,
+                      PlotTypeList types = trajectory_types);
+
+  void plotOdometry(const std::vector<Robot> &,
+                    PlotTypeList types = sensor_types);
+
+  void plotMeasurementsVector(const std::vector<Robot> &,
+                              const std::vector<Landmark> &,
+                              PlotTypeList types = trajectory_types);
+
+  void plotMeasurements(const std::vector<Robot> &,
+                        PlotTypeList types = sensor_types);
+
+  void plotOdometryPDFs(const std::vector<Robot> &,
                         const double bin_size = 0.001);
 
-  void plotMeasurements(std::initializer_list<PlotType>,
-                        const unsigned short robot_id = 0);
-
-  void plotMeasurementsVector(const unsigned short robot_id = 0);
-
-  void plotMeasurementPDFs(const unsigned short robot_id = 0,
+  void plotMeasurementPDFs(const std::vector<Robot> &,
                            const double bin_size = 0.001);
 
-  void addInferenceIteration(const unsigned short);
+  void inferenceAnimation(const Robot &);
 
-  void inferenceErrorAnimation(std::initializer_list<PlotType>,
-                               const unsigned short robot_id = 0);
+  void addInferenceIteration(const Robot &);
 
-  void trajectoryAnimation(const unsigned short);
+  void trajectoryAnimation(const Robot &, const std::vector<Landmark> &);
 
-  void plotInferenceIterations(std::initializer_list<PlotType>,
-                               std::vector<unsigned int> iterations = {},
-                               const unsigned short robot_id = 0);
+  void plotInferenceIterations(const Robot &);
 
 private:
-  struct Plot {
-    bool using_binary_file{};
-    std::string binary_name;
-    std::string binary_format;
-
-    gnuplot::PlotSettings settings;
-
-    std::string plot_string;
-
-    Plot(const std::string binary_name, std::string binary_format)
-        : binary_name(binary_name), binary_format(binary_format) {
-      using_binary_file = true;
-    }
-
-    Plot(const std::string plot_string) : plot_string(plot_string) {}
-  };
-
   /** Data structure containing the settings of a gnuplot terminal. */
   gnuplot::TerminalSettings terminal_;
 
@@ -99,91 +146,21 @@ private:
    * plotter. */
   static unsigned short terminal_number_;
 
-  unsigned int total_inference_iterations_{};
-
-  /** Reference to a data handler instance */
-  Handler &data_;
-
-  /** Name of the dataset that the datahandler is using. */
-  std::string dataset_name_;
-
   /** Directory where the data extraction plots are saved. */
-  std::string data_extraction_directory_;
-
-  /** Directory where the data inference plots are saved. */
-  std::string data_infernce_directory_;
-
-  std::string animation_directory_;
-
-  /** Total number of synced data points in the dataset. */
-  size_t data_points_;
-
-  /** Total number of synced measurements present for each robot in the dataset.
-   */
-  std::vector<size_t> total_measurements_;
-
-  /** Total number of robots present in the dataset. */
-  unsigned short total_robots_;
-
-  /** Total number of landmarks present in the dataset. */
-  unsigned short total_landmarks_;
+  std::string output_directory_;
+  std::string plots_directory_;
 
   /** Instance of the gnuplot iostream class that allows for plotting */
   Gnuplot gnuplot_;
 
-  /**
-   * Type defintion for the vector of tuples containing the serialised data of
-   * the robots odometry inputs. The vector will be of size total_robots.
-   * The elements in the vector correspond to:
-   *   - double : time [s]
-   *   - double : forward velocity [m/s]
-   *   - double : angular velocity [rad/s]
-   */
-  using odometry_tuple = std::vector<
-      std::tuple<double /* time [s] */, double /* forward velocity [m/s]*/,
-                 double /* Angular velocity [rad/s]*/>>;
+  struct IterationData {
+    PlotDataList<Robot::State> synced;
+    PlotDataList<Robot::State> groundtruth;
+    PlotDataList<Robot::State> error;
+    PlotDataList<Robot::State> absolute_error;
+  };
 
-  /**
-   * Type defintion for the vector of tuples containing the serialised data of
-   * the robots poses. The vector will be of size total_robots.
-   * The elements in the vector correspond to:
-   *   - double : time [s]
-   *   - double : global x position [m]
-   *   - double : global y position [m]
-   *   - double : global orientation [rad]
-   */
-  using pose_tuple = std::vector<
-      std::tuple<double /* time [s] */, double /* x position [m] */,
-                 double /* y position [m] */, double /* orientation [rad] */>>;
-
-  /**
-   * Type defintion for the vector of tuples containing the serialised data of
-   * the landmarks points. The vector will be of size total_landmarks.
-   * The elements in the vector correspond to:
-   *   - double : time [s]
-   *   - double : global x position [m]
-   *   - double : global y position [m]
-   */
-  using point_tuple = std::vector<
-      std::tuple<double /* x position [m] */, double /* y position [m] */>>;
-
-  /**
-   * Type defintion for the vector of tuples containing the serialised data of
-   * the landmarks points. The vector will be of size total_landmarks.
-   * The elements in the vector correspond to:
-   *   - double : time [s]
-   *   - unsigned short: Subject ID
-   *   - double : relative range to agent measured [m]
-   *   - double : relative bearing to agent measured [rad]
-   */
-  using measurement_tuple = std::vector<
-      std::tuple<double /* time [s] */, unsigned short /* Subject */,
-                 double /* range [m] */, double /* bearing [rad] */>>;
-
-  using PlotData =
-      std::variant<pose_tuple, point_tuple, measurement_tuple, odometry_tuple>;
-
-  using PlotList = std::vector<Plot>;
+  std::unordered_map<std::uintptr_t, IterationData> iteration_data_;
 
   /** Indices of the items in the tuples used for gnuplotting.
    * @note gnuplot starts its indexing at 1. */
@@ -206,118 +183,48 @@ private:
     BIN_COUNT = 3,
   };
 
-  /**
-   * @struct RobotData
-   * Houses the serialised data fields for all information pertaining to the
-   * robots.
-   */
-  struct RobotData {
+  void plot(const PlotSettingsList &, const gnuplot::AxisSettings &);
 
-    /**
-     * @struct PDF
-     * Contains the name and binary format of data file containing the bins of
-     * the Probability Density Function .
-     */
-    struct PDF {
-      std::string filename;
-      static constexpr const char *binary_format = "%double%double%double";
-    } forward_velocity_pdf, angular_velocity_pdf, range_pdf, bearing_pdf;
+  template <typename T>
+  PlotData<T> binariseData(const Agent &, const std::vector<T> &);
 
-    /**
-     * @struct MeasurementVector
-     * Contains the vectors of measurements taken by the robot. For example,
-     * given the range and bearing, a vector can be drawn from the robots
-     * current position to a given item measured.
-     */
-    struct MeasurementVector {
-      std::string filename;
-      static constexpr const char *binary_format =
-          "%double%double%double%double";
-    } measurement_vector;
+  PlotData<Robot::Measurement>
+  binariseMeasurementVectors(const Agent &,
+                             const std::vector<Robot::Measurement> &,
+                             const std::vector<Robot::State> &);
 
-    /**
-     * @struct Types
-     * Contains the names and binary format of data files associated with the
-     * different types of data structures.
-     */
-    struct DataVariants {
-      std::string raw;         ///< Raw data.
-      std::string synced;      ///< Data synced by linear interpolation.
-      std::string groundtruth; ///< Groundtruth data.
-      std::string error;       ///< Error data (synced - groundtruth)
+  std::pair<PlotData<Robot::Measurement>, PlotData<Robot::Measurement>>
+  binariseMeasurementPDF(const Agent &, const std::vector<Robot::Measurement> &,
+                         const double);
 
-      virtual ~DataVariants() = default;
-    };
+  std::pair<PlotData<Robot::Odometry>, PlotData<Robot::Odometry>>
+  binariseOdometryPDF(const Agent &, const std::vector<Robot::Odometry> &,
+                      const double);
 
-    /** Contains the filenames of the variants of extracted odometry data. */
-    struct Odometry : DataVariants {
-      static std::string binary_format() { return "%double%double%double"; };
-    } odometry;
-
-    /** Contains the filenames of the variants of extracted measurement data. */
-    struct Measurement : DataVariants {
-      static std::string binary_format() {
-        return "%double%ushort%double%double";
-      }
-    } measurement;
-
-    /** Contains the filenames of the variants of extracted Pose data. */
-    struct Pose : DataVariants {
-      static const std::string binary_format() {
-        return "%double%double%double%double";
-      }
-    } pose;
-
-    std::string absolute_pose_error; ///< Absolute value of error data.
-
-    struct Iterations {
-      std::string pose;
-      std::string error;
-      std::string absolute_error;
-      static const std::string binary_format() {
-        return "%double%double%double%double";
-      };
-    } iterations;
-  };
-
-  /** Filename of the binary landmark data. */
-  struct LandmarkData {
-    std::string filename;
-    static const std::string binary_format() { return "%double%double"; };
-  } binary_landmark_data_;
-
-  void plot(const PlotList &, const gnuplot::AxisSettings &);
-
-  /** Vector containing the serialised data extracted into the RobotData struct.
-   */
-  std::vector<RobotData> binary_robot_data_;
-
-  void inferenceIterationsPlotter(const unsigned short, PlotType,
-                                  std::vector<unsigned int>);
-
-  void trajectoryIterationsPlotter(const unsigned short,
-                                   std::vector<unsigned int>);
-
-  void binariseRobotPoseData(std::initializer_list<PlotType>,
-                             const unsigned short robot_id = 0U);
-  void binariseLandmarkData();
-  void binariseOdometryData(std::initializer_list<PlotType>,
-                            const unsigned short robot_id = 0U);
-  void binariseMeasurementData(std::initializer_list<PlotType>,
-                               const unsigned short robot_id = 0U);
-  void binariseMeasurementVectors(std::initializer_list<PlotType>,
-                                  const unsigned short robot_id = 0U);
-
-  void binariseOdometryPDF(unsigned short, const double);
-  void binariseMeasurementPDF(unsigned short, const double);
-
-  void write_binary(std::string &, const std::vector<Robot::Odometry> &);
-  void write_binary(std::string &, const std::vector<Robot::State> &,
+  void write_binary(const std::string &, const std::vector<Robot::Odometry> &);
+  void write_binary(const std::string &, const std::vector<Robot::State> &,
                     bool append = false);
-  void write_binary(std::string &, const std::vector<Robot::Measurement> &);
-  void write_binary(std::string &, const std::vector<Landmark> &);
-  void write_binary(std::string &, const std::unordered_map<int, double> &,
-                    const double &);
+  void write_binary(const std::string &,
+                    const std::vector<Robot::Measurement> &);
+  void write_binary(const std::string &, const std::vector<Landmark> &);
+  void write_binary(const std::string &,
+                    const std::unordered_map<int, double> &, const double &);
+
+  void inferenceIterationsPlotter(const Agent &,
+                                  const PlotDataList<Robot::State> &, Type);
+
+  void trajectoryIterationsPlotter(const Agent &,
+                                   const PlotDataList<Robot::State> &,
+                                   const PlotData<Landmark> &, Type);
+
+  std::string generate_temp_filename(const std::string &extension = ".bin");
+
+  std::array<std::pair<const PlotDataList<Robot::State> &, Type>, 4U>
+  getIterationsData(const Robot &);
+
+  std::uintptr_t getKeyForRobot(const Robot &);
+
+  std::string to_string(Type);
 };
 
 } // namespace Data
