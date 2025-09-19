@@ -103,11 +103,12 @@ public:
   static constexpr PlotTypeList trajectory_types{Type::GROUNDTRUTH,
                                                  Type::SYNCED};
 
-  static constexpr PlotTypeList sensor_types{Type::GROUNDTRUTH, Type::SYNCED,
-                                             Type::ERROR};
+  static constexpr PlotTypeList sensor_types{Type::RAW, Type::GROUNDTRUTH, Type::SYNCED
+                                             };
 
   static constexpr PlotTypeList pose_types{Type::GROUNDTRUTH, Type::SYNCED,
-                                           Type::ERROR, Type::ABSOLUTE_ERROR};
+                                           Type::RAW, Type::ERROR,
+                                           Type::ABSOLUTE_ERROR};
 
   void plotPoses(const std::vector<Robot> &, PlotTypeList types = pose_types);
 

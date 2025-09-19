@@ -4,7 +4,6 @@
 #include "Robot.h"
 
 #include <array>
-#include <boost/current_function.hpp>
 #include <cassert>
 #include <cmath>
 #include <initializer_list>
@@ -32,7 +31,6 @@ unsigned short Plotter::terminal_number_{};
  */
 Plotter::Plotter() {
 
-  /* TODO: Plotter should control its own output directory. */
   output_directory_ = Handler::getProjectDirectory() + Handler::output_folder;
   plots_directory_ = output_directory_ + "/plots/";
 }
@@ -152,7 +150,8 @@ Plotter::binariseMeasurementPDF(
   std::unordered_map<int, double> bearing_bin_counts;
 
   /* Create PDFs. */
-  const double number_of_measurements{static_cast<double>(measurements.size())};
+  const double number_of_measurements{
+      static_cast<double>(Handler::getNumberOfMeasurements(measurements))};
 
   for (const auto &data : measurements) {
 
@@ -403,10 +402,11 @@ void Plotter::plotMeasurementsVector(const std::vector<Robot> &robots,
   PlotData<Landmark> landmark_plot{binariseData(landmarks.front(), landmarks)};
 
   for (const auto &robot : robots) {
-    PlotData<Robot::State> gt_pose{binariseData(robot, robot.synced.states)};
+    PlotData<Robot::State> gt_pose{
+        binariseData(robot, robot.groundtruth.states)};
 
     PlotData<Robot::Measurement> vectors{binariseMeasurementVectors(
-        robot, robot.synced.measurements, robot.groundtruth.states)};
+        robot, robot.groundtruth.measurements, robot.groundtruth.states)};
 
     terminal_.number = ++terminal_number_;
     gnuplot_ << gnuplot::setTerminal(terminal_);
@@ -489,20 +489,10 @@ void Plotter::plotPoses(const std::vector<Robot> &robots, PlotTypeList types) {
   };
 
   for (const Type &plot_type : types) {
-    gnuplot_ << gnuplot::setTerminal(terminal_);
-    terminal_.number = ++terminal_number_;
-
-    const std::string file_name{"Robot_" + to_string(plot_type) + "Poses"};
-    const std::string output_file{plots_directory_ + file_name};
-    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
-
-    gnuplot_ << gnuplot::grid();
-
-    static constexpr unsigned short rows{3U}, columns{1U};
-    gnuplot_ << gnuplot::setMultiplot(rows, columns);
 
     PlotSettingsList x_plots, y_plots, orientation_plots;
 
+    bool empty_list{};
     for (const auto &robot : robots) {
 
       std::unique_ptr<PlotData<Robot::State>> pose_plot;
@@ -530,6 +520,15 @@ void Plotter::plotPoses(const std::vector<Robot> &robots, PlotTypeList types) {
         break;
 
       case Type::RAW:
+        /* NOTE: Simulated data does not have raw values. */
+        if (robot.raw.states.empty()) {
+          std::cerr << "\033[1;33m" << "[WARNING]" << "\033[0m "
+                    << "Raw data not populated. Skipping plot." << std::endl;
+          empty_list = true;
+
+          continue;
+        }
+
         pose_plot = std::make_unique<PlotData<Robot::State>>(
             binariseData(robot, robot.raw.states));
         {
@@ -597,6 +596,21 @@ void Plotter::plotPoses(const std::vector<Robot> &robots, PlotTypeList types) {
       };
     }
 
+    if (empty_list)
+      continue;
+
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+    terminal_.number = ++terminal_number_;
+
+    const std::string file_name{"Robot_" + to_string(plot_type) + "Poses"};
+    const std::string output_file{plots_directory_ + file_name};
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
+    gnuplot_ << gnuplot::grid();
+
+    static constexpr unsigned short rows{3U}, columns{1U};
+    gnuplot_ << gnuplot::setMultiplot(rows, columns);
+
     plot(x_plots, x_position_axis);
     plot(y_plots, y_position_axis);
     plot(orientation_plots, orientation_axis);
@@ -630,18 +644,6 @@ void Plotter::plotOdometry(const std::vector<Robot> &robots,
   };
 
   for (const auto &robot : robots) {
-
-    terminal_.number = ++terminal_number_;
-    gnuplot_ << gnuplot::setTerminal(terminal_);
-
-    const std::string filename{"Robot " + robot.id() + " Odometry"};
-    const std::string output_file{plots_directory_ + filename};
-    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
-
-    static constexpr unsigned short rows{2U}, columns{1U};
-    gnuplot_ << gnuplot::setMultiplot(rows, columns);
-
-    gnuplot_ << gnuplot::grid();
 
     PlotSettingsList forward_velocity_plots, angular_velocity_plots;
 
@@ -696,6 +698,18 @@ void Plotter::plotOdometry(const std::vector<Robot> &robots,
       };
     }
 
+    terminal_.number = ++terminal_number_;
+    gnuplot_ << gnuplot::setTerminal(terminal_);
+
+    const std::string filename{"Robot " + robot.id() + " Odometry"};
+    const std::string output_file{plots_directory_ + filename};
+    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
+    static constexpr unsigned short rows{2U}, columns{1U};
+    gnuplot_ << gnuplot::setMultiplot(rows, columns);
+
+    gnuplot_ << gnuplot::grid();
+
     plot(forward_velocity_plots, forward_velocity_axis);
     plot(angular_velocity_plots, angular_velocity_axis);
 
@@ -728,17 +742,6 @@ void Plotter::plotOdometryPDFs(const std::vector<Robot> &robots,
   };
 
   for (const auto &robot : robots) {
-
-    terminal_.number = ++terminal_number_;
-    gnuplot_ << gnuplot::setTerminal(terminal_);
-
-    const std::string filename{"Odometry_PDF"};
-    const std::string output_file{plots_directory_ + filename};
-    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
-
-    static constexpr unsigned short rows{2U}, columns{1U};
-    gnuplot_ << gnuplot::setMultiplot(rows, columns);
-    gnuplot_ << gnuplot::grid();
 
     const auto &[forward_velocity, angular_velocity]{
         binariseOdometryPDF(robot, robot.error.odometry, bin_size)};
@@ -809,11 +812,25 @@ void Plotter::plotOdometryPDFs(const std::vector<Robot> &robots,
         .math_expression = true,
     };
 
-    plot(forward_velocity_pdf, forward_velocity_axis);
-    plot(angular_velocity_pdf, angular_velocity_axis);
+    /* Peform plotting */
+    {
+      terminal_.number = ++terminal_number_;
+      gnuplot_ << gnuplot::setTerminal(terminal_);
 
-    gnuplot_ << gnuplot::unsetMultiplot();
-    gnuplot_.flush();
+      const std::string filename{"Odometry_PDF"};
+      const std::string output_file{plots_directory_ + filename};
+      gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
+      static constexpr unsigned short rows{2U}, columns{1U};
+      gnuplot_ << gnuplot::setMultiplot(rows, columns);
+      gnuplot_ << gnuplot::grid();
+
+      plot(forward_velocity_pdf, forward_velocity_axis);
+      plot(angular_velocity_pdf, angular_velocity_axis);
+
+      gnuplot_ << gnuplot::unsetMultiplot();
+      gnuplot_.flush();
+    }
   }
 } // namespace Data
 
@@ -841,18 +858,6 @@ void Plotter::plotMeasurements(const std::vector<Robot> &robots,
   };
 
   for (const auto &robot : robots) {
-
-    terminal_.number = ++terminal_number_;
-    gnuplot_ << gnuplot::setTerminal(terminal_);
-
-    std::string filename{"Robot_" + robot.id() + "_Measurements"};
-    std::string output_file{plots_directory_ + filename};
-    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
-
-    static constexpr unsigned short rows{2U}, columns{1U};
-    gnuplot_ << gnuplot::setMultiplot(rows, columns);
-
-    gnuplot_ << gnuplot::grid();
 
     PlotSettingsList range_plots, bearing_plots;
 
@@ -904,11 +909,26 @@ void Plotter::plotMeasurements(const std::vector<Robot> &robots,
       };
     }
 
-    plot(range_plots, range_axis);
-    plot(bearing_plots, bearing_axis);
+    /* Create Plot */
+    {
+      terminal_.number = ++terminal_number_;
+      gnuplot_ << gnuplot::setTerminal(terminal_);
 
-    gnuplot_ << gnuplot::unsetMultiplot();
-    gnuplot_.flush();
+      std::string filename{"Robot_" + robot.id() + "_Measurements"};
+      std::string output_file{plots_directory_ + filename};
+      gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
+      static constexpr unsigned short rows{2U}, columns{1U};
+      gnuplot_ << gnuplot::setMultiplot(rows, columns);
+
+      gnuplot_ << gnuplot::grid();
+
+      plot(range_plots, range_axis);
+      plot(bearing_plots, bearing_axis);
+
+      gnuplot_ << gnuplot::unsetMultiplot();
+      gnuplot_.flush();
+    }
   }
 }
 
@@ -936,18 +956,6 @@ void Plotter::plotMeasurementPDFs(const std::vector<Robot> &robots,
   };
 
   for (const auto &robot : robots) {
-
-    terminal_.number = ++terminal_number_;
-    gnuplot_ << gnuplot::setTerminal(terminal_);
-
-    const std::string title{"Robot_" + robot.id() + "_Measurement_PDF"};
-    const std::string output_file{plots_directory_ + title};
-    gnuplot_ << gnuplot::setOutput(output_file, terminal_);
-
-    static constexpr unsigned short rows{2U}, columns{1U};
-    gnuplot_ << gnuplot::setMultiplot(rows, columns);
-
-    gnuplot_ << gnuplot::grid();
 
     const auto &[range_plot, bearing_plot]{
         binariseMeasurementPDF(robot, robot.error.measurements, bin_size)};
@@ -1013,11 +1021,26 @@ void Plotter::plotMeasurementPDFs(const std::vector<Robot> &robots,
         .math_expression = true,
     };
 
-    plot(range_pdf, range_axis);
-    plot(bearing_pdf, bearing_axis);
+    /* Create Plot */
+    {
+      terminal_.number = ++terminal_number_;
+      gnuplot_ << gnuplot::setTerminal(terminal_);
 
-    gnuplot_ << gnuplot::unsetMultiplot();
-    gnuplot_.flush();
+      const std::string title{"Robot_" + robot.id() + "_Measurement_PDF"};
+      const std::string output_file{plots_directory_ + title};
+      gnuplot_ << gnuplot::setOutput(output_file, terminal_);
+
+      static constexpr unsigned short rows{2U}, columns{1U};
+      gnuplot_ << gnuplot::setMultiplot(rows, columns);
+
+      gnuplot_ << gnuplot::grid();
+
+      plot(range_pdf, range_axis);
+      plot(bearing_pdf, bearing_axis);
+
+      gnuplot_ << gnuplot::unsetMultiplot();
+      gnuplot_.flush();
+    }
   }
 }
 
