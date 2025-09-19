@@ -48,6 +48,11 @@ public:
     double x;           ///< Robot Groundtruth x-coordinate [m].
     double y;           ///< Robot Groundtruth y-coordinate [m].
     double orientation; ///< Robot Groundtruth orientation [rad].
+
+    friend std::ostream &operator<<(std::ostream &os, const State &state) {
+      return os << "t(" << state.time << ") : x(" << state.x << "), y("
+                << state.y << "), h(" << state.orientation << ")";
+    }
   };
 
   /**
