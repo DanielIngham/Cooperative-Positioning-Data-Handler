@@ -91,33 +91,33 @@ void Robot::calculateOdometryError() {
  */
 void Robot::calculateMeasurementError(const bool simulation) {
   /* Check if the groundtruth has been set. */
-  if (this->groundtruth.measurements.size() == 0 && !simulation) {
+  if (groundtruth.measurements.size() == 0 && !simulation) {
     throw std::runtime_error("Groundtruth measurement values for robot " +
                              id() + " have not been set.");
   }
 
   /* Check if the synced data has been set. */
-  if (this->synced.measurements.size() == 0 && !simulation) {
+  if (synced.measurements.size() == 0 && !simulation) {
     throw std::runtime_error("Synced measurement values for robot " + id() +
                              " have not been set.");
   }
 
   /* If the measurement error vector is not empty, empty it before calculation.
    */
-  if (this->error.measurements.size() > 0) {
-    this->error.measurements.clear();
+  if (error.measurements.size() > 0) {
+    error.measurements.clear();
   }
 
   /* Reserve memory for faster vector population. */
-  this->error.measurements.reserve(this->groundtruth.measurements.size());
+  error.measurements.reserve(groundtruth.measurements.size());
 
   /* Calculate Range and Bearing error for each measurement. */
-  auto iterator{this->error.measurements.begin()};
-  for (std::size_t k{}; k < this->groundtruth.measurements.size(); k++) {
+  auto iterator{error.measurements.begin()};
+  for (std::size_t k{}; k < groundtruth.measurements.size(); k++) {
 
     /* Loop through the subjects */
     bool first_item{true};
-    for (std::size_t s{}; s < this->groundtruth.measurements[k].subjects.size();
+    for (std::size_t s{}; s < groundtruth.measurements[k].subjects.size();
          s++) {
 
       /* Check that the subjects match between the groundtruth and the synced
@@ -128,14 +128,6 @@ void Robot::calculateMeasurementError(const bool simulation) {
                                  "match the syned subject barcode: " +
                                  groundtruth.measurements[k].subjects[s] +
                                  "!=" + synced.measurements[k].subjects[s]);
-      }
-
-      /* Ignore invalid measurements. These invalid measurements are explicitly
-       * set by DataHandler::calculateGroundtruthMeasurement when an invalid
-       * subject barcode is detected. */
-      if (groundtruth.measurements[k].ranges[s] == -1.0 &&
-          groundtruth.measurements[k].bearings[s] == 2 * M_PI) {
-        continue;
       }
 
       /* If the measurement is the first for the time stamp, push back a new
@@ -153,13 +145,11 @@ void Robot::calculateMeasurementError(const bool simulation) {
       } else {
         /* Otherwise append the measurement values to the existing measurments
            for the current time stamp. */
-        iterator->subjects.push_back(
-            this->groundtruth.measurements[k].subjects[s]);
-        iterator->ranges.push_back(this->groundtruth.measurements[k].ranges[s] -
-                                   this->synced.measurements[k].ranges[s]);
-        iterator->bearings.push_back(
-            this->groundtruth.measurements[k].bearings[s] -
-            this->synced.measurements[k].bearings[s]);
+        iterator->subjects.push_back(groundtruth.measurements[k].subjects[s]);
+        iterator->ranges.push_back(groundtruth.measurements[k].ranges[s] -
+                                   synced.measurements[k].ranges[s]);
+        iterator->bearings.push_back(groundtruth.measurements[k].bearings[s] -
+                                     synced.measurements[k].bearings[s]);
       }
     }
   }
