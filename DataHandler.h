@@ -10,8 +10,9 @@
 #include <cmath> // std::floor
 #include <cstddef>
 #include <cstdlib> // system
-#include <string>  // std::string
-#include <vector>  // std::vector
+#include <map>
+#include <string> // std::string
+#include <vector> // std::vector
 
 #include "Landmark.h"
 #include "Robot.h"
@@ -56,7 +57,7 @@ static constexpr const char *Set[]{
 class Handler {
 public:
   /* Constructors */
-  Handler();
+  Handler() = default;
 
   Handler(const std::string &,
           const std::string &output_directory = HandlerDefaults::kOutputDir,
@@ -98,8 +99,11 @@ public:
   const unsigned short getNumberOfRobots() const;
   const unsigned short getNumberOfLandmarks() const;
   const unsigned short getNumberOfBarcodes() const;
-  const unsigned long getNumberOfSyncedDatapoints() const;
-  const std::vector<size_t> getNumberOfSyncedMeasurements() const;
+  const size_t getNumberOfSyncedDatapoints() const;
+  const std::map<Agent::ID, size_t> &getNumberOfSyncedMeasurements() const;
+
+  static const size_t
+  getNumberOfMeasurements(const std::vector<Robot::Measurement> &);
 
   const Agent *getAgent(const Agent::Barcode &) const;
 
@@ -171,7 +175,7 @@ private:
   /**
    * @brief the total number of synced measurements for each robot.
    */
-  std::vector<size_t> total_synced_measurements_;
+  std::map<Agent::ID, size_t> total_synced_measurements_;
 
   /**
    * @brief All landmarks containing all the data extracted form
@@ -205,9 +209,9 @@ private:
 
   void readBarcodes(const std::string &);
   void readLandmarks(const std::string &);
-  void readGroundTruth(const std::string &, int);
-  void readOdometry(const std::string &, int);
-  void readMeasurements(const std::string &, int);
+  void readGroundTruth(const std::string &, const Agent::ID &);
+  void readOdometry(const std::string &, const Agent::ID &);
+  void readMeasurements(const std::string &, const Agent::ID &);
 
   void syncData(const double &);
 

@@ -23,18 +23,14 @@
 #include <filesystem> // std::filesystem
 #include <fstream>    // std::ifstream
 #include <iostream>   // std::cout
-#include <sstream>    // std::ostringstream
-#include <stdexcept>  // std::runtime_error
+#include <numeric>
+#include <sstream>   // std::ostringstream
+#include <stdexcept> // std::runtime_error
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace Data {
-
-/**
- * @brief Default constructor.
- */
-Handler::Handler() {}
 
 /**
  * @brief Constructor that sets the simuation values for the multi-robot
@@ -63,10 +59,10 @@ Handler::Handler(const unsigned long int data_points, double sample_period,
  * @brief Constructor that extracts and populates class attributes using the
  * values from the dataset provided.
  * @param[in] dataset directory path to the dataset folder.
- * @param[in] sample_period the desired sample period for resampling the data to
- * sync the timesteps between the vehicles.
  * @param[in] output_directory The directory where the extracted data and plots
  * are saved.
+ * @param[in] sample_period the desired sample period for resampling the data to
+ * sync the timesteps between the vehicles.
  * @note The dataset extractor constructor only takes one dataset at at time.
  */
 Handler::Handler(const std::string &dataset,
@@ -116,7 +112,7 @@ void Handler::setSimulation(const size_t data_points,
   total_barcodes_ = total_landmarks_ + total_robots_;
 
   simulator_.setSimulation(data_points, sample_period, robots_, landmarks_,
-                           seed);
+                           total_robots_, total_landmarks_, seed);
 
   setNumberOfSyncedMeasurements();
 
@@ -149,7 +145,6 @@ void Handler::setSimulation(const size_t data_points,
  * @param[in] sample_period the desired sample period for resampling the data to
  * @param[in] output_directory The directory where the extracted data and plots
  * are saved.
- * sync the timesteps between the vehicles.
  * @note All datasets in the UTIAS Multi-robot Localisation and mapping dataset
  * have the same number of landmarks and robots. Therefore, if the dataset
  * directory is provided, it is assumed that the number of landmarks and robots
@@ -167,16 +162,16 @@ void Handler::setDataSet(const std::string &dataset,
                          const std::string &output_directory,
                          const double &sample_period) {
   /* Start timer for measurement of extraction period. */
-  auto start = std::chrono::high_resolution_clock::now();
+  auto start{std::chrono::high_resolution_clock::now()};
 
   /* Check if the data set directory exists */
 
 #ifndef LIB_DIR
-  throw std::runtime_error("LIB_DIR not set")
+  throw std::runtime_error("LIB_DIR not set");
 
 #endif // !LIB_DIR
 
-      this->dataset_ = LIB_DIR + ("/data/" + dataset);
+  dataset_ = LIB_DIR + ("/data/" + dataset);
 
   if (!std::filesystem::exists(dataset_)) {
     throw std::runtime_error("Dataset file path does not exist: " + dataset_);
@@ -198,10 +193,10 @@ void Handler::setDataSet(const std::string &dataset,
     readLandmarks(dataset_);
 
     /* Populate the values for each robot from the dataset */
-    for (int id{}; id < total_robots_; id++) {
-      readGroundTruth(dataset_, id);
-      readOdometry(dataset_, id);
-      readMeasurements(dataset_, id);
+    for (const auto &robot : robots_) {
+      readGroundTruth(dataset_, robot.id());
+      readOdometry(dataset_, robot.id());
+      readMeasurements(dataset_, robot.id());
     }
 
   } catch (std::runtime_error &error) {
@@ -228,9 +223,9 @@ void Handler::setDataSet(const std::string &dataset,
 
   try {
     /* Calculate odometry and measurement errors. */
-    for (int i{}; i < total_robots_; i++) {
-      robots_[i].calculateSensorErrror();
-      robots_[i].calculateSampleErrorStats();
+    for (auto &robot : robots_) {
+      robot.calculateSensorErrror();
+      robot.calculateSampleErrorStats();
     }
     /* Stop timer after extraction. */
     auto end{std::chrono::high_resolution_clock::now()};
@@ -282,10 +277,11 @@ void Handler::setOutputDirectory(const std::string &output_directory,
 }
 
 /**
- * @brief Extracts data from the barcodes data file: Barcodes.dat.
+ * Extracts the ID and barcode data provided by Barcodes.dat and assigns them to
+ * the agents.
  * @param[in] dataset directory path to the dataset folder.
- * @note If the data could not be extracted from the specified dataset, a
- * std::runtime_error is thrown.
+ * @note This function is also responsible for creating the instances of the
+ * robot and landmark agents stored in as the Handlers fields.
  */
 void Handler::readBarcodes(const std::string &dataset) {
   /* Check that the dataset was specified */
@@ -302,7 +298,6 @@ void Handler::readBarcodes(const std::string &dataset) {
     throw std::runtime_error("Unable to open barcodes file: " + filename);
   }
 
-  /* Iterate through file line by line.*/
   std::string line;
   int i{};
 
@@ -336,8 +331,11 @@ void Handler::readBarcodes(const std::string &dataset) {
 
   file.close();
 }
+
 /**
- * @brief Extracts data from the landmarks data file: Landmark_Groundtruth.dat.
+ * @brief Extracts position and standard deviation data from the landmarks data
+ * file (Landmark_Groundtruth.dat) and assigns them to there respective
+ * landmark.
  * @param[in] dataset path to the dataset folder.
  * @note Data::Handler::readBarcodes needs to be called before this function
  * since this function relies on the barcodes extracted.
@@ -352,7 +350,7 @@ void Handler::readLandmarks(const std::string &dataset) {
   if (!file.is_open()) {
     throw std::runtime_error("Unable to open Landmarks file: " + filename);
   }
-  /* Iterate through file line by line.*/
+
   int i{};
   std::string line;
 
@@ -391,23 +389,24 @@ void Handler::readLandmarks(const std::string &dataset) {
 }
 
 /**
- * @brief Extracts data from the groundtruth data file:
+ * @brief Extracts pose data from the groundtruth data file:
  * Robotx_Groundtruth.dat.
  * @param[in] dataset path to the dataset folder.
- * @param[in] robot_id the ID of the robot for which the extracted measurement
- * will be assigned to.
+ * @param[in] id the ID of the robot for which the  groundtruth is assigned
+ * to.
  * @details The data extracted form the Robotx_Groundtruth.dat contains the
  * timestamp [s], x coordinate [m], y coordinate [m], and orientation [rad] of
  * the robot x. These are used to populate the Robot::raw states member for a
  * given robot in Data::Handler::robots_.
  */
-void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
+void Handler::readGroundTruth(const std::string &dataset, const Agent::ID &id) {
   /* Clear all previous elements in the ground truth vector. */
-  robots_[robot_id].raw.states.clear();
+  Robot &robot{getRobot(id)};
+
+  robot.raw.states.clear();
 
   /* Setup file for data extraction */
-  std::string filename{dataset + "/Robot" + std::to_string(robot_id + 1) +
-                       "_Groundtruth.dat"};
+  std::string filename{dataset + "/Robot" + id + "_Groundtruth.dat"};
   std::ifstream file(filename);
 
   /* Check if the file could be opened */
@@ -416,7 +415,6 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
                              filename);
   }
 
-  /* Loop through each line in the file. */
   std::string line;
   while (std::getline(file, line)) {
     /* Ignore Comments */
@@ -434,7 +432,7 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
     iss >> time >> x_coordinate >> y_coordinate >> orientation;
 
     /* Populate robot states with exracted values. */
-    robots_[robot_id].raw.states.emplace_back(Robot::State{
+    robot.raw.states.emplace_back(Robot::State{
         .time = time,
         .x = x_coordinate,
         .y = y_coordinate,
@@ -455,13 +453,13 @@ void Handler::readGroundTruth(const std::string &dataset, int robot_id) {
  * measured odometry input into robot x. These are used to populate the
  * Robot::raw odometry member for a given robot in Data::Handler::robots_.
  */
-void Handler::readOdometry(const std::string &dataset, int robot_id) {
+void Handler::readOdometry(const std::string &dataset, const Agent::ID &id) {
   /* Clear all previous elements in the odometry vector. */
-  robots_[robot_id].raw.odometry.clear();
+  Robot &robot{getRobot(id)};
+  robot.raw.odometry.clear();
 
   /* Setup file for data extraction */
-  std::string filename{dataset + "/Robot" + std::to_string(robot_id + 1) +
-                       "_Odometry.dat"};
+  std::string filename{dataset + "/Robot" + id + "_Odometry.dat"};
 
   std::fstream file(filename);
 
@@ -487,7 +485,7 @@ void Handler::readOdometry(const std::string &dataset, int robot_id) {
     iss >> time >> forward_velocity >> angular_velocity;
 
     /* Populate the robot class with the extracted values. */
-    robots_[robot_id].raw.odometry.emplace_back(Robot::Odometry{
+    robot.raw.odometry.emplace_back(Robot::Odometry{
         .time = time,
         .forward_velocity = forward_velocity,
         .angular_velocity = angular_velocity,
@@ -509,14 +507,16 @@ void Handler::readOdometry(const std::string &dataset, int robot_id) {
  * (subjects, ranges and bearings) are filled with only one value. The
  * grouping by time stamp occurs in the Data::Handler::syncData function.
  */
-void Handler::readMeasurements(const std::string &dataset, int robot_id) {
+void Handler::readMeasurements(const std::string &dataset,
+                               const Agent::ID &id) {
   /* Clear all previous elements in the measurement vector. */
-  robots_[robot_id].raw.measurements.clear();
-  robots_[robot_id].synced.measurements.clear();
+  Robot &robot{getRobot(id)};
+
+  robot.raw.measurements.clear();
+  robot.synced.measurements.clear();
 
   /* Setup file for data extraction */
-  std::string filename{dataset + "/Robot" + std::to_string(robot_id + 1) +
-                       "_Measurement.dat"};
+  std::string filename{dataset + "/Robot" + id + "_Measurement.dat"};
   std::fstream file(filename);
 
   /* Check if the file could be opened */
@@ -544,9 +544,13 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
     iss >> time >> subject >> range >> bearing;
 
     const Agent::Barcode subject_barcode{subject};
+    const Agent *agent{getAgent(subject_barcode)};
 
-    robots_[robot_id].raw.measurements.emplace_back(time, subject_barcode,
-                                                    range, bearing);
+    /* NOTE: only measurements with valid agent barcodes are included. */
+    if (agent) {
+      robot.raw.measurements.emplace_back(time, subject_barcode, range,
+                                          bearing);
+    }
   }
 
   file.close();
@@ -563,8 +567,8 @@ void Handler::readMeasurements(const std::string &dataset, int robot_id) {
  */
 void Handler::syncData(const double &sample_period) {
   /* Find the minimum and maximimum times in the datasets */
-  double minimum_time = robots_.front().raw.states.front().time;
-  double maximum_time = robots_.front().raw.states.back().time;
+  double minimum_time{robots_.front().raw.states.front().time};
+  double maximum_time{robots_.front().raw.states.back().time};
 
   for (int i{1U}; i < total_robots_; i++) {
 
@@ -673,7 +677,7 @@ void Handler::syncData(const double &sample_period) {
       } else {
 
         /* Interpolate the Groundtruth values */
-        auto previous_groundtruth = (current_groundtruth - 1);
+        auto previous_groundtruth{current_groundtruth - 1};
 
         double interpolation_factor{
             (synced_timestamp - previous_groundtruth->time) /
@@ -745,7 +749,7 @@ void Handler::syncData(const double &sample_period) {
         continue;
       }
 
-      auto previous_odometry = (current_odometry - 1);
+      auto previous_odometry{current_odometry - 1};
 
       /* Calculating Odometry Interpolation */
       double interpolation_factor{
@@ -890,7 +894,7 @@ void Handler::calculateGroundtruthOdometry() {
 }
 
 /**
- * @brief Calculates the ground truth measurements for a given robot.
+ * @brief Calculates the groundtruth measurements for a given robot.
  * @details The following expression is utilised to calculate the groundtruth
  * measurement values using the groundtruth robot state values extracted from
  * the dataset:
@@ -918,14 +922,14 @@ void Handler::calculateGroundtruthMeasurement() {
     for (size_t k{}; k < robot.synced.measurements.size(); k++) {
       /* Find the value of the ground truth with the same time stamp as the
        * measurement */
-      static const double timestamp_threshold{1e-3};
+      static const double timestamp_threshold{1e-5};
       for (; t < robot.groundtruth.states.size(); t++) {
 
-        const double rounded_time_difference =
+        const double rounded_time_difference{
             std::abs((robot.groundtruth.states[t].time -
-                      robot.synced.measurements[k].time)) < timestamp_threshold;
+                      robot.synced.measurements[k].time))};
 
-        if (rounded_time_difference == 0.0) {
+        if (rounded_time_difference < timestamp_threshold) {
           break;
         }
       }
@@ -934,13 +938,7 @@ void Handler::calculateGroundtruthMeasurement() {
        * the landmarks */
       for (size_t s{}; s < robot.synced.measurements[k].subjects.size(); s++) {
 
-        /* If the subjects barcode extracted does not correspond to any of the
-         * barcodes extracted, then don't add the measurement. Then the ground
-         * truth range and bearing measurments are set to zero. This is used
-         * by the error calculator to determine if the measurement has a
-         * corresponding groundtruth or not.*/
-        double range{-1.0};         // Invalid range
-        double bearing{2.0 * M_PI}; // Invalid Bearing
+        double range{}, bearing{};
 
         /* Get the subjects ID from its barcode. */
         const Agent::Barcode &barcode{robot.synced.measurements[k].subjects[s]};
@@ -960,9 +958,7 @@ void Handler::calculateGroundtruthMeasurement() {
 
             y_difference = agent_robot->groundtruth.states[t].y -
                            robot.groundtruth.states[t].y;
-          }
-          /* All landmarks have ID's [6,20]. */
-          else {
+          } else {
             const Landmark *agent_landmark{
                 dynamic_cast<const Landmark *>(agent)};
 
@@ -982,6 +978,9 @@ void Handler::calculateGroundtruthMeasurement() {
           /* Calculate Range */
           range = std::sqrt(x_difference * x_difference +
                             y_difference * y_difference);
+        } else {
+          throw std::runtime_error("Agent with barcode " + agent->barcode() +
+                                   " does not exist.");
         }
 
         /* Create a new instance of the Measurement struct on the first */
@@ -1004,21 +1003,18 @@ void Handler::calculateGroundtruthMeasurement() {
 }
 
 void Handler::setNumberOfSyncedMeasurements() {
-  total_synced_measurements_.assign(total_robots_, 0U);
 
-  for (unsigned short id{}; id < total_robots_; ++id) {
+  for (const auto &robot : robots_) {
 
-    const std::vector<Robot::Measurement> &measurements =
-        robots_[id].synced.measurements;
+    auto it{total_synced_measurements_.find(robot.id())};
 
-    if (measurements.empty())
-      continue;
+    /* Add if the data has not already been set. */
+    if (it == total_synced_measurements_.end()) {
+      size_t total_measurements{
+          getNumberOfMeasurements(robot.synced.measurements)};
 
-    total_synced_measurements_[id] = std::accumulate(
-        measurements.begin(), measurements.end(), 0U,
-        [](unsigned int sum, const auto &group) {
-          return sum + static_cast<unsigned int>(group.subjects.size());
-        });
+      total_synced_measurements_.emplace(robot.id(), total_measurements);
+    }
   }
 }
 
@@ -1564,13 +1560,13 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
   robot_file << "# Bin Centre	Bin Width	Bin Count	Robot ID\n";
 
   /* Save the plot data for the Range Error  */
-  for (int id{}; id < total_robots_; id++) {
+  for (const auto &robot : robots_) {
 
-    size_t number_of_measurements{total_synced_measurements_[id]};
+    size_t number_of_measurements{total_synced_measurements_.at(robot.id())};
 
     std::unordered_map<int, double> range_bin_counts;
 
-    for (const auto &measurement : robots_[id].error.measurements) {
+    for (const auto &measurement : robot.error.measurements) {
       for (auto range : measurement.ranges) {
         int bin_index = static_cast<int>(std::floor(range / bin_size));
         range_bin_counts[bin_index] +=
@@ -1583,7 +1579,7 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
       double bin_end{bin_start + bin_size};
 
       robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                 << count << '\t' << id + 1 << '\n';
+                 << count << '\t' << robot.id() << '\n';
     }
     /* Add two empty lines after robot entires for gnuplot */
     robot_file << '\n';
@@ -1603,13 +1599,13 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
 
   robot_file << "# Bin Centre	Bin Width	Count	Robot ID\n";
 
-  for (int id{}; id < total_robots_; id++) {
+  for (const auto &robot : robots_) {
     /* Save the plot data for the Bearing Error  */
-    size_t number_of_measurements{total_synced_measurements_[id]};
+    size_t number_of_measurements{total_synced_measurements_.at(robot.id())};
 
     std::unordered_map<int, double> bearing_bin_counts;
 
-    for (const auto &measurement : robots_[id].error.measurements) {
+    for (const auto &measurement : robot.error.measurements) {
       for (auto bearing : measurement.bearings) {
         int bin_index{static_cast<int>(std::floor(bearing / bin_size))};
         bearing_bin_counts[bin_index] +=
@@ -1622,7 +1618,7 @@ void Handler::saveMeasurementErrorPDF(double bin_size) {
       double bin_end{bin_start + bin_size};
 
       robot_file << (bin_start + bin_end) / 2 << '\t' << bin_size << "\t"
-                 << count << '\t' << id + 1 << '\n';
+                 << count << '\t' << robot.id() + 1 << '\n';
     }
 
     /* Add two empty lines after robot entires for gnuplot */
@@ -1995,20 +1991,31 @@ const unsigned short int Handler::getNumberOfBarcodes() const {
 /**
  * @brief Getter for the Data::Handler::getNumberOfSyncedDatapoints field.
  */
-const unsigned long Handler::getNumberOfSyncedDatapoints() const {
+const size_t Handler::getNumberOfSyncedDatapoints() const {
   return total_synced_datapoints_;
 }
 
 /**
  * @brief Returns the number of measurements for each robot.
  */
-const std::vector<size_t> Handler::getNumberOfSyncedMeasurements() const {
+const std::map<Agent::ID, size_t> &
+Handler::getNumberOfSyncedMeasurements() const {
 
   assert(!total_synced_measurements_.empty() &&
          "total_synced_measurements_() empty, call "
          "setNumberOfSyncedMeasurements().");
 
   return total_synced_measurements_;
+}
+
+const size_t Handler::getNumberOfMeasurements(
+    const std::vector<Robot::Measurement> &measurements) {
+
+  double total{std::accumulate(measurements.begin(), measurements.end(), .0,
+                               [](size_t a, const Robot::Measurement &b) {
+                                 return a + b.subjects.size();
+                               })};
+  return total;
 }
 
 /**
