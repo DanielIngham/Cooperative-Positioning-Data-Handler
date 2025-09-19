@@ -37,13 +37,13 @@ class Simulator {
 public:
   Simulator();
   Simulator(const unsigned long int, double, std::vector<Robot> &,
-            std::vector<Landmark> &,
+            std::vector<Landmark> &, unsigned short, unsigned short,
             const unsigned long seed = SimulationDefaults::kSeed);
   ~Simulator();
 
   /* Setters */
   void setSimulation(const unsigned long int, double, std::vector<Robot> &,
-                     std::vector<Landmark> &,
+                     std::vector<Landmark> &, unsigned short, unsigned short,
                      const unsigned long seed = SimulationDefaults::kSeed);
 
 private:
@@ -68,12 +68,12 @@ private:
   /**
    * @brief The total number of landmarks in the dataset.
    */
-  unsigned short int total_landmarks{};
+  unsigned short int total_landmarks_{};
 
   /**
    * @brief The total number of robots in the dataset.
    */
-  unsigned short int total_robots{};
+  unsigned short int total_robots_{};
 
   /**
    * @brief the total number of barcodes in the dataset.

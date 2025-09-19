@@ -10,6 +10,7 @@
 
 #include "Simulator.h"
 
+#include <cassert>
 #include <chrono>
 #include <iostream>
 #include <random>
@@ -31,11 +32,14 @@ Simulator::~Simulator() {}
  */
 Simulator::Simulator(const unsigned long int data_points, double sample_period,
                      std::vector<Robot> &robots,
-                     std::vector<Landmark> &landmarks, const unsigned long seed)
+                     std::vector<Landmark> &landmarks,
+                     unsigned short total_robots,
+                     unsigned short total_landmarks, const unsigned long seed)
     : data_points_(data_points), sample_period_(sample_period),
       robots_(&robots), landmarks_(&landmarks) {
 
-  setSimulation(data_points_, sample_period_, robots, landmarks, seed);
+  setSimulation(data_points_, sample_period_, robots, landmarks, total_robots,
+                total_landmarks, seed);
 }
 
 /**
@@ -44,21 +48,23 @@ Simulator::Simulator(const unsigned long int data_points, double sample_period,
 void Simulator::setSimulation(const unsigned long int data_points,
                               double sample_period, std::vector<Robot> &robots,
                               std::vector<Landmark> &landmarks,
+                              unsigned short total_robots,
+                              unsigned short total_landmarks,
                               const unsigned long seed) {
   setGeneratorSeed(seed);
 
   data_points_ = data_points;
   sample_period_ = sample_period;
 
-  total_landmarks = landmarks.size();
-  total_robots = robots.size();
+  total_landmarks_ = total_landmarks;
+  total_robots_ = total_robots;
   total_barcodes_ = total_landmarks + total_robots;
 
   robots_ = &robots;
   landmarks_ = &landmarks;
 
-  assignVectorMemory();
   setBarcodes();
+  assignVectorMemory();
   setErrorStatistics();
   setLandmarkPositions();
   setRobotsInitalState();
@@ -72,6 +78,8 @@ void Simulator::setSimulation(const unsigned long int data_points,
  * simulator.
  */
 void Simulator::assignVectorMemory() {
+  assert(robots_->size() > 0);
+
   for (auto &robot : *robots_) {
     robot.groundtruth.states.reserve(data_points_);
     robot.synced.odometry.reserve(data_points_);
@@ -102,7 +110,7 @@ void Simulator::setBarcodes() {
     const unsigned short id{static_cast<unsigned short>(i + 1U)};
     const unsigned short barcode{id};
 
-    if (i < total_robots) {
+    if (i < total_robots_) {
       /* To align with the UTIAS dataset, the ids are one indexed. */
       (*robots_).emplace_back(id, barcode);
     } else {
@@ -124,7 +132,7 @@ void Simulator::setErrorStatistics() {
       std::sqrt(variance_.landmarks[MIN]), std::sqrt(variance_.landmarks[MAX]));
 
   /* Loop through each landmark and set the id and standard deviation */
-  unsigned short landmark_id{total_robots};
+  unsigned short landmark_id{total_robots_};
   for (auto &landmark : *landmarks_) {
 
     /* Set the variance for each landmark */
@@ -180,7 +188,7 @@ void Simulator::setLandmarkPositions() {
    * 2m apart from all other landmarks. */
   auto timer_start{std::chrono::high_resolution_clock::now()};
 
-  for (unsigned short i{1U}; i < total_landmarks; i++) {
+  for (unsigned short i{1U}; i < total_landmarks_; i++) {
     auto current_time{std::chrono::high_resolution_clock::now()};
 
     auto timer_duration{std::chrono::duration_cast<std::chrono::seconds>(
@@ -250,15 +258,15 @@ void Simulator::setRobotsInitalState() {
     unique = true;
 
     /* Overwrite the origin values set in Robot::assignVectorMemory. */
-    Robot::State &first_robot_state{
-        (*robots_).front().groundtruth.states.front()};
-
-    first_robot_state = {
+    (*robots_).front().groundtruth.states.front() = {
         .time = .0,
         .x = position_x(generator),
         .y = position_y(generator),
         .orientation = orientation(generator),
     };
+
+    Robot::State &first_robot_state{
+        (*robots_).front().groundtruth.states.front()};
 
     for (const auto &landmark : (*landmarks_)) {
       /* Check that the new point is far enough away from other points
@@ -278,12 +286,11 @@ void Simulator::setRobotsInitalState() {
   } while (!unique);
 
   /* Set the initial values up for the remaining robots. */
-  for (unsigned short id{1U}; id < total_robots; id++) {
+  for (unsigned short id{1U}; id < total_robots_; id++) {
 
     /* Overwrite the origin values set in Robot::assignVectorMemory. */
     unique = true;
-    Robot::State &current_robot_pose =
-        (*robots_)[id].groundtruth.states.front();
+    Robot::State &current_robot_pose{(*robots_)[id].groundtruth.states.front()};
 
     current_robot_pose = Robot::State{
         .time = .0,
@@ -424,6 +431,8 @@ void Simulator::setRobotOdometryAndState() {
           robot.groundtruth.states.back().orientation +
           sample_period_ * robot.groundtruth.odometry.back().angular_velocity};
 
+      Robot::normaliseAngle(orientation);
+
       robot.groundtruth.states.emplace_back(Robot::State{
           .time = sample_period_ * k,
           .x = x_position,
@@ -440,7 +449,7 @@ void Simulator::setRobotOdometryAndState() {
        * should be guided back towards the centre of the simulation area. */
       static const double position_buffer{1.0};
 
-      Robot::State &groundtruth_pose = robot.groundtruth.states.at(k);
+      Robot::State &groundtruth_pose{robot.groundtruth.states.at(k)};
 
       if (groundtruth_pose.x < position_buffer ||
           groundtruth_pose.x > (limits_.width - position_buffer) ||
@@ -652,7 +661,7 @@ void Simulator::setGeneratorSeed(unsigned long seed) {
     generator_seed_ = seed;
   }
 
-  std::cout << "\033[1;32mSimulator is using seed:\033[0m " << seed
+  std::cout << "\033[1;32mSimulator is using seed:\033[0m " << generator_seed_
             << std::endl;
 }
 
