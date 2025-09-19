@@ -39,11 +39,16 @@ public:
   void position(double x, double y);
   void standard_deviation(double x, double y);
 
+  friend std::ostream &operator<<(std::ostream &os, const Landmark &landmark) {
+    return os << "[" << landmark.id() << " | " << landmark.barcode() << "]"
+              << "\t x(" << landmark.x() << ")" << ", y(" << landmark.y()
+              << ")";
+  }
+
 private:
   struct Euclidean2D {
-    double x;   ///< The landmark's global x-coordinate.
-    double y;   ///< The landmark's global y-coordinate.
-    bool set{}; ///< Flag to prevent resetting initial state.
+    double x; ///< The landmark's global x-coordinate.
+    double y; ///< The landmark's global y-coordinate.
   } position_, std_dev_;
 };
 
