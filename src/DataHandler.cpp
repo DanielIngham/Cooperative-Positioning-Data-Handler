@@ -2008,6 +2008,14 @@ Handler::getNumberOfSyncedMeasurements() const {
   return total_synced_measurements_;
 }
 
+const size_t Handler::getNumberOfSyncedMeasurements(Agent::ID id) const {
+  assert(!total_synced_measurements_.empty() &&
+         "total_synced_measurements_() empty, call "
+         "setNumberOfSyncedMeasurements().");
+
+  return total_synced_measurements_.at(id);
+}
+
 const size_t Handler::getNumberOfMeasurements(
     const std::vector<Robot::Measurement> &measurements) {
 

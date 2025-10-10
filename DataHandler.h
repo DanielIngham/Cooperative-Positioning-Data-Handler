@@ -101,6 +101,7 @@ public:
   const unsigned short getNumberOfBarcodes() const;
   const size_t getNumberOfSyncedDatapoints() const;
   const std::map<Agent::ID, size_t> &getNumberOfSyncedMeasurements() const;
+  const size_t getNumberOfSyncedMeasurements(Agent::ID id) const;
 
   static const size_t
   getNumberOfMeasurements(const std::vector<Robot::Measurement> &);
