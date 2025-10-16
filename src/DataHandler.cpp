@@ -1799,10 +1799,10 @@ void Handler::calculateStateError() {
  * Returns the average RMSE of all the robots in the data set.
  */
 Robot::State Handler::getAverageRMSE() {
-  Robot::State average_RMSE;
+  Robot::State average_RMSE{.x = .0, .y = .0, .orientation = .0};
 
   for (const Robot &robot : robots_) {
-    const Robot::State &robot_RMSE = robot.getRMSE();
+    const Robot::State &robot_RMSE{robot.getRMSE()};
 
     average_RMSE.x += robot_RMSE.x;
     average_RMSE.y += robot_RMSE.y;

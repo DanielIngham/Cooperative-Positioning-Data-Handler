@@ -398,6 +398,8 @@ void Robot::calculateStateError() {
   error.states.reserve(total_data_points);
   absolute_state_error.reserve(total_data_points);
 
+  rmse = {.x = .0, .y = .0, .orientation = .0};
+
   /* Calculate the error between the groundtruth and the states. */
   for (unsigned long k{}; k < total_data_points; k++) {
 
@@ -452,6 +454,7 @@ Robot::State Robot::getRMSE() const {
 
   return rmse;
 }
+
 /**
  * @brief Normalise an angle between \f$(-\pi, \pi]\f$.
  * @param[inout] angle Angle in radians.
