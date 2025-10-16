@@ -8,19 +8,21 @@ public:
   enum class Type { ROBOT, LANDMARK };
 
   Agent(unsigned short id, unsigned short barcode, Type type);
+  Agent() = default;
   Agent(Agent &&) = default;
-  Agent(const Agent &) = delete;
-  Agent &operator=(Agent &&) = delete;
-  Agent &operator=(const Agent &) = delete;
+  Agent(const Agent &) = default;
+  Agent &operator=(Agent &&) = default;
+  Agent &operator=(const Agent &) = default;
   virtual ~Agent() = default;
 
   struct Identifier {
   protected:
     friend Agent;
 
-    const unsigned short value_;
+    unsigned short value_;
 
   public:
+    Identifier() = default;
     Identifier(unsigned short identifier) : value_{identifier} {};
 
     bool operator==(const Identifier &other) const {
@@ -57,15 +59,15 @@ private:
    * @note The handler starts this index at 1. Therefore the first robot has an
    * ID of 1.
    */
-  const ID id_;
+  ID id_;
 
   /**
    * @brief  Barcode associated with the robot. This is what the other robots
    * will read during there operation to identify each other.
    */
-  const Barcode barcode_;
+  Barcode barcode_;
 
-  const Type type_;
+  Type type_;
 };
 
 } // namespace Data

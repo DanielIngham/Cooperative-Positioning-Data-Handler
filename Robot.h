@@ -22,10 +22,11 @@ namespace Data {
 class Robot : public Agent {
 public:
   Robot(unsigned short id, unsigned short barcode);
+  Robot() = default;
   Robot(Robot &&) = default;
-  Robot(const Robot &) = delete;
-  Robot &operator=(Robot &&) = delete;
-  Robot &operator=(const Robot &) = delete;
+  Robot(const Robot &) = default;
+  Robot &operator=(Robot &&) = default;
+  Robot &operator=(const Robot &) = default;
   ~Robot();
 
   using List = std::vector<Robot>;
@@ -53,6 +54,16 @@ public:
       return os << "t(" << state.time << ") : x(" << state.x << "), y("
                 << state.y << "), h(" << state.orientation << ")";
     }
+
+    bool operator==(const State &other) const {
+      static constexpr double decimal_threshold{1e-4};
+
+      bool x_same{(x - other.x) < decimal_threshold};
+      bool y_same{(y - other.y) < decimal_threshold};
+      bool o_same{(orientation - other.orientation) < decimal_threshold};
+
+      return x_same && y_same && o_same;
+    }
   };
 
   /**
@@ -79,7 +90,8 @@ public:
     std::vector<double> ranges;   ///< The measured ranges to the subjects [m]
     std::vector<double> bearings; ///< The bearings from the subjects [rad]
 
-    Measurement();
+    Measurement() = default;
+
     /**
      * @brief Constructor that allows for the copying of measurement structures.
      */

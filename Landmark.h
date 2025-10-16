@@ -23,10 +23,11 @@ namespace Data {
 class Landmark : public Agent {
 public:
   Landmark(unsigned short id, unsigned short barcode);
+  Landmark() = default;
   Landmark(Landmark &&) = default;
-  Landmark(const Landmark &) = delete;
-  Landmark &operator=(Landmark &&) = delete;
-  Landmark &operator=(const Landmark &) = delete;
+  Landmark(const Landmark &) = default;
+  Landmark &operator=(Landmark &&) = default;
+  Landmark &operator=(const Landmark &) = default;
   ~Landmark();
 
   using List = std::vector<Landmark>;
