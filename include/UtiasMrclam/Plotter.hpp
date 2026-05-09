@@ -5,8 +5,8 @@
  */
 #pragma once
 
-#include "Landmark.h"
-#include "Robot.h"
+#include "UtiasMrclam/agents/Landmark.hpp"
+#include "UtiasMrclam/agents/Robot.hpp"
 
 #include <cmath>
 #include <stdexcept>
@@ -17,8 +17,8 @@
 /* Warn about depreciated functions. */
 #define GNUPLOT_DEPRECATE_WARN
 /* TODO: Fix the include path in CMake. */
-#include "./external/gnuplot/gnuplot-iostream.h"
-#include "./external/gnuplot/gnuplot_helper.h"
+#include "gnuplot/gnuplot-iostream.h"
+#include "gnuplot/gnuplot_helper.h"
 
 namespace Data {
 
@@ -103,8 +103,8 @@ public:
   static constexpr PlotTypeList trajectory_types{Type::GROUNDTRUTH,
                                                  Type::SYNCED};
 
-  static constexpr PlotTypeList sensor_types{Type::RAW, Type::GROUNDTRUTH, Type::SYNCED
-                                             };
+  static constexpr PlotTypeList sensor_types{Type::RAW, Type::GROUNDTRUTH,
+                                             Type::SYNCED};
 
   static constexpr PlotTypeList pose_types{Type::GROUNDTRUTH, Type::SYNCED,
                                            Type::RAW, Type::ERROR,

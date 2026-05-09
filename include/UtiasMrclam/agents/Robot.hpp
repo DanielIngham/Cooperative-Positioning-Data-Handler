@@ -7,7 +7,7 @@
 #ifndef INCLUDE_INCLUDE_ROBOT_H_
 #define INCLUDE_INCLUDE_ROBOT_H_
 
-#include "Agent.h"
+#include "UtiasMrclam/agents/Agent.hpp"
 
 #include <cmath>  // std::atan2
 #include <vector> // std::vector

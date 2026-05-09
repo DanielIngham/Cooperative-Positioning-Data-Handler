@@ -8,7 +8,7 @@
  * @date 2025-04-25
  */
 
-#include "Simulator.h"
+#include "UtiasMrclam/Simulator.hpp"
 
 #include <cassert>
 #include <chrono>

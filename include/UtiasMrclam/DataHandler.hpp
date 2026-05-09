@@ -14,9 +14,9 @@
 #include <string> // std::string
 #include <vector> // std::vector
 
-#include "Landmark.h"
-#include "Robot.h"
-#include "Simulator.h"
+#include "UtiasMrclam/Simulator.hpp"
+#include "UtiasMrclam/agents/Landmark.hpp"
+#include "UtiasMrclam/agents/Robot.hpp"
 
 namespace Data {
 

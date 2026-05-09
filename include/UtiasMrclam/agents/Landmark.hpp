@@ -7,7 +7,7 @@
 #ifndef INCLUDE_INCLUDE_LANDMARK_H_
 #define INCLUDE_INCLUDE_LANDMARK_H_
 
-#include "Agent.h"
+#include "UtiasMrclam/agents/Agent.hpp"
 #include <vector>
 
 namespace Data {

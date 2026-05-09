@@ -10,10 +10,10 @@
  * @date 2025-03-28
  */
 
-#include "DataHandler.h"
-#include "Agent.h"
-#include "Landmark.h"
-#include "Simulator.h"
+#include "UtiasMrclam/DataHandler.hpp"
+#include "UtiasMrclam/Simulator.hpp"
+#include "UtiasMrclam/agents/Agent.hpp"
+#include "UtiasMrclam/agents/Landmark.hpp"
 
 #include <algorithm> // std::remove_if and std::find
 #include <cassert>

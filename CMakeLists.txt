@@ -8,7 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS 
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/extractors/*.cpp"
+)
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/external/gnuplot")
 
@@ -17,7 +19,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_library(DataHandler STATIC ${SOURCE_FILES})
 
-target_include_directories(DataHandler PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(DataHandler PUBLIC 
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	"${CMAKE_CURRENT_SOURCE_DIR}/external"
+)
 
 target_compile_definitions(DataHandler PRIVATE
 	LIB_DIR="${CMAKE_CURRENT_SOURCE_DIR}"

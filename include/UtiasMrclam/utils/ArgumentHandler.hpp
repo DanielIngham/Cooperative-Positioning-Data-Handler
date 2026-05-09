@@ -13,8 +13,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "DataHandler.h"
-#include "Simulator.h"
+#include "UtiasMrclam/DataHandler.hpp"
+#include "UtiasMrclam/Simulator.hpp"
 
 namespace ArgumentHandler {
 

@@ -7,8 +7,8 @@
 #ifndef INCLUDE_INCLUDE_SIMULATOR_H_
 #define INCLUDE_INCLUDE_SIMULATOR_H_
 
-#include "Landmark.h"
-#include "Robot.h"
+#include "UtiasMrclam/agents/Landmark.hpp"
+#include "UtiasMrclam/agents/Robot.hpp"
 
 #include <cmath>
 #include <random>

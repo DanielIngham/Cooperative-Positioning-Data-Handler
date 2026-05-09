@@ -1,7 +1,7 @@
-#include "Plotter.h"
-#include "DataHandler.h"
-#include "Landmark.h"
-#include "Robot.h"
+#include "UtiasMrclam/Plotter.hpp"
+#include "UtiasMrclam/DataHandler.hpp"
+#include "UtiasMrclam/agents/Landmark.hpp"
+#include "UtiasMrclam/agents/Robot.hpp"
 
 #include <array>
 #include <cassert>

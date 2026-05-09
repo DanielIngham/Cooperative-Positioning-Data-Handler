@@ -6,8 +6,9 @@
  * @author Daniel Ingham
  * @date 2025-04-23
  */
-#include "Robot.h"
-#include "Agent.h"
+#include "UtiasMrclam/agents/Robot.hpp"
+#include "UtiasMrclam/agents/Agent.hpp"
+
 #include <algorithm> // std::sort
 #include <cmath>
 #include <cstdlib>
