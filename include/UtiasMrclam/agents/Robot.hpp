@@ -31,8 +31,6 @@ public:
 
   using List = std::vector<Robot>;
 
-  static void normaliseAngle(double &);
-
   /**
    * @brief Data attributes for a single groundtruth reading extracted from
    * Robotx_Groundtruth.dat.

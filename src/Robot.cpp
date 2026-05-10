@@ -8,6 +8,7 @@
  */
 #include "UtiasMrclam/agents/Robot.hpp"
 #include "UtiasMrclam/agents/Agent.hpp"
+#include "UtiasMrclam/utils/Utils.hpp"
 
 #include <algorithm> // std::sort
 #include <cmath>
@@ -76,7 +77,7 @@ void Robot::calculateOdometryError() {
 
     /* Normalise the error values between -pi and pi radians (-180 and 180
      * degrees respectively). */
-    normaliseAngle(angular_velocity);
+    utias::mrclam::utils::normaliseAngle(angular_velocity);
 
     error.odometry.push_back(Odometry{
         .time = groundtruth.odometry[k].time,
@@ -412,7 +413,7 @@ void Robot::calculateStateError() {
                              synced.states[k].orientation};
 
     /* Normalise the orientation error between -180 and 180. */
-    normaliseAngle(orientation_error);
+    utias::mrclam::utils::normaliseAngle(orientation_error);
     rmse.x += x_error * x_error;
     rmse.y += y_error * y_error;
     rmse.orientation += orientation_error * orientation_error;
@@ -454,14 +455,6 @@ Robot::State Robot::getRMSE() const {
   }
 
   return rmse;
-}
-
-/**
- * @brief Normalise an angle between \f$(-\pi, \pi]\f$.
- * @param[inout] angle Angle in radians.
- */
-void Robot::normaliseAngle(double &angle) {
-  angle -= 2.0 * M_PI * floor((angle + M_PI) / (2.0 * M_PI));
 }
 
 } // namespace Data

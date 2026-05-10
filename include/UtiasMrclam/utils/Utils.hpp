@@ -16,13 +16,9 @@ namespace utias::mrclam::utils {
  * @returns an equivalent angle normalised to fall within the range [-pi,
  * pi).
  */
-inline double normaliseAngle(double angle_rad) {
-  angle_rad = std::fmod(angle_rad + std::numbers::pi, 2.0 * std::numbers::pi);
-
-  if (angle_rad < 0)
-    angle_rad += 2.0 * std::numbers::pi;
-
-  return angle_rad - std::numbers::pi;
+inline void normaliseAngle(double &angle_rad) {
+  angle_rad -= 2.0 * std::numbers::pi *
+               floor((angle_rad + std::numbers::pi) / (2.0 * std::numbers::pi));
 }
 
 inline const Data::Robot::Measurement *

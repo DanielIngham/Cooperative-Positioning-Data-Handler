@@ -9,6 +9,7 @@
  */
 
 #include "UtiasMrclam/Simulator.hpp"
+#include "UtiasMrclam/utils/Utils.hpp"
 
 #include <cassert>
 #include <chrono>
@@ -431,7 +432,7 @@ void Simulator::setRobotOdometryAndState() {
           robot.groundtruth.states.back().orientation +
           sample_period_ * robot.groundtruth.odometry.back().angular_velocity};
 
-      Robot::normaliseAngle(orientation);
+      utias::mrclam::utils::normaliseAngle(orientation);
 
       robot.groundtruth.states.emplace_back(Robot::State{
           .time = sample_period_ * k,
@@ -469,7 +470,7 @@ void Simulator::setRobotOdometryAndState() {
                                   groundtruth_pose.orientation};
 
         /* Normalise the orientation */
-        Robot::normaliseAngle(bearing_for_centre);
+        utias::mrclam::utils::normaliseAngle(bearing_for_centre);
 
         /* If the the bearing from the centre point is less than approximately
          * 10 degrees positive or negative, there is no need to make further
@@ -576,7 +577,7 @@ void Simulator::setRobotMeasurement() {
                        ego_robot.groundtruth.states[k].orientation};
 
         /* Normalise the bearing between -180 and 180 (-pi and pi) */
-        Robot::normaliseAngle(bearing);
+        utias::mrclam::utils::normaliseAngle(bearing);
 
         /* According to the UTIAS multirobot localisation and mapping paper,
          * the robots have a field of view of 60 degrees (-0.52, 0.52
@@ -625,7 +626,7 @@ void Simulator::setRobotMeasurement() {
                        ego_robot.groundtruth.states[k].orientation};
 
         /* Normalise the orientation between -180 and 180 (-pi and pi) */
-        Robot::normaliseAngle(bearing);
+        utias::mrclam::utils::normaliseAngle(bearing);
 
         /* According to the UTIAS paper, the robots have a field of view of 60
          * degrees (-0.52, 0.52 radians). */
@@ -734,7 +735,8 @@ void Simulator::addGaussianNoise() {
         robot.synced.measurements.back().bearings[s] += added_bearing_noise;
 
         /* Normalise the bearing error. */
-        Robot::normaliseAngle(robot.synced.measurements.back().bearings[s]);
+        utias::mrclam::utils::normaliseAngle(
+            robot.synced.measurements.back().bearings[s]);
       }
     }
   }

@@ -58,7 +58,8 @@ public:
    */
   Pose operator+(const Pose &pose2) {
     Point coordinate{this->coordinate_ + pose2.coordinate()};
-    double theta{utils::normaliseAngle(this->theta() + pose2.theta())};
+    double theta{this->theta() + pose2.theta()};
+    utils::normaliseAngle(theta);
 
     return {coordinate, theta};
   }
@@ -70,7 +71,8 @@ public:
    */
   Pose operator-(const Pose &pose2) {
     Point coordinate{this->coordinate_ - pose2.coordinate()};
-    double theta{utils::normaliseAngle(this->orientation_ - pose2.theta())};
+    double theta{this->orientation_ - pose2.theta()};
+    utils::normaliseAngle(theta);
 
     return {coordinate, theta};
   }
@@ -83,7 +85,8 @@ public:
    */
   Pose operator*(const Pose &pose2) {
     Point coordinate{this->coordinate_ * pose2.coordinate()};
-    double theta{utils::normaliseAngle(this->theta() * pose2.theta())};
+    double theta{this->theta() * pose2.theta()};
+    utils::normaliseAngle(theta);
 
     return {coordinate, theta};
   }

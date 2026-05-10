@@ -14,6 +14,7 @@
 #include "UtiasMrclam/Simulator.hpp"
 #include "UtiasMrclam/agents/Agent.hpp"
 #include "UtiasMrclam/agents/Landmark.hpp"
+#include "UtiasMrclam/utils/Utils.hpp"
 
 #include <algorithm> // std::remove_if and std::find
 #include <cassert>
@@ -709,7 +710,7 @@ void Handler::syncData(const double &sample_period) {
 
         /* Normalise the orientation between PI and -PI (180 and -180 degrees
          * respectively) */
-        Robot::normaliseAngle(interpolated_orientation);
+        utias::mrclam::utils::normaliseAngle(interpolated_orientation);
 
         double interpolated_x_position{
             interpolation_factor *
@@ -973,7 +974,7 @@ void Handler::calculateGroundtruthMeasurement() {
 
           /* Normalise bearing between -180 and 180 (-pi and pi
            * respectively)*/
-          Robot::normaliseAngle(bearing);
+          utias::mrclam::utils::normaliseAngle(bearing);
 
           /* Calculate Range */
           range = std::sqrt(x_difference * x_difference +

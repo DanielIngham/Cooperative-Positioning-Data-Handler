@@ -737,7 +737,7 @@ void testGroundtruthOdometry() {
 
         /* Normalise the orientation between PI and -PI (180 and -180 degrees
          * respectively) */
-        Data::Robot::normaliseAngle(orientation);
+        utias::mrclam::utils::normaliseAngle(orientation);
 
         average_orientation_difference += std::abs(
             orientation - robots[id].groundtruth.states[k + 1].orientation);
