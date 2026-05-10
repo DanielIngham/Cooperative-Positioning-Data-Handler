@@ -2,7 +2,7 @@
  * @file Pose.hpp
  */
 #include "UtiasMrclam/geometry/Point.hpp"
-#include "UtiasMrclam/utils/Common.hpp"
+#include "UtiasMrclam/utils/Utils.hpp"
 
 namespace utias::mrclam::geo {
 class Pose {
@@ -58,7 +58,7 @@ public:
    */
   Pose operator+(const Pose &pose2) {
     Point coordinate{this->coordinate_ + pose2.coordinate()};
-    double theta{common::normaliseAngle(this->theta() + pose2.theta())};
+    double theta{utils::normaliseAngle(this->theta() + pose2.theta())};
 
     return {coordinate, theta};
   }
@@ -70,7 +70,7 @@ public:
    */
   Pose operator-(const Pose &pose2) {
     Point coordinate{this->coordinate_ - pose2.coordinate()};
-    double theta{common::normaliseAngle(this->orientation_ - pose2.theta())};
+    double theta{utils::normaliseAngle(this->orientation_ - pose2.theta())};
 
     return {coordinate, theta};
   }
@@ -83,7 +83,7 @@ public:
    */
   Pose operator*(const Pose &pose2) {
     Point coordinate{this->coordinate_ * pose2.coordinate()};
-    double theta{common::normaliseAngle(this->theta() * pose2.theta())};
+    double theta{utils::normaliseAngle(this->theta() * pose2.theta())};
 
     return {coordinate, theta};
   }

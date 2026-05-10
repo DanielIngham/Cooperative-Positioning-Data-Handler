@@ -84,37 +84,36 @@ public:
       const std::string &output_directory = SimulationDefaults::kOutputDir,
       const unsigned long seed = SimulationDefaults::kSeed);
 
-  std::string getDatasetName();
-  std::string getDataExtractionDirectory();
-  std::string getDataInferenceDirectory();
+  [[nodiscard]] std::string getDatasetName();
+  [[nodiscard]] std::string getDataExtractionDirectory();
+  [[nodiscard]] std::string getDataInferenceDirectory();
 
-  Robot::List &getRobots();
-  Robot &getRobot(Agent::ID id);
+  [[nodiscard]] Robot::List &getRobots();
+  [[nodiscard]] Robot &getRobot(Agent::ID id);
 
-  const Landmark::List &getLandmarks() const;
-  Landmark &getLandmark(Agent::ID id);
+  [[nodiscard]] const Landmark::List &getLandmarks() const;
+  [[nodiscard]] Landmark &getLandmark(Agent::ID id);
 
-  const double getSamplePeriod() const;
+  [[nodiscard]] const double getSamplePeriod() const;
 
-  const unsigned short getNumberOfRobots() const;
-  const unsigned short getNumberOfLandmarks() const;
-  const unsigned short getNumberOfBarcodes() const;
-  const size_t getNumberOfSyncedDatapoints() const;
-  const std::map<Agent::ID, size_t> &getNumberOfSyncedMeasurements() const;
-  const size_t getNumberOfSyncedMeasurements(Agent::ID id) const;
+  [[nodiscard]] const unsigned short getNumberOfRobots() const;
+  [[nodiscard]] const unsigned short getNumberOfLandmarks() const;
+  [[nodiscard]] const unsigned short getNumberOfBarcodes() const;
+  [[nodiscard]] const size_t getNumberOfSyncedDatapoints() const;
+  [[nodiscard]] const std::map<Agent::ID, size_t> &
+  getNumberOfSyncedMeasurements() const;
+  [[nodiscard]] const size_t getNumberOfSyncedMeasurements(Agent::ID id) const;
 
-  static const size_t
+  [[nodiscard]] static const size_t
   getNumberOfMeasurements(const std::vector<Robot::Measurement> &);
 
-  const Agent *getAgent(const Agent::Barcode &) const;
+  [[nodiscard]] const Agent *getAgent(const Agent::Barcode &) const;
 
   void saveExtractedData();
   void saveInferenceData();
 
   void calculateStateError();
   Robot::State getAverageRMSE();
-
-  static const Robot::Measurement *getMeasurement(const Robot *, size_t);
 
   static const std::string getProjectDirectory();
 
