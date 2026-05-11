@@ -4,6 +4,7 @@
  */
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <numbers>
 
 #include "UtiasMrclam/agents/Robot.hpp"
