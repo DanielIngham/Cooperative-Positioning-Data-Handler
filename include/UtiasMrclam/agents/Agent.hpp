@@ -44,6 +44,8 @@ public:
                                  const Identifier &identifier) {
       return s + std::to_string(identifier.value_);
     }
+
+    size_t val() const { return value_; }
   };
 
   struct ID : Identifier {};
