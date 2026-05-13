@@ -980,7 +980,7 @@ void Handler::calculateGroundtruthMeasurement() {
           range = std::sqrt(x_difference * x_difference +
                             y_difference * y_difference);
         } else {
-          throw std::runtime_error("Agent with barcode " + agent->barcode() +
+          throw std::runtime_error("Agent with barcode " + barcode +
                                    " does not exist.");
         }
 
