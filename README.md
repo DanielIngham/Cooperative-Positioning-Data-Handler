@@ -28,10 +28,10 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/external/DataHandler")
 target_link_libraries(${PROJECT_TARGET} PRIVATE DataHandler)
 ```
 # Argument Handler
-The data handler comes with a `ArgumentHandler.h` which contains functionality to set options of the data handler through executable arguments. To use the argument handler: 
+The data handler comes with a `ArgumentHandler.hpp` which contains functionality to set options of the data handler through executable arguments. To use the argument handler: 
 ```cpp
-#include <ArgumentHandler.h>
-#include <DataHandler.h>
+#include <UtiasMrclam/DataHandler.hpp>
+#include <UtiasMrclam/utils/ArgumentHandler.hpp>
 
 int main(int argc, char *argv[]) { 
     Data::Handler data;
@@ -47,5 +47,5 @@ Once added into main, the help menu options for the argument handler can be seen
 For more information, the documentation for this project is available at: [Cooperative Positioning Data Handler GitHub page.](https://danielingham.github.io/Cooperative-Positioning-Data-Handler/)
 
 # Examples
-For example of how to use the data handler, see the constructor in [filter.cpp](https://github.com/DanielIngham/Cooperative-Positioning-Filters/blob/master/src/filter.cpp), from the [cooperative localisation filters repository](https://github.com/DanielIngham/Cooperative-Positioning-Filters.git).
+For example of how to use the data handler, see the [cooperative localisation filters repository](https://github.com/DanielIngham/Cooperative-Positioning-Filters.git).
 
