@@ -1,6 +1,7 @@
-#include "DataHandler.h" // Data::Handler
-#include "Plotter.h"
-#include "Robot.h"
+#include "UtiasMrclam/DataHandler.hpp"
+#include "UtiasMrclam/Plotter.hpp"
+#include "UtiasMrclam/agents/Robot.hpp"
+#include "UtiasMrclam/utils/Utils.hpp"
 
 #include <algorithm> // std::find
 #include <assert.h>
@@ -90,8 +91,8 @@ void checkLandmarkBarcodes() {
 
     for (int j = 0; j < data.getNumberOfLandmarks(); j++) {
       /* Check the id against its barcode */
-      if (landmarks[j].barcode != barcodes[landmarks[j].id - 1]) {
-        std::cerr << "[ERROR] Landmark " << landmarks[j].id
+      if (landmarks[j].barcode() != barcodes[landmarks[j].id() - 1]) {
+        std::cerr << "[ERROR] Landmark " << landmarks[j].id()
                   << " does not not have the correct ID." << std::endl;
         flag = false;
       }
@@ -856,23 +857,23 @@ void checkSimulation() {
 
   data.setSimulation(70000, 5U, 15U, 0.02);
   data.saveExtractedData();
-  data.plotExtractedData();
 }
 
 void checkPlotting() {
   Data::Handler data;
-  const std::string dataset = "MRCLAM_Dataset" + std::to_string(1);
+  const std::string dataset{"MRCLAM_Dataset" + std::to_string(1)};
   data.setDataSet(dataset);
 
-  Data::Plotter plot(data);
+  Data::Plotter plot{};
   gnuplot::TerminalSettings terminal;
 
   terminal.type = gnuplot::TerminalType::PNG;
   plot.setTerminal(terminal);
 
-  plot.plotPoses({Data::Plotter::SYNCED}, 1);
-  plot.plotPoses({Data::Plotter::RAW, Data::Plotter::GROUNDTRUTH}, 1);
-  plot.plotOdometry({Data::Plotter::SYNCED}, 1);
+  const auto &robots{data.getRobots()};
+  plot.plotPoses({robots.at(0)}, {Data::Type::SYNCED});
+  plot.plotPoses({robots.at(0)}, {Data::Type::RAW, Data::Type::GROUNDTRUTH});
+  plot.plotOdometry({robots.at(0)}, {Data::Type::SYNCED});
   plot.plotMeasurements(
       {Data::Plotter::SYNCED, Data::Plotter::GROUNDTRUTH, Data::Plotter::RAW});
 
