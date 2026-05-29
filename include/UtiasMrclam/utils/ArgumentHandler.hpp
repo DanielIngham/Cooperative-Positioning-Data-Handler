@@ -71,7 +71,7 @@ inline void showHelp(char *executable) {
             << std::endl
             << std::endl;
 
-  std::cout << "Optional Simulation flags" << std::endl
+  std::cout << "Optional Dataset flags" << std::endl
             << '\t' << "-o <output directory>" << std::endl
             << '\t' << "-s <sample period>" << std::endl
             << std::endl;
