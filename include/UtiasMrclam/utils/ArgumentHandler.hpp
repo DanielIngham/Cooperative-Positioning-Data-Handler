@@ -80,7 +80,6 @@ inline void showHelp(char *executable) {
             << '\t' << "-o <output directory>" << std::endl
             << '\t' << "-p <sample period>" << std::endl
             << '\t' << "-r <number of robots>" << std::endl
-            << '\t' << "-r <number of robots>" << std::endl
             << '\t' << "-l <number of landmarks>" << std::endl
             << '\t' << "-S <Simulation seed>" << std::endl
             << std::endl;
@@ -97,11 +96,13 @@ inline int argToInt(char *argument) {
     argument_integer = std::stoi(argument);
 
   } catch (const std::invalid_argument &e) {
-    std::cerr << "Invalid argument: not a number" << std::endl;
+    std::cerr << "Invalid argument: " << argument << " not a number. "
+              << e.what() << std::endl;
     throw;
 
   } catch (const std::out_of_range &e) {
-    std::cerr << "Number out of range" << std::endl;
+    std::cerr << "Number " << argument << " out of range. " << e.what()
+              << std::endl;
     throw;
   }
 
