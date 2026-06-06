@@ -16,7 +16,7 @@
 #include "UtiasMrclam/DataHandler.hpp"
 #include "UtiasMrclam/Simulator.hpp"
 
-namespace ArgumentHandler {
+namespace utias::mrclam::ArgumentHandler {
 
 enum ArgumentOrder {
   EXECUTABLE, ///< The first argument is always the executable.
@@ -138,11 +138,11 @@ inline double argToDouble(char *argument) {
  * @param argv Argument values. The strings corresponding to the arguments.
  * @param data Data::Handler instance to be set based on provided arguments.
  */
-inline void setDataSet(int argc, char *argv[], Data::Handler &data) {
+inline void setDataSet(int argc, char *argv[], Handler &data) {
 
   std::string dataset;
-  std::string output_directory = Data::HandlerDefaults::kOutputDir;
-  double sample_period = Data::HandlerDefaults::kSamplePeriod;
+  std::string output_directory = HandlerDefaults::kOutputDir;
+  double sample_period = HandlerDefaults::kSamplePeriod;
 
   if (argc == 2) {
     throw std::runtime_error("No dataset provided. " +
@@ -184,7 +184,7 @@ inline void setDataSet(int argc, char *argv[], Data::Handler &data) {
 
   /* NOTE: If the output directory is not specified by the user, the set the
    * output directory to the executables name. */
-  if (output_directory == Data::HandlerDefaults::kOutputDir) {
+  if (output_directory == HandlerDefaults::kOutputDir) {
     output_directory = std::string(argv[EXECUTABLE]);
   }
 
@@ -205,7 +205,7 @@ inline void setDataSet(int argc, char *argv[], Data::Handler &data) {
  * @param argv Argument values. The strings corresponding to the arguments.
  * @param data Data::Handler instance to be set based on provided arguments.
  */
-inline void setSimulation(int argc, char *argv[], Data::Handler &data) {
+inline void setSimulation(int argc, char *argv[], Handler &data) {
 
   assert(argc > 2 && "Number of simulated data points not provided.");
 
@@ -214,14 +214,14 @@ inline void setSimulation(int argc, char *argv[], Data::Handler &data) {
   assert(data_points > 0 &&
          "The number of datapoints must be a positive integer.");
 
-  unsigned int robots{Data::SimulationDefaults::kRobots},
-      landmarks{Data::SimulationDefaults::kLandmarks};
+  unsigned int robots{SimulationDefaults::kRobots},
+      landmarks{SimulationDefaults::kLandmarks};
 
-  size_t seed{Data::SimulationDefaults::kSeed};
+  size_t seed{SimulationDefaults::kSeed};
 
-  double sample_period{Data::SimulationDefaults::kSamplePeriod};
+  double sample_period{SimulationDefaults::kSamplePeriod};
 
-  std::string output_directory{Data::SimulationDefaults::kOutputDir};
+  std::string output_directory{SimulationDefaults::kOutputDir};
 
   if (argc == 2U) {
     throw std::runtime_error("Number of datapoints not specified. " +
@@ -269,7 +269,7 @@ inline void setSimulation(int argc, char *argv[], Data::Handler &data) {
 
   /* NOTE: If the output directory is not specified by the user, the set the
    * output directory to the executables name. */
-  if (output_directory == Data::SimulationDefaults::kOutputDir) {
+  if (output_directory == SimulationDefaults::kOutputDir) {
     output_directory = std::string(argv[EXECUTABLE]);
   }
 
@@ -293,7 +293,7 @@ inline void setSimulation(int argc, char *argv[], Data::Handler &data) {
  * @param argv Argument values. The strings corresponding to the arguments.
  * @param data Data::Handler instance to be set based on provided arguments.
  */
-inline void setArguments(int argc, char *argv[], Data::Handler &data) {
+inline void setArguments(int argc, char *argv[], Handler &data) {
 
   /* Check if an argument is provided. */
   if (argc == 1) {
@@ -330,5 +330,5 @@ inline void setArguments(int argc, char *argv[], Data::Handler &data) {
   }
 }
 
-} // namespace ArgumentHandler
+} // namespace utias::mrclam::ArgumentHandler
 #endif // INCLUDE_DATAHANDLER_INPUTHANDLER_HPP_
