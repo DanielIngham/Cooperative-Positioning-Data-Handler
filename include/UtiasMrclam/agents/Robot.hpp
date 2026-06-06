@@ -12,7 +12,7 @@
 #include <cmath>  // std::atan2
 #include <vector> // std::vector
 
-namespace Data {
+namespace utias::mrclam {
 
 /**
  * @class Robot
@@ -186,6 +186,6 @@ private:
   void calculateOdometryError();
   void calculateMeasurementError(const bool simulation = false);
 };
-} // namespace Data
+} // namespace utias::mrclam
 
 #endif // INCLUDE_INCLUDE_ROBOT_H_

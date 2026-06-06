@@ -31,7 +31,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Data {
+namespace utias::mrclam {
 
 /**
  * @brief Constructor that sets the simuation values for the multi-robot
@@ -2049,4 +2049,4 @@ const std::string Handler::getProjectDirectory() {
   }
   return std::string(project_env);
 }
-} // namespace Data
+} // namespace utias::mrclam

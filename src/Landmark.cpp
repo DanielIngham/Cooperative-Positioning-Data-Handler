@@ -1,7 +1,7 @@
 #include "UtiasMrclam/agents/Landmark.hpp"
 #include "UtiasMrclam/agents/Agent.hpp"
 
-namespace Data {
+namespace utias::mrclam {
 
 Landmark::Landmark(unsigned short id, unsigned short barcode)
     : Agent(id, barcode, Agent::Type::LANDMARK) {}
@@ -25,4 +25,4 @@ void Landmark::standard_deviation(double x, double y) {
   std_dev_.y = y;
 }
 
-} // namespace Data
+} // namespace utias::mrclam

@@ -19,7 +19,7 @@
 #include <stdexcept> // std::runtime_error
 #include <string>    // std::string
 
-namespace Data {
+namespace utias::mrclam {
 
 /**
  * @brief Default constructor.
@@ -457,4 +457,4 @@ Robot::State Robot::getRMSE() const {
   return rmse;
 }
 
-} // namespace Data
+} // namespace utias::mrclam

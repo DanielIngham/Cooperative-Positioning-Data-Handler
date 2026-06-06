@@ -14,7 +14,7 @@
 #include <random>
 #include <vector>
 
-namespace Data {
+namespace utias::mrclam {
 
 struct SimulationDefaults {
   static constexpr unsigned short kRobots{5U};
@@ -131,6 +131,6 @@ private:
   void setGeneratorSeed(unsigned long);
   void addGaussianNoise();
 };
-} // namespace Data
+} // namespace utias::mrclam
 
 #endif // INCLUDE_INCLUDE_SIMULATOR_H_

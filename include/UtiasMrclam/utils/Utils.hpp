@@ -4,13 +4,11 @@
  */
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <numbers>
 
 #include "UtiasMrclam/agents/Robot.hpp"
 
 namespace utias::mrclam::utils {
-
 /**
  * Normalises a given angle to fall in the range [-pi, pi).
  * @param angle_rad unnormalised angle in radians
@@ -22,8 +20,8 @@ inline void normaliseAngle(double &angle_rad) {
                floor((angle_rad + std::numbers::pi) / (2.0 * std::numbers::pi));
 }
 
-inline const Data::Robot::Measurement *
-getMeasurement(const std::vector<Data::Robot::Measurement> &measurements,
+inline const Robot::Measurement *
+getMeasurement(const std::vector<Robot::Measurement> &measurements,
                double time) {
 
   /* Threshold for double floating point precision. */
@@ -32,8 +30,9 @@ getMeasurement(const std::vector<Data::Robot::Measurement> &measurements,
   /* Find the first element whose time is larger than the current time.  */
   auto iterator{
       std::lower_bound(measurements.begin(), measurements.end(), time,
-                       [](const Data::Robot::Measurement &measurement,
-                          double time) { return measurement.time < time; })};
+                       [](const Robot::Measurement &measurement, double time) {
+                         return measurement.time < time;
+                       })};
 
   if (iterator == measurements.end())
     return nullptr;
@@ -66,13 +65,13 @@ getMeasurement(const std::vector<Data::Robot::Measurement> &measurements,
  * @returns pointer to the measurement found. std::nullptr if nothing was
  * found.
  */
-inline const Data::Robot::Measurement *getMeasurement(const Data::Robot *robot,
-                                                      size_t index) {
+inline const Robot::Measurement *getMeasurement(const Robot *robot,
+                                                size_t index) {
 
-  const Data::Robot::Odometry &odometry{robot->synced.odometry.at(index)};
+  const Robot::Odometry &odometry{robot->synced.odometry.at(index)};
   const double current_time{odometry.time};
 
-  const std::vector<Data::Robot::Measurement> &measurements{
+  const std::vector<Robot::Measurement> &measurements{
       robot->synced.measurements};
 
   return getMeasurement(measurements, current_time);

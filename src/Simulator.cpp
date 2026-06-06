@@ -17,7 +17,7 @@
 #include <random>
 #include <stdexcept>
 
-namespace Data {
+namespace utias::mrclam {
 
 /**
  * @brief Default constructor.
@@ -741,4 +741,4 @@ void Simulator::addGaussianNoise() {
     }
   }
 }
-} // namespace Data
+} // namespace utias::mrclam

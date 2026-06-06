@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ostream>
-namespace Data {
+namespace utias::mrclam {
 
 class Agent {
 public:
@@ -72,4 +72,4 @@ private:
   Type type_;
 };
 
-} // namespace Data
+} // namespace utias::mrclam

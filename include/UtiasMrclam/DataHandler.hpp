@@ -18,7 +18,7 @@
 #include "UtiasMrclam/agents/Landmark.hpp"
 #include "UtiasMrclam/agents/Robot.hpp"
 
-namespace Data {
+namespace utias::mrclam {
 
 /**
  * @struct DataHandlerDefaults
@@ -234,5 +234,5 @@ private:
   void relativeRobotDistance();
   void relativeLandmarkDistance();
 };
-} // namespace Data
+} // namespace utias::mrclam
 #endif // INCLUDE_INCLUDE_DATA_EXTRACTOR_H_

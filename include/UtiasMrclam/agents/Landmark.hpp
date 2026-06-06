@@ -10,7 +10,7 @@
 #include "UtiasMrclam/agents/Agent.hpp"
 #include <vector>
 
-namespace Data {
+namespace utias::mrclam {
 
 /**
  * @struct Landmark
@@ -53,6 +53,6 @@ private:
   } position_, std_dev_;
 };
 
-} // namespace Data
+} // namespace utias::mrclam
 
 #endif // INCLUDE_INCLUDE_LANDMARK_H_

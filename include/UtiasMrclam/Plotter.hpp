@@ -16,11 +16,10 @@
 
 /* Warn about depreciated functions. */
 #define GNUPLOT_DEPRECATE_WARN
-/* TODO: Fix the include path in CMake. */
 #include "gnuplot/gnuplot-iostream.h"
 #include "gnuplot/gnuplot_helper.h"
 
-namespace Data {
+namespace utias::mrclam {
 
 enum class Type { SYNCED, GROUNDTRUTH, RAW, ERROR, ABSOLUTE_ERROR };
 
@@ -228,4 +227,4 @@ private:
   std::string to_string(Type);
 };
 
-} // namespace Data
+} // namespace utias::mrclam

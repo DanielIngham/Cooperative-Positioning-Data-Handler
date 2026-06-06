@@ -19,7 +19,8 @@
 #include <filesystem>
 #endif // REUSE
 
-namespace Data {
+namespace utias::mrclam {
+
 unsigned short Plotter::terminal_number_{};
 
 /**
@@ -125,8 +126,7 @@ PlotData<Robot::Measurement> Plotter::binariseMeasurementVectors(
   fout.close();
 
   return vector_plot;
-} // namespace Data
-
+}
 /**
  * Groups the robots measurement error for its range and bearing sensing, and
  * creates a quasi PDF (scaled PMF).
@@ -832,7 +832,7 @@ void Plotter::plotOdometryPDFs(const std::vector<Robot> &robots,
       gnuplot_.flush();
     }
   }
-} // namespace Data
+}
 
 /**
  * Plots the range and bearing measurements that each vehicle recieved through a
@@ -1220,8 +1220,7 @@ void Plotter::trajectoryIterationsPlotter(
   }
 
   plot(plot_list, axis);
-
-} // namespace Data
+}
 
 /**
  * Writes binary file for odometry data.
@@ -1491,4 +1490,4 @@ std::string Plotter::to_string(Type type) {
   }
 }
 
-} // namespace Data
+} // namespace utias::mrclam
